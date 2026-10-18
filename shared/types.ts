@@ -45,3 +45,19 @@ export interface GameAnalysis {
 }
 // GameSummary gains (optional, filled by listGames when analysed):
 export interface AnalysisBadge { accuracyUser: number | null; blunders: number; mistakes: number; status: GameAnalysis['status'] }
+
+// M3: spaced-repetition cards
+export type CardKind = 'opening' | 'mistake' | 'lesson';
+export type Rating = 'again' | 'hard' | 'good' | 'easy';
+export interface CardRef { gameId?: number; ply?: number; repertoire?: string; nodeId?: string; lessonId?: string; exerciseId?: string }
+export interface Card {
+  id: number; kind: CardKind; positionKey: string; fen: string; sideToMove: Color;
+  prompt: string; solution: { accepted: string[]; best: string; explanation: string | null };
+  refs: CardRef[]; suspended: boolean; createdAt: number;
+  lastMove?: { uci: string } | null; // opponent's move leading to fen, for animation (openings)
+}
+export interface CardWithState extends Card { due: number | null; isNew: boolean }
+export interface ReviewSubmit { rating: Rating; answerUci: string | null; durationMs: number }
+export interface ReviewResult { cardId: number; nextDue: number }
+export interface ReviewSession { cards: CardWithState[]; dueCount: number; newAvailable: number }
+export interface CardFlag { id: number; cardId: number; note: string; createdAt: number }
