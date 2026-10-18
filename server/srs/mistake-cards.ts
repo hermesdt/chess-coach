@@ -1,10 +1,11 @@
 import type { DatabaseSync } from 'node:sqlite';
-import type { GameAnalysis, MoveAnalysis, Tag } from '../../shared/types.js';
+import type { GameAnalysis, GameReview, MoveAnalysis, Tag } from '../../shared/types.js';
 import { bySeverity, CLASSIFICATION_TEXT, TAG_TEXT } from '../../shared/tag-text.js';
 import { winPct } from '../analysis/winpct.js';
 import type { EnginePool } from '../engine/pool.js';
 import type { EngineLine } from '../engine/uci.js';
-import { listCardsByRef, positionKey, setRefs, setSuspended, upsertCard } from './cards-repo.js';
+import { latestReview } from '../ai/notes-repo.js';
+import { listCardsByRef, positionKey, setRefs, setSolution, setSuspended, upsertCard } from './cards-repo.js';
 
 const MULTIPV = 3;
 const ACCEPT_WITHIN = 5;
@@ -32,10 +33,34 @@ function playedWithinMargin(lines: EngineLine[], played: string): boolean {
   return lines.some((l) => l.pv[0] === played && best - winPct(l.score) <= ACCEPT_WITHIN);
 }
 
-function explanation(m: MoveAnalysis): string {
+function explanation(m: MoveAnalysis, why?: string): string {
   const label = CLASSIFICATION_TEXT[m.classification] ?? m.classification;
   const tags = bySeverity(m.tags.filter((t) => MATERIAL_TAGS.includes(t))).map((t) => TAG_TEXT[t]);
-  return tags.length === 0 ? label : `${label} — ${tags.join('. ')}.`;
+  const base = tags.length === 0 ? label : `${label} — ${tags.join('. ')}.`;
+  if (!why) return base;
+  return `${base}${base.endsWith('.') ? '' : '.'} ${why}`;
+}
+
+const whyByPly = (review: GameReview | null): Map<number, string> =>
+  new Map((review?.moments ?? []).filter((m) => m.whyItMatters.trim() !== '').map((m) => [m.ply, m.whyItMatters.trim()]));
+
+/** Adds the coach's "why it matters" to the mistake cards that point at a ply of this game. Other cards are not touched. */
+export function applyCoachExplanations(db: DatabaseSync, analysis: GameAnalysis, review: GameReview): number {
+  const why = whyByPly(review);
+  const moves = new Map(analysis.moves.map((m) => [m.ply, m]));
+  let updated = 0;
+  for (const card of listCardsByRef(db, analysis.gameId)) {
+    if (card.kind !== 'mistake') continue;
+    for (const ref of card.refs) {
+      const m = ref.gameId === analysis.gameId && ref.ply !== undefined ? moves.get(ref.ply) : undefined;
+      const text = m ? why.get(m.ply) : undefined;
+      if (!m || !text) continue;
+      setSolution(db, card.id, { ...card.solution, explanation: explanation(m, text) });
+      updated += 1;
+      break;
+    }
+  }
+  return updated;
 }
 
 const isMistake = (m: MoveAnalysis): boolean =>
@@ -54,6 +79,7 @@ export async function buildMistakeCards(
 ): Promise<{ created: number; updated: number; suspended: number }> {
   const result = { created: 0, updated: 0, suspended: 0 };
   const mistakes = analysis.moves.filter(isMistake);
+  const why = whyByPly(latestReview(db, `game:${analysis.gameId}`, analysis.version));
 
   for (const m of mistakes) {
     const lines = await pool.analyse(m.fenBefore, { nodes: opts.nodes, multipv: MULTIPV });
@@ -69,7 +95,7 @@ export async function buildMistakeCards(
     upsertCard(db, {
       kind: 'mistake', positionKey: key, fen: m.fenBefore, sideToMove: color,
       prompt: `${color === 'white' ? 'White' : 'Black'} to move. You played ${m.san} here in a game. Find a better move.`,
-      solution: { accepted, best, explanation: explanation(m) },
+      solution: { accepted, best, explanation: explanation(m, why.get(m.ply)) },
       refs: [{ gameId: analysis.gameId, ply: m.ply }], lastMove: null,
     });
     result[existed ? 'updated' : 'created'] += 1;

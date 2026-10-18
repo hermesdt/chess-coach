@@ -4,6 +4,11 @@ import { z } from 'zod';
 import { runStructured } from '../ai/runner.js';
 import type { Registry } from '../ai/registry.js';
 import { getSettings } from '../config.js';
+import { getAnalysis } from '../analysis/analysis-repo.js';
+import { coachErrorMessage, gameNotes, reviewGame } from '../ai/game-review.js';
+import { PROVIDER_IDS, type ProviderId } from '../ai/types.js';
+import { getGameRow } from '../db/games-repo.js';
+import { runJob } from '../jobs.js';
 
 const TEST_TIMEOUT_MS = 60_000;
 const testSchema = z.object({ ok: z.boolean() });
@@ -28,6 +33,30 @@ export function aiRoutes(db: DatabaseSync, registry: Registry, timeoutMs = TEST_
         }),
       );
       return c.json(rows);
+    })
+    .get('/games/:id/coach', (c) => {
+      const id = c.req.param('id');
+      if (!/^\d+$/.test(id) || !getGameRow(db, Number(id))) return c.json({ error: 'not found' }, 404);
+      return c.json(gameNotes(db, Number(id)));
+    })
+    .post('/games/:id/coach', async (c) => {
+      const id = c.req.param('id');
+      const game = /^\d+$/.test(id) ? getGameRow(db, Number(id)) : null;
+      if (!game) return c.json({ error: 'not found' }, 404);
+      const body = (await c.req.json().catch(() => null)) as { provider?: unknown } | null;
+      const requested = body?.provider;
+      if (requested !== undefined && !(PROVIDER_IDS as readonly unknown[]).includes(requested)) return c.json({ error: 'unknown provider' }, 400);
+      if (getAnalysis(db, game.id)?.status !== 'done') return c.json({ error: 'Analyse this game first.' }, 400);
+      const provider = requested as ProviderId | undefined;
+      const job = runJob(db, 'coach', async () => {
+        try {
+          await reviewGame(db, registry, game.id, { provider });
+        } catch (err) {
+          const settings = getSettings(db);
+          throw new Error(coachErrorMessage(err, [settings.openrouterApiKey, settings.anthropicApiKey]), { cause: err });
+        }
+      });
+      return c.json({ jobId: job.id });
     })
     .post('/ai/providers/:id/test', async (c) => {
       const id = c.req.param('id');

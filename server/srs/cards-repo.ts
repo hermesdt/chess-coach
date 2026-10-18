@@ -97,6 +97,10 @@ export function setRefs(db: DatabaseSync, id: number, refs: CardRef[]): void {
   db.prepare('UPDATE cards SET refs_json = ? WHERE id = ?').run(JSON.stringify(refs), id);
 }
 
+export function setSolution(db: DatabaseSync, id: number, solution: Card['solution']): void {
+  db.prepare('UPDATE cards SET solution_json = ? WHERE id = ?').run(JSON.stringify(solution), id);
+}
+
 export function listCardsByRef(db: DatabaseSync, gameId: number): Card[] {
   return db.prepare('SELECT * FROM cards ORDER BY id').all()
     .map(toCard)

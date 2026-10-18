@@ -1,3 +1,4 @@
+import type { LessonId } from './lessons';
 export type Source = 'chesscom' | 'lichess' | 'import';
 export type Color = 'white' | 'black';
 export type GameResult = 'win' | 'loss' | 'draw';
@@ -23,6 +24,10 @@ export type ProviderId = (typeof PROVIDER_IDS)[number];
 export type AiProviderSetting = 'auto' | ProviderId | 'none';
 export interface SettingsDTO { chesscomUsername: string | null; lichessUsername: string | null; lichessTokenSet: boolean; syncInitialMonths: number; engineNodes: number; reviewDailyLimit: number; reviewNewPerDay: number; aiProvider: AiProviderSetting; aiModels: Record<ProviderId, string | null>; openrouterKeySet: boolean; anthropicKeySet: boolean }
 export interface SettingsUpdate { chesscomUsername?: string; lichessUsername?: string; lichessToken?: string; syncInitialMonths?: number; engineNodes?: number; reviewDailyLimit?: number; reviewNewPerDay?: number; aiProvider?: AiProviderSetting; aiModels?: Partial<Record<ProviderId, string>>; openrouterApiKey?: string; anthropicApiKey?: string }
+// M5: AI game review
+export interface GameReviewMoment { ply: number; whatHappened: string; whyItMatters: string; principle: string; lessonId: LessonId | null }
+export interface GameReview { summary: string; openingNote: string; moments: GameReviewMoment[]; oneThingToPractice: string }
+export interface GameReviewNote { provider: ProviderId; model: string; createdAt: number; review: GameReview }
 export type JobStatus = 'queued' | 'running' | 'done' | 'error';
 export interface Job { id: number; kind: string; status: JobStatus; progress: number; total: number | null; message: string | null; error: string | null; createdAt: number; finishedAt: number | null }
 export interface ImportPreviewItem { index: number; white: string; black: string; date: string | null; detectedColor: Color | null; skippedReason: string | null }
