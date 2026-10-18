@@ -11,7 +11,7 @@ export interface NewGame {
   termination: string | null; eco: string | null; openingName: string | null;
   pgn: string; url: string | null; plyCount: number;
 }
-export interface GameSummary extends Omit<NewGame, 'pgn'> { id: number }
+export interface GameSummary extends Omit<NewGame, 'pgn'> { id: number; analysis?: AnalysisBadge }
 export interface MoveInfo { ply: number; san: string; uci: string; fenBefore: string; fenAfter: string }
 export interface GameDetail extends GameSummary { pgn: string; startFen: string; moves: MoveInfo[] }
 export interface GameListQuery { source?: Source; color?: Color; result?: GameResult; q?: string; limit?: number; offset?: number }
