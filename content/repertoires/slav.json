@@ -1,0 +1,1700 @@
+{
+ "id": "slav",
+ "name": "Slav and anti-London",
+ "color": "black",
+ "moves": [
+  {
+   "san": "d4",
+   "comment": "White starts with the d-pawn.",
+   "children": [
+    {
+     "san": "d5",
+     "comment": "Meet the d-pawn with the d-pawn. You claim the centre and get a solid, simple game.",
+     "children": [
+      {
+       "san": "c4",
+       "comment": "White attacks d5 from the side.",
+       "children": [
+        {
+         "san": "c6",
+         "comment": "This is the Slav. It is your Caro-Kann pawn move: ...c6 guards d5 and keeps your c8 bishop free.",
+         "children": [
+          {
+           "san": "Nf3",
+           "comment": "White develops and guards d4.",
+           "children": [
+            {
+             "san": "Nf6",
+             "comment": "Develop and guard d5 again. Your plan: ...dxc4, then ...Bf5, then ...e6.",
+             "children": [
+              {
+               "san": "Nc3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "dxc4",
+                 "comment": "Take the pawn on c4. Your next job is the bishop: it must leave before you play ...e6.",
+                 "children": [
+                  {
+                   "san": "a4",
+                   "comment": "White stops ...b5 and plans e3 and Bxc4.",
+                   "children": [
+                    {
+                     "san": "Bf5",
+                     "comment": "Bring the bishop out before ...e6, as in the Caro-Kann. The pawn on a4 stops ...b5, so do not try to keep the c4 pawn.",
+                     "children": [
+                      {
+                       "san": "e3",
+                       "comment": null,
+                       "children": [
+                        {
+                         "san": "e6",
+                         "comment": "Now the bishop sits outside your pawn chain. This is your Caro-Kann plan: bishop first, then ...e6.",
+                         "children": [
+                          {
+                           "san": "Bxc4",
+                           "comment": "White wins the pawn back.",
+                           "children": [
+                            {
+                             "san": "Bb4",
+                             "comment": "Pin the knight on c3 against the king. Next you play ...Nbd7 and castle.",
+                             "children": [
+                              {
+                               "san": "O-O",
+                               "comment": null,
+                               "children": [
+                                {
+                                 "san": "Nbd7",
+                                 "comment": "Develop the last knight. It supports the later breaks ...e5 and ...c5. Then you castle.",
+                                 "children": [
+                                  {
+                                   "san": "Qe2",
+                                   "comment": null,
+                                   "children": [
+                                    {
+                                     "san": "Bg6",
+                                     "comment": "Step back before e3-e4 can hit the bishop on f5. On g6 it also watches the e4 square.",
+                                     "children": [
+                                      {
+                                       "san": "e4",
+                                       "comment": null,
+                                       "children": [
+                                        {
+                                         "san": "O-O",
+                                         "comment": "Castle. Your king is safe and your pieces are out. Aim for ...e5 or ...c5 later, like in the Caro-Kann.",
+                                         "children": [
+                                          {
+                                           "san": "Bd3",
+                                           "comment": null,
+                                           "children": [
+                                            {
+                                             "san": "Re8",
+                                             "comment": "Put the rook on the e-file. It prepares the ...e5 break, a Caro-Kann idea you know.",
+                                             "children": [],
+                                             "level": 3
+                                            }
+                                           ],
+                                           "level": 3
+                                          }
+                                         ],
+                                         "tags": [
+                                          "main"
+                                         ]
+                                        }
+                                       ],
+                                       "tags": [
+                                        "main"
+                                       ]
+                                      }
+                                     ],
+                                     "tags": [
+                                      "main"
+                                     ]
+                                    }
+                                   ],
+                                   "tags": [
+                                    "main"
+                                   ]
+                                  }
+                                 ],
+                                 "tags": [
+                                  "main"
+                                 ],
+                                 "level": 2
+                                }
+                               ],
+                               "tags": [
+                                "main"
+                               ]
+                              }
+                             ],
+                             "tags": [
+                              "main"
+                             ]
+                            }
+                           ],
+                           "tags": [
+                            "main"
+                           ]
+                          }
+                         ],
+                         "tags": [
+                          "main"
+                         ]
+                        }
+                       ],
+                       "tags": [
+                        "main"
+                       ]
+                      }
+                     ],
+                     "tags": [
+                      "main"
+                     ]
+                    }
+                   ],
+                   "tags": [
+                    "main"
+                   ]
+                  },
+                  {
+                   "san": "e3",
+                   "comment": "White wants to take back on c4 with the bishop.",
+                   "children": [
+                    {
+                     "san": "b5",
+                     "comment": "Hold the pawn with ...b5. The c6 pawn guards b5, so the chain is solid.",
+                     "children": [
+                      {
+                       "san": "a4",
+                       "comment": null,
+                       "children": [
+                        {
+                         "san": "b4",
+                         "comment": "Push the pawn. It attacks the knight on c3 and wins space.",
+                         "children": [
+                          {
+                           "san": "Na2",
+                           "comment": null,
+                           "children": [
+                            {
+                             "san": "e6",
+                             "comment": "Open the f8 bishop and guard d5. Then you can bring the c8 bishop out with ...Bb7 or ...Ba6.",
+                             "children": [],
+                             "level": 2
+                            }
+                           ],
+                           "level": 2
+                          }
+                         ],
+                         "level": 2
+                        }
+                       ],
+                       "level": 2
+                      }
+                     ],
+                     "level": 2
+                    }
+                   ],
+                   "level": 2
+                  },
+                  {
+                   "san": "Ne5",
+                   "comment": "White plans to win the c4 pawn back with the knight.",
+                   "children": [
+                    {
+                     "san": "Nbd7",
+                     "comment": "Challenge the knight at once. If it takes on d7, you retake.",
+                     "children": [
+                      {
+                       "san": "Nxc4",
+                       "comment": null,
+                       "children": [
+                        {
+                         "san": "Qc7",
+                         "comment": "The queen guards the e5 square and prepares ...e5, the Caro-Kann break.",
+                         "children": [
+                          {
+                           "san": "g3",
+                           "comment": null,
+                           "children": [
+                            {
+                             "san": "e5",
+                             "comment": "Strike at the centre with ...e5. It opens lines for your pieces.",
+                             "children": [],
+                             "level": 3
+                            }
+                           ],
+                           "level": 3
+                          }
+                         ],
+                         "level": 3
+                        }
+                       ],
+                       "level": 3
+                      }
+                     ],
+                     "level": 3
+                    }
+                   ],
+                   "level": 3
+                  }
+                 ],
+                 "tags": [
+                  "main"
+                 ]
+                }
+               ],
+               "tags": [
+                "main"
+               ]
+              }
+             ],
+             "tags": [
+              "main"
+             ]
+            }
+           ],
+           "tags": [
+            "main"
+           ]
+          },
+          {
+           "san": "Nc3",
+           "comment": null,
+           "children": [
+            {
+             "san": "Nf6",
+             "comment": "Develop and guard d5. Next comes ...e6 or ...dxc4.",
+             "children": [
+              {
+               "san": "e3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "e6",
+                 "comment": "Solid: ...e6 guards d5 and opens the f8 bishop. The c8 bishop is shut in, but ...dxc4 and ...b5 free it later.",
+                 "children": [
+                  {
+                   "san": "Nf3",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "Nbd7",
+                     "comment": "Develop the knight to d7. It supports ...c5 and ...e5 later, and it keeps ...dxc4 ready.",
+                     "children": [
+                      {
+                       "san": "Bd3",
+                       "comment": null,
+                       "children": [
+                        {
+                         "san": "dxc4",
+                         "comment": "Take with a gain of time: the pawn on c4 attacks the bishop on d3.",
+                         "children": [
+                          {
+                           "san": "Bxc4",
+                           "comment": null,
+                           "children": [
+                            {
+                             "san": "b5",
+                             "comment": "Hit the bishop again with a pawn. You gain space and time.",
+                             "children": [
+                              {
+                               "san": "Bd3",
+                               "comment": null,
+                               "children": [
+                                {
+                                 "san": "a6",
+                                 "comment": "Guard the b5 pawn with ...a6. Now the b5 pawn is solid.",
+                                 "children": [
+                                  {
+                                   "san": "e4",
+                                   "comment": null,
+                                   "children": [
+                                    {
+                                     "san": "c5",
+                                     "comment": "Strike the centre with ...c5. It is the same lever as in the Caro-Kann.",
+                                     "children": [],
+                                     "tags": [
+                                      "main"
+                                     ]
+                                    }
+                                   ],
+                                   "tags": [
+                                    "main"
+                                   ]
+                                  }
+                                 ],
+                                 "tags": [
+                                  "main"
+                                 ],
+                                 "level": 2
+                                }
+                               ],
+                               "tags": [
+                                "main"
+                               ]
+                              }
+                             ],
+                             "tags": [
+                              "main"
+                             ]
+                            }
+                           ],
+                           "tags": [
+                            "main"
+                           ]
+                          }
+                         ],
+                         "tags": [
+                          "main"
+                         ]
+                        }
+                       ],
+                       "tags": [
+                        "main"
+                       ]
+                      }
+                     ],
+                     "tags": [
+                      "main"
+                     ]
+                    }
+                   ],
+                   "tags": [
+                    "main"
+                   ]
+                  }
+                 ],
+                 "tags": [
+                  "main"
+                 ]
+                }
+               ],
+               "tags": [
+                "main"
+               ]
+              },
+              {
+               "san": "Nf3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "dxc4",
+                 "comment": "Same position as the main Slav, so take the pawn and follow your plan.",
+                 "children": [],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              }
+             ],
+             "tags": [
+              "main"
+             ]
+            }
+           ],
+           "tags": [
+            "main"
+           ]
+          },
+          {
+           "san": "cxd5",
+           "comment": "The Exchange Slav. White trades pawns and the game becomes symmetrical.",
+           "children": [
+            {
+             "san": "cxd5",
+             "comment": "Retake with the c-pawn. You have a pawn in the centre and an open c-file.",
+             "children": [
+              {
+               "san": "Nc3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Nf6",
+                 "comment": "Develop and guard d5.",
+                 "children": [
+                  {
+                   "san": "Bf4",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "Nc6",
+                     "comment": "Develop with pressure on d4. This knight also supports a later ...e5.",
+                     "children": [
+                      {
+                       "san": "e3",
+                       "comment": null,
+                       "children": [
+                        {
+                         "san": "Bf5",
+                         "comment": "Bring the bishop out before ...e6, as in the Caro-Kann.",
+                         "children": [
+                          {
+                           "san": "Nf3",
+                           "comment": null,
+                           "children": [
+                            {
+                             "san": "e6",
+                             "comment": "Now the bishop sits outside your pawn chain. You are solid and fully developed.",
+                             "children": [
+                              {
+                               "san": "Bd3",
+                               "comment": null,
+                               "children": [
+                                {
+                                 "san": "Bxd3",
+                                 "comment": "Trade your good bishop for theirs. Then ...Bb4 pins the knight.",
+                                 "children": [
+                                  {
+                                   "san": "Qxd3",
+                                   "comment": null,
+                                   "children": [
+                                    {
+                                     "san": "Bb4",
+                                     "comment": "Pin the knight on c3 against the king. Then castle.",
+                                     "children": [],
+                                     "level": 2
+                                    }
+                                   ],
+                                   "level": 2
+                                  }
+                                 ],
+                                 "level": 2
+                                }
+                               ],
+                               "level": 2
+                              }
+                             ]
+                            }
+                           ]
+                          }
+                         ]
+                        }
+                       ]
+                      }
+                     ]
+                    }
+                   ]
+                  }
+                 ],
+                 "tags": [
+                  "main"
+                 ]
+                }
+               ],
+               "tags": [
+                "main"
+               ]
+              }
+             ],
+             "tags": [
+              "main"
+             ]
+            }
+           ],
+           "tags": [
+            "main"
+           ]
+          },
+          {
+           "san": "e3",
+           "comment": null,
+           "children": [
+            {
+             "san": "Nf6",
+             "comment": "Develop and guard d5. You will play ...e6 or ...Bf5 next.",
+             "children": [
+              {
+               "san": "Nc3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "e6",
+                 "comment": "Solid: ...e6 guards d5 and opens the f8 bishop.",
+                 "children": [
+                  {
+                   "san": "Nf3",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "Nbd7",
+                     "comment": "Develop the knight to d7. Same set-up as in the line with 3.Nc3.",
+                     "children": [],
+                     "tags": [
+                      "main"
+                     ]
+                    }
+                   ],
+                   "tags": [
+                    "main"
+                   ]
+                  }
+                 ],
+                 "tags": [
+                  "main"
+                 ]
+                }
+               ],
+               "tags": [
+                "main"
+               ]
+              },
+              {
+               "san": "Nf3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Bf5",
+                 "comment": "Bring the bishop out before ...e6. Same idea as the Caro-Kann.",
+                 "children": [],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              }
+             ],
+             "tags": [
+              "main"
+             ]
+            }
+           ],
+           "tags": [
+            "main"
+           ]
+          }
+         ],
+         "tags": [
+          "main"
+         ]
+        }
+       ],
+       "tags": [
+        "main"
+       ]
+      },
+      {
+       "san": "Bf4",
+       "comment": "This is the London-style bishop move. It comes out before White’s e-pawn moves.",
+       "children": [
+        {
+         "san": "c5",
+         "comment": "Strike at d4 at once. Bf4 left c1, so only the queen guards d4. This is the Caro-Kann ...c5 break you know.",
+         "children": [
+          {
+           "san": "e3",
+           "comment": "White guards d4 with the e-pawn.",
+           "children": [
+            {
+             "san": "Nc6",
+             "comment": "Attack d4 a second time. Develop with a purpose.",
+             "children": [
+              {
+               "san": "c3",
+               "comment": "White adds another guard on d4 with the c-pawn.",
+               "children": [
+                {
+                 "san": "Qb6",
+                 "comment": "Hit b2. The bishop left c1, so nothing guards that pawn. An early queen move is fine when it makes a threat.",
+                 "children": [
+                  {
+                   "san": "Qb3",
+                   "comment": "White guards b2 and offers a queen trade.",
+                   "children": [
+                    {
+                     "san": "c4",
+                     "comment": "Push with tempo. The c4 pawn attacks the queen on b3.",
+                     "children": [
+                      {
+                       "san": "Qxb6",
+                       "comment": null,
+                       "children": [
+                        {
+                         "san": "axb6",
+                         "comment": "Retake with the a-pawn. Your rook gets the half-open a-file, and the doubled b-pawns are fine.",
+                         "children": [
+                          {
+                           "san": "Nd2",
+                           "comment": null,
+                           "children": [
+                            {
+                             "san": "Nf6",
+                             "comment": "Bring the knight out. Next you play ...Bf5, the Caro-Kann bishop move.",
+                             "children": [
+                              {
+                               "san": "a3",
+                               "comment": null,
+                               "children": [
+                                {
+                                 "san": "b5",
+                                 "comment": "Guard the c4 pawn and gain space on the queenside.",
+                                 "children": [],
+                                 "level": 3
+                                }
+                               ],
+                               "level": 3
+                              }
+                             ],
+                             "tags": [
+                              "main"
+                             ]
+                            }
+                           ],
+                           "tags": [
+                            "main"
+                           ]
+                          }
+                         ],
+                         "tags": [
+                          "main"
+                         ]
+                        }
+                       ],
+                       "tags": [
+                        "main"
+                       ]
+                      }
+                     ],
+                     "tags": [
+                      "main"
+                     ]
+                    }
+                   ],
+                   "tags": [
+                    "main"
+                   ]
+                  },
+                  {
+                   "san": "Qc1",
+                   "comment": "White guards b2 with the queen.",
+                   "children": [
+                    {
+                     "san": "Bf5",
+                     "comment": "Bring the bishop out before ...e6, the Caro-Kann rule.",
+                     "children": [],
+                     "level": 2
+                    }
+                   ],
+                   "level": 2
+                  },
+                  {
+                   "san": "Nd2",
+                   "comment": "White leaves b2 loose.",
+                   "children": [
+                    {
+                     "san": "Bf5",
+                     "comment": "Develop the bishop first. If White plays Qb3, the queens can trade.",
+                     "children": [],
+                     "level": 2
+                    }
+                   ],
+                   "level": 2
+                  }
+                 ],
+                 "tags": [
+                  "main"
+                 ]
+                }
+               ]
+              },
+              {
+               "san": "Nf3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Nf6",
+                 "comment": "Develop your knight. After White plays c3, you play ...Qb6.",
+                 "children": [
+                  {
+                   "san": "c3",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "Qb6",
+                     "comment": "Hit b2. The bishop left c1, so the pawn has no guard.",
+                     "children": [
+                      {
+                       "san": "Qb3",
+                       "comment": "White guards b2 and offers a queen trade.",
+                       "children": [
+                        {
+                         "san": "c4",
+                         "comment": "Push with tempo. The c4 pawn attacks the queen on b3.",
+                         "children": [
+                          {
+                           "san": "Qxb6",
+                           "comment": null,
+                           "children": [
+                            {
+                             "san": "axb6",
+                             "comment": "Retake with the a-pawn. Your rook gets the half-open a-file, and the doubled b-pawns are fine.",
+                             "children": [
+                              {
+                               "san": "Nbd2",
+                               "comment": null,
+                               "children": [
+                                {
+                                 "san": "b5",
+                                 "comment": "Guard the c4 pawn and gain space. Your queenside pawns are strong now.",
+                                 "children": []
+                                }
+                               ]
+                              }
+                             ]
+                            }
+                           ]
+                          }
+                         ]
+                        }
+                       ]
+                      },
+                      {
+                       "san": "Qc1",
+                       "comment": "White guards b2 with the queen.",
+                       "children": [
+                        {
+                         "san": "Bf5",
+                         "comment": "Bring the bishop out before ...e6, the Caro-Kann rule.",
+                         "children": [],
+                         "level": 2
+                        }
+                       ],
+                       "level": 2
+                      }
+                     ],
+                     "tags": [
+                      "main"
+                     ]
+                    }
+                   ]
+                  }
+                 ],
+                 "tags": [
+                  "main"
+                 ]
+                }
+               ]
+              },
+              {
+               "san": "Nc3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "cxd4",
+                 "comment": "Take on d4. After exd4 your bishop comes out to f5.",
+                 "children": [
+                  {
+                   "san": "exd4",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "Bf5",
+                     "comment": "Bring the bishop out before ...e6, the Caro-Kann rule.",
+                     "children": [],
+                     "level": 2
+                    }
+                   ]
+                  }
+                 ],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              },
+              {
+               "san": "dxc5",
+               "comment": "White takes a pawn.",
+               "children": [
+                {
+                 "san": "e5",
+                 "comment": "Strike with ...e5 at once. It attacks the bishop on f4, and you win the pawn back after it moves.",
+                 "children": [],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              },
+              {
+               "san": "Bb5",
+               "comment": "White pins your knight to the king.",
+               "children": [
+                {
+                 "san": "Bd7",
+                 "comment": "Break the pin. Then you can take on d4 or play ...a6.",
+                 "children": [],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              }
+             ],
+             "tags": [
+              "main"
+             ]
+            }
+           ],
+           "tags": [
+            "main"
+           ]
+          },
+          {
+           "san": "c3",
+           "comment": "White guards d4 with the c-pawn.",
+           "children": [
+            {
+             "san": "Nc6",
+             "comment": "Attack d4 again. Now d4 has two attackers.",
+             "children": [
+              {
+               "san": "e3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Qb6",
+                 "comment": "Hit b2. The bishop left c1, so the pawn has no guard.",
+                 "children": [],
+                 "tags": [
+                  "main"
+                 ]
+                }
+               ]
+              },
+              {
+               "san": "Nf3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Nf6",
+                 "comment": "Develop your knight. You still plan ...Qb6.",
+                 "children": [
+                  {
+                   "san": "e3",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "Qb6",
+                     "comment": "Hit b2. The bishop left c1, so the pawn has no guard.",
+                     "children": [],
+                     "tags": [
+                      "main"
+                     ]
+                    }
+                   ]
+                  }
+                 ],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              },
+              {
+               "san": "Nd2",
+               "comment": "The knight blocks White’s own queen from d4.",
+               "children": [
+                {
+                 "san": "cxd4",
+                 "comment": "Take on d4. After cxd4 Nxd4 your knight is safe, because Nd2 blocks the queen.",
+                 "children": [],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              },
+              {
+               "san": "dxc5",
+               "comment": "White takes a pawn.",
+               "children": [
+                {
+                 "san": "e5",
+                 "comment": "Strike with ...e5. It attacks the bishop on f4, and you win the pawn back.",
+                 "children": [],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "san": "dxc5",
+           "comment": "White takes the pawn.",
+           "children": [
+            {
+             "san": "e6",
+             "comment": "Open the f8 bishop. Next you play ...Bxc5 and win the pawn back.",
+             "children": [
+              {
+               "san": "e3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Bxc5",
+                 "comment": "Take the pawn back. You develop and keep an equal game.",
+                 "children": [
+                  {
+                   "san": "Nf3",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "Nf6",
+                     "comment": "Develop your knight and guard d5. Castle soon.",
+                     "children": [],
+                     "tags": [
+                      "main"
+                     ]
+                    }
+                   ]
+                  }
+                 ],
+                 "tags": [
+                  "main"
+                 ]
+                }
+               ]
+              },
+              {
+               "san": "Qd4",
+               "comment": "White’s queen comes out early.",
+               "children": [
+                {
+                 "san": "Nc6",
+                 "comment": "Develop with tempo. The knight attacks the queen on d4.",
+                 "children": [],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              }
+             ],
+             "tags": [
+              "main"
+             ]
+            }
+           ]
+          },
+          {
+           "san": "Nf3",
+           "comment": "White develops and guards d4.",
+           "children": [
+            {
+             "san": "Nc6",
+             "comment": "Attack d4 a second time and develop.",
+             "children": [
+              {
+               "san": "e3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Nf6",
+                 "comment": "Develop your knight. You still plan ...Qb6.",
+                 "children": [
+                  {
+                   "san": "c3",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "Qb6",
+                     "comment": "Hit b2. The bishop left c1, so the pawn has no guard.",
+                     "children": [],
+                     "tags": [
+                      "main"
+                     ]
+                    }
+                   ]
+                  }
+                 ],
+                 "tags": [
+                  "main"
+                 ]
+                }
+               ]
+              }
+             ],
+             "tags": [
+              "main"
+             ]
+            }
+           ]
+          }
+         ],
+         "tags": [
+          "main"
+         ]
+        }
+       ],
+       "tags": [
+        "main"
+       ]
+      },
+      {
+       "san": "Nf3",
+       "comment": null,
+       "children": [
+        {
+         "san": "Nf6",
+         "comment": "Develop and guard d5. Most set-ups from here share your Caro-Kann ideas.",
+         "children": [
+          {
+           "san": "e3",
+           "comment": null,
+           "children": [
+            {
+             "san": "Bf5",
+             "comment": "Bring the bishop out before ...e6. It is the Caro-Kann move you know.",
+             "children": [
+              {
+               "san": "Bd3",
+               "comment": "White offers to trade your bishop.",
+               "children": [
+                {
+                 "san": "Bxd3",
+                 "comment": "Trade bishops. Your bishop got out before ...e6, so you give up nothing.",
+                 "children": [
+                  {
+                   "san": "Qxd3",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "c6",
+                     "comment": "Prepare ...e6 and ...Nbd7. This is the Slav and Caro-Kann pawn shape again.",
+                     "children": [
+                      {
+                       "san": "O-O",
+                       "comment": null,
+                       "children": [
+                        {
+                         "san": "e6",
+                         "comment": "Close the centre solidly. Your set-up is complete: ...c6, ...d5, ...e6.",
+                         "children": [
+                          {
+                           "san": "c4",
+                           "comment": null,
+                           "children": [
+                            {
+                             "san": "Nbd7",
+                             "comment": "Develop the last knight. Next you play ...Be7 and castle.",
+                             "children": [],
+                             "level": 2
+                            }
+                           ],
+                           "level": 2
+                          }
+                         ],
+                         "tags": [
+                          "main"
+                         ]
+                        }
+                       ],
+                       "tags": [
+                        "main"
+                       ]
+                      }
+                     ],
+                     "tags": [
+                      "main"
+                     ]
+                    }
+                   ],
+                   "tags": [
+                    "main"
+                   ]
+                  }
+                 ],
+                 "tags": [
+                  "main"
+                 ]
+                }
+               ],
+               "tags": [
+                "main"
+               ]
+              },
+              {
+               "san": "c4",
+               "comment": "White hits d5 from the side.",
+               "children": [
+                {
+                 "san": "c6",
+                 "comment": "Guard d5 with the c-pawn. You reach the Slav with your bishop already out.",
+                 "children": [
+                  {
+                   "san": "Nc3",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "e6",
+                     "comment": "Solid. The bishop is outside the chain, and d5 is well guarded.",
+                     "children": [],
+                     "level": 2
+                    }
+                   ],
+                   "level": 2
+                  }
+                 ],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              },
+              {
+               "san": "Nh4",
+               "comment": "The knight attacks your bishop.",
+               "children": [
+                {
+                 "san": "Bg4",
+                 "comment": "Move the bishop with tempo: it attacks the queen on d1.",
+                 "children": [],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              }
+             ],
+             "tags": [
+              "main"
+             ]
+            }
+           ],
+           "tags": [
+            "main"
+           ]
+          },
+          {
+           "san": "c4",
+           "comment": "White hits d5 from the side.",
+           "children": [
+            {
+             "san": "c6",
+             "comment": "Guard d5 with the c-pawn. You reach the Slav. Follow the Slav plan: ...dxc4, ...Bf5, ...e6.",
+             "children": [],
+             "tags": [
+              "main"
+             ]
+            }
+           ],
+           "tags": [
+            "main"
+           ]
+          },
+          {
+           "san": "Bf4",
+           "comment": null,
+           "children": [
+            {
+             "san": "c5",
+             "comment": "Strike at d4 with the c-pawn. This is the anti-London plan: ...c5, ...Nc6, ...Qb6.",
+             "children": [
+              {
+               "san": "e3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Nc6",
+                 "comment": "Attack d4 a second time and develop.",
+                 "children": [
+                  {
+                   "san": "c3",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "Qb6",
+                     "comment": "Hit b2. The bishop left c1, so the pawn has no guard.",
+                     "children": [],
+                     "tags": [
+                      "main"
+                     ]
+                    }
+                   ]
+                  }
+                 ],
+                 "tags": [
+                  "main"
+                 ]
+                }
+               ]
+              }
+             ],
+             "tags": [
+              "main"
+             ]
+            }
+           ],
+           "tags": [
+            "main"
+           ]
+          },
+          {
+           "san": "Bg5",
+           "comment": "The bishop eyes your knight.",
+           "children": [
+            {
+             "san": "Ne4",
+             "comment": "Hit the bishop with the knight. If Bf4, you play ...c5 at once.",
+             "children": [
+              {
+               "san": "Bf4",
+               "comment": null,
+               "children": [
+                {
+                 "san": "c5",
+                 "comment": "Strike at d4 with the c-pawn, like in the anti-London line.",
+                 "children": [],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              }
+             ],
+             "level": 2
+            }
+           ],
+           "level": 2
+          },
+          {
+           "san": "Nc3",
+           "comment": null,
+           "children": [
+            {
+             "san": "c6",
+             "comment": "Guard d5 with the c-pawn and prepare ...Bf5.",
+             "children": [
+              {
+               "san": "Bf4",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Bf5",
+                 "comment": "Bring the bishop out before ...e6.",
+                 "children": [],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              }
+             ],
+             "level": 2
+            }
+           ],
+           "level": 2
+          }
+         ],
+         "tags": [
+          "main"
+         ]
+        }
+       ],
+       "tags": [
+        "main"
+       ]
+      },
+      {
+       "san": "e3",
+       "comment": null,
+       "children": [
+        {
+         "san": "Nf6",
+         "comment": "Develop and guard d5. You will play ...Bf5 next.",
+         "children": [
+          {
+           "san": "Nf3",
+           "comment": null,
+           "children": [
+            {
+             "san": "Bf5",
+             "comment": "Bring the bishop out before ...e6. It is the Caro-Kann move you know.",
+             "children": [
+              {
+               "san": "Bd3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Bxd3",
+                 "comment": "Trade it. Then you play ...c6 and ...e6.",
+                 "children": [
+                  {
+                   "san": "Qxd3",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "c6",
+                     "comment": "The Slav and Caro-Kann pawn shape again: ...c6 and ...d5.",
+                     "children": [],
+                     "tags": [
+                      "main"
+                     ]
+                    }
+                   ]
+                  }
+                 ],
+                 "tags": [
+                  "main"
+                 ]
+                }
+               ]
+              }
+             ],
+             "tags": [
+              "main"
+             ]
+            }
+           ]
+          },
+          {
+           "san": "Bd3",
+           "comment": "White develops the bishop before the knight.",
+           "children": [
+            {
+             "san": "c5",
+             "comment": "Hit d4 with the c-pawn. It is the same break as in the Caro-Kann.",
+             "children": [
+              {
+               "san": "c3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Nc6",
+                 "comment": "Attack d4 a second time and develop.",
+                 "children": [],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              }
+             ],
+             "level": 2
+            }
+           ],
+           "level": 2
+          }
+         ],
+         "tags": [
+          "main"
+         ]
+        }
+       ],
+       "tags": [
+        "main"
+       ]
+      },
+      {
+       "san": "Bg5",
+       "comment": "White develops the bishop early.",
+       "children": [
+        {
+         "san": "c5",
+         "comment": "Strike at d4. If White plays e3, answer with ...Qb6.",
+         "children": [
+          {
+           "san": "e3",
+           "comment": null,
+           "children": [
+            {
+             "san": "Qb6",
+             "comment": "Hit b2. The bishop left c1, so the pawn has no guard.",
+             "children": [],
+             "level": 2
+            }
+           ],
+           "level": 2
+          }
+         ],
+         "level": 2
+        }
+       ],
+       "level": 2
+      },
+      {
+       "san": "e4",
+       "comment": "A gambit: White offers a pawn.",
+       "children": [
+        {
+         "san": "dxe4",
+         "comment": "Take the pawn. Give it back later if you must, but get your pieces out first.",
+         "children": [
+          {
+           "san": "Nc3",
+           "comment": null,
+           "children": [
+            {
+             "san": "Nf6",
+             "comment": "Develop and attack the e4 pawn. You are a pawn up, so finish your development.",
+             "children": [
+              {
+               "san": "f3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "exf3",
+                 "comment": "Take again. Then play ...Bf5 or ...e6 and finish your development.",
+                 "children": [],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              }
+             ],
+             "level": 2
+            }
+           ],
+           "level": 2
+          }
+         ],
+         "level": 2
+        }
+       ],
+       "level": 2
+      },
+      {
+       "san": "Nc3",
+       "comment": null,
+       "children": [
+        {
+         "san": "Nf6",
+         "comment": "Develop and guard d5.",
+         "children": [
+          {
+           "san": "Bf4",
+           "comment": null,
+           "children": [
+            {
+             "san": "c6",
+             "comment": "Guard d5 and stop Nb5. You will play ...Bf5 next.",
+             "children": [
+              {
+               "san": "e3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Bf5",
+                 "comment": "Bring the bishop out before ...e6, the Caro-Kann rule.",
+                 "children": [],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              }
+             ],
+             "level": 2
+            }
+           ],
+           "level": 2
+          }
+         ],
+         "level": 2
+        }
+       ],
+       "level": 2
+      }
+     ],
+     "tags": [
+      "main"
+     ]
+    }
+   ],
+   "tags": [
+    "main"
+   ]
+  },
+  {
+   "san": "c4",
+   "comment": "The English. White controls d5 from the side.",
+   "children": [
+    {
+     "san": "c6",
+     "comment": "Your Slav set-up. You play ...d5 next and reach the Slav or the Caro-Kann shape.",
+     "children": [
+      {
+       "san": "Nf3",
+       "comment": null,
+       "children": [
+        {
+         "san": "d5",
+         "comment": "Claim the centre. Same pawns as the Slav.",
+         "children": [
+          {
+           "san": "d4",
+           "comment": null,
+           "children": [
+            {
+             "san": "Nf6",
+             "comment": "Develop and guard d5. You are in the Slav. Play ...dxc4, ...Bf5, ...e6.",
+             "children": [],
+             "tags": [
+              "main"
+             ]
+            }
+           ]
+          },
+          {
+           "san": "e3",
+           "comment": null,
+           "children": [
+            {
+             "san": "Nf6",
+             "comment": "Develop and guard d5. Next comes ...e6 and ...Nbd7.",
+             "children": [],
+             "level": 2
+            }
+           ],
+           "level": 2
+          }
+         ],
+         "tags": [
+          "main"
+         ]
+        }
+       ],
+       "tags": [
+        "main"
+       ]
+      },
+      {
+       "san": "d4",
+       "comment": null,
+       "children": [
+        {
+         "san": "d5",
+         "comment": "Claim the centre. Now you have the Slav.",
+         "children": [
+          {
+           "san": "Nf3",
+           "comment": null,
+           "children": [
+            {
+             "san": "Nf6",
+             "comment": "Develop and guard d5. Slav plan: ...dxc4, ...Bf5, ...e6.",
+             "children": [],
+             "tags": [
+              "main"
+             ]
+            }
+           ]
+          }
+         ],
+         "tags": [
+          "main"
+         ]
+        }
+       ],
+       "tags": [
+        "main"
+       ]
+      },
+      {
+       "san": "e4",
+       "comment": "White takes the centre.",
+       "children": [
+        {
+         "san": "d5",
+         "comment": "Hit the e4 pawn at once. This is the Caro-Kann strike.",
+         "children": [
+          {
+           "san": "exd5",
+           "comment": null,
+           "children": [
+            {
+             "san": "cxd5",
+             "comment": "Retake with the c-pawn. Your pawn on d5 holds the centre.",
+             "children": [
+              {
+               "san": "cxd5",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Nf6",
+                 "comment": "Develop and attack the d5 pawn. You plan to win it back.",
+                 "children": [
+                  {
+                   "san": "Nc3",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "Nxd5",
+                     "comment": "Take the pawn back. Your knight is active in the centre.",
+                     "children": [],
+                     "level": 2
+                    }
+                   ],
+                   "level": 2
+                  }
+                 ],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              }
+             ],
+             "level": 2
+            }
+           ],
+           "level": 2
+          }
+         ],
+         "level": 2
+        }
+       ],
+       "level": 2
+      }
+     ],
+     "tags": [
+      "main"
+     ]
+    }
+   ],
+   "tags": [
+    "main"
+   ]
+  },
+  {
+   "san": "Nf3",
+   "comment": "White waits and keeps all options open.",
+   "children": [
+    {
+     "san": "d5",
+     "comment": "Take the centre. You can add ...c6, ...Nf6 and ...Bf5 like in the Caro-Kann.",
+     "children": [
+      {
+       "san": "d4",
+       "comment": null,
+       "children": [
+        {
+         "san": "Nf6",
+         "comment": "Develop and guard d5. You are in the 1.d4 lines now.",
+         "children": [],
+         "tags": [
+          "main"
+         ]
+        }
+       ]
+      },
+      {
+       "san": "c4",
+       "comment": "White hits d5 from the side.",
+       "children": [
+        {
+         "san": "c6",
+         "comment": "Guard d5 with the c-pawn. Now you have the Slav.",
+         "children": [],
+         "tags": [
+          "main"
+         ]
+        }
+       ],
+       "tags": [
+        "main"
+       ]
+      }
+     ],
+     "tags": [
+      "main"
+     ]
+    }
+   ],
+   "tags": [
+    "main"
+   ]
+  }
+ ]
+}
