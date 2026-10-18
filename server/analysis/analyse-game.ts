@@ -9,6 +9,7 @@ import { openingTags } from './tags-opening.js';
 import { classify, flip, meanAccuracy, moveAccuracy, moverWinAfter, winPct } from './winpct.js';
 
 const MAX_PV_PLIES = 8;
+const INITIAL_FEN = new Chess().fen();
 
 interface Position { line: EngineLine | null; score: EngineScore }
 
@@ -62,7 +63,9 @@ export async function analyseGame(
 ): Promise<Omit<GameAnalysis, 'status' | 'error'>> {
   const fens = [game.startFen, ...game.moves.map((m) => m.fenAfter)];
   const positions = await Promise.all(fens.map((fen) => evaluate(fen, pool, opts.nodes)));
-  const opening = game.userColor ? openingTags(game.moves, game.userColor) : new Map<number, Tag[]>();
+  // openingTags uses ply parity, so it only fits games from the standard start position.
+  const standardStart = game.startFen === INITIAL_FEN;
+  const opening = game.userColor && standardStart ? openingTags(game.moves, game.userColor) : new Map<number, Tag[]>();
 
   const moves: MoveAnalysis[] = game.moves.map((m, i) => {
     const before = positions[i]!;
@@ -73,7 +76,11 @@ export async function analyseGame(
     const winAfter = moverWinAfter(after.score);
     const bestUci = before.line?.pv[0] ?? '';
     const isBest = m.uci === bestUci;
-    const classification: Classification = classify(winBefore, winAfter, isBest);
+    let classification: Classification = classify(winBefore, winAfter, isBest);
+    // Allowing a forced mate is always a blunder, unless the mover was already getting mated.
+    const allowsMate = after.score.mate !== null && after.score.mate > 0;
+    const alreadyMated = before.score.mate !== null && before.score.mate < 0;
+    if (allowsMate && !alreadyMated && !isBest && winBefore >= 5) classification = 'blunder';
     let tags: Tag[] = [];
     if (isUserMove) {
       if (before.line) {

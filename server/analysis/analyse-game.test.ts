@@ -149,4 +149,51 @@ describe('analyseGame', () => {
     expect(l1.keyMoments).toEqual([]);
     expect(l2.keyMoments).toHaveLength(1);
   });
+
+  it('classifies a move that allows a forced mate as a blunder', async () => {
+    const sans = ['e4', 'e5', 'Nf3', 'd6', 'Bc4', 'Bg4', 'Nc3', 'g6', 'Nxe5', 'Bxd1', 'Bxf7+', 'Ke7', 'Nd5#'];
+    const game = detail(sans, 'black');
+    const pool = fakePool({
+      [fenAfter(sans.slice(0, 9))]: [line(cp(-80), 'g4e6')],
+      [fenAfter(sans.slice(0, 10))]: [line(mate(3), 'f1f7')],
+      [fenAfter(sans.slice(0, 11))]: [line(mate(-2), 'e8e7')],
+    });
+    const a = await analyseGame(game, pool, { nodes: 10 });
+    const m = a.moves[9]!;
+    expect(m).toMatchObject({ ply: 10, san: 'Bxd1', classification: 'blunder' });
+    expect(a.counts.blunder).toBe(1);
+    expect(a.keyMoments.find((k) => k.ply === 10)).toMatchObject({ reason: 'blunder' });
+  });
+
+  it('keeps classify() when the position was already mated', async () => {
+    const sans = ['e4', 'e5', 'Nf3', 'd6', 'Bc4', 'Bg4', 'Nc3', 'g6', 'Nxe5', 'Bxd1'];
+    const game = detail(sans, 'black');
+    const pool = fakePool({
+      [fenAfter(sans.slice(0, 9))]: [line(mate(-4), 'g4d1')],
+      [fenAfter(sans)]: [line(mate(3), 'f1f7')],
+    });
+    const a = await analyseGame(game, pool, { nodes: 10 });
+    expect(a.moves[9]!.classification).toBe('best');
+    const pool2 = fakePool({
+      [fenAfter(sans.slice(0, 9))]: [line(mate(-4), 'a7a6')],
+      [fenAfter(sans)]: [line(mate(3), 'f1f7')],
+    });
+    const b = await analyseGame(game, pool2, { nodes: 10 });
+    expect(b.moves[9]!.classification).toBe('good');
+  });
+
+  it('skips opening tags for games from a custom start FEN', async () => {
+    const startFen = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2';
+    const a = await analyseGame(detail(['Qh4', 'Nc3', 'Qxe4+'], 'black', startFen), fakePool({}), { nodes: 10 });
+    expect(a.moves.every((m) => !m.tags.includes('early_queen'))).toBe(true);
+  });
+
+  it('renders castling in pvSan and recognises it as the best move', async () => {
+    const startFen = 'r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1';
+    const game = detail(['O-O'], 'white', startFen);
+    const pool = fakePool({ [startFen]: [line(cp(30), 'e1g1', 'e8c8')] });
+    const a = await analyseGame(game, pool, { nodes: 10 });
+    expect(a.moves[0]).toMatchObject({ uci: 'e1g1', bestSan: 'O-O', classification: 'best' });
+    expect(a.moves[0]!.pvSan).toEqual(['O-O', 'O-O-O']);
+  });
 });
