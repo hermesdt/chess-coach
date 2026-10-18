@@ -144,7 +144,7 @@ export interface ImportResult { inserted: number; duplicates: number; skipped: n
 ### Task 3: PGN utilities  *(model: sonnet)*
 
 **Files:**
-- Create: `server/chess/pgn.ts`, `server/chess/__fixtures__/multi.pgn` (3 games incl. CRLF, comments, a variation, one `SetUp "1"` + `FEN` game, one `Variant "Chess960"` game)
+- Create: `server/chess/pgn.ts`, `server/chess/__fixtures__/multi.pgn` (4 games: 3 standard incl. CRLF, comments, a variation, one `SetUp "1"` + `FEN` game, one `Variant "Chess960"` game)
 - Test: `server/chess/pgn.test.ts`
 
 **Interfaces:**
