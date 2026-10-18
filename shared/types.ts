@@ -28,6 +28,10 @@ export interface SettingsUpdate { chesscomUsername?: string; lichessUsername?: s
 export interface GameReviewMoment { ply: number; whatHappened: string; whyItMatters: string; principle: string; lessonId: LessonId | null }
 export interface GameReview { summary: string; openingNote: string; moments: GameReviewMoment[]; oneThingToPractice: string }
 export interface GameReviewNote { provider: ProviderId; model: string; createdAt: number; review: GameReview }
+// M5: AI weakness report
+export interface WeaknessItem { title: string; rule: string; lessonId: LessonId; focus: string }
+export interface WeaknessReport { headline: string; weaknesses: WeaknessItem[]; encouragement: string }
+export interface WeaknessReportNote { provider: ProviderId; model: string; createdAt: number; report: WeaknessReport }
 export type JobStatus = 'queued' | 'running' | 'done' | 'error';
 export interface Job { id: number; kind: string; status: JobStatus; progress: number; total: number | null; message: string | null; error: string | null; createdAt: number; finishedAt: number | null }
 export interface ImportPreviewItem { index: number; white: string; black: string; date: string | null; detectedColor: Color | null; skippedReason: string | null }

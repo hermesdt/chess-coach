@@ -77,6 +77,14 @@ describe('reviewGame', () => {
     expect(note.review.moments.map((m) => m.ply)).toEqual([3]);
   });
 
+  it('keeps only the first moment of a duplicated ply', async () => {
+    const dup = { ...review().moments[0]!, whatHappened: 'Second take.' };
+    reply = () => JSON.stringify(review({ moments: [...review().moments, dup] }));
+    const note = await reviewGame(db, registry(), 1, {});
+    expect(note.review.moments).toHaveLength(1);
+    expect(note.review.moments[0]!.whatHappened).toBe('You played Qh5 too early.');
+  });
+
   it('accepts a review without moments', async () => {
     reply = () => JSON.stringify(review({ moments: [] }));
     expect((await reviewGame(db, registry(), 1, {})).review.moments).toEqual([]);

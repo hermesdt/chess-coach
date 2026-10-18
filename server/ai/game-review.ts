@@ -9,6 +9,7 @@ import { getGameRow } from '../db/games-repo.js';
 import { currentLevel, type Level } from '../level.js';
 import { applyCoachExplanations } from '../srs/mistake-cards.js';
 import { allowedSan, gameFacts } from './facts.js';
+import { toStrictJsonSchema } from './json-schema.js';
 import { findNote, listNotes, saveNote } from './notes-repo.js';
 import { buildUserPrompt, PROMPT_VERSION, SYSTEM } from './prompts/game-review.js';
 import { redact } from './redact.js';
@@ -30,11 +31,7 @@ const reviewSchema = z.object({
 });
 
 /** Strict: additionalProperties false, every key required, lessonId nullable. */
-export const GAME_REVIEW_JSON_SCHEMA: object = (() => {
-  const schema = z.toJSONSchema(reviewSchema) as Record<string, unknown>;
-  delete schema.$schema;
-  return schema;
-})();
+export const GAME_REVIEW_JSON_SCHEMA: object = toStrictJsonSchema(reviewSchema);
 
 export const NOT_CONFIGURED = 'AI not configured. Choose a provider in Settings.';
 
@@ -94,7 +91,9 @@ export async function reviewGame(
       signal: opts.signal,
     },
   );
-  const review: GameReview = { ...value, moments: value.moments.filter((m) => plies.has(m.ply)) };
+  const seen = new Set<number>();
+  const moments = value.moments.filter((m) => plies.has(m.ply) && !seen.has(m.ply) && seen.add(m.ply));
+  const review: GameReview = { ...value, moments };
   saveNote(db, { subject, promptVersion, analysisVersion: analysis.version, provider: provider.id, model }, review);
   applyCoachExplanations(db, analysis, review);
   return { provider: provider.id, model, createdAt: Date.now(), review };

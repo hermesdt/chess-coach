@@ -54,7 +54,7 @@ export function createApp(deps: AppDeps): Hono {
   app.use('/api/*', localOnly);
   app.route('/api', healthRoutes);
   app.route('/api', settingsRoutes(deps.db));
-  app.route('/api', aiRoutes(deps.db, ai, deps.aiTestTimeoutMs));
+  app.route('/api', aiRoutes(deps.db, ai, deps.aiTestTimeoutMs, getReps));
   app.route('/api', syncRoutes(deps.db, { fetchFn: deps.fetchFn, now: deps.now, pool }, getReps));
   app.route('/api', jobsRoutes(deps.db));
   app.route('/api', gamesRoutes(deps.db));

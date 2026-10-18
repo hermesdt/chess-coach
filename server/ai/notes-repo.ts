@@ -1,9 +1,9 @@
 import type { DatabaseSync } from 'node:sqlite';
-import type { GameReview, GameReviewNote, ProviderId } from '../../shared/types.js';
+import type { GameReview, GameReviewNote, ProviderId, WeaknessReport, WeaknessReportNote } from '../../shared/types.js';
 
 export interface NoteKey { subject: string; promptVersion: string; analysisVersion: number; provider: ProviderId; model: string }
 
-export function saveNote(db: DatabaseSync, key: NoteKey, review: GameReview, now = Date.now()): void {
+export function saveNote(db: DatabaseSync, key: NoteKey, review: GameReview | WeaknessReport, now = Date.now()): void {
   db.prepare(
     `INSERT INTO ai_notes (subject, prompt_version, analysis_version, provider, model, json, created_at)
      VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -44,4 +44,28 @@ export function latestReview(db: DatabaseSync, subject: string, analysisVersion:
     'SELECT * FROM ai_notes WHERE subject = ? AND analysis_version = ? ORDER BY created_at DESC, id DESC LIMIT 1',
   ).get(subject, analysisVersion);
   return row ? toNote(row).review : null;
+}
+
+const WEAKNESS_SUBJECT = 'weakness';
+
+/** Weakness reports are keyed by the facts hash, which goes into the prompt version (analysis version is 0). */
+export const weaknessKey = (promptVersion: string, provider: ProviderId, model: string): NoteKey =>
+  ({ subject: WEAKNESS_SUBJECT, promptVersion, analysisVersion: 0, provider, model });
+
+function toWeaknessNote(r: Record<string, unknown>): WeaknessReportNote {
+  return { provider: r.provider as ProviderId, model: r.model as string, createdAt: r.created_at as number, report: JSON.parse(String(r.json)) as WeaknessReport };
+}
+
+export function findWeaknessNote(db: DatabaseSync, q: { promptVersion: string; provider: ProviderId; model: string | null }): WeaknessReportNote | null {
+  const row = db.prepare(
+    `SELECT * FROM ai_notes WHERE subject = ? AND prompt_version = ? AND provider = ?
+       AND (? IS NULL OR model = ?) ORDER BY created_at DESC, id DESC LIMIT 1`,
+  ).get(WEAKNESS_SUBJECT, q.promptVersion, q.provider, q.model, q.model);
+  return row ? toWeaknessNote(row) : null;
+}
+
+/** The newest weakness report from any provider. */
+export function latestWeaknessNote(db: DatabaseSync): WeaknessReportNote | null {
+  const row = db.prepare('SELECT * FROM ai_notes WHERE subject = ? ORDER BY created_at DESC, id DESC LIMIT 1').get(WEAKNESS_SUBJECT);
+  return row ? toWeaknessNote(row) : null;
 }

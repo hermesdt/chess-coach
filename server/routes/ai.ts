@@ -6,6 +6,8 @@ import type { Registry } from '../ai/registry.js';
 import { getSettings } from '../config.js';
 import { getAnalysis } from '../analysis/analysis-repo.js';
 import { coachErrorMessage, gameNotes, reviewGame } from '../ai/game-review.js';
+import { weaknessFacts, latestWeakness, weaknessReport, NO_GAMES } from '../ai/weakness.js';
+import type { Repertoire } from '../repertoire/types.js';
 import { PROVIDER_IDS, type ProviderId } from '../ai/types.js';
 import { getGameRow } from '../db/games-repo.js';
 import { runJob } from '../jobs.js';
@@ -22,7 +24,7 @@ function redact(text: string, secrets: (string | null)[]): string {
     .replace(/\bsk-[A-Za-z0-9_-]{8,}/g, '[redacted]');
 }
 
-export function aiRoutes(db: DatabaseSync, registry: Registry, timeoutMs = TEST_TIMEOUT_MS): Hono {
+export function aiRoutes(db: DatabaseSync, registry: Registry, timeoutMs = TEST_TIMEOUT_MS, getReps: () => Repertoire[] = () => []): Hono {
   return new Hono()
     .get('/ai/providers', async (c) => {
       const { aiModels } = getSettings(db);
@@ -51,6 +53,23 @@ export function aiRoutes(db: DatabaseSync, registry: Registry, timeoutMs = TEST_
       const job = runJob(db, 'coach', async () => {
         try {
           await reviewGame(db, registry, game.id, { provider });
+        } catch (err) {
+          const settings = getSettings(db);
+          throw new Error(coachErrorMessage(err, [settings.openrouterApiKey, settings.anthropicApiKey]), { cause: err });
+        }
+      });
+      return c.json({ jobId: job.id });
+    })
+    .get('/coach/weakness', (c) => c.json(latestWeakness(db)))
+    .post('/coach/weakness', async (c) => {
+      const body = (await c.req.json().catch(() => null)) as { provider?: unknown } | null;
+      const requested = body?.provider;
+      if (requested !== undefined && !(PROVIDER_IDS as readonly unknown[]).includes(requested)) return c.json({ error: 'unknown provider' }, 400);
+      if (weaknessFacts(db, 1).games === 0) return c.json({ error: NO_GAMES }, 400);
+      const provider = requested as ProviderId | undefined;
+      const job = runJob(db, 'coach', async () => {
+        try {
+          await weaknessReport(db, registry, { provider, reps: getReps() });
         } catch (err) {
           const settings = getSettings(db);
           throw new Error(coachErrorMessage(err, [settings.openrouterApiKey, settings.anthropicApiKey]), { cause: err });
