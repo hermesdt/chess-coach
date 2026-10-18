@@ -32,5 +32,5 @@ export function useJob(jobId: number | null, intervalMs = 1000): Job | null {
     };
   }, [jobId, intervalMs]);
 
-  return job;
+  return job?.id === jobId ? job : null;
 }

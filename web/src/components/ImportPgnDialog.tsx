@@ -1,8 +1,7 @@
 import { type ChangeEvent, useState } from 'react';
-import type { Color, ImportPreviewItem, ImportResult } from '../../../shared/types';
+import type { ImportPreviewItem, ImportResult } from '../../../shared/types';
 import { api } from '../api';
-
-type Choice = Color | 'none';
+import { buildColors, type Choice, initialChoices } from '../lib/importColors';
 
 export function ImportPgnDialog({ onClose, onImported }: { onClose: () => void; onImported: () => void }) {
   const [pgn, setPgn] = useState('');
@@ -14,7 +13,10 @@ export function ImportPgnDialog({ onClose, onImported }: { onClose: () => void; 
 
   const onFile = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) setPgn(await file.text());
+    if (!file) return;
+    setPgn(await file.text());
+    setPreview(null);
+    setChoices([]);
   };
 
   const run = async (fn: () => Promise<void>) => {
@@ -33,13 +35,13 @@ export function ImportPgnDialog({ onClose, onImported }: { onClose: () => void; 
     run(async () => {
       const items = await api.previewImport(pgn);
       setPreview(items);
-      setChoices(items.map((i) => i.detectedColor ?? 'none'));
+      setChoices(initialChoices(items));
     });
 
   const doImport = () =>
     run(async () => {
-      const colors = choices.map((c): Color | null => (c === 'none' ? null : c));
-      setResult(await api.importPgn(pgn, colors));
+      if (!preview) return;
+      setResult(await api.importPgn(pgn, buildColors(preview, choices)));
       onImported();
     });
 
@@ -65,6 +67,7 @@ export function ImportPgnDialog({ onClose, onImported }: { onClose: () => void; 
               onChange={(e) => {
                 setPgn(e.target.value);
                 setPreview(null);
+                setChoices([]);
               }}
             />
             <input type="file" accept=".pgn,text/plain" onChange={(e) => void onFile(e)} />
