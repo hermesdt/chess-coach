@@ -374,6 +374,8 @@ status; each milestone gets its own plan in `docs/superpowers/plans/`.
   cards, tag → lesson links.
 - **M7 Insights + polish** — insights page, dashboard focus, settings page
   completeness, empty states, README.
+- **M8 Level 2–3 content** — level-2/3 lessons, new tags, deeper repertoire
+  nodes (§18). Start when the owner nears level 2 or when M1–M7 are done.
 
 ## 15. Left to the builder
 
@@ -423,3 +425,58 @@ status; each milestone gets its own plan in `docs/superpowers/plans/`.
    comment/explanation against the engine output for that position. The app
    adds a "Report a problem" button on cards and lesson exercises that stores
    a flag and suspends the card; flags show on the Settings page.
+
+## 18. Adaptive levels and repertoire choice (owner request, 2026-10-18)
+
+Owner: "if I manage to move from 550, the system should adapt with me and
+make me better at higher levels. The openings I mentioned are a few I started;
+no strong need to stick to them only. You decide." All calls below are mine.
+
+### 18.1 Levels
+
+- `currentLevel(db)` → `1 | 2 | 3`, from the median rating of the user's last
+  20 rated games, converted to a chess.com-equivalent (chess.com as is;
+  lichess − 300; rapid and blitz only, else any time class):
+  level 1 < 900, level 2 900–1399, level 3 ≥ 1400. Settings can pin a level
+  (`level_override`). The level is shown on the dashboard; a level-up shows a
+  one-time message with what was unlocked.
+- What the level changes:
+  - **Repertoire depth:** every repertoire node has `level` (1–3, inherited
+    from the parent, default 1). Opening cards and the drill only include
+    nodes with `level ≤ currentLevel`. Level 1 = 6–8 moves of main lines and
+    the replies that beginners actually play; levels 2–3 add depth and
+    sidelines.
+  - **Course:** lessons have `level`. Level 1 = the 12 lessons of §9. Level 2
+    and 3 lessons are a later milestone (M8), unlocked when the level rises.
+    Level 2 topics: pawn structures (isolated pawn, Carlsbad, Caro/Slav
+    structures), outposts and weak squares, good vs bad bishop, rook endgames
+    (Lucena/Philidor), king activity, prophylaxis ("what does my opponent
+    want?"), calculation habit (checks-captures-threats, candidate moves).
+    Level 3 topics: minority attack, pawn breaks, piece trades by plan,
+    converting an advantage, defensive technique, opposite-colour bishops.
+  - **Analysis emphasis:** key moments at level 1 = blunders and mistakes; at
+    level 2+ also inaccuracies with win-% loss ≥ 15; tag set grows in M8
+    (`missed_fork`, `missed_pin`, `weak_back_rank`, `bad_bishop` etc.).
+  - **AI coach:** the prompts receive the level and rating and adapt depth
+    and vocabulary (level 1: rules of thumb; level 3: plans and concrete
+    calculation).
+  - **Daily review mix:** new-card cap per kind follows the level (level 1:
+    more lesson and mistake cards; level 3: more opening depth).
+
+### 18.2 Repertoire choice (decided)
+
+A complete, low-theory repertoire built on one structure family, so the
+owner remembers more with less:
+
+- **White: London System** (kept). Same set-up against almost everything, so
+  little to memorise; plans (Ne5, kingside attack) transfer between games.
+- **Black vs 1.e4: Caro-Kann** (kept). Solid, few early traps, pieces come
+  out naturally (…Bf5 before …e6).
+- **Black vs 1.d4 / 1.c4 / 1.Nf3: Slav set-up** (new). 1.d4 d5 2.c4 c6 —
+  the same …c6/…d5/…Bf5 ideas as the Caro-Kann, so both defences share plans.
+  Include the **anti-London** line (1.d4 d5 2.Bf4 c5!, very common at the
+  owner's level) and simple answers to 1.c4 and 1.Nf3 (…d5/…c6 set-ups).
+- Not chosen (reasons kept for the owner): Italian/1.e4 e5 open games teach
+  tactics well but need more theory against many replies; the King's Indian
+  and Sicilian need far more memorisation. The data format allows adding any
+  repertoire later (e.g. an "Italian" White repertoire as a level-2 option).

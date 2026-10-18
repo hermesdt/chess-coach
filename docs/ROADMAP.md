@@ -23,12 +23,13 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | # | Milestone | Status | Plan |
 |---|-----------|--------|------|
 | M1 | Foundation + sync + games list/viewer | done | `docs/superpowers/plans/2026-10-18-m1-foundation-sync.md` |
-| M2 | Engine analysis + review screen | planned | `docs/superpowers/plans/2026-10-18-m2-engine-analysis.md` |
-| M3 | SRS core + mistake cards + dashboard v1 | todo | — |
-| M4 | Openings: repertoires, validator, explorer, drill, leaks | todo | — |
-| M5 | AI coach (claude-cli, codex-cli, opencode-cli, openrouter, anthropic-api) | todo | — |
-| M6 | Principles course (12 lessons) | todo | — |
-| M7 | Insights + polish + README | todo | — |
+| M2 | Engine analysis + review screen + level | in progress | `docs/superpowers/plans/2026-10-18-m2-engine-analysis.md` |
+| M3 | SRS core + mistake cards + dashboard v1 | planned | `docs/superpowers/plans/2026-10-18-m3-srs-mistake-cards.md` |
+| M4 | Openings: London, Caro-Kann, Slav/anti-London; validator, explorer, drill, leaks; levels | planned | `docs/superpowers/plans/2026-10-18-m4-openings.md` |
+| M5 | AI coach (claude-cli, codex-cli, opencode-cli, openrouter, anthropic-api) | planned | `docs/superpowers/plans/2026-10-18-m5-ai-coach.md` |
+| M6 | Principles course (12 level-1 lessons) | planned | `docs/superpowers/plans/2026-10-18-m6-course.md` |
+| M7 | Insights + polish + README | planned | `docs/superpowers/plans/2026-10-18-m7-insights-polish.md` |
+| M8 | Level 2–3 content (lessons, tags, deeper repertoire) | todo | — (write when M1–M7 are done) |
 
 ## Log
 
@@ -52,3 +53,4 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
     data.
 - Known minor gaps carried forward: chess.com has no 429 retry; LIKE search
   is case-insensitive for ASCII only; a cleared setting falls back to `.env`.
+- 2026-10-18 — Owner: the app should adapt as they improve; free choice of openings. Added spec §18 (levels 1–3 from rating; level-gated repertoire depth, lessons, key moments, AI tone) and the Slav/anti-London repertoire for Black vs 1.d4. M8 added for level 2–3 content.
