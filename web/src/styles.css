@@ -38,3 +38,5 @@ tr.clickable:hover { background: #eef2f7 !important; }
 .move { background: none; border: 0; text-align: left; padding: 0.2rem 0.4rem; border-radius: 4px; cursor: pointer; font: inherit; }
 .move:hover { background: #eef2f7; }
 .move.current { background: #ddf4ff; font-weight: 600; }
+.nowrap { white-space: nowrap; }
+tr.clickable:focus-visible { outline: 2px solid #0969da; outline-offset: -2px; }

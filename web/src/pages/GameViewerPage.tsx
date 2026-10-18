@@ -4,8 +4,8 @@ import { Chessboard } from 'react-chessboard';
 import type { GameDetail } from '../../../shared/types';
 import { api } from '../api';
 import { MoveList } from '../components/MoveList';
+import { formatDate } from '../lib/format';
 import { fenAt, navigate, type NavAction } from '../lib/navigator';
-import { formatDate } from './GamesPage';
 
 const HIGHLIGHT = { backgroundColor: 'rgba(255, 235, 59, 0.5)' };
 
@@ -44,7 +44,22 @@ export function GameViewerPage() {
     setGame(null);
     setError(null);
     setPly(0);
-    api.getGame(Number(id)).then(setGame, (e: Error) => setError(e.message));
+    if (!/^\d+$/.test(id ?? '')) {
+      setError('Game not found');
+      return;
+    }
+    let stale = false;
+    api.getGame(Number(id)).then(
+      (g) => {
+        if (!stale) setGame(g);
+      },
+      (e: Error) => {
+        if (!stale) setError(e.message);
+      },
+    );
+    return () => {
+      stale = true;
+    };
   }, [id]);
 
   const maxPly = game?.moves.length ?? 0;

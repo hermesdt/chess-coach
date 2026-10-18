@@ -6,11 +6,25 @@ import { useJob } from '../hooks/useJob';
 export function SyncButton({ onFinished }: { onFinished?: () => void }) {
   const [jobId, setJobId] = useState<number | null>(null);
   const [startError, setStartError] = useState<string | null>(null);
-  const job = useJob(jobId);
+  const { job, error: pollError } = useJob(jobId);
   const reported = useRef<number | null>(null);
 
   const finished = job?.status === 'done' || job?.status === 'error';
-  const running = jobId !== null && !finished;
+  const running = jobId !== null && !finished && !pollError;
+
+  // Reconnect to a sync that is already running (for example after a page reload).
+  useEffect(() => {
+    let cancelled = false;
+    api.getSyncStatus().then(
+      (status) => {
+        if (!cancelled && status.runningJobId !== null) setJobId((current) => current ?? status.runningJobId);
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (job && finished && reported.current !== job.id) {
@@ -36,6 +50,7 @@ export function SyncButton({ onFinished }: { onFinished?: () => void }) {
       {running && job && <span className="muted">{job.message ?? `${job.progress} games`}</span>}
       {job?.status === 'done' && <span className="ok">{job.message ?? 'Sync finished.'}</span>}
       {job?.status === 'error' && <span className="error">{job.error ?? 'Sync failed.'}</span>}
+      {pollError && <span className="error">Lost contact with the server: {pollError}</span>}
       {startError && <span className="error">{startError}</span>}
     </div>
   );

@@ -1,13 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import type { Color, GameList, GameResult, Source } from '../../../shared/types';
 import { api } from '../api';
 import { ImportPgnDialog } from '../components/ImportPgnDialog';
 import { SyncButton } from '../components/SyncButton';
+import { formatDate, opponentLabel } from '../lib/format';
 
 const PAGE_SIZE = 50;
-
-export const formatDate = (ms: number) => new Date(ms).toISOString().slice(0, 10);
 
 export function GamesPage() {
   const navigate = useNavigate();
@@ -20,7 +19,10 @@ export function GamesPage() {
   const [error, setError] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
 
+  const latestRequest = useRef(0);
+
   const load = useCallback(() => {
+    const requestId = ++latestRequest.current;
     api
       .listGames({
         source: source || undefined,
@@ -30,7 +32,16 @@ export function GamesPage() {
         limit: PAGE_SIZE,
         offset: page * PAGE_SIZE,
       })
-      .then(setData, (e: Error) => setError(e.message));
+      .then(
+        (list) => {
+          if (requestId !== latestRequest.current) return;
+          setData(list);
+          setError(null);
+        },
+        (e: Error) => {
+          if (requestId === latestRequest.current) setError(e.message);
+        },
+      );
   }, [source, color, result, search, page]);
 
   useEffect(load, [load]);
@@ -89,13 +100,21 @@ export function GamesPage() {
             </thead>
             <tbody>
               {data.items.map((g) => {
-                const opp = g.userColor === 'black' ? { name: g.white, elo: g.whiteElo } : { name: g.black, elo: g.blackElo };
+                const open = () => void navigate(`/games/${g.id}`);
                 return (
-                  <tr key={g.id} className="clickable" onClick={() => void navigate(`/games/${g.id}`)}>
-                    <td>{formatDate(g.playedAt)}</td>
+                  <tr
+                    key={g.id}
+                    className="clickable"
+                    tabIndex={0}
+                    onClick={open}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') open();
+                    }}
+                  >
+                    <td className="nowrap">{formatDate(g.playedAt)}</td>
                     <td>{g.source}</td>
                     <td>{g.userColor ?? '-'}</td>
-                    <td>{opp.name}{opp.elo !== null ? ` (${opp.elo})` : ''}</td>
+                    <td>{opponentLabel(g)}</td>
                     <td>{g.result ? <span className={`badge ${g.result}`}>{g.result}</span> : '-'}</td>
                     <td>{g.openingName ?? g.eco ?? ''}</td>
                     <td>{g.timeClass}</td>

@@ -14,12 +14,14 @@ import type {
 export interface SyncStatus {
   chesscom: number | null;
   lichess: number | null;
+  runningJobId: number | null;
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`/api${path}`, {
     ...init,
-    headers: init?.body ? { 'Content-Type': 'application/json' } : undefined,
+    // The server requires a JSON content type on every write, even without a body.
+    headers: init?.method && init.method !== 'GET' ? { 'Content-Type': 'application/json' } : undefined,
   });
   if (!res.ok) {
     const body = (await res.json().catch(() => null)) as { error?: string } | null;
@@ -46,7 +48,7 @@ export const api = {
     request<SettingsDTO>('/settings', { method: 'PUT', body: JSON.stringify(update) }),
   listGames: (q: GameListQuery = {}) => request<GameList>(`/games${queryString(q)}`),
   getGame: (id: number) => request<GameDetail>(`/games/${id}`),
-  startSync: () => post<{ jobId: number }>('/sync'),
+  startSync: () => post<{ jobId: number; alreadyRunning?: boolean }>('/sync'),
   getJob: (id: number) => request<Job>(`/jobs/${id}`),
   getSyncStatus: () => request<SyncStatus>('/sync/status'),
   previewImport: (pgn: string) => post<ImportPreviewItem[]>('/import/preview', { pgn }),

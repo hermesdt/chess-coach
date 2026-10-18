@@ -25,20 +25,20 @@ describe('useJob', () => {
       .mockResolvedValueOnce(job('running', 2))
       .mockResolvedValue(job('done', 3));
     const { result } = renderHook(() => useJob(1, 1000));
-    expect(result.current).toBeNull();
+    expect(result.current.job).toBeNull();
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(0);
     });
-    expect(result.current?.status).toBe('running');
+    expect(result.current.job?.status).toBe('running');
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1000);
     });
-    expect(result.current?.progress).toBe(2);
+    expect(result.current.job?.progress).toBe(2);
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1000);
     });
-    expect(result.current?.status).toBe('done');
+    expect(result.current.job?.status).toBe('done');
     expect(getJob).toHaveBeenCalledTimes(3);
 
     await act(async () => {
@@ -53,7 +53,35 @@ describe('useJob', () => {
     await act(async () => {
       await vi.advanceTimersByTimeAsync(3000);
     });
-    expect(result.current).toBeNull();
+    expect(result.current).toEqual({ job: null, error: null });
     expect(getJob).not.toHaveBeenCalled();
+  });
+
+  it('stops after 3 consecutive errors and exposes the error', async () => {
+    const getJob = vi.spyOn(api, 'getJob').mockRejectedValue(new Error('offline'));
+    const { result } = renderHook(() => useJob(1, 1000));
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(10_000);
+    });
+    expect(getJob).toHaveBeenCalledTimes(3);
+    expect(result.current).toEqual({ job: null, error: 'offline' });
+  });
+
+  it('resets the error count after a success', async () => {
+    const getJob = vi
+      .spyOn(api, 'getJob')
+      .mockRejectedValueOnce(new Error('x'))
+      .mockRejectedValueOnce(new Error('x'))
+      .mockResolvedValueOnce(job('running', 1))
+      .mockRejectedValueOnce(new Error('x'))
+      .mockRejectedValueOnce(new Error('x'))
+      .mockResolvedValue(job('done', 2));
+    const { result } = renderHook(() => useJob(1, 1000));
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(10_000);
+    });
+    expect(getJob).toHaveBeenCalledTimes(6);
+    expect(result.current.error).toBeNull();
+    expect(result.current.job?.status).toBe('done');
   });
 });
