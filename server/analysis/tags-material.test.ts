@@ -51,6 +51,15 @@ describe('hung_piece', () => {
     expect(tags).not.toContain('hung_piece');
   });
 
+  it('does not tag hung_piece on an even knight trade even with a large drop', () => {
+    const tags = materialTags({
+      fenBefore: NE4, playedUci: 'c3e4',
+      bestBefore: line(cp(250), 'c3e4'), bestAfter: line(cp(-20), 'd5e4'),
+      evalBeforeMover: cp(250), evalAfterMover: cp(20),
+    });
+    expect(tags).not.toContain('hung_piece');
+  });
+
   it('does not tag a knight-for-knight recapture, and does not tag bad_trade', () => {
     const tags = materialTags({
       fenBefore: NE4, playedUci: 'c3e4',

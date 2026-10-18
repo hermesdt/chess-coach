@@ -53,7 +53,10 @@ export function materialTags(input: MaterialTagInput): Tag[] {
 
   if (bestAfter?.pv[0] && drop >= HUNG_MIN_DROP) {
     const reply = playUci(new Chess(after.fen()), bestAfter.pv[0]);
-    if (reply.captured && PIECE_VALUE[reply.captured]! >= HUNG_MIN_PIECE_VALUE) tags.push('hung_piece');
+    const lost = reply.captured ? PIECE_VALUE[reply.captured]! : 0;
+    // A recapture on the same square after a capture of equal or more value is a trade, not a hung piece.
+    const evenTrade = reply.to === played.to && played.captured !== undefined && PIECE_VALUE[played.captured]! >= lost;
+    if (lost >= HUNG_MIN_PIECE_VALUE && !evenTrade) tags.push('hung_piece');
   }
 
   if (played.captured && drop >= BAD_TRADE_MIN_DROP) tags.push('bad_trade');
