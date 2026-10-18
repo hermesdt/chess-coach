@@ -1,6 +1,6 @@
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import type { EngineScore } from '../../shared/types.js';
-import { parseInfoLine } from './uci-parse.js';
+import { parseInfoLine, selectLines, type ParsedInfo } from './uci-parse.js';
 
 export interface EngineLine { multipv: number; score: EngineScore; pv: string[] }
 
@@ -66,13 +66,13 @@ export class UciEngine {
       this.send(`setoption name MultiPV value ${multipv}`);
       await this.isReady();
       this.send(`position fen ${fen}`);
-      const best = new Map<number, EngineLine>();
+      const infos: ParsedInfo[] = [];
       await this.request(`go nodes ${opts.nodes}`, (l) => {
         const info = parseInfoLine(l);
-        if (info) best.set(info.multipv, { multipv: info.multipv, score: info.score, pv: info.pv });
+        if (info) infos.push(info);
         return l.startsWith('bestmove');
       }, opts.timeoutMs ?? DEFAULT_TIMEOUT_MS);
-      return [...best.values()].sort((a, b) => a.multipv - b.multipv);
+      return selectLines(infos, multipv);
     });
   }
 

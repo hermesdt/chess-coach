@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseBestMove, parseInfoLine } from './uci-parse.js';
+import { parseBestMove, parseInfoLine, selectLines, type ParsedInfo } from './uci-parse.js';
 
 describe('parseInfoLine', () => {
   it('parses a centipawn score', () => {
@@ -35,5 +35,37 @@ describe('parseBestMove', () => {
   });
   it('returns null for other lines', () => {
     expect(parseBestMove('info depth 1')).toBeNull();
+  });
+});
+
+describe('selectLines', () => {
+  const info = (depth: number, multipv: number, pv: string): ParsedInfo => ({
+    depth, multipv, score: { cp: 10 * multipv, mate: null }, pv: pv.split(' '),
+  });
+
+  it('uses the deepest complete depth when a deeper depth is partial', () => {
+    const infos = [
+      info(16, 1, 'd2d4 d7d5'), info(16, 2, 'e2e4 e7e5'), info(16, 3, 'g1f3 d7d5'),
+      info(17, 1, 'e2e4 e7e5'), // multipv 2 was an upperbound (skipped), no multipv 3
+    ];
+    const lines = selectLines(infos, 3);
+    expect(lines.map((l) => l.pv[0])).toEqual(['d2d4', 'e2e4', 'g1f3']);
+    expect(lines.map((l) => l.multipv)).toEqual([1, 2, 3]);
+  });
+
+  it('returns fewer lines when the position has fewer legal moves', () => {
+    const infos = [info(10, 1, 'a1a2'), info(10, 2, 'a1b1'), info(11, 1, 'a1a2'), info(11, 2, 'a1b1')];
+    expect(selectLines(infos, 3)).toHaveLength(2);
+  });
+
+  it('falls back to the deepest line per index and drops repeated first moves', () => {
+    const infos = [info(5, 1, 'e2e4'), info(5, 2, 'd2d4'), info(6, 1, 'd2d4'), info(6, 3, 'g1f3')];
+    const lines = selectLines(infos, 3);
+    expect(lines.map((l) => l.pv[0])).toEqual(['d2d4', 'g1f3']);
+    expect(lines.map((l) => l.multipv)).toEqual([1, 3]);
+  });
+
+  it('returns an empty array without infos', () => {
+    expect(selectLines([], 2)).toEqual([]);
   });
 });

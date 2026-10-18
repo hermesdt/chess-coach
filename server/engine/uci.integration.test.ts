@@ -28,6 +28,12 @@ describe.skipIf(!isStockfishAvailable())('UciEngine (Stockfish)', () => {
     expect(lines.map((l) => l.multipv)).toEqual([1, 2, 3]);
   });
 
+  it('returns three distinct first moves with multipv 3 under a node limit', async () => {
+    const lines = await engine.analyse(START, { nodes: 400000, multipv: 3 });
+    expect(lines.map((l) => l.multipv)).toEqual([1, 2, 3]);
+    expect(new Set(lines.map((l) => l.pv[0])).size).toBe(3);
+  });
+
   it('finds a forced mate in 1', async () => {
     const lines = await engine.analyse('6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1', { nodes: 50000 });
     expect(lines[0]!.score.mate).toBe(1);
