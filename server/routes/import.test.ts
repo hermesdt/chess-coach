@@ -69,3 +69,17 @@ describe('import', () => {
     expect(detail.startFen).toContain(' b ');
   });
 });
+
+describe('import refreshes openings', () => {
+  it('creates opening cards and records a leak for imported games', async () => {
+    const lines = ['[Event "x"]', '[Date "2026.10.01"]', '[White "bob"]', '[Black "Alvaro"]', '[Result "0-1"]', '',
+      '1. e4 c6 2. d4 d5 3. e5 Bg4 0-1', ''];
+    const game = lines.join('\n');
+    expect(db.prepare("SELECT COUNT(*) AS n FROM cards WHERE kind = 'opening'").get()).toEqual({ n: 0 });
+    const res = await post('/api/import', { pgn: game });
+    expect(await res.json()).toEqual({ inserted: 1, duplicates: 0, skipped: 0 });
+    expect(Number((db.prepare("SELECT COUNT(*) AS n FROM cards WHERE kind = 'opening'").get() as { n: number }).n)).toBeGreaterThan(0);
+    expect(db.prepare("SELECT kind, node_id FROM opening_events").all()).toEqual([{ kind: 'leak', node_id: 'e4 c6 d4 d5 e5 Bf5' }]);
+  });
+});
+

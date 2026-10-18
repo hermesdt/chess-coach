@@ -61,6 +61,8 @@ export function selectLines(infos: ParsedInfo[], k: number): SelectedLine[] {
     (b) => b.length === k && b.every((i, idx) => i.multipv === idx + 1),
   );
   const uniform = complete.filter((b) => b.every((i) => i.depth === b[0]!.depth));
+  // Prefer the last batch whose lines all share one depth: a batch cut off mid-update mixes depths, so
+  // its scores are not comparable. Without such a batch, the last complete one is the best we have.
   const chosen = uniform.at(-1) ?? complete.at(-1);
   if (chosen) return dedupe(chosen.map(toLine));
 

@@ -4,7 +4,7 @@ import type { Color, ImportPreviewItem, ImportRequest, ImportResult, NewGame } f
 import { gameFromPgn, splitPgn } from '../chess/pgn.js';
 import { getSettings } from '../config.js';
 import { insertGames } from '../db/games-repo.js';
-import { scanLeaks } from '../repertoire/leaks.js';
+import { refreshOpenings } from '../repertoire/refresh.js';
 import type { Repertoire } from '../repertoire/types.js';
 
 const tag = (pgn: string, name: string): string | null => {
@@ -55,9 +55,9 @@ export function importRoutes(db: DatabaseSync, getReps: () => Repertoire[]): Hon
       const { inserted, duplicates } = insertGames(db, games);
       if (inserted > 0) {
         try {
-          scanLeaks(db, getReps());
+          refreshOpenings(db, getReps());
         } catch (e) {
-          console.error('could not scan opening leaks after import', e);
+          console.error('could not refresh openings after import', e);
         }
       }
       const result: ImportResult = { inserted, duplicates, skipped };

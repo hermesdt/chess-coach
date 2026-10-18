@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import type { DatabaseSync } from 'node:sqlite';
 import { Chess } from 'chess.js';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { OpeningDetail, OpeningLeakGroup, OpeningSummary, RepNodeDTO } from '../../shared/types.js';
 import { createApp } from '../app.js';
 import { openDb } from '../db/db.js';
@@ -51,6 +51,19 @@ describe('GET /api/openings', () => {
     expect(caro.nodeCount).toBe(reps[0]!.byId.size);
     expect(caro.cardCount).toBeGreaterThan(0);
     expect(list.find((o) => o.id === 'london')!.stats).toEqual({ games: 1, win: 1, draw: 0, loss: 0 });
+  });
+});
+
+describe('GET /api/openings leak scan failure', () => {
+  it('logs the error and still returns the stats', async () => {
+    addGame('e4 c6 d4 d5', 'black', 'win');
+    const broken = Object.create(reps[0]!, { roots: { get: () => { throw new Error('boom'); } } }) as typeof reps[number];
+    const failing = createApp({ db, repertoires: [broken, reps[1]!] });
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const res = await failing.request('/api/openings');
+    expect(res.status).toBe(200);
+    expect(log).toHaveBeenCalled();
+    log.mockRestore();
   });
 });
 

@@ -5,9 +5,9 @@ import { DrillBoard } from '../components/DrillBoard';
 import { LineDrill } from '../components/LineDrill';
 import { RepertoireTree } from '../components/RepertoireTree';
 import { nodeAtPath } from '../lib/line-drill';
+import { formatLeak, tabRank } from '../lib/openings';
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-const TAB_ORDER = ['london', 'caro-kann', 'slav'];
 const TAB_LABEL: Record<string, string> = { london: 'London', 'caro-kann': 'Caro-Kann', slav: 'Slav' };
 
 /** "1.e4 c6 2.d4" from a SAN path. */
@@ -33,7 +33,7 @@ export function OpeningsPage() {
     api.listOpenings().then(
       (l) => {
         if (stale) return;
-        const sorted = [...l].sort((a, b) => TAB_ORDER.indexOf(a.id) - TAB_ORDER.indexOf(b.id));
+        const sorted = [...l].sort((a, b) => tabRank(a.id) - tabRank(b.id));
         setList(sorted);
         setActiveId(sorted[0]?.id ?? null);
       },
@@ -148,9 +148,7 @@ export function OpeningsPage() {
               <ul className="leak-list">
                 {leaks.map((l) => (
                   <li key={`${l.nodeId}|${l.playedSan}`}>
-                    <span>
-                      In {l.count} games you played {l.playedSan} instead of {l.expectedSan}
-                    </span>
+                    <span>{formatLeak(l)}</span>
                     <button
                       type="button"
                       onClick={() => {

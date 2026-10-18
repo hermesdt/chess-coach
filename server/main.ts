@@ -9,11 +9,9 @@ import { backfillMistakeCards } from './srs/backfill.js';
 import { requeuePending } from './analysis/queue.js';
 import { closeEnginePool, lazyEnginePool } from './engine/pool.js';
 import { recoverInterruptedJobs } from './jobs.js';
-import { currentLevel } from './level.js';
 import { loadAllRepertoires } from './repertoire/load.js';
-import { scanLeaks } from './repertoire/leaks.js';
+import { refreshOpenings } from './repertoire/refresh.js';
 import type { Repertoire } from './repertoire/types.js';
-import { syncOpeningCards } from './repertoire/opening-cards.js';
 
 if (existsSync('.env')) process.loadEnvFile('.env');
 
@@ -47,8 +45,7 @@ const server = serve(
     let repertoires: Repertoire[] = [];
     try {
       repertoires = loadAllRepertoires();
-      syncOpeningCards(db, repertoires, currentLevel(db).level);
-      scanLeaks(db, repertoires);
+      refreshOpenings(db, repertoires);
     } catch (err) {
       console.error('opening card sync or leak scan failed:', err);
     }

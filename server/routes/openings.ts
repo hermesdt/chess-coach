@@ -29,7 +29,11 @@ function toDto(node: RepNode, level: number): RepNodeDTO {
 export function openingsRoutes(db: DatabaseSync, getReps: () => Repertoire[]): Hono {
   return new Hono()
     .get('/openings', (c) => {
-      scanLeaks(db, getReps());
+      try {
+        scanLeaks(db, getReps());
+      } catch (e) {
+        console.error('could not scan opening leaks', e);
+      }
       const cards = listCardsByKind(db, 'opening').filter((card) => !card.suspended);
       const list: OpeningSummary[] = getReps().map((rep) => ({
         id: rep.id, name: rep.name, color: rep.color, nodeCount: rep.byId.size,

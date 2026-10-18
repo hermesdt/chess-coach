@@ -7,7 +7,7 @@ import { openDb } from '../db/db.js';
 import { insertGames } from '../db/games-repo.js';
 import { parsePgn } from '../chess/pgn.js';
 import { positionKey, upsertCard } from '../srs/cards-repo.js';
-import { findLeak, scanLeaks } from './leaks.js';
+import { findLeak, openingMoves, scanLeaks } from './leaks.js';
 import { loadRepertoire } from './load.js';
 import { syncOpeningCards } from './opening-cards.js';
 
@@ -183,3 +183,61 @@ describe('scanLeaks', () => {
     expect(events()).toHaveLength(1);
   });
 });
+
+const lv = () => loadRepertoire({
+  id: 'lv', name: 'Lv', color: 'black',
+  moves: [{ san: 'e4', children: [{ san: 'e5', comment: 'c', children: [{ san: 'Nf3', children: [{ san: 'Nc6', level: 2, comment: 'c' }] }] }] }],
+});
+const setLevel = (l: string) =>
+  db.prepare("INSERT INTO settings (key, value) VALUES ('level_override', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(l);
+
+describe('scanLeaks edge cases', () => {
+  it('skips games that do not start from the standard position', () => {
+    const fen = 'rnbqkbnr/pppppppp/8/8/8/8/1PPPPPPP/RNBQKBNR w KQkq - 0 1';
+    const chess = new Chess(fen);
+    for (const s of 'e4 c6 d4 d5 e5 Bg4'.split(' ')) chess.move(s);
+    chess.setHeader('SetUp', '1');
+    chess.setHeader('FEN', fen);
+    const pgn = chess.pgn();
+    insertGames(db, [{
+      source: 'chesscom', sourceId: 'odd', playedAt: NOW - 1, timeClass: 'blitz', rated: true, white: 'Me', black: 'Opp',
+      whiteElo: 1000, blackElo: 1000, userColor: 'black', result: 'win', termination: null, eco: null, openingName: null,
+      pgn, url: null, plyCount: 6,
+    }]);
+    scanLeaks(db, [caro], NOW);
+    expect(events()).toMatchObject([{ kind: 'not_this_opening', repertoire_id: null }]);
+  });
+
+  it('replays only the opening of a long game and classifies it like a full replay', () => {
+    const shuffle = ' Nf3 Nf6 Ng1 Ng8'.repeat(20);
+    const sans = `e4 c6 d4 d5 e5 Bg4${shuffle}`;
+    const long = addGame(sans, 'black');
+    const fine = addGame(`e4 c6 d4 d5 e5 Bf5${shuffle}`, 'black');
+    const pgn = new Chess();
+    for (const s of sans.split(' ')) pgn.move(s);
+    const part = openingMoves(pgn.pgn(), 10);
+    expect(part).toHaveLength(10);
+    expect(part).toEqual(parsePgn(pgn.pgn()).moves.slice(0, 10));
+    scanLeaks(db, [caro], NOW);
+    expect(events()).toMatchObject([
+      { game_id: long, ...findLeakFields(findLeak(caro, movesOf(sans), 'black', 1)) },
+      { game_id: fine, ...findLeakFields(findLeak(caro, movesOf(`e4 c6 d4 d5 e5 Bf5${shuffle}`), 'black', 1)) },
+    ]);
+  });
+
+  it('rescans a game when the level drops, so leaks at now-locked nodes disappear', () => {
+    const rep = lv();
+    setLevel('2');
+    addGame('e4 e5 Nf3 Nf6', 'black');
+    scanLeaks(db, [rep], NOW);
+    expect(events()).toMatchObject([{ kind: 'leak', node_id: 'e4 e5 Nf3 Nc6', level: 2 }]);
+    setLevel('1');
+    scanLeaks(db, [rep], NOW);
+    expect(events()).toMatchObject([{ kind: 'end_of_book', node_id: null, level: 1 }]);
+  });
+});
+
+function findLeakFields(res: ReturnType<typeof findLeak>) {
+  return { kind: res.kind, node_id: 'nodeId' in res ? res.nodeId : null, ply: 'ply' in res ? res.ply : null };
+}
+
