@@ -8,7 +8,8 @@ type Draft = Omit<Card, 'id' | 'createdAt' | 'suspended'> & { sortOrder: number 
 
 /**
  * One draft per position where the repertoire side is to move and the repertoire move is allowed
- * at `level`. Depth-first preorder gives `sortOrder`. Transpositions merge into one draft.
+ * at `level`. `sortOrder` takes one node from each repertoire in turn, depth-first inside each, so
+ * the openings are introduced alternately. Transpositions merge into one draft.
  */
 function collectDrafts(reps: Repertoire[], level: number): Map<string, Draft> {
   const drafts = new Map<string, Draft>();
@@ -30,16 +31,27 @@ function collectDrafts(reps: Repertoire[], level: number): Map<string, Draft> {
       refs: [ref], lastMove: lastMove ? { uci: lastMove } : null, sortOrder: order++,
     });
   };
-  const visit = (rep: Repertoire, node: RepNode) => {
-    const repMove = node.mover !== rep.color ? node.children[0] : undefined;
-    if (repMove) add(rep, node.fenAfter, repMove, node.uci);
-    for (const child of node.children) visit(rep, child);
-  };
-  for (const rep of reps) {
+  type Item = { fen: string; child: RepNode; lastMove: string | null };
+  const itemsOf = (rep: Repertoire): Item[] => {
+    const items: Item[] = [];
+    const visit = (node: RepNode) => {
+      const repMove = node.mover !== rep.color ? node.children[0] : undefined;
+      if (repMove) items.push({ fen: node.fenAfter, child: repMove, lastMove: node.uci });
+      for (const child of node.children) visit(child);
+    };
     // A white repertoire starts with its own move from the initial position.
     const first = rep.color === 'white' ? rep.roots[0] : undefined;
-    if (first) add(rep, first.fenBefore, first, null);
-    for (const root of rep.roots) visit(rep, root);
+    if (first) items.push({ fen: first.fenBefore, child: first, lastMove: null });
+    for (const root of rep.roots) visit(root);
+    return items;
+  };
+  const lists = reps.map((rep) => ({ rep, items: itemsOf(rep).filter((i) => i.child.level <= level) }));
+  const longest = Math.max(0, ...lists.map((l) => l.items.length));
+  for (let i = 0; i < longest; i++) {
+    for (const { rep, items } of lists) {
+      const item = items[i];
+      if (item) add(rep, item.fen, item.child, item.lastMove);
+    }
   }
   return drafts;
 }

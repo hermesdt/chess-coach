@@ -145,3 +145,22 @@ describe('session ordering', () => {
     expect(buildSession(db, NOW, { daily: 20, newPerDay: 10 }).cards.map((c) => c.id)).toEqual([o2]);
   });
 });
+
+describe('card order across repertoires', () => {
+  it('alternates repertoires, depth-first inside each', () => {
+    const white = loadRepertoire({
+      id: 'a', name: 'A', color: 'white',
+      moves: [{ san: 'e4', comment: 'c', children: [{ san: 'e5', children: [{ san: 'Nf3', comment: 'c', children: [{ san: 'Nc6', children: [{ san: 'Bb5', comment: 'c' }] }] }] }] }],
+    });
+    const black = loadRepertoire({
+      id: 'b', name: 'B', color: 'black',
+      moves: [{ san: 'd4', children: [{ san: 'd5', comment: 'c', children: [{ san: 'c4', children: [{ san: 'e6', comment: 'c', children: [{ san: 'Nc3', children: [{ san: 'Nf6', comment: 'c' }] }] }] }] }] }],
+    });
+    syncOpeningCards(db, [white, black], 1);
+    const prompts = (db.prepare("SELECT prompt FROM cards WHERE kind = 'opening' ORDER BY sort_order").all() as { prompt: string }[]).map((r) => r.prompt);
+    expect(prompts).toEqual(['A: your move.', 'B: your move.', 'A: your move.', 'B: your move.', 'A: your move.', 'B: your move.']);
+    const second = db.prepare("SELECT sort_order, fen FROM cards WHERE kind = 'opening' ORDER BY sort_order").all() as { sort_order: number; fen: string }[];
+    expect(second.map((r) => r.sort_order)).toEqual([0, 1, 2, 3, 4, 5]);
+  });
+});
+
