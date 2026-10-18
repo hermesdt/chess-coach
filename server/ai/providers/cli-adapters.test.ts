@@ -24,7 +24,7 @@ describe('claude-cli', () => {
     const out = await p.complete(req, { model: 'sonnet' });
     expect(out).toEqual({ text: '{"ok":true}', model: 'sonnet' });
     expect(calls[0]!.cmd).toBe('claude');
-    expect(calls[0]!.args).toEqual(expect.arrayContaining(['-p', '--output-format', 'json', '--model', 'sonnet', '--tools', '', '--json-schema', '{"type":"object"}']));
+    expect(calls[0]!.args).toEqual(expect.arrayContaining(['-p', '--output-format', 'json', '--model', 'sonnet', '--tools', '', '--strict-mcp-config', '--setting-sources', '', '--json-schema', '{"type":"object"}']));
     expect(calls[0]!.stdin).toBe('SYS\n\nUSER');
     expect(calls[0]!.timeoutMs).toBe(180_000);
     expect(calls[0]!.cwd).toMatch(/chess-coach-ai-/);
@@ -33,6 +33,10 @@ describe('claude-cli', () => {
     const calls: Call[] = [];
     await createClaudeCli(fake({ stdout: ok }, calls), async () => true).complete(req, { model: null });
     expect(calls[0]!.args).not.toContain('--model');
+  });
+  it('falls back to the last JSON object line when the output has extra lines', async () => {
+    const p = createClaudeCli(fake({ stdout: `warning: something\n${ok}\n` }), async () => true);
+    expect((await p.complete(req, { model: null })).text).toBe('{"ok":true}');
   });
   it('fails on is_error', async () => {
     const out = JSON.stringify({ is_error: true, result: 'Credit balance too low' });
@@ -108,13 +112,18 @@ describe('opencode-cli', () => {
     const out = await createOpencodeCli(fake({ stdout: events }, calls), async () => true).complete(req, { model: 'openai/gpt-5' });
     expect(out).toEqual({ text: '{"ok":true}', model: 'openai/gpt-5' });
     expect(calls[0]!.cmd).toBe('opencode');
-    expect(calls[0]!.args).toEqual(['run', '--format', 'json', '-m', 'openai/gpt-5']);
+    expect(calls[0]!.args).toEqual(['run', '--format', 'json', '--agent', 'plan', '-m', 'openai/gpt-5']);
     expect(calls[0]!.stdin).toBe('SYS\n\nUSER');
+  });
+  it('uses only the text of the final message and skips non-object JSON lines', async () => {
+    const ev = (messageID: string, text: string) => JSON.stringify({ type: 'text', part: { type: 'text', messageID, text } });
+    const out = await createOpencodeCli(fake({ stdout: [ev('m1', 'thinking out loud'), '42', 'null', ev('m2', '{"ok":'), ev('m2', 'true}')].join('\n') }), async () => true).complete(req, { model: null });
+    expect(out.text).toBe('{"ok":true}');
   });
   it('omits -m when unset and ignores non-JSON lines', async () => {
     const calls: Call[] = [];
     const out = await createOpencodeCli(fake({ stdout: `banner\n${events}\n` }, calls), async () => true).complete(req, { model: null });
-    expect(calls[0]!.args).toEqual(['run', '--format', 'json']);
+    expect(calls[0]!.args).toEqual(['run', '--format', 'json', '--agent', 'plan']);
     expect(out.text).toBe('{"ok":true}');
   });
   it('fails on an error event, on non-zero exit, on timeout and on no text', async () => {

@@ -8,13 +8,18 @@ export type { CliRunner };
 
 export const CLI_TIMEOUT_MS = 180_000;
 
-/** Spawns without a shell in its own process group; kills the whole group on timeout. */
+const MAX_BUFFER = 2 * 1024 * 1024;
+const KILL_GRACE_MS = 2000;
+
+/** Spawns without a shell in its own process group; kills the whole group on timeout and after exit. */
 export const realCliRunner: CliRunner = (cmd, args, opts) =>
   new Promise((resolve) => {
     let stdout = '';
     let stderr = '';
+    let truncated = false;
     let timedOut = false;
     let settled = false;
+    let graceTimer: NodeJS.Timeout | undefined;
     const child = spawn(cmd, args, { cwd: opts.cwd, detached: true, stdio: ['pipe', 'pipe', 'pipe'] });
     const killGroup = (): void => {
       try {
@@ -23,21 +28,39 @@ export const realCliRunner: CliRunner = (cmd, args, opts) =>
         /* group already gone */
       }
     };
+    const append = (current: string, chunk: Buffer): string => {
+      if (current.length >= MAX_BUFFER) {
+        truncated = true;
+        return current;
+      }
+      const next = current + chunk.toString();
+      if (next.length <= MAX_BUFFER) return next;
+      truncated = true;
+      return next.slice(0, MAX_BUFFER);
+    };
     const timer = setTimeout(() => {
       timedOut = true;
       killGroup();
+      graceTimer = setTimeout(() => finish(null), KILL_GRACE_MS);
     }, opts.timeoutMs);
-    const finish = (code: number | null): void => {
+    function finish(code: number | null): void {
       if (settled) return;
       settled = true;
       clearTimeout(timer);
+      clearTimeout(graceTimer);
+      killGroup();
+      if (truncated) stderr += '\n[output truncated at 2 MB]';
       resolve({ code, stdout, stderr, timedOut });
-    };
-    child.stdout.on('data', (d: Buffer) => (stdout += d.toString()));
-    child.stderr.on('data', (d: Buffer) => (stderr += d.toString()));
+    }
+    child.stdout.on('data', (d: Buffer) => (stdout = append(stdout, d)));
+    child.stderr.on('data', (d: Buffer) => (stderr = append(stderr, d)));
     child.on('error', (err) => {
       stderr += err.message;
       finish(-1);
+    });
+    child.on('exit', (code) => {
+      // After a timeout kill, do not wait for `close` (a grandchild may hold the pipes).
+      if (timedOut) finish(code);
     });
     child.on('close', (code) => finish(code));
     child.stdin.on('error', () => undefined);
