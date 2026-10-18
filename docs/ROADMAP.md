@@ -26,7 +26,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M2 | Engine analysis + review screen + level | done | `docs/superpowers/plans/2026-10-18-m2-engine-analysis.md` |
 | M3 | SRS core + mistake cards + dashboard v1 | done | `docs/superpowers/plans/2026-10-18-m3-srs-mistake-cards.md` |
 | M4 | Openings: London, Caro-Kann, Slav/anti-London; validator, explorer, drill, leaks; levels | done | `docs/superpowers/plans/2026-10-18-m4-openings.md` |
-| M5 | AI coach (claude-cli, codex-cli, opencode-cli, openrouter, anthropic-api) | planned | `docs/superpowers/plans/2026-10-18-m5-ai-coach.md` |
+| M5 | AI coach (claude-cli, codex-cli, opencode-cli, openrouter, anthropic-api) | done | `docs/superpowers/plans/2026-10-18-m5-ai-coach.md` |
 | M6 | Principles course (12 level-1 lessons) | planned | `docs/superpowers/plans/2026-10-18-m6-course.md` |
 | M7 | Insights + polish + README | planned | `docs/superpowers/plans/2026-10-18-m7-insights-polish.md` |
 | M8 | Level 2–3 content (lessons, tags, deeper repertoire) | todo | — (write when M1–M7 are done) |
@@ -98,3 +98,15 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   change triggers a rescan without re-flagging old leaks.
 - Note: commit 409272d (README + MIT license) came from another session; M7
   updates that README instead of creating one.
+- 2026-10-19 — **M5 done.** 599 tests. AI coach with five providers:
+  claude CLI, codex CLI, opencode CLI (subscriptions; all three verified with
+  real calls), OpenRouter and Anthropic API (need a key in Settings). Per-game
+  coach notes and a weakness report; every answer is validated (strict JSON)
+  and grounded: it may only name moves that Stockfish or the game produced,
+  per key moment. Notes are cached per provider, requested model and level.
+- M5 rulings (review these): `auto` order claude → codex → anthropic →
+  openrouter → opencode; CLI runs drop ANTHROPIC_API_KEY / OPENAI_API_KEY so
+  subscriptions are used; coach notes depend on the level; the Anthropic
+  adapter uses claude-opus-5-5 at low effort with server-side refusal fallbacks.
+- Known minor gaps: lowercase "bb5" style moves are not caught by grounding;
+  some descriptive phrases ("Knight f3 is nice") can trigger a retry.
