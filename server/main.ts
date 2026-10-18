@@ -15,34 +15,40 @@ if (existsSync('.env')) process.loadEnvFile('.env');
 const DEFAULT_DB_PATH = 'data/chess.db';
 const dbPath = process.env.CHESS_DB_PATH || DEFAULT_DB_PATH;
 const port = Number(process.env.PORT) || 8787;
-mkdirSync(dirname(dbPath), { recursive: true });
-const db = openDb(dbPath);
+let handler: ((req: Request) => Response | Promise<Response>) | null = null;
+const server = serve(
+  { fetch: (req) => (handler ? handler(req) : new Response('starting', { status: 503 })), hostname: '127.0.0.1', port },
+  (info) => {
+    // The port is ours: only now touch the DB and start background work.
+    mkdirSync(dirname(dbPath), { recursive: true });
+    const db = openDb(dbPath);
 
-const backupDir = process.env.BACKUP_DIR || (dbPath === DEFAULT_DB_PATH ? join(dirname(dbPath), 'backups') : null);
-if (backupDir) {
-  const runBackup = () => {
-    try {
-      backupDb(db, backupDir, new Date());
-    } catch (err) {
-      console.error('db backup failed:', err);
+    const backupDir =
+      process.env.BACKUP_DIR || (dbPath === DEFAULT_DB_PATH ? join(dirname(dbPath), 'backups') : null);
+    if (backupDir) {
+      const runBackup = () => {
+        try {
+          backupDb(db, backupDir, new Date());
+        } catch (err) {
+          console.error('db backup failed:', err);
+        }
+      };
+      runBackup();
+      setInterval(runBackup, 24 * 60 * 60 * 1000).unref();
     }
-  };
-  runBackup();
-  setInterval(runBackup, 24 * 60 * 60 * 1000).unref();
-}
-recoverInterruptedJobs(db, Date.now());
-requeuePending(db, { pool: lazyEnginePool });
-backfillMistakeCards(db, lazyEnginePool);
-const app = createApp({ db });
+    recoverInterruptedJobs(db, Date.now());
+    requeuePending(db, { pool: lazyEnginePool });
+    backfillMistakeCards(db, lazyEnginePool);
+    const app = createApp({ db });
 
-if (existsSync('dist')) {
-  app.use('/*', serveStatic({ root: './dist' }));
-  app.get('*', serveStatic({ path: './dist/index.html' }));
-}
-
-const server = serve({ fetch: app.fetch, hostname: '127.0.0.1', port }, (info) => {
-  console.log(`chess-coach listening on http://127.0.0.1:${info.port}`);
-});
+    if (existsSync('dist')) {
+      app.use('/*', serveStatic({ root: './dist' }));
+      app.get('*', serveStatic({ path: './dist/index.html' }));
+    }
+    handler = app.fetch;
+    console.log(`chess-coach listening on http://127.0.0.1:${info.port}`);
+  },
+);
 
 server.on('error', (err: NodeJS.ErrnoException) => {
   if (err.code === 'EADDRINUSE') {

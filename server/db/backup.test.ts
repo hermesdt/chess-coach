@@ -20,6 +20,7 @@ describe('backupDb', () => {
     const copy = openDb(path);
     expect(copy.prepare('SELECT value FROM settings WHERE key = ?').get('a')?.value).toBe('v');
     copy.close();
+    expect(readdirSync(join(dir, 'nested'))).toEqual(['chess-2026-10-18.db']);
   });
 
   it('does nothing on a second call the same day', () => {
