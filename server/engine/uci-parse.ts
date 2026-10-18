@@ -40,31 +40,36 @@ export interface SelectedLine { multipv: number; score: EngineScore; pv: string[
 
 const toLine = (i: ParsedInfo): SelectedLine => ({ multipv: i.multipv, score: i.score, pv: i.pv });
 
-// Pick lines from ONE depth so they stay consistent. `infos` holds exact (non-bound) scores only.
+const dedupe = (lines: SelectedLine[]): SelectedLine[] => {
+  const seen = new Set<string>();
+  return lines.filter((l) => !seen.has(l.pv[0]!) && seen.add(l.pv[0]!));
+};
+
+// Stockfish prints the k lines as a batch per update; a new batch starts at multipv 1.
+// `infos` holds exact (non-bound) scores only, so a batch with a dropped bound line is incomplete.
+function splitBatches(infos: ParsedInfo[]): ParsedInfo[][] {
+  const batches: ParsedInfo[][] = [];
+  for (const i of infos) {
+    if (i.multipv === 1 || batches.length === 0) batches.push([]);
+    batches[batches.length - 1]!.push(i);
+  }
+  return batches;
+}
+
 export function selectLines(infos: ParsedInfo[], k: number): SelectedLine[] {
-  const byDepth = new Map<number, Map<number, ParsedInfo>>();
+  const complete = splitBatches(infos).filter(
+    (b) => b.length === k && b.every((i, idx) => i.multipv === idx + 1),
+  );
+  const uniform = complete.filter((b) => b.every((i) => i.depth === b[0]!.depth));
+  const chosen = uniform.at(-1) ?? complete.at(-1);
+  if (chosen) return dedupe(chosen.map(toLine));
+
+  // Fallback: deepest line per multipv index (later wins ties).
+  const deepest = new Map<number, ParsedInfo>();
   for (const i of infos) {
     if (i.multipv < 1 || i.multipv > k) continue;
-    let m = byDepth.get(i.depth);
-    if (!m) byDepth.set(i.depth, (m = new Map()));
-    m.set(i.multipv, i);
+    const prev = deepest.get(i.multipv);
+    if (!prev || i.depth >= prev.depth) deepest.set(i.multipv, i);
   }
-  const depths = [...byDepth.keys()].sort((a, b) => b - a);
-  for (const d of depths) {
-    const m = byDepth.get(d)!;
-    if (m.size === k) {
-      return [...m.values()].sort((a, b) => a.multipv - b.multipv).map(toLine);
-    }
-  }
-  // Fallback: deepest line per multipv index, then drop repeated first moves.
-  const deepest = new Map<number, ParsedInfo>();
-  for (const d of [...depths].reverse()) for (const i of byDepth.get(d)!.values()) deepest.set(i.multipv, i);
-  const seen = new Set<string>();
-  const out: SelectedLine[] = [];
-  for (const i of [...deepest.values()].sort((a, b) => a.multipv - b.multipv)) {
-    if (seen.has(i.pv[0]!)) continue;
-    seen.add(i.pv[0]!);
-    out.push(toLine(i));
-  }
-  return out;
+  return dedupe([...deepest.values()].sort((a, b) => a.multipv - b.multipv).map(toLine));
 }

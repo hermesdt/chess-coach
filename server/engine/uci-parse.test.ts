@@ -65,6 +65,37 @@ describe('selectLines', () => {
     expect(lines.map((l) => l.multipv)).toEqual([1, 3]);
   });
 
+  it('returns the last uniform batch when a later batch mixes depths', () => {
+    const infos = [
+      info(16, 1, 'c8f5'), info(16, 2, 'e7e6'), info(16, 3, 'a7a6'),
+      info(17, 1, 'e7e6'), info(16, 2, 'c8f5'), info(16, 3, 'a7a6'),
+    ];
+    const lines = selectLines(infos, 3);
+    expect(lines.map((l) => l.pv[0])).toEqual(['c8f5', 'e7e6', 'a7a6']);
+  });
+
+  it('returns the last complete batch when no batch has a single depth', () => {
+    const infos = [
+      info(16, 1, 'c8f5'), info(16, 2, 'e7e6'), info(15, 3, 'a7a6'),
+      info(17, 1, 'e7e6'), info(16, 2, 'c8f5'), info(16, 3, 'a7a6'),
+    ];
+    expect(selectLines(infos, 3).map((l) => l.pv[0])).toEqual(['e7e6', 'c8f5', 'a7a6']);
+  });
+
+  it('skips a batch with a dropped bound line', () => {
+    const infos = [
+      info(16, 1, 'c8f5'), info(16, 2, 'e7e6'), info(16, 3, 'a7a6'),
+      info(17, 1, 'e7e6'), info(17, 3, 'a7a6'), // multipv 2 was a bound
+    ];
+    expect(selectLines(infos, 3).map((l) => l.pv[0])).toEqual(['c8f5', 'e7e6', 'a7a6']);
+  });
+
+  it('dedupes by first move as a safety net', () => {
+    const infos = [info(16, 1, 'c8f5'), info(16, 2, 'c8f5 e7e6'), info(16, 3, 'a7a6')];
+    const lines = selectLines(infos, 3);
+    expect(lines.map((l) => l.pv[0])).toEqual(['c8f5', 'a7a6']);
+  });
+
   it('returns an empty array without infos', () => {
     expect(selectLines([], 2)).toEqual([]);
   });

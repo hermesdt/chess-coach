@@ -34,6 +34,16 @@ describe.skipIf(!isStockfishAvailable())('UciEngine (Stockfish)', () => {
     expect(new Set(lines.map((l) => l.pv[0])).size).toBe(3);
   });
 
+  it('returns three distinct first moves after 1.e4 c6 2.d4 d5 3.e5 at 1M nodes', async () => {
+    const chess = new Chess();
+    for (const m of ['e4', 'c6', 'd4', 'd5', 'e5']) chess.move(m);
+    for (let n = 0; n < 3; n++) {
+      const lines = await engine.analyse(chess.fen(), { nodes: 1_000_000, multipv: 3, timeoutMs: 60_000 });
+      expect(lines.map((l) => l.multipv)).toEqual([1, 2, 3]);
+      expect(new Set(lines.map((l) => l.pv[0])).size).toBe(3);
+    }
+  }, 180_000);
+
   it('finds a forced mate in 1', async () => {
     const lines = await engine.analyse('6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1', { nodes: 50000 });
     expect(lines[0]!.score.mate).toBe(1);
