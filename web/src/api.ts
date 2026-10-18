@@ -13,6 +13,9 @@ import type {
   ImportRequest,
   ImportResult,
   Job,
+  OpeningDetail,
+  OpeningLeakGroup,
+  OpeningSummary,
   SettingsDTO,
   SettingsUpdate,
   Tag,
@@ -88,6 +91,9 @@ export const api = {
   getReviewStats: () => request<ReviewStats>('/review/stats'),
   submitReview: (cardId: number, body: ReviewSubmit) => post<ReviewResult>(`/review/${cardId}`, body),
   flagCard: (cardId: number, note: string) => post<CardFlag>(`/cards/${cardId}/flag`, { note }),
+  listOpenings: () => request<OpeningSummary[]>('/openings'),
+  getOpening: (id: string) => request<OpeningDetail>(`/openings/${encodeURIComponent(id)}`),
+  getOpeningLeaks: (id: string) => request<OpeningLeakGroup[]>(`/openings/${encodeURIComponent(id)}/leaks`),
   importPgn: (pgn: string, colors?: (Color | null)[]) =>
     post<ImportResult>('/import', { pgn, colors } satisfies ImportRequest),
 };

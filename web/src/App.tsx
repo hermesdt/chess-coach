@@ -5,6 +5,7 @@ import { REVIEW_FINISHED } from './lib/events';
 import { DashboardPage } from './pages/DashboardPage';
 import { GamesPage } from './pages/GamesPage';
 import { GameViewerPage } from './pages/GameViewerPage';
+import { OpeningsPage } from './pages/OpeningsPage';
 import { ReviewPage } from './pages/ReviewPage';
 import { SettingsPage } from './pages/SettingsPage';
 
@@ -45,6 +46,7 @@ export function App() {
         <NavLink to="/" end>Dashboard</NavLink>
         <NavLink to="/games">Games</NavLink>
         <ReviewLink />
+        <NavLink to="/openings">Openings</NavLink>
         <NavLink to="/settings">Settings</NavLink>
       </nav>
       <main className="main">
@@ -53,6 +55,7 @@ export function App() {
           <Route path="/games" element={<GamesPage />} />
           <Route path="/games/:id" element={<GameViewerPage />} />
           <Route path="/review" element={<ReviewPage />} />
+          <Route path="/openings" element={<OpeningsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>

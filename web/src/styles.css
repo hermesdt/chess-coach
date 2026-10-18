@@ -73,3 +73,25 @@ tr.clickable:focus-visible { outline: 2px solid #0969da; outline-offset: -2px; }
 .panel h2 { margin-top: 0; font-size: 1.1rem; }
 button.big { padding: 0.7rem 1.6rem; font-size: 1.1rem; font-weight: 600; background: #0969da; border-color: #0969da; color: #fff; }
 button.big:hover:not(:disabled) { background: #0757b3; }
+
+.tabs { display: flex; gap: 0.25rem; margin-bottom: 0.75rem; border-bottom: 1px solid #d0d7de; }
+.tab { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none; }
+.tab.active { background: #0969da; border-color: #0969da; color: #fff; font-weight: 600; }
+.tab.active:hover:not(:disabled) { background: #0757b3; }
+.openings .viewer-board { flex: 1 1 360px; }
+.explorer { flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.breadcrumb { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.rep-current-comment { margin: 0; padding: 0.5rem 0.75rem; background: #ddf4ff; border-radius: 6px; }
+.rep-moves { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.rep-move { padding: 0.4rem 0.6rem; background: #fff; border: 1px solid #eaeef2; border-radius: 6px; }
+.rep-move.mine { border-left: 4px solid #1a7f37; background: #f0fff4; }
+.rep-move.locked { opacity: 0.5; background: #f6f8fa; }
+.rep-move button { border: none; background: none; padding: 0; display: flex; gap: 0.5rem; align-items: baseline; }
+.rep-move button:disabled { cursor: not-allowed; }
+.rep-tag { font-size: 0.75rem; color: #656d76; }
+.rep-comment { margin: 0.25rem 0 0; font-size: 0.9rem; color: #424a53; }
+.leak-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.leak-list li { display: flex; gap: 0.75rem; align-items: center; justify-content: space-between; }
+.drill-frame { border: 3px solid transparent; border-radius: 4px; }
+.drill-frame.flash { border-color: #cf222e; animation: flash 0.6s ease-out; }
+@keyframes flash { from { box-shadow: 0 0 0 6px rgba(207, 34, 46, 0.5); } to { box-shadow: none; } }
