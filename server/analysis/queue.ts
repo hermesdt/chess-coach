@@ -7,6 +7,7 @@ import type { EnginePool } from '../engine/pool.js';
 import { runJob } from '../jobs.js';
 import { currentLevel } from '../level.js';
 import { analyseGame } from './analyse-game.js';
+import { buildMistakeCards } from '../srs/mistake-cards.js';
 import { ANALYSIS_VERSION, markAnalysis, saveAnalysis } from './analysis-repo.js';
 
 export interface QueueDeps { pool: Pick<EnginePool, 'analyse'>; nodes?: number }
@@ -55,15 +56,27 @@ function loadGame(db: DatabaseSync, id: number): GameDetail {
   return { ...row, startFen, moves };
 }
 
-async function analyseOne(db: DatabaseSync, id: number, deps: QueueDeps): Promise<void> {
+/** Returns a note to append to the job message when card building failed. */
+async function analyseOne(db: DatabaseSync, id: number, deps: QueueDeps): Promise<string> {
+  let nodes: number;
+  let result: Awaited<ReturnType<typeof analyseGame>>;
   try {
     markAnalysis(db, id, 'running');
     const game = loadGame(db, id);
-    const nodes = deps.nodes ?? getSettings(db).engineNodes;
-    const result = await analyseGame(game, deps.pool, { nodes, level: currentLevel(db).level });
+    nodes = deps.nodes ?? getSettings(db).engineNodes;
+    result = await analyseGame(game, deps.pool, { nodes, level: currentLevel(db).level });
     saveAnalysis(db, { ...result, status: 'done', error: null });
   } catch (e) {
     markAnalysis(db, id, 'error', e instanceof Error ? e.message : String(e));
+    return '';
+  }
+  // Cards never change the analysis status. A failure only shows on the job message.
+  try {
+    await buildMistakeCards(db, { ...result, status: 'done', error: null }, deps.pool, { nodes });
+    return '';
+  } catch (e) {
+    console.error(`Card building failed for game ${id}:`, e);
+    return ' (cards: failed)';
   }
 }
 
@@ -131,16 +144,17 @@ export function enqueueAnalysis(
   try {
     const job = runJob(db, 'analysis', async (report) => {
       let processed = 0;
+      let cardNote = '';
       try {
         report(0, state.total, `Analysed 0 of ${state.total}`);
         for (let id = state.priority.shift() ?? state.pending.shift(); id !== undefined; id = state.priority.shift() ?? state.pending.shift()) {
           state.current = id;
-          await analyseOne(db, id, deps);
+          cardNote = (await analyseOne(db, id, deps)) || cardNote;
           state.current = null;
           processed += 1;
           report(processed, state.total, `Analysed ${processed} of ${state.total}`);
         }
-        return `Analysed ${processed} of ${state.total}`;
+        return `Analysed ${processed} of ${state.total}${cardNote}`;
       } finally {
         active.delete(db);
       }
