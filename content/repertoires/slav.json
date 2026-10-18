@@ -49,7 +49,7 @@
                        "children": [
                         {
                          "san": "e6",
-                         "comment": "Now the bishop sits outside your pawn chain. This is your Caro-Kann plan: bishop first, then ...e6.",
+                         "comment": "Now the bishop is outside your pawns. This is your Caro-Kann plan: bishop first, then ...e6.",
                          "children": [
                           {
                            "san": "Bxc4",
@@ -163,7 +163,7 @@
                    "children": [
                     {
                      "san": "b5",
-                     "comment": "Hold the pawn with ...b5. The c6 pawn guards b5, so the chain is solid.",
+                     "comment": "Hold the pawn with ...b5. The c6 pawn guards b5, so the pawn is safe.",
                      "children": [
                       {
                        "san": "a4",
@@ -199,6 +199,19 @@
                    "level": 2
                   },
                   {
+                   "san": "e4",
+                   "comment": "White builds a big centre.",
+                   "children": [
+                    {
+                     "san": "b5",
+                     "comment": "Hold the pawn with ...b5 at once. The c6 pawn guards it.",
+                     "children": [],
+                     "level": 2
+                    }
+                   ],
+                   "level": 2
+                  },
+                  {
                    "san": "Ne5",
                    "comment": "White plans to win the c4 pawn back with the knight.",
                    "children": [
@@ -211,23 +224,9 @@
                        "comment": null,
                        "children": [
                         {
-                         "san": "Qc7",
-                         "comment": "The queen guards the e5 square and prepares ...e5, the Caro-Kann break.",
-                         "children": [
-                          {
-                           "san": "g3",
-                           "comment": null,
-                           "children": [
-                            {
-                             "san": "e5",
-                             "comment": "Strike at the centre with ...e5. It opens lines for your pieces.",
-                             "children": [],
-                             "level": 3
-                            }
-                           ],
-                           "level": 3
-                          }
-                         ],
+                         "san": "b5",
+                         "comment": "Hit the knight with the b-pawn. The c6 pawn guards b5, so White must move the knight.",
+                         "children": [],
                          "level": 3
                         }
                        ],
@@ -248,6 +247,47 @@
                "tags": [
                 "main"
                ]
+              },
+              {
+               "san": "e3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Bf5",
+                 "comment": "Same idea as in the Caro-Kann: bishop out before ...e6.",
+                 "children": [
+                  {
+                   "san": "Nc3",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "e6",
+                     "comment": "Now the bishop is outside your pawns. Solid and calm.",
+                     "children": [
+                      {
+                       "san": "Nh4",
+                       "comment": "The knight attacks your bishop on f5.",
+                       "children": [
+                        {
+                         "san": "Bg6",
+                         "comment": "Step back. If White takes on g6, you retake with the h-pawn and open the h-file.",
+                         "children": [],
+                         "level": 2
+                        }
+                       ],
+                       "level": 2
+                      }
+                     ],
+                     "level": 2
+                    }
+                   ],
+                   "level": 2
+                  }
+                 ],
+                 "level": 2
+                }
+               ],
+               "level": 2
               }
              ],
              "tags": [
@@ -289,7 +329,7 @@
                        "children": [
                         {
                          "san": "dxc4",
-                         "comment": "Take with a gain of time: the pawn on c4 attacks the bishop on d3.",
+                         "comment": "Take on c4 and gain time: your pawn attacks the bishop on d3.",
                          "children": [
                           {
                            "san": "Bxc4",
@@ -297,7 +337,7 @@
                            "children": [
                             {
                              "san": "b5",
-                             "comment": "Hit the bishop again with a pawn. You gain space and time.",
+                             "comment": "Push the pawn. It attacks the bishop on c4 and gains space.",
                              "children": [
                               {
                                "san": "Bd3",
@@ -313,7 +353,7 @@
                                    "children": [
                                     {
                                      "san": "c5",
-                                     "comment": "Strike the centre with ...c5. It is the same lever as in the Caro-Kann.",
+                                     "comment": "Strike the centre with ...c5. It is the same break as in the Caro-Kann.",
                                      "children": [],
                                      "tags": [
                                       "main"
@@ -436,7 +476,7 @@
                            "children": [
                             {
                              "san": "e6",
-                             "comment": "Now the bishop sits outside your pawn chain. You are solid and fully developed.",
+                             "comment": "Now the bishop is outside your pawns. You are solid and well developed.",
                              "children": [
                               {
                                "san": "Bd3",
@@ -603,7 +643,7 @@
                    "children": [
                     {
                      "san": "c4",
-                     "comment": "Push with tempo. The c4 pawn attacks the queen on b3.",
+                     "comment": "Push the pawn. It attacks the queen on b3 and gains space.",
                      "children": [
                       {
                        "san": "Qxb6",
@@ -611,7 +651,7 @@
                        "children": [
                         {
                          "san": "axb6",
-                         "comment": "Retake with the a-pawn. Your rook gets the half-open a-file, and the doubled b-pawns are fine.",
+                         "comment": "Retake with the a-pawn. Your rook can use the a-file, and the doubled b-pawns are fine.",
                          "children": [
                           {
                            "san": "Nd2",
@@ -670,7 +710,7 @@
                    "children": [
                     {
                      "san": "Bf5",
-                     "comment": "Bring the bishop out before ...e6, the Caro-Kann rule.",
+                     "comment": "Bishop out before ...e6. White’s queen on c1 guards b2, so you develop instead.",
                      "children": [],
                      "level": 2
                     }
@@ -683,7 +723,7 @@
                    "children": [
                     {
                      "san": "Bf5",
-                     "comment": "Develop the bishop first. If White plays Qb3, the queens can trade.",
+                     "comment": "Bishop out before ...e6. Nd2 does not guard b2, so ...Qxb2 is still possible. If Qb3, trade queens.",
                      "children": [],
                      "level": 2
                     }
@@ -711,7 +751,7 @@
                    "children": [
                     {
                      "san": "Qb6",
-                     "comment": "Hit b2. The bishop left c1, so the pawn has no guard.",
+                     "comment": "Hit b2. With Nf3 and Bf4 out, nothing guards that pawn.",
                      "children": [
                       {
                        "san": "Qb3",
@@ -719,7 +759,7 @@
                        "children": [
                         {
                          "san": "c4",
-                         "comment": "Push with tempo. The c4 pawn attacks the queen on b3.",
+                         "comment": "Push the pawn. It attacks the queen on b3 and gains space.",
                          "children": [
                           {
                            "san": "Qxb6",
@@ -727,7 +767,7 @@
                            "children": [
                             {
                              "san": "axb6",
-                             "comment": "Retake with the a-pawn. Your rook gets the half-open a-file, and the doubled b-pawns are fine.",
+                             "comment": "Retake with the a-pawn. Your rook can use the a-file, and the doubled b-pawns are fine.",
                              "children": [
                               {
                                "san": "Nbd2",
@@ -754,7 +794,7 @@
                        "children": [
                         {
                          "san": "Bf5",
-                         "comment": "Bring the bishop out before ...e6, the Caro-Kann rule.",
+                         "comment": "Bishop out before ...e6. The queen on c1 guards b2, so go back to development.",
                          "children": [],
                          "level": 2
                         }
@@ -789,7 +829,7 @@
                    "children": [
                     {
                      "san": "Bf5",
-                     "comment": "Bring the bishop out before ...e6, the Caro-Kann rule.",
+                     "comment": "Bishop out before ...e6. Then ...e6 and ...Nf6 finish your development.",
                      "children": [],
                      "level": 2
                     }
@@ -851,7 +891,7 @@
                "children": [
                 {
                  "san": "Qb6",
-                 "comment": "Hit b2. The bishop left c1, so the pawn has no guard.",
+                 "comment": "Hit b2. White played c3 and e3, but nothing guards b2.",
                  "children": [],
                  "tags": [
                   "main"
@@ -873,7 +913,7 @@
                    "children": [
                     {
                      "san": "Qb6",
-                     "comment": "Hit b2. The bishop left c1, so the pawn has no guard.",
+                     "comment": "Hit b2. Neither the knight on f3 nor the c3 pawn guards it.",
                      "children": [],
                      "tags": [
                       "main"
@@ -893,7 +933,7 @@
                "children": [
                 {
                  "san": "cxd4",
-                 "comment": "Take on d4. After cxd4 Nxd4 your knight is safe, because Nd2 blocks the queen.",
+                 "comment": "Take on d4. After cxd4 Nxd4 you win a pawn, and Nd2 blocks the queen. If e3 hits the knight, retreat to c6.",
                  "children": [],
                  "level": 2
                 }
@@ -960,7 +1000,7 @@
                "children": [
                 {
                  "san": "Nc6",
-                 "comment": "Develop with tempo. The knight attacks the queen on d4.",
+                 "comment": "Develop with a threat. The knight attacks the queen on d4.",
                  "children": [],
                  "level": 2
                 }
@@ -996,7 +1036,7 @@
                    "children": [
                     {
                      "san": "Qb6",
-                     "comment": "Hit b2. The bishop left c1, so the pawn has no guard.",
+                     "comment": "Hit b2. The c3 and e3 pawns do not guard it, and the bishop left c1.",
                      "children": [],
                      "tags": [
                       "main"
@@ -1050,7 +1090,7 @@
                "children": [
                 {
                  "san": "Bxd3",
-                 "comment": "Trade bishops. Your bishop got out before ...e6, so you give up nothing.",
+                 "comment": "Trade bishops. Your bishop got out first, so the trade costs you nothing.",
                  "children": [
                   {
                    "san": "Qxd3",
@@ -1100,6 +1140,19 @@
                    "tags": [
                     "main"
                    ]
+                  },
+                  {
+                   "san": "cxd3",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "e6",
+                     "comment": "Close the centre. Your set-up is solid, and White has doubled d-pawns on d3 and d4.",
+                     "children": [],
+                     "level": 2
+                    }
+                   ],
+                   "level": 2
                   }
                  ],
                  "tags": [
@@ -1125,7 +1178,7 @@
                    "children": [
                     {
                      "san": "e6",
-                     "comment": "Solid. The bishop is outside the chain, and d5 is well guarded.",
+                     "comment": "Solid. The bishop is outside your pawns, and d5 is well guarded.",
                      "children": [],
                      "level": 2
                     }
@@ -1144,7 +1197,7 @@
                "children": [
                 {
                  "san": "Bg4",
-                 "comment": "Move the bishop with tempo: it attacks the queen on d1.",
+                 "comment": "Nh4 attacks your bishop. Move it and attack their queen: Bg4.",
                  "children": [],
                  "level": 2
                 }
@@ -1200,7 +1253,7 @@
                    "children": [
                     {
                      "san": "Qb6",
-                     "comment": "Hit b2. The bishop left c1, so the pawn has no guard.",
+                     "comment": "Hit b2. Same plan as against 2.Bf4: nothing guards that pawn.",
                      "children": [],
                      "tags": [
                       "main"
@@ -1392,8 +1445,22 @@
            "children": [
             {
              "san": "Qb6",
-             "comment": "Hit b2. The bishop left c1, so the pawn has no guard.",
-             "children": [],
+             "comment": "Hit b2. After Nc3, play ...e6. Do not grab b2.",
+             "children": [
+              {
+               "san": "Nc3",
+               "comment": null,
+               "children": [
+                {
+                 "san": "e6",
+                 "comment": "Guard d5 and open the f8 bishop. The b2 pawn looks free, but taking it is risky.",
+                 "children": [],
+                 "level": 2
+                }
+               ],
+               "level": 2
+              }
+             ],
              "level": 2
             }
            ],
@@ -1419,7 +1486,7 @@
            "children": [
             {
              "san": "Nf6",
-             "comment": "Develop and attack the e4 pawn. You are a pawn up, so finish your development.",
+             "comment": "Develop and guard your extra pawn on e4. You are a pawn up, so finish your development.",
              "children": [
               {
                "san": "f3",
@@ -1468,7 +1535,7 @@
                "children": [
                 {
                  "san": "Bf5",
-                 "comment": "Bring the bishop out before ...e6, the Caro-Kann rule.",
+                 "comment": "Bishop out before ...e6. Your c6 pawn already stops Nb5.",
                  "children": [],
                  "level": 2
                 }
@@ -1596,7 +1663,7 @@
            "children": [
             {
              "san": "cxd5",
-             "comment": "Retake with the c-pawn. Your pawn on d5 holds the centre.",
+             "comment": "Retake with the c-pawn. If cxd5 follows, you can win the pawn back with ...Nf6 and ...Nxd5.",
              "children": [
               {
                "san": "cxd5",
