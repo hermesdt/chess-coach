@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import type { Color, GameList, GameResult, Source } from '../../../shared/types';
 import { api } from '../api';
 import { ImportPgnDialog } from '../components/ImportPgnDialog';
+import { AnalyseButton } from '../components/AnalyseButton';
 import { SyncButton } from '../components/SyncButton';
 import { formatDate, opponentLabel } from '../lib/format';
 
@@ -59,6 +60,12 @@ export function GamesPage() {
       <div className="toolbar">
         <SyncButton onFinished={load} />
         <button type="button" onClick={() => setImportOpen(true)}>Import PGN</button>
+        <AnalyseButton
+          label="Analyse more"
+          runningLabel="Analysing..."
+          start={async () => (await api.queueAnalysis(20)).jobId}
+          onFinished={load}
+        />
       </div>
       <div className="filters">
         <select aria-label="Source" value={source} onChange={(e) => onFilter(setSource)(e.target.value as Source | '')}>
@@ -95,7 +102,7 @@ export function GamesPage() {
           <table className="games">
             <thead>
               <tr>
-                <th>Date</th><th>Platform</th><th>Colour</th><th>Opponent</th><th>Result</th><th>Opening</th><th>Time</th>
+                <th>Date</th><th>Platform</th><th>Colour</th><th>Opponent</th><th>Result</th><th>Opening</th><th>Time</th><th>Accuracy</th><th>??/?</th>
               </tr>
             </thead>
             <tbody>
@@ -118,6 +125,8 @@ export function GamesPage() {
                     <td>{g.result ? <span className={`badge ${g.result}`}>{g.result}</span> : '-'}</td>
                     <td>{g.openingName ?? g.eco ?? ''}</td>
                     <td>{g.timeClass}</td>
+                    <td>{g.analysis?.status === 'done' && g.analysis.accuracyUser !== null ? `${Math.round(g.analysis.accuracyUser)}%` : '-'}</td>
+                    <td>{g.analysis?.status === 'done' ? `${g.analysis.blunders}/${g.analysis.mistakes}` : '-'}</td>
                   </tr>
                 );
               })}

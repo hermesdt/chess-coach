@@ -1,5 +1,6 @@
 import type {
   Color,
+  GameAnalysis,
   GameDetail,
   GameList,
   GameListQuery,
@@ -10,6 +11,8 @@ import type {
   SettingsDTO,
   SettingsUpdate,
 } from '../../shared/types';
+
+export type AnalysisResponse = GameAnalysis | { status: 'none' } | { status: 'pending' | 'running' | 'error'; error?: string | null };
 
 export interface SyncStatus {
   chesscom: number | null;
@@ -48,6 +51,9 @@ export const api = {
     request<SettingsDTO>('/settings', { method: 'PUT', body: JSON.stringify(update) }),
   listGames: (q: GameListQuery = {}) => request<GameList>(`/games${queryString(q)}`),
   getGame: (id: number) => request<GameDetail>(`/games/${id}`),
+  getAnalysis: (id: number) => request<AnalysisResponse>(`/games/${id}/analysis`),
+  analyseGame: (id: number) => post<{ jobId: number }>(`/games/${id}/analyse`),
+  queueAnalysis: (limit: number) => post<{ jobId: number; queued: number }>('/analysis/queue', { limit }),
   startSync: () => post<{ jobId: number; alreadyRunning?: boolean }>('/sync'),
   getJob: (id: number) => request<Job>(`/jobs/${id}`),
   getSyncStatus: () => request<SyncStatus>('/sync/status'),

@@ -1,20 +1,26 @@
+import { glyph } from '../lib/eval';
 import { useEffect, useRef } from 'react';
-import type { MoveInfo } from '../../../shared/types';
+import type { MoveAnalysis, MoveInfo } from '../../../shared/types';
 
 interface Props {
   moves: MoveInfo[];
   currentPly: number;
   onSelect: (ply: number) => void;
+  /** Optional analysis, indexed by ply - 1. Adds coloured glyphs. */
+  analysis?: MoveAnalysis[];
 }
 
-export function MoveList({ moves, currentPly, onSelect }: Props) {
+export function MoveList({ moves, currentPly, onSelect, analysis }: Props) {
   const currentRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     currentRef.current?.scrollIntoView?.({ block: 'nearest' });
   }, [currentPly]);
 
-  const cell = (move: MoveInfo | undefined) =>
-    move ? (
+  const cell = (move: MoveInfo | undefined) => {
+    if (!move) return null;
+    const a = analysis?.[move.ply - 1];
+    const g = a && a.isUserMove ? glyph(a.classification) : '';
+    return (
       <button
         type="button"
         ref={move.ply === currentPly ? currentRef : undefined}
@@ -22,8 +28,10 @@ export function MoveList({ moves, currentPly, onSelect }: Props) {
         onClick={() => onSelect(move.ply)}
       >
         {move.san}
+        {g && <span className={`glyph ${a?.classification}`}>{g}</span>}
       </button>
-    ) : null;
+    );
+  };
 
   const rows: { number: number; white: MoveInfo; black?: MoveInfo }[] = [];
   for (let i = 0; i < moves.length; i += 2) {
