@@ -121,3 +121,11 @@ it('POST test does not redact very short key values', async () => {
   };
   expect(await (await json('POST', '/api/ai/providers/openrouter/test')).json()).toEqual({ ok: false, error: 'table is unavailable' });
 });
+
+it('POST test redacts a short stored key of 4 characters', async () => {
+  await json('PUT', '/api/settings', { openrouterApiKey: 'k3y9' });
+  complete = async () => {
+    throw new Error('bad key k3y9');
+  };
+  expect(await (await json('POST', '/api/ai/providers/openrouter/test')).json()).toEqual({ ok: false, error: 'bad key [redacted]' });
+});

@@ -75,3 +75,20 @@ it('accepts dash variants in castling', () => {
   expect(findUngroundedMoves('Castle O–O now, or 0–0–0', new Set(['O-O', 'O-O-O']))).toEqual([]);
   expect(findUngroundedMoves('Castle O–O', new Set())).toEqual(['O-O']);
 });
+
+it('does not split rank or file disambiguated piece moves', () => {
+  const nxa3 = groundingSet(['Nxa3']);
+  expect(findUngroundedMoves('R1a3', nxa3)).toEqual(['R1a3']);
+  expect(findUngroundedMoves('N1f3', groundingSet(['Nf3']))).toEqual(['N1f3']);
+  expect(findUngroundedMoves('N1f3', groundingSet(['N1f3']))).toEqual([]);
+  expect(findUngroundedMoves('Qh4e1', groundingSet(['Qh4e1']))).toEqual([]);
+  expect(findUngroundedMoves('Qh4e1', groundingSet(['Qe1']))).toEqual(['Qh4e1']);
+  expect(findUngroundedMoves('Be4Nf3 and Nf3Nc6', new Set())).toEqual(['Be4', 'Nf3', 'Nc6']);
+});
+
+it('keeps looking for a move verb across a colon or a newline', () => {
+  const nxe4 = groundingSet(['Nxe4']);
+  expect(findUngroundedMoves('I would play: e4', nxe4)).toEqual(['e4']);
+  expect(findUngroundedMoves('play\ne4', nxe4)).toEqual(['e4']);
+  expect(findUngroundedMoves('Play. e4 is a square', nxe4)).toEqual([]);
+});

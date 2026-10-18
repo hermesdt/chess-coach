@@ -11,7 +11,7 @@ const testSchema = z.object({ ok: z.boolean() });
 /** Removes API keys (the stored ones and anything key-shaped) from text that may reach the client. */
 function redact(text: string, secrets: (string | null)[]): string {
   let out = text;
-  for (const secret of secrets) if (secret && secret.length >= 6) out = out.replaceAll(secret, '[redacted]');
+  for (const secret of secrets) if (secret && secret.length >= 4) out = out.replaceAll(secret, '[redacted]');
   return out
     .replace(/Bearer\s+\S+/gi, 'Bearer [redacted]')
     .replace(/\bsk-[A-Za-z0-9_-]{8,}/g, '[redacted]');

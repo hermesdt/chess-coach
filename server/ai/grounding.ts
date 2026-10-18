@@ -9,6 +9,17 @@ const MOVE_VERB =
 /** A move-looking start right after a digit or check mark means two moves are glued together. */
 const GLUED = /([1-8+#])(?=(?:[KQRBN][a-h]?[1-8]?x?[a-h][1-8]|[a-h]x?[a-h]?[1-8]|O-O))/g;
 
+/** Splits glued moves, but keeps disambiguated piece moves whole (`R1a3`, `Qh4e1`). */
+function splitGlued(text: string): string {
+  return text.replace(GLUED, (match, _mark: string, offset: number) => {
+    const before = text.slice(Math.max(0, offset - 2), offset);
+    const after = text.slice(offset + 1);
+    if (/[KQRBN]$/.test(before)) return match;
+    if (/[KQRBN][a-h]$/.test(before) && /^[a-h]x?[1-8]/.test(after)) return match;
+    return `${match} `;
+  });
+}
+
 /** Drops check marks; the promotion part is kept. */
 const normalise = (san: string) => san.replace(/[+#]+$/, '');
 const stripPromotion = (san: string) => san.replace(/=[QRBN]$/, '');
@@ -32,16 +43,16 @@ export function groundingSet(sans: Iterable<string>, factsText = ''): Set<string
 }
 
 function prepare(text: string): string {
-  return text
+  const cleaned = text
     .replace(/[‐-―−]/g, '-')
     .replace(/[_*`~]/g, ' ')
-    .replace(/(?<![A-Za-z0-9])0-0(-0)?(?![A-Za-z0-9])/g, (m) => m.replaceAll('0', 'O'))
-    .replace(GLUED, '$1 ');
+    .replace(/(?<![A-Za-z0-9])0-0(-0)?(?![A-Za-z0-9])/g, (m) => m.replaceAll('0', 'O'));
+  return splitGlued(cleaned);
 }
 
 /** True when one of the two words before `index` is a move verb ("play e4", "reply with e4"). */
 function afterMoveVerb(text: string, index: number): boolean {
-  const tail = text.slice(0, index).split(/[.!?;:\n]/).pop() ?? '';
+  const tail = text.slice(0, index).split(/[.!?]/).pop() ?? '';
   return tail.split(/[^A-Za-z]+/).filter(Boolean).slice(-2).some((w) => MOVE_VERB.test(w));
 }
 
