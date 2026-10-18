@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import type { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'node:url';
+import { transaction } from './db.js';
 
 const MIGRATIONS_DIR = fileURLToPath(new URL('./migrations/', import.meta.url));
 
@@ -13,14 +14,9 @@ export function migrate(db: DatabaseSync): void {
   for (const file of files) {
     if (applied.has(file)) continue;
     const sql = readFileSync(MIGRATIONS_DIR + file, 'utf8');
-    db.exec('BEGIN');
-    try {
+    transaction(db, () => {
       db.exec(sql);
       db.prepare('INSERT INTO schema_migrations (version, applied_at) VALUES (?, ?)').run(file, Date.now());
-      db.exec('COMMIT');
-    } catch (err) {
-      db.exec('ROLLBACK');
-      throw err;
-    }
+    });
   }
 }

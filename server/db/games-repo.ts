@@ -1,5 +1,6 @@
 import type { DatabaseSync, SQLInputValue } from 'node:sqlite';
 import type { GameList, GameListQuery, GameSummary, NewGame, Source } from '../../shared/types.js';
+import { transaction } from './db.js';
 
 type Row = Record<string, unknown>;
 
@@ -32,8 +33,7 @@ export function insertGames(db: DatabaseSync, games: NewGame[]): { inserted: num
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
   let inserted = 0;
   const now = Date.now();
-  db.exec('BEGIN');
-  try {
+  transaction(db, () => {
     for (const g of games) {
       const res = stmt.run(
         g.source, g.sourceId, g.playedAt, g.timeClass, g.rated ? 1 : 0, g.white, g.black, g.whiteElo, g.blackElo,
@@ -41,11 +41,7 @@ export function insertGames(db: DatabaseSync, games: NewGame[]): { inserted: num
       );
       inserted += Number(res.changes);
     }
-    db.exec('COMMIT');
-  } catch (err) {
-    db.exec('ROLLBACK');
-    throw err;
-  }
+  });
   return { inserted, duplicates: games.length - inserted };
 }
 

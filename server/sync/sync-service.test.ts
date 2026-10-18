@@ -64,7 +64,7 @@ describe('sync', () => {
     expect(job.message).toContain('token needed');
     expect(listGames(db, { source: 'chesscom' }).total).toBeGreaterThan(0);
     const status = await (await app().request('/api/sync/status')).json();
-    expect(status).toEqual({ chesscom: NOW, lichess: null });
+    expect(status).toEqual({ chesscom: NOW, lichess: null, runningJobId: null });
   });
 
   it('ends in error when every configured source fails', async () => {
@@ -145,5 +145,35 @@ describe('sync', () => {
     await runSync();
     const lichessUrl = calls.find((u) => u.startsWith('https://lichess.org/'))!;
     expect(new URL(lichessUrl).searchParams.get('since')).toBe(String(NOW - 120 * 30 * DAY));
+  });
+
+  it('returns the running sync job instead of starting a second one', async () => {
+    setSetting(db, 'chesscom_username', 'hikaru');
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => (release = resolve));
+    routes[ARCHIVES] = () => new Response(load('chesscom-archives.json'));
+    const slowFetch = (async (input: string | URL | Request) => {
+      await gate;
+      return fakeFetch(input);
+    }) as typeof fetch;
+    const slowApp = createApp({ db, fetchFn: slowFetch, now: () => NOW });
+    const post = async () =>
+      (await (await slowApp.request('/api/sync', { method: 'POST', headers: JSON_HEADERS })).json()) as {
+        jobId: number;
+        alreadyRunning?: boolean;
+      };
+    const first = await post();
+    expect(first.alreadyRunning).toBeUndefined();
+    const second = await post();
+    expect(second).toEqual({ jobId: first.jobId, alreadyRunning: true });
+    const status = (await (await slowApp.request('/api/sync/status')).json()) as { runningJobId: number | null };
+    expect(status.runningJobId).toBe(first.jobId);
+    release();
+    await waitForJob(db, first.jobId, 5000);
+    const after = (await (await slowApp.request('/api/sync/status')).json()) as { runningJobId: number | null };
+    expect(after.runningJobId).toBeNull();
+    const third = await post();
+    expect(third.jobId).not.toBe(first.jobId);
+    await waitForJob(db, third.jobId, 5000);
   });
 });

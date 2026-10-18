@@ -37,7 +37,11 @@ export function importRoutes(db: DatabaseSync): Hono {
     .post('/import', async (c) => {
       const body = (await c.req.json().catch(() => null)) as Partial<ImportRequest> | null;
       if (typeof body?.pgn !== 'string') return c.json({ error: 'pgn must be a string' }, 400);
-      const colors: (Color | null | undefined)[] = Array.isArray(body.colors) ? body.colors : [];
+      if (body.colors !== undefined && !Array.isArray(body.colors)) return c.json({ error: 'colors must be an array' }, 400);
+      const colors: (Color | null | undefined)[] = body.colors ?? [];
+      if (!colors.every((v) => v === undefined || v === null || v === 'white' || v === 'black')) {
+        return c.json({ error: "colors entries must be 'white', 'black' or null" }, 400);
+      }
       const usernames = usernamesOf(db);
       const games: NewGame[] = [];
       let skipped = 0;

@@ -8,3 +8,20 @@ export function openDb(path: string): DatabaseSync {
   migrate(db);
   return db;
 }
+
+let savepointCounter = 0;
+
+/** Runs fn in a SAVEPOINT. Commits on return, rolls back on throw. Calls nest. */
+export function transaction<T>(db: DatabaseSync, fn: () => T): T {
+  const name = `sp_${savepointCounter++}`;
+  db.exec(`SAVEPOINT ${name}`);
+  try {
+    const result = fn();
+    db.exec(`RELEASE ${name}`);
+    return result;
+  } catch (err) {
+    db.exec(`ROLLBACK TO ${name}`);
+    db.exec(`RELEASE ${name}`);
+    throw err;
+  }
+}

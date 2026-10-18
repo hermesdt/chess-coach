@@ -37,6 +37,14 @@ describe('import', () => {
     expect(again).toEqual({ inserted: 0, duplicates: 3, skipped: 1 });
   });
 
+  it('rejects invalid colours entries with 400', async () => {
+    for (const colors of [['red'], [1], 'white', [['white']]]) {
+      const res = await post('/api/import', { pgn, colors });
+      expect(res.status).toBe(400);
+    }
+    expect((await post('/api/import', { pgn, colors: ['white', null] })).status).toBe(200);
+  });
+
   it('applies colour overrides and keeps detection for undefined entries', async () => {
     await post('/api/import', { pgn, colors: [null, 'white'] });
     const list = (await (await app.request('/api/games')).json()) as { items: { white: string; userColor: string | null }[] };

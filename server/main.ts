@@ -3,11 +3,13 @@ import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { createApp } from './app.js';
 import { openDb } from './db/db.js';
+import { recoverInterruptedJobs } from './jobs.js';
 
 if (existsSync('.env')) process.loadEnvFile('.env');
 
 mkdirSync('data', { recursive: true });
 const db = openDb('data/chess.db');
+recoverInterruptedJobs(db, Date.now());
 const app = createApp({ db });
 
 if (existsSync('dist')) {

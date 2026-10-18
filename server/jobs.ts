@@ -45,6 +45,21 @@ export function updateJob(db: DatabaseSync, id: number, patch: JobPatch): void {
   db.prepare(`UPDATE jobs SET ${sets} WHERE id = ?`).run(...keys.map((k) => patch[k] as string | number | null), id);
 }
 
+export function findActiveJob(db: DatabaseSync, kind: string): Job | null {
+  const row = db
+    .prepare("SELECT * FROM jobs WHERE kind = ? AND status IN ('queued', 'running') ORDER BY id DESC LIMIT 1")
+    .get(kind);
+  return row ? toJob(row) : null;
+}
+
+/** Marks jobs left over from a previous process as failed. Call once on startup. */
+export function recoverInterruptedJobs(db: DatabaseSync, now: number): number {
+  const res = db
+    .prepare("UPDATE jobs SET status = 'error', error = 'interrupted by restart', finished_at = ? WHERE status IN ('queued', 'running')")
+    .run(now);
+  return Number(res.changes);
+}
+
 export function runJob(db: DatabaseSync, kind: string, work: (report: Report) => Promise<string | void>): Job {
   const job = createJob(db, kind);
   updateJob(db, job.id, { status: 'running' });
@@ -54,7 +69,11 @@ export function runJob(db: DatabaseSync, kind: string, work: (report: Report) =>
       const message = await work(report);
       updateJob(db, job.id, { status: 'done', message: message ?? undefined, finishedAt: Date.now() });
     } catch (e) {
-      updateJob(db, job.id, { status: 'error', error: e instanceof Error ? e.message : String(e), finishedAt: Date.now() });
+      try {
+        updateJob(db, job.id, { status: 'error', error: e instanceof Error ? e.message : String(e), finishedAt: Date.now() });
+      } catch (updateError) {
+        console.error(`job ${job.id} could not be marked as failed`, updateError);
+      }
     }
   })();
   return getJob(db, job.id)!;

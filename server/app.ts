@@ -1,5 +1,5 @@
 import type { DatabaseSync } from 'node:sqlite';
-import { Hono } from 'hono';
+import { Hono, type MiddlewareHandler } from 'hono';
 import { gamesRoutes } from './routes/games.js';
 import { healthRoutes } from './routes/health.js';
 import { importRoutes } from './routes/import.js';
@@ -13,8 +13,23 @@ export interface AppDeps {
   now?: () => number;
 }
 
+const LOCAL_HOST = /^(127\.0\.0\.1|localhost)(:\d+)?$/i;
+const WRITE_METHODS = new Set(['POST', 'PUT', 'DELETE']);
+
+/** Rejects DNS-rebinding (foreign Host) and cross-site form posts (non-JSON writes). */
+const localOnly: MiddlewareHandler = async (c, next) => {
+  const host = c.req.header('host');
+  if (host !== undefined && !LOCAL_HOST.test(host)) return c.json({ error: 'forbidden host' }, 403);
+  if (WRITE_METHODS.has(c.req.method)) {
+    const type = c.req.header('content-type') ?? '';
+    if (!/^application\/json\s*(;|$)/i.test(type)) return c.json({ error: 'content-type must be application/json' }, 415);
+  }
+  await next();
+};
+
 export function createApp(deps: AppDeps): Hono {
   const app = new Hono();
+  app.use('/api/*', localOnly);
   app.route('/api', healthRoutes);
   app.route('/api', settingsRoutes(deps.db));
   app.route('/api', syncRoutes(deps.db, { fetchFn: deps.fetchFn, now: deps.now }));
