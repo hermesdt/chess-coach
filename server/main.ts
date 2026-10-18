@@ -3,6 +3,7 @@ import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { createApp } from './app.js';
 import { openDb } from './db/db.js';
+import { closeEnginePool } from './engine/pool.js';
 import { recoverInterruptedJobs } from './jobs.js';
 
 if (existsSync('.env')) process.loadEnvFile('.env');
@@ -20,3 +21,9 @@ if (existsSync('dist')) {
 serve({ fetch: app.fetch, hostname: '127.0.0.1', port: 8787 }, (info) => {
   console.log(`chess-coach listening on http://127.0.0.1:${info.port}`);
 });
+
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+  process.on(signal, () => {
+    void closeEnginePool().finally(() => process.exit(0));
+  });
+}

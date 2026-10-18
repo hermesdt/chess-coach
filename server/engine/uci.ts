@@ -23,11 +23,13 @@ export class UciEngine {
   private pending: Pending | null = null;
   private buffer = '';
   private _alive = true;
+  private busy = false;
 
   private constructor(private readonly proc: ChildProcessWithoutNullStreams) {
     proc.stdout.setEncoding('utf8');
     proc.stdout.on('data', (chunk: string) => this.onData(chunk));
     proc.stderr.resume();
+    proc.stdin.on('error', (e) => this.onExit(e));
     proc.on('error', (e) => this.onExit(e));
     proc.on('exit', () => this.onExit(new Error('Engine process exited')));
   }
@@ -49,25 +51,40 @@ export class UciEngine {
   }
 
   async setOptions(o: Record<string, string | number>): Promise<void> {
-    for (const [name, value] of Object.entries(o)) this.send(`setoption name ${name} value ${value}`);
-    await this.isReady();
+    await this.exclusive(async () => {
+      for (const [name, value] of Object.entries(o)) this.send(`setoption name ${name} value ${value}`);
+      await this.isReady();
+    });
   }
 
   async analyse(
     fen: string,
     opts: { nodes: number; multipv?: number; timeoutMs?: number },
   ): Promise<EngineLine[]> {
-    const multipv = opts.multipv ?? 1;
-    this.send(`setoption name MultiPV value ${multipv}`);
-    await this.isReady();
-    this.send(`position fen ${fen}`);
-    const best = new Map<number, EngineLine>();
-    await this.request(`go nodes ${opts.nodes}`, (l) => {
-      const info = parseInfoLine(l);
-      if (info) best.set(info.multipv, { multipv: info.multipv, score: info.score, pv: info.pv });
-      return l.startsWith('bestmove');
-    }, opts.timeoutMs ?? DEFAULT_TIMEOUT_MS);
-    return [...best.values()].sort((a, b) => a.multipv - b.multipv);
+    return this.exclusive(async () => {
+      const multipv = opts.multipv ?? 1;
+      this.send(`setoption name MultiPV value ${multipv}`);
+      await this.isReady();
+      this.send(`position fen ${fen}`);
+      const best = new Map<number, EngineLine>();
+      await this.request(`go nodes ${opts.nodes}`, (l) => {
+        const info = parseInfoLine(l);
+        if (info) best.set(info.multipv, { multipv: info.multipv, score: info.score, pv: info.pv });
+        return l.startsWith('bestmove');
+      }, opts.timeoutMs ?? DEFAULT_TIMEOUT_MS);
+      return [...best.values()].sort((a, b) => a.multipv - b.multipv);
+    });
+  }
+
+  // Reject a concurrent call before anything is written to stdin.
+  private async exclusive<T>(fn: () => Promise<T>): Promise<T> {
+    if (this.busy) throw new Error('Engine is busy');
+    this.busy = true;
+    try {
+      return await fn();
+    } finally {
+      this.busy = false;
+    }
   }
 
   async quit(): Promise<void> {
