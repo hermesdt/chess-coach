@@ -54,7 +54,8 @@ describe('momentText', () => {
       title: 'Blunder',
       reasons: ['This allowed a checkmate', 'You left a piece undefended'],
     });
-    expect(momentLine(tagged('blunder', ['hung_piece']))).toBe('Blunder \u2014 You left a piece undefended');
+    expect(momentLine(tagged('blunder', ['hung_piece']))).toBe('Blunder \u2014 you left a piece undefended.');
+    expect(momentLine(tagged('blunder', ['hung_piece', 'allowed_mate']))).toBe('Blunder \u2014 this allowed a checkmate; you left a piece undefended.');
   });
 
   it('shows the classification text only when there is no tag', () => {

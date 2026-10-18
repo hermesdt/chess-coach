@@ -37,8 +37,10 @@ export function momentText(move: MoveAnalysis): { title: string; reasons: string
   return first === undefined ? { title: capitalise(move.classification), reasons: [] } : { title: first, reasons: rest };
 }
 
-/** One line for a move: "Blunder: You left a piece undefended, This capture lost material". */
+const lowerFirst = (text: string) => text.charAt(0).toLowerCase() + text.slice(1);
+
+/** One line for a move: "Blunder \u2014 this allowed a checkmate; this capture lost material." */
 export function momentLine(move: MoveAnalysis): string {
   const { title, reasons } = momentText(move);
-  return reasons.length > 0 ? `${title} \u2014 ${reasons.join(', ')}` : title;
+  return reasons.length > 0 ? `${title} \u2014 ${reasons.map(lowerFirst).join('; ')}.` : title;
 }

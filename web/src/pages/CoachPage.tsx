@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { LESSON_TITLES } from '../../../shared/lessons';
 import type { AiProviderSetting, ProviderId, WeaknessReportNote } from '../../../shared/types';
@@ -14,14 +14,30 @@ export function CoachPage() {
   const [setting, setSetting] = useState<AiProviderSetting>('auto');
   const [chosen, setChosen] = useState<ProviderId | ''>('');
 
+  const [providerError, setProviderError] = useState<string | null>(null);
+  const latest = useRef(0);
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  /** Only the newest request may set state, and none after unmount. */
   const load = useCallback(() => {
+    const request = ++latest.current;
+    const current = () => mounted.current && request === latest.current;
     api.getWeakness().then(
       (n) => {
+        if (!current()) return;
         setNote(n);
         setLoaded(true);
         setError(null);
       },
       (e: Error) => {
+        if (!current()) return;
         setError(e.message);
         setLoaded(true);
       },
@@ -30,13 +46,20 @@ export function CoachPage() {
 
   useEffect(load, [load]);
   useEffect(() => {
+    let stale = false;
     Promise.all([api.listProviders(), api.getSettings()]).then(
       ([list, s]) => {
+        if (stale) return;
         setProviders(list);
         setSetting(s.aiProvider);
       },
-      () => {},
+      (e: Error) => {
+        if (!stale) setProviderError(e.message);
+      },
     );
+    return () => {
+      stale = true;
+    };
   }, []);
 
   const noneAvailable = providers.length > 0 && !providers.some((p) => p.ok);
@@ -45,6 +68,7 @@ export function CoachPage() {
     <section>
       <h1>Coach</h1>
       {error && <p className="error">{error}</p>}
+      {providerError && <p className="error">Could not load the AI providers: {providerError}</p>}
       {!loaded && <p>Loading...</p>}
       {loaded && !note && !error && <p className="muted">No report yet. Analyse a few games, then make a report.</p>}
       {note && (

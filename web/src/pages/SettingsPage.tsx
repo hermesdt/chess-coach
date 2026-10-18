@@ -37,6 +37,19 @@ function AiSettings({ settings, onSaved }: { settings: SettingsDTO; onSaved: (s:
     }
   };
 
+  const removeKey = async (field: 'openrouterApiKey' | 'anthropicApiKey') => {
+    setMessage(null);
+    setError(null);
+    try {
+      onSaved(await api.putSettings({ [field]: '' }));
+      setMessage('API key removed.');
+      loadProviders();
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  };
+
+  const anyTestRunning = Object.values(tests).includes('running');
   const test = async (id: ProviderId) => {
     setTests((t) => ({ ...t, [id]: 'running' }));
     try {
@@ -57,7 +70,7 @@ function AiSettings({ settings, onSaved }: { settings: SettingsDTO; onSaved: (s:
             <li key={p.id}>
               <strong>{p.label}</strong>
               {p.ok ? <span className="ok">ready</span> : <span className="muted">not ready: {p.reason ?? 'unknown reason'}</span>}
-              <button type="button" disabled={t === 'running'} onClick={() => void test(p.id)}>
+              <button type="button" disabled={anyTestRunning} onClick={() => void test(p.id)}>
                 {t === 'running' ? 'Testing...' : 'Test'}
               </button>
               {t && t !== 'running' && (t.ok ? <span className="ok">OK in {t.ms} ms · {t.model}</span> : <span className="error">{t.error}</span>)}
@@ -96,6 +109,11 @@ function AiSettings({ settings, onSaved }: { settings: SettingsDTO; onSaved: (s:
             onChange={(e) => setOpenrouterKey(e.target.value)}
           />
         </label>
+        {settings.openrouterKeySet && (
+          <button type="button" className="link" onClick={() => void removeKey('openrouterApiKey')}>
+            Remove OpenRouter key
+          </button>
+        )}
         <label>
           Anthropic API key
           <input
@@ -106,6 +124,11 @@ function AiSettings({ settings, onSaved }: { settings: SettingsDTO; onSaved: (s:
             onChange={(e) => setAnthropicKey(e.target.value)}
           />
         </label>
+        {settings.anthropicKeySet && (
+          <button type="button" className="link" onClick={() => void removeKey('anthropicApiKey')}>
+            Remove Anthropic key
+          </button>
+        )}
         <button type="submit">Save AI settings</button>
         {message && <p className="ok">{message}</p>}
         {error && <p className="error">{error}</p>}

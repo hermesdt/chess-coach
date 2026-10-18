@@ -7,10 +7,14 @@ interface Props {
   /** Starts the job and returns its id, or null when there is nothing to analyse. */
   start: () => Promise<number | null>;
   onFinished?: () => void;
+  /** Disables the button from outside, for example while another job of the same kind runs. */
+  disabled?: boolean;
+  /** Called when this button's job starts and ends. */
+  onRunningChange?: (running: boolean) => void;
 }
 
 /** A button that starts an analysis job, shows its progress, and reports when it ends. */
-export function AnalyseButton({ label, runningLabel, start, onFinished }: Props) {
+export function AnalyseButton({ label, runningLabel, start, onFinished, disabled = false, onRunningChange }: Props) {
   const [jobId, setJobId] = useState<number | null>(null);
   const [startError, setStartError] = useState<string | null>(null);
   const [nothing, setNothing] = useState(false);
@@ -19,6 +23,10 @@ export function AnalyseButton({ label, runningLabel, start, onFinished }: Props)
 
   const finished = job?.status === 'done' || job?.status === 'error';
   const running = jobId !== null && !finished && !pollError;
+
+  useEffect(() => {
+    onRunningChange?.(running);
+  }, [running, onRunningChange]);
 
   useEffect(() => {
     if (job && finished && reported.current !== job.id) {
@@ -44,7 +52,7 @@ export function AnalyseButton({ label, runningLabel, start, onFinished }: Props)
 
   return (
     <div className="sync">
-      <button type="button" disabled={running} onClick={() => void click()}>
+      <button type="button" disabled={running || disabled} onClick={() => void click()}>
         {running ? runningLabel : label}
       </button>
       {running && job && (

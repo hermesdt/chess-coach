@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { Chessboard } from 'react-chessboard';
-import type { GameAnalysis, GameDetail, GameReviewNote } from '../../../shared/types';
+import type { GameAnalysis, GameDetail, GameReviewNote, ProviderId } from '../../../shared/types';
 import { api, type AnalysisResponse } from '../api';
 import { AnalyseButton } from '../components/AnalyseButton';
 import { CoachPanel } from '../components/CoachPanel';
 import { EvalGraph } from '../components/EvalGraph';
 import { KeyMoments } from '../components/KeyMoments';
 import { MoveList } from '../components/MoveList';
+import { noteIndexFor } from '../lib/coach-notes';
 import { formatDate } from '../lib/format';
 import { fenAt, navigate, type NavAction } from '../lib/navigator';
 
@@ -110,8 +111,18 @@ export function GameViewerPage() {
   const [notes, setNotes] = useState<GameReviewNote[]>([]);
   const [activeNote, setActiveNote] = useState(0);
   const [notesReload, setNotesReload] = useState(0);
-  const reloadNotes = useCallback(() => setNotesReload((n) => n + 1), []);
+  const [notesError, setNotesError] = useState<string | null>(null);
+  const select = useRef<{ provider: ProviderId | null; model: string | null } | null>(null);
+  const reloadNotes = useCallback((asked?: { provider: ProviderId | null; model: string | null }) => {
+    select.current = asked ?? null;
+    setNotesReload((n) => n + 1);
+  }, []);
   const isDone = analysis?.status === 'done';
+
+  useEffect(() => {
+    setNotes([]);
+    setNotesError(null);
+  }, [id]);
 
   useEffect(() => {
     if (!isDone || !/^\d+$/.test(id ?? '')) {
@@ -122,10 +133,16 @@ export function GameViewerPage() {
     api.getCoachNotes(Number(id)).then(
       (n) => {
         if (stale) return;
+        const asked = select.current;
+        select.current = null;
         setNotes(n);
-        setActiveNote(0);
+        setActiveNote(asked ? noteIndexFor(n, asked.provider, asked.model) : 0);
       },
-      () => {},
+      (e: Error) => {
+        if (stale) return;
+        setNotes([]);
+        setNotesError(e.message);
+      },
     );
     return () => {
       stale = true;
@@ -248,7 +265,7 @@ export function GameViewerPage() {
         </div>
         <MoveList moves={game.moves} currentPly={shownPly} onSelect={(p) => go({ goto: p })} analysis={done?.moves} />
       </div>
-      {done && <CoachPanel gameId={game.id} notes={notes} active={activeNote} onActive={setActiveNote} onChanged={reloadNotes} />}
+      {done && <CoachPanel key={game.id} gameId={game.id} notes={notes} active={activeNote} onActive={setActiveNote} onChanged={reloadNotes} error={notesError} />}
       {done && (
         <>
           <h2>Key moments</h2>
