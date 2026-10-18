@@ -21,6 +21,7 @@
 - Key moments: user blunders and mistakes, plus user moves tagged `missed_capture` or `missed_mate`; deduplicated by ply, ordered by win % lost descending, max 6.
 - `ANALYSIS_VERSION = 1` constant; stored with every analysis.
 - Analysis eligibility: `user_color IS NOT NULL` and the user made ≥ 6 moves. After a sync, queue the newest 50 eligible unanalysed games, newest first. One analysis worker job runs at a time; queued requests append to it.
+- Reuse M1 infrastructure: multi-statement writes go through `transaction(db, fn)` (SAVEPOINT-based, `server/db/db.ts`); background work goes through `runJob` (`server/jobs.ts`) — jobs interrupted by a restart are marked `error` at startup, so the analysis queue must re-derive pending work from `game_analysis` rows (status `pending`/`running` → re-queue on startup) rather than from job state. Mutating API routes require `Content-Type: application/json` (local-only guard middleware).
 - Engine integration tests run only when Stockfish is available (`describe.skipIf(!stockfishAvailable)`); all other tests use fakes.
 
 ## Review Focus

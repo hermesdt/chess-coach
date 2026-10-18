@@ -22,7 +22,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 
 | # | Milestone | Status | Plan |
 |---|-----------|--------|------|
-| M1 | Foundation + sync + games list/viewer | planned | `docs/superpowers/plans/2026-10-18-m1-foundation-sync.md` |
+| M1 | Foundation + sync + games list/viewer | done | `docs/superpowers/plans/2026-10-18-m1-foundation-sync.md` |
 | M2 | Engine analysis + review screen | planned | `docs/superpowers/plans/2026-10-18-m2-engine-analysis.md` |
 | M3 | SRS core + mistake cards + dashboard v1 | todo | — |
 | M4 | Openings: repertoires, validator, explorer, drill, leaks | todo | — |
@@ -35,3 +35,20 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 - 2026-10-18 — Design written. Stockfish 19 installed via Homebrew.
   Lichess export needs a personal token (anonymous returns 404).
 - 2026-10-18 — Owner asked for several AI providers. M5 now covers claude-cli, codex-cli, opencode-cli, openrouter, anthropic-api (no LiteLLM).
+- 2026-10-18 — **M1 done.** 99 tests. Smoke: chess.com sync of a public
+  account (822 games in ~10 s), incremental re-sync adds 0, viewer renders
+  (headless Chrome screenshots). Final review (opus) fixes applied: lichess
+  oldest-first sync, per-username start point, job recovery after restart,
+  one sync at a time, local-only Host/Content-Type guard, SAVEPOINT
+  `transaction()` helper.
+- M1 rulings (decisions taken without the owner; review these):
+  - Lichess `since` uses a 14-day overlap window (lichess filters by game
+    start time). Cost if wrong: a few seconds of extra download per sync.
+  - Lichess `clocks=true` (spec wins over the plan).
+  - Imported and synced copies of the same game are not deduplicated yet.
+    Revisit in M7 insights (risk: double counting).
+  - Large PGN imports run synchronously (UI blocks for very large files).
+  - Extra shared component `SyncButton`; chess.com fixture uses real 2024-01
+    data.
+- Known minor gaps carried forward: chess.com has no 429 retry; LIKE search
+  is case-insensitive for ASCII only; a cleared setting falls back to `.env`.
