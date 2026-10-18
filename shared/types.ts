@@ -23,3 +23,25 @@ export interface Job { id: number; kind: string; status: JobStatus; progress: nu
 export interface ImportPreviewItem { index: number; white: string; black: string; date: string | null; detectedColor: Color | null; skippedReason: string | null }
 export interface ImportRequest { pgn: string; colors?: (Color | null)[] } // colors[i] overrides detection for game i
 export interface ImportResult { inserted: number; duplicates: number; skipped: number }
+
+export type Classification = 'best' | 'good' | 'inaccuracy' | 'mistake' | 'blunder';
+export type Tag = 'hung_piece' | 'missed_capture' | 'missed_mate' | 'allowed_mate' | 'bad_trade'
+  | 'early_queen' | 'slow_development' | 'no_castle' | 'same_piece_twice';
+export interface EngineScore { cp: number | null; mate: number | null } // from side-to-move view; exactly one non-null
+export interface MoveAnalysis {
+  ply: number; san: string; uci: string; color: Color; fenBefore: string;
+  evalBefore: EngineScore; // side to move at fenBefore
+  evalAfter: EngineScore;  // side to move at fenAfter (the opponent)
+  bestUci: string; bestSan: string; pvSan: string[]; // engine best line from fenBefore, max 8 plies
+  winBefore: number; winAfter: number; winLoss: number; // mover's view
+  classification: Classification; tags: Tag[]; isUserMove: boolean;
+}
+export interface KeyMoment { ply: number; reason: Classification | Tag; winLoss: number }
+export interface GameAnalysis {
+  gameId: number; version: number; status: 'pending' | 'running' | 'done' | 'error'; error: string | null;
+  accuracyUser: number | null; accuracyOpp: number | null;
+  counts: { blunder: number; mistake: number; inaccuracy: number }; // user's moves only
+  moves: MoveAnalysis[]; keyMoments: KeyMoment[]; analysedAt: number | null;
+}
+// GameSummary gains (optional, filled by listGames when analysed):
+export interface AnalysisBadge { accuracyUser: number | null; blunders: number; mistakes: number; status: GameAnalysis['status'] }
