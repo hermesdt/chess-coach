@@ -763,7 +763,7 @@
            "children": [
             {
              "san": "Bd6",
-             "comment": "Black wants to trade your good bishop.",
+             "comment": "Black wants to trade your bishop.",
              "children": [
               {
                "san": "Bg3",
@@ -1252,24 +1252,10 @@
                  "level": 2,
                  "children": [
                   {
-                   "san": "Nf3",
-                   "comment": "Develop a knight and attack d4 again. If ...dxe3, Bxe3 hits the queen on b6.",
+                   "san": "exd4",
+                   "comment": "Retake with the pawn. Your queen on c1 guards b2, and your bishop keeps its diagonal.",
                    "level": 2,
-                   "children": [
-                    {
-                     "san": "dxe3",
-                     "comment": null,
-                     "level": 2,
-                     "children": [
-                      {
-                       "san": "Bxe3",
-                       "comment": "Retake and attack the queen on b6. Develop with tempo.",
-                       "level": 2,
-                       "children": []
-                      }
-                     ]
-                    }
-                   ]
+                   "children": []
                   }
                  ]
                 }
@@ -1367,7 +1353,7 @@
                  "children": [
                   {
                    "san": "Bf4",
-                   "comment": "Develop the bishop outside the pawn chain. It is free now, and it eyes the b8-h2 diagonal.",
+                   "comment": "Develop the bishop outside your pawns. It is free now, and it eyes the b8-h2 diagonal.",
                    "level": 2,
                    "children": [
                     {
@@ -1416,7 +1402,7 @@
          "children": [
           {
            "san": "e3",
-           "comment": "Guard d4 and keep things solid. Play Bf4 later, only when ...e5 is not a fork.",
+           "comment": "Guard d4 and keep things solid. Play Bf4 later, only when ...e5 would not hit both your d4 pawn and your bishop.",
            "level": 2,
            "children": [
             {

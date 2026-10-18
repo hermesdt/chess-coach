@@ -54,7 +54,7 @@
                "children": [
                 {
                  "san": "e6",
-                 "comment": "Now the bishop is outside your pawn chain. Close the centre and stay solid.",
+                 "comment": "Now the bishop is outside your pawns. Close the centre and stay solid.",
                  "children": [
                   {
                    "san": "Be2",
@@ -381,8 +381,8 @@
                    ],
                    "children": [
                     {
-                     "san": "Nf6",
-                     "comment": "Develop the knight and guard d5 a second time. Your centre pawn is safe.",
+                     "san": "Nxd4",
+                     "comment": "Take the free pawn. Their bishop on d3 blocks the queen, so nothing guards d4.",
                      "children": []
                     }
                    ]
@@ -1076,7 +1076,7 @@
                    "children": [
                     {
                      "san": "Qh4+",
-                     "comment": "Check! After they block, you take the e4 pawn with check.",
+                     "comment": "Check! They must block or move the king, and then you take the e4 pawn.",
                      "tags": [
                       "trap"
                      ],
@@ -1087,7 +1087,7 @@
                        "children": [
                         {
                          "san": "Qxe4+",
-                         "comment": "Take the pawn with check. You fork the king and the h1 rook.",
+                         "comment": "Take the pawn with check. You also attack the h1 rook.",
                          "children": []
                         }
                        ]
@@ -1100,6 +1100,18 @@
                         {
                          "san": "Qxe4+",
                          "comment": "Take the pawn with check. Their king has lost the right to castle.",
+                         "children": []
+                        }
+                       ]
+                      },
+                      {
+                       "san": "Kd2",
+                       "comment": null,
+                       "level": 2,
+                       "children": [
+                        {
+                         "san": "Qxe4",
+                         "comment": "Take the pawn. Their king is stuck in the middle and cannot castle.",
                          "children": []
                         }
                        ]
@@ -1426,7 +1438,7 @@
                "children": [
                 {
                  "san": "e6",
-                 "comment": "Solid. Build your pawn chain.",
+                 "comment": "Solid. Support your centre with pawns.",
                  "children": [
                   {
                    "san": "Be2",
