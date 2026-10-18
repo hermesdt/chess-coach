@@ -1,6 +1,118 @@
 import { type FormEvent, useEffect, useState } from 'react';
-import type { SettingsDTO, SettingsUpdate } from '../../../shared/types';
-import { api } from '../api';
+import { PROVIDER_IDS, type AiProviderSetting, type ProviderId, type SettingsDTO, type SettingsUpdate } from '../../../shared/types';
+import { api, type ProviderInfo, type ProviderTestResult } from '../api';
+
+function AiSettings({ settings, onSaved }: { settings: SettingsDTO; onSaved: (s: SettingsDTO) => void }) {
+  const [provider, setProvider] = useState<AiProviderSetting>(settings.aiProvider);
+  const [models, setModels] = useState<Record<ProviderId, string>>(
+    () => Object.fromEntries(PROVIDER_IDS.map((id) => [id, settings.aiModels[id] ?? ''])) as Record<ProviderId, string>,
+  );
+  const [openrouterKey, setOpenrouterKey] = useState('');
+  const [anthropicKey, setAnthropicKey] = useState('');
+  const [providers, setProviders] = useState<ProviderInfo[]>([]);
+  const [tests, setTests] = useState<Partial<Record<ProviderId, ProviderTestResult | 'running'>>>({});
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadProviders = () => {
+    api.listProviders().then(setProviders, (e: Error) => setError(e.message));
+  };
+  useEffect(loadProviders, []);
+
+  const save = async (e: FormEvent) => {
+    e.preventDefault();
+    setMessage(null);
+    setError(null);
+    const update: SettingsUpdate = { aiProvider: provider, aiModels: models };
+    if (openrouterKey !== '') update.openrouterApiKey = openrouterKey;
+    if (anthropicKey !== '') update.anthropicApiKey = anthropicKey;
+    try {
+      onSaved(await api.putSettings(update));
+      setOpenrouterKey('');
+      setAnthropicKey('');
+      setMessage('AI settings saved.');
+      loadProviders();
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  };
+
+  const test = async (id: ProviderId) => {
+    setTests((t) => ({ ...t, [id]: 'running' }));
+    try {
+      const result = await api.testProvider(id);
+      setTests((t) => ({ ...t, [id]: result }));
+    } catch (err) {
+      setTests((t) => ({ ...t, [id]: { ok: false, error: (err as Error).message } }));
+    }
+  };
+
+  return (
+    <>
+      <h2>AI coach</h2>
+      <ul className="ai-status">
+        {providers.map((p) => {
+          const t = tests[p.id];
+          return (
+            <li key={p.id}>
+              <strong>{p.label}</strong>
+              {p.ok ? <span className="ok">ready</span> : <span className="muted">not ready: {p.reason ?? 'unknown reason'}</span>}
+              <button type="button" disabled={t === 'running'} onClick={() => void test(p.id)}>
+                {t === 'running' ? 'Testing...' : 'Test'}
+              </button>
+              {t && t !== 'running' && (t.ok ? <span className="ok">OK in {t.ms} ms · {t.model}</span> : <span className="error">{t.error}</span>)}
+            </li>
+          );
+        })}
+      </ul>
+      <form className="form" onSubmit={(e) => void save(e)}>
+        <label>
+          Default provider
+          <select value={provider} onChange={(e) => setProvider(e.target.value as AiProviderSetting)}>
+            <option value="auto">auto (first one that is ready)</option>
+            <option value="none">none (AI off)</option>
+            {providers.map((p) => (
+              <option key={p.id} value={p.id}>{p.label}</option>
+            ))}
+          </select>
+        </label>
+        {providers.map((p) => (
+          <label key={p.id}>
+            {p.label} model
+            <input
+              value={models[p.id]}
+              placeholder="provider default"
+              onChange={(e) => setModels((m) => ({ ...m, [p.id]: e.target.value }))}
+            />
+          </label>
+        ))}
+        <label>
+          OpenRouter API key
+          <input
+            type="password"
+            autoComplete="off"
+            value={openrouterKey}
+            placeholder={settings.openrouterKeySet ? 'saved' : ''}
+            onChange={(e) => setOpenrouterKey(e.target.value)}
+          />
+        </label>
+        <label>
+          Anthropic API key
+          <input
+            type="password"
+            autoComplete="off"
+            value={anthropicKey}
+            placeholder={settings.anthropicKeySet ? 'saved' : ''}
+            onChange={(e) => setAnthropicKey(e.target.value)}
+          />
+        </label>
+        <button type="submit">Save AI settings</button>
+        {message && <p className="ok">{message}</p>}
+        {error && <p className="error">{error}</p>}
+      </form>
+    </>
+  );
+}
 
 export function SettingsPage() {
   const [settings, setSettings] = useState<SettingsDTO | null>(null);
@@ -94,6 +206,7 @@ export function SettingsPage() {
         {message && <p className="ok">{message}</p>}
         {error && <p className="error">{error}</p>}
       </form>
+      {settings && <AiSettings settings={settings} onSaved={setSettings} />}
     </section>
   );
 }

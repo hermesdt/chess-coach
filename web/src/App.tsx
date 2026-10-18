@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { NavLink, Route, Routes, useLocation } from 'react-router';
 import { api } from './api';
 import { REVIEW_FINISHED } from './lib/events';
+import { CoachPage } from './pages/CoachPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { GamesPage } from './pages/GamesPage';
 import { GameViewerPage } from './pages/GameViewerPage';
@@ -47,6 +48,7 @@ export function App() {
         <NavLink to="/games">Games</NavLink>
         <ReviewLink />
         <NavLink to="/openings">Openings</NavLink>
+        <NavLink to="/coach">Coach</NavLink>
         <NavLink to="/settings">Settings</NavLink>
       </nav>
       <main className="main">
@@ -56,6 +58,7 @@ export function App() {
           <Route path="/games/:id" element={<GameViewerPage />} />
           <Route path="/review" element={<ReviewPage />} />
           <Route path="/openings" element={<OpeningsPage />} />
+          <Route path="/coach" element={<CoachPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>

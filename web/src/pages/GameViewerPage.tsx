@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { Chessboard } from 'react-chessboard';
-import type { GameAnalysis, GameDetail } from '../../../shared/types';
+import type { GameAnalysis, GameDetail, GameReviewNote } from '../../../shared/types';
 import { api, type AnalysisResponse } from '../api';
 import { AnalyseButton } from '../components/AnalyseButton';
+import { CoachPanel } from '../components/CoachPanel';
 import { EvalGraph } from '../components/EvalGraph';
 import { KeyMoments } from '../components/KeyMoments';
 import { MoveList } from '../components/MoveList';
@@ -105,6 +106,31 @@ export function GameViewerPage() {
     const timer = setInterval(loadAnalysis, 2000);
     return () => clearInterval(timer);
   }, [inProgress, loadAnalysis]);
+
+  const [notes, setNotes] = useState<GameReviewNote[]>([]);
+  const [activeNote, setActiveNote] = useState(0);
+  const [notesReload, setNotesReload] = useState(0);
+  const reloadNotes = useCallback(() => setNotesReload((n) => n + 1), []);
+  const isDone = analysis?.status === 'done';
+
+  useEffect(() => {
+    if (!isDone || !/^\d+$/.test(id ?? '')) {
+      setNotes([]);
+      return;
+    }
+    let stale = false;
+    api.getCoachNotes(Number(id)).then(
+      (n) => {
+        if (stale) return;
+        setNotes(n);
+        setActiveNote(0);
+      },
+      () => {},
+    );
+    return () => {
+      stale = true;
+    };
+  }, [id, isDone, notesReload]);
 
   const maxPly = game?.moves.length ?? 0;
   const go = useCallback(
@@ -222,6 +248,7 @@ export function GameViewerPage() {
         </div>
         <MoveList moves={game.moves} currentPly={shownPly} onSelect={(p) => go({ goto: p })} analysis={done?.moves} />
       </div>
+      {done && <CoachPanel gameId={game.id} notes={notes} active={activeNote} onActive={setActiveNote} onChanged={reloadNotes} />}
       {done && (
         <>
           <h2>Key moments</h2>
@@ -231,7 +258,7 @@ export function GameViewerPage() {
               <span style={{ color: PLAYED_ARROW }}>Red arrow</span>: your move ({moment.san}).
             </p>
           )}
-          <KeyMoments moments={done.keyMoments} moves={done.moves} onSelect={selectMoment} />
+          <KeyMoments moments={done.keyMoments} moves={done.moves} onSelect={selectMoment} coach={notes[activeNote]?.review.moments} />
         </>
       )}
     </section>

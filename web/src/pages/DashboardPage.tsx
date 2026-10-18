@@ -65,7 +65,7 @@ export function DashboardPage() {
           {topTag ? (
             <>
               <p>{TAG_TEXT[topTag.tag]} — in {topTag.count} of your last {topTag.games} {plural(topTag.games, 'game')}</p>
-              <span className="muted">Lesson coming soon</span>
+              <Link to="/coach">See your coach report</Link>
             </>
           ) : (
             <p className="muted">Analyse a few games to see your main focus.</p>

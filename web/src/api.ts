@@ -8,6 +8,9 @@ import type {
   GameDetail,
   GameList,
   GameSummary,
+  GameReviewNote,
+  ProviderId,
+  WeaknessReportNote,
   GameListQuery,
   ImportPreviewItem,
   ImportRequest,
@@ -22,6 +25,16 @@ import type {
 } from '../../shared/types';
 
 export type AnalysisResponse = GameAnalysis | { status: 'none' } | { status: 'pending' | 'running' | 'error'; error?: string | null };
+
+export interface ProviderInfo {
+  id: ProviderId;
+  label: string;
+  ok: boolean;
+  reason: string | null;
+  model: string | null;
+}
+
+export type ProviderTestResult = { ok: true; model: string; ms: number } | { ok: false; error: string };
 
 export interface ReviewStats {
   dueNow: number;
@@ -94,6 +107,12 @@ export const api = {
   listOpenings: () => request<OpeningSummary[]>('/openings'),
   getOpening: (id: string) => request<OpeningDetail>(`/openings/${encodeURIComponent(id)}`),
   getOpeningLeaks: (id: string) => request<OpeningLeakGroup[]>(`/openings/${encodeURIComponent(id)}/leaks`),
+  listProviders: () => request<ProviderInfo[]>('/ai/providers'),
+  testProvider: (id: ProviderId) => post<ProviderTestResult>(`/ai/providers/${id}/test`),
+  getCoachNotes: (gameId: number) => request<GameReviewNote[]>(`/games/${gameId}/coach`),
+  coachGame: (gameId: number, provider?: ProviderId) => post<{ jobId: number }>(`/games/${gameId}/coach`, { provider }),
+  getWeakness: () => request<WeaknessReportNote | null>('/coach/weakness'),
+  makeWeakness: (provider?: ProviderId) => post<{ jobId: number }>('/coach/weakness', { provider }),
   importPgn: (pgn: string, colors?: (Color | null)[]) =>
     post<ImportResult>('/import', { pgn, colors } satisfies ImportRequest),
 };
