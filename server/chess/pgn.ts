@@ -9,6 +9,8 @@ export class PgnError extends Error {
   }
 }
 
+const TAG_LINE = /^\[\w+\s+"/;
+
 const normalise = (text: string): string => text.replace(/\r\n?/g, '\n');
 
 export function splitPgn(text: string): string[] {
@@ -23,7 +25,7 @@ export function splitPgn(text: string): string[] {
   };
   for (const line of normalise(text).split('\n')) {
     const trimmed = line.trim();
-    if (trimmed.startsWith('[')) {
+    if (TAG_LINE.test(trimmed)) {
       if (seenMoves) flush();
     } else if (trimmed) {
       seenMoves = true;
@@ -115,6 +117,8 @@ export function gameFromPgn(
   opts: { source: Source; sourceId?: string; usernames: (string | null)[]; userColor?: Color | null },
 ): NewGame | { skipped: string } {
   const text = normalise(pgn).trim();
+  const variant = /^\[Variant\s+"([^"]*)"\]/im.exec(text)?.[1];
+  if (variant && variant.toLowerCase() !== 'standard') return { skipped: 'non-standard variant' };
   let parsed: ReturnType<typeof parsePgn>;
   try {
     parsed = parsePgn(text);
@@ -122,7 +126,6 @@ export function gameFromPgn(
     return { skipped: `invalid PGN: ${e instanceof Error ? e.message : String(e)}` };
   }
   const { headers: h, moves } = parsed;
-  if (h.Variant && h.Variant.toLowerCase() !== 'standard') return { skipped: 'non-standard variant' };
 
   const white = h.White ?? '?';
   const black = h.Black ?? '?';

@@ -93,6 +93,10 @@ describe('gameFromPgn', () => {
   it('skips non-standard variants', () => {
     expect(gameFromPgn(games[3]!, base)).toEqual({ skipped: 'non-standard variant' });
   });
+  it('skips variants chess.js cannot parse as non-standard', () => {
+    const pgn = '[White "a"]\n[Black "b"]\n[Variant "Crazyhouse"]\n\n1. e4 d5 2. exd5 Qxd5 3. P@e5 *';
+    expect(gameFromPgn(pgn, base)).toEqual({ skipped: 'non-standard variant' });
+  });
   it('skips unparseable games with a reason', () => {
     const g = gameFromPgn('[White "a"]\n\n1. e4 e4 *', base);
     expect(g).toHaveProperty('skipped');
