@@ -108,3 +108,19 @@ button.big:hover:not(:disabled) { background: #0757b3; }
 .ai-status li { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
 .weakness { margin: 0 0 0.75rem; padding: 0.5rem 0.75rem; border: 1px solid #d0d7de; border-radius: 8px; }
 .weakness h3 { margin: 0 0 0.25rem; font-size: 1rem; }
+
+.course-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.course-item { display: flex; gap: 0.75rem; padding: 0.75rem 1rem; border: 1px solid #d0d7de; border-radius: 8px; }
+.course-item h2 { margin: 0 0 0.25rem; font-size: 1.1rem; }
+.course-item p { margin: 0.15rem 0; }
+.course-item.locked { opacity: 0.55; }
+.course-item.recommended { border-color: #1a7f37; background: #f0fff4; }
+.course-status { font-size: 1.25rem; width: 1.5rem; text-align: center; }
+.recommended-badge { margin-left: 0.5rem; background: #1a7f37; color: #fff; font-size: 0.75rem; }
+.lesson { display: flex; flex-direction: column; max-width: 40rem; }
+.lesson-body h3 { margin-bottom: 0.25rem; }
+.exercise .drill-board { max-width: 28rem; }
+.feedback.correct { color: #1a7f37; font-weight: 600; }
+.feedback.wrong { color: #cf222e; font-weight: 600; }
+.exercise-actions { display: flex; gap: 0.5rem; }
+.learn-link { display: block; margin: 0.15rem 0 0.4rem 0.5rem; }

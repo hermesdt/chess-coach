@@ -1,5 +1,7 @@
 import type {
   CardFlag,
+  CourseLesson,
+  CourseLessonDetail,
   Color,
   ReviewResult,
   ReviewSession,
@@ -113,6 +115,9 @@ export const api = {
   coachGame: (gameId: number, provider?: ProviderId) => post<{ jobId: number }>(`/games/${gameId}/coach`, { provider }),
   getWeakness: () => request<WeaknessReportNote | null>('/coach/weakness'),
   makeWeakness: (provider?: ProviderId) => post<{ jobId: number }>('/coach/weakness', { provider }),
+  listCourse: () => request<CourseLesson[]>('/course'),
+  getLesson: (id: string) => request<CourseLessonDetail>(`/course/${encodeURIComponent(id)}`),
+  completeLesson: (id: string) => post<{ created: number }>(`/course/${encodeURIComponent(id)}/complete`),
   importPgn: (pgn: string, colors?: (Color | null)[]) =>
     post<ImportResult>('/import', { pgn, colors } satisfies ImportRequest),
 };

@@ -14,7 +14,7 @@ export function courseRoutes(db: DatabaseSync, getLessons: () => Lesson[], now: 
   return new Hono()
     .get('/course', (c) => {
       const list: CourseLesson[] = getLessons().map((l) => ({
-        id: l.id, order: l.order, title: l.title, summary: l.summary, status: statusOf(l), exercises: l.exercises.length,
+        id: l.id, order: l.order, level: l.level, title: l.title, summary: l.summary, status: statusOf(l), exercises: l.exercises.length,
       }));
       return c.json(list);
     })

@@ -96,5 +96,5 @@ export interface Lesson {
   body: string; exercises: Exercise[]; links: { title: string; url: string }[];
 }
 export type LessonStatus = 'new' | 'done' | 'locked';
-export interface CourseLesson { id: string; order: number; title: string; summary: string; status: LessonStatus; exercises: number }
+export interface CourseLesson { id: string; order: number; level: 1 | 2 | 3; title: string; summary: string; status: LessonStatus; exercises: number }
 export type CourseLessonDetail = Lesson & { status: LessonStatus };

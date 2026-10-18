@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { LESSON_TITLES } from '../../../shared/lessons';
 import type { GameReviewMoment, KeyMoment, MoveAnalysis } from '../../../shared/types';
 import { momentLine } from '../lib/eval';
+import { lessonLink } from '../lib/lesson-links';
 
 interface Props {
   moments: KeyMoment[];
@@ -21,6 +22,8 @@ export function KeyMoments({ moments, moves, onSelect, coach = [] }: Props) {
         const m = moves[k.ply - 1];
         if (!m) return null;
         const ai = coach.find((c) => c.ply === k.ply);
+        const tag = m.isUserMove ? m.tags[0] : undefined;
+        const learn = tag ? lessonLink(tag) : null;
         return (
           <li key={k.ply}>
             <button type="button" onClick={() => onSelect(k.ply)}>
@@ -30,6 +33,7 @@ export function KeyMoments({ moments, moves, onSelect, coach = [] }: Props) {
                 Best: {m.bestSan} · lost {Math.round(k.winLoss)}%
               </span>
             </button>
+            {learn && <Link className="learn-link" to={learn.to}>Learn: {learn.title}</Link>}
             {ai && (
               <div className="coach-moment">
                 <p>{ai.whatHappened}</p>

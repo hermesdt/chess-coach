@@ -23,8 +23,8 @@ describe('GET /api/course', () => {
   it('lists lessons with status and exercise count; a lesson above the level is locked', async () => {
     const list = (await (await app.request('/api/course')).json()) as CourseLesson[];
     expect(list).toEqual([
-      { id: 'blunder-check', order: 1, title: 'Blunder check', summary: first.summary, status: 'new', exercises: 3 },
-      { id: 'free-material', order: 2, title: 'Free stuff', summary: first.summary, status: 'locked', exercises: 3 },
+      { id: 'blunder-check', order: 1, level: 1, title: 'Blunder check', summary: first.summary, status: 'new', exercises: 3 },
+      { id: 'free-material', order: 2, level: 2, title: 'Free stuff', summary: first.summary, status: 'locked', exercises: 3 },
     ]);
   });
 

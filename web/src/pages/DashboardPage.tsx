@@ -4,6 +4,7 @@ import { TAG_TEXT } from '../../../shared/tag-text';
 import { api, type DashboardData } from '../api';
 import { SyncButton } from '../components/SyncButton';
 import { formatDate } from '../lib/format';
+import { lessonLink } from '../lib/lesson-links';
 
 const plural = (n: number, word: string) => (n === 1 ? word : `${word}s`);
 const when = (ms: number | null) => (ms === null ? 'never' : new Date(ms).toLocaleString());
@@ -65,6 +66,7 @@ export function DashboardPage() {
           {topTag ? (
             <>
               <p>{TAG_TEXT[topTag.tag]} — in {topTag.count} of your last {topTag.games} {plural(topTag.games, 'game')}</p>
+              <p><Link to={lessonLink(topTag.tag).to}>Lesson: {lessonLink(topTag.tag).title}</Link></p>
               <Link to="/coach">See your coach report</Link>
             </>
           ) : (
