@@ -60,7 +60,7 @@
 
 ### Task 5: README + production run  *(model: haiku — documentation from the listed facts; reviewed by sonnet)*
 
-**Files:** Create `README.md`; Modify `package.json` if `start` needs `NODE_ENV=production`
+**Files:** Update the existing `README.md` (added in commit 409272d with an MIT LICENSE — keep both); Modify `package.json` if `start` needs `NODE_ENV=production`
 - [ ] Write README per Global Constraints. Verify `pnpm build && pnpm start` serves the app at `http://127.0.0.1:8787` (curl `/` and `/api/health`). Commit `docs: readme`.
 
 ### Task 6: Smoke run and close  *(main session)*

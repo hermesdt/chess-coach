@@ -25,7 +25,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M1 | Foundation + sync + games list/viewer | done | `docs/superpowers/plans/2026-10-18-m1-foundation-sync.md` |
 | M2 | Engine analysis + review screen + level | done | `docs/superpowers/plans/2026-10-18-m2-engine-analysis.md` |
 | M3 | SRS core + mistake cards + dashboard v1 | done | `docs/superpowers/plans/2026-10-18-m3-srs-mistake-cards.md` |
-| M4 | Openings: London, Caro-Kann, Slav/anti-London; validator, explorer, drill, leaks; levels | planned | `docs/superpowers/plans/2026-10-18-m4-openings.md` |
+| M4 | Openings: London, Caro-Kann, Slav/anti-London; validator, explorer, drill, leaks; levels | done | `docs/superpowers/plans/2026-10-18-m4-openings.md` |
 | M5 | AI coach (claude-cli, codex-cli, opencode-cli, openrouter, anthropic-api) | planned | `docs/superpowers/plans/2026-10-18-m5-ai-coach.md` |
 | M6 | Principles course (12 level-1 lessons) | planned | `docs/superpowers/plans/2026-10-18-m6-course.md` |
 | M7 | Insights + polish + README | planned | `docs/superpowers/plans/2026-10-18-m7-insights-polish.md` |
@@ -83,3 +83,18 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 - M3 rulings (review these): FSRS short-term steps off; card explanations use
   only material tags in severity order; DrillBoard always shows a promotion
   picker; per-level new-card mix deferred to M8.
+- 2026-10-18 — **M4 done.** 432 tests. Three repertoires, each written by an
+  agent, validated by Stockfish (1M nodes) and checked by a separate content
+  reviewer who replayed positions with chess.js: London (White, 131 moves),
+  Caro-Kann (vs 1.e4, 134), Slav + anti-London (vs 1.d4/1.c4/1.Nf3, 117);
+  about half at level 1. Opening cards join the daily review (repertoires
+  alternate; leak positions get priority). Leak detection against the owner's
+  games, Openings page with explorer, line drill and leaks. Content reviews
+  found and fixed ~30 false or misleading comments before merge.
+  Also fixed: Stockfish multipv line selection (affected M3 mistake-card answers).
+- M4 rulings (review these): opening cards alternate between repertoires;
+  leak positions become priority cards (up to 3 extra new cards per day);
+  only leaks from the last 30 days flag cards on the first scan; a content
+  change triggers a rescan without re-flagging old leaks.
+- Note: commit 409272d (README + MIT license) came from another session; M7
+  updates that README instead of creating one.
