@@ -6,10 +6,16 @@
   {
    "san": "e4",
    "comment": "White takes the centre. You answer with ...c6, a solid move that prepares ...d5.",
+   "tags": [
+    "main"
+   ],
    "children": [
     {
      "san": "c6",
      "comment": "This is the Caro-Kann. You get ...d5 next, with a safe king and no weak pawns.",
+     "tags": [
+      "main"
+     ],
      "children": [
       {
        "san": "d4",
@@ -34,7 +40,7 @@
            "children": [
             {
              "san": "Bf5",
-             "comment": "Bring the bishop out before ...e6 locks it in. This is the key Caro-Kann idea.",
+             "comment": "Bring the bishop out before you play ...e6. This is the key Caro-Kann idea.",
              "tags": [
               "main"
              ],
@@ -48,18 +54,18 @@
                "children": [
                 {
                  "san": "e6",
-                 "comment": "Now the bishop is outside your pawn chain. Close the centre and be solid.",
+                 "comment": "Now the bishop is outside your pawn chain. Close the centre and stay solid.",
                  "children": [
                   {
                    "san": "Be2",
                    "comment": null,
+                   "tags": [
+                    "main"
+                   ],
                    "children": [
                     {
                      "san": "c5",
-                     "comment": "Hit the centre. A pawn break like ...c5 is how you fight a space advantage.",
-                     "tags": [
-                      "main"
-                     ],
+                     "comment": "Hit the centre with a pawn. ...c5 attacks d4 and fights their space.",
                      "children": [
                       {
                        "san": "Be3",
@@ -75,7 +81,7 @@
                            "children": [
                             {
                              "san": "Ne7",
-                             "comment": "Develop and get ready to castle. Aim at the e5 pawn and the d4 knight.",
+                             "comment": "Develop and get ready to castle. The knight guards your bishop on f5 and can go to c6 next.",
                              "children": [
                               {
                                "san": "O-O",
@@ -85,7 +91,6 @@
                                 {
                                  "san": "Nbc6",
                                  "comment": "Hit the d4 knight. Now every piece fights for the centre.",
-                                 "level": 2,
                                  "children": []
                                 }
                                ]
@@ -95,6 +100,65 @@
                            ]
                           }
                          ]
+                        }
+                       ]
+                      },
+                      {
+                       "san": "dxc5",
+                       "comment": null,
+                       "level": 2,
+                       "children": [
+                        {
+                         "san": "Bxc5",
+                         "comment": "Take the pawn back and develop your dark bishop.",
+                         "children": []
+                        }
+                       ]
+                      }
+                     ]
+                    }
+                   ]
+                  },
+                  {
+                   "san": "Bd3",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "Bxd3",
+                     "comment": "Trade their active bishop. Then hit the centre with ...c5.",
+                     "children": [
+                      {
+                       "san": "Qxd3",
+                       "comment": null,
+                       "children": [
+                        {
+                         "san": "c5",
+                         "comment": "Hit the centre with a pawn. ...c5 attacks d4.",
+                         "children": []
+                        }
+                       ]
+                      }
+                     ]
+                    }
+                   ]
+                  },
+                  {
+                   "san": "c3",
+                   "comment": null,
+                   "level": 2,
+                   "children": [
+                    {
+                     "san": "c5",
+                     "comment": "Hit d4 at once. It holds their pawns together.",
+                     "children": [
+                      {
+                       "san": "Be2",
+                       "comment": null,
+                       "children": [
+                        {
+                         "san": "Nc6",
+                         "comment": "Develop and add a second attacker on d4.",
+                         "children": []
                         }
                        ]
                       }
@@ -119,23 +183,20 @@
                  "children": [
                   {
                    "san": "g4",
-                   "comment": "They attack your bishop.",
+                   "comment": null,
                    "level": 2,
                    "children": [
                     {
                      "san": "Bg6",
                      "comment": "Retreat to the safe square. The bishop is still active.",
-                     "level": 2,
                      "children": [
                       {
                        "san": "Nge2",
                        "comment": null,
-                       "level": 2,
                        "children": [
                         {
                          "san": "c5",
-                         "comment": "Break in the centre. Attack the base of their pawn chain.",
-                         "level": 2,
+                         "comment": "Hit d4. It holds their pawns together.",
                          "children": []
                         }
                        ]
@@ -151,17 +212,14 @@
               {
                "san": "Bd3",
                "comment": "They offer a bishop trade.",
-               "level": 2,
                "children": [
                 {
                  "san": "Bxd3",
-                 "comment": "Take it. Trade your good bishop for theirs and stay safe.",
-                 "level": 2,
+                 "comment": "Take it. Trade your active bishop for theirs and stay safe.",
                  "children": [
                   {
                    "san": "Qxd3",
                    "comment": null,
-                   "level": 2,
                    "children": [
                     {
                      "san": "e6",
@@ -183,17 +241,14 @@
                 {
                  "san": "Bg6",
                  "comment": "Just retreat. Pawns do not move back, so their weaknesses stay.",
-                 "level": 2,
                  "children": [
                   {
                    "san": "h4",
                    "comment": null,
-                   "level": 2,
                    "children": [
                     {
-                     "san": "h6",
-                     "comment": "Stop h5. If they push on, ...Bh7 is a safe square.",
-                     "level": 2,
+                     "san": "h5",
+                     "comment": "Hit the g4 pawn and stop h5. Your bishop keeps its square on g6.",
                      "children": []
                     }
                    ]
@@ -209,8 +264,7 @@
                "children": [
                 {
                  "san": "h5",
-                 "comment": "Stop their pawn. Your bishop stays safe.",
-                 "level": 2,
+                 "comment": "Stop White's h-pawn from reaching h5. Your bishop keeps the f5 square.",
                  "children": []
                 }
                ]
@@ -228,26 +282,29 @@
            "children": [
             {
              "san": "cxd5",
-             "comment": "Retake with the c-pawn to keep the centre pawn on d5.",
+             "comment": "Retake with the c-pawn to keep a pawn on d5.",
              "children": [
               {
                "san": "Bd3",
                "comment": null,
+               "tags": [
+                "main"
+               ],
                "children": [
                 {
                  "san": "Nc6",
-                 "comment": "Develop and guard d5. Develop fast: knights before bishops.",
-                 "tags": [
-                  "main"
-                 ],
+                 "comment": "Develop and hit d4. Knights before bishops.",
                  "children": [
                   {
                    "san": "c3",
                    "comment": null,
+                   "tags": [
+                    "main"
+                   ],
                    "children": [
                     {
                      "san": "Nf6",
-                     "comment": "Develop another piece. You hit e4 and control the centre.",
+                     "comment": "Develop another piece. You control e4 and the centre.",
                      "children": [
                       {
                        "san": "Bf4",
@@ -255,25 +312,24 @@
                        "children": [
                         {
                          "san": "Bg4",
-                         "comment": "Pin their knight and develop the bishop outside your pawns. Do it before ...e6.",
+                         "comment": "Attack the queen and develop the bishop outside your pawns. Do it before ...e6.",
                          "children": [
                           {
                            "san": "Qb3",
-                           "comment": "They hit your b7 pawn and d5.",
+                           "comment": "They hit your b7 and d5 pawns.",
+                           "level": 2,
                            "children": [
                             {
                              "san": "Qd7",
-                             "comment": "Guard b7 and keep d5 safe. Taking b7 would lose time and risk the queen.",
+                             "comment": "Guard b7 and keep d5 safe.",
                              "children": [
                               {
                                "san": "Nd2",
                                "comment": null,
-                               "level": 2,
                                "children": [
                                 {
                                  "san": "e6",
                                  "comment": "Open your dark bishop and guard d5. You are solid.",
-                                 "level": 2,
                                  "children": [
                                   {
                                    "san": "Ngf3",
@@ -282,8 +338,7 @@
                                    "children": [
                                     {
                                      "san": "Bd6",
-                                     "comment": "Trade the bishop on f4 if you can. Then castle.",
-                                     "level": 3,
+                                     "comment": "Hit the bishop on f4 and offer a trade. Then castle.",
                                      "children": []
                                     }
                                    ]
@@ -301,6 +356,88 @@
                        ]
                       }
                      ]
+                    }
+                   ]
+                  },
+                  {
+                   "san": "Nf3",
+                   "comment": null,
+                   "tags": [
+                    "sideline"
+                   ],
+                   "children": [
+                    {
+                     "san": "Bg4",
+                     "comment": "Develop the bishop outside your pawns and pressure the knight on f3.",
+                     "children": []
+                    }
+                   ]
+                  },
+                  {
+                   "san": "Nc3",
+                   "comment": null,
+                   "tags": [
+                    "sideline"
+                   ],
+                   "children": [
+                    {
+                     "san": "Nf6",
+                     "comment": "Develop the knight and guard d5 a second time. Your centre pawn is safe.",
+                     "children": []
+                    }
+                   ]
+                  }
+                 ]
+                }
+               ]
+              },
+              {
+               "san": "c3",
+               "comment": null,
+               "tags": [
+                "sideline"
+               ],
+               "children": [
+                {
+                 "san": "Nc6",
+                 "comment": "Develop and hit d4.",
+                 "children": [
+                  {
+                   "san": "Bd3",
+                   "comment": null,
+                   "level": 2,
+                   "children": [
+                    {
+                     "san": "Nf6",
+                     "comment": "Develop another piece. You control e4 and d5.",
+                     "children": []
+                    }
+                   ]
+                  }
+                 ]
+                }
+               ]
+              },
+              {
+               "san": "Nf3",
+               "comment": null,
+               "tags": [
+                "sideline"
+               ],
+               "children": [
+                {
+                 "san": "Nc6",
+                 "comment": "Develop and hit d4.",
+                 "children": [
+                  {
+                   "san": "Bb5",
+                   "comment": null,
+                   "children": [
+                    {
+                     "san": "Bd7",
+                     "comment": "Block the pin and develop.",
+                     "level": 2,
+                     "children": []
                     }
                    ]
                   }
@@ -322,13 +459,13 @@
                   {
                    "san": "Nc3",
                    "comment": null,
+                   "tags": [
+                    "main"
+                   ],
                    "children": [
                     {
                      "san": "e6",
-                     "comment": "Solid. You can take on d5 or play ...Bb4.",
-                     "tags": [
-                      "main"
-                     ],
+                     "comment": "Solid. It guards d5 again and opens your dark bishop.",
                      "children": [
                       {
                        "san": "Nf3",
@@ -336,8 +473,7 @@
                        "children": [
                         {
                          "san": "Bb4",
-                         "comment": "Pin the knight on c3. It cannot guard d4 and e4 well now.",
-                         "level": 2,
+                         "comment": "Pin the knight on c3. It cannot move freely, so White's push against d5 gets weaker.",
                          "children": [
                           {
                            "san": "cxd5",
@@ -347,27 +483,22 @@
                             {
                              "san": "Nxd5",
                              "comment": "Take back with the knight. It is a strong centre square.",
-                             "level": 2,
                              "children": [
                               {
                                "san": "Bd2",
                                "comment": null,
-                               "level": 2,
                                "children": [
                                 {
                                  "san": "Nc6",
                                  "comment": "Develop. You hit d4 and keep control.",
-                                 "level": 2,
                                  "children": [
                                   {
                                    "san": "Bd3",
                                    "comment": null,
-                                   "level": 2,
                                    "children": [
                                     {
                                      "san": "Nf6",
                                      "comment": "Retreat and develop. Next, castle.",
-                                     "level": 2,
                                      "children": [
                                       {
                                        "san": "O-O",
@@ -376,8 +507,7 @@
                                        "children": [
                                         {
                                          "san": "O-O",
-                                         "comment": "Castle and your king is safe. Equal game.",
-                                         "level": 3,
+                                         "comment": "Castle and your king is safe. The game is equal.",
                                          "children": []
                                         }
                                        ]
@@ -404,57 +534,25 @@
                   },
                   {
                    "san": "cxd5",
-                   "comment": "They trade in the centre.",
+                   "comment": null,
                    "level": 2,
                    "children": [
                     {
                      "san": "Nxd5",
                      "comment": "Take back with a developing move. Your knight sits in the centre.",
-                     "level": 2,
                      "children": [
                       {
                        "san": "Nc3",
                        "comment": null,
-                       "level": 2,
                        "children": [
                         {
                          "san": "Nc6",
                          "comment": "Develop and attack d4. Fight for the centre.",
-                         "level": 2,
                          "children": []
                         }
                        ]
                       }
                      ]
-                    }
-                   ]
-                  }
-                 ]
-                }
-               ]
-              },
-              {
-               "san": "Nf3",
-               "comment": null,
-               "tags": [
-                "sideline"
-               ],
-               "children": [
-                {
-                 "san": "Nc6",
-                 "comment": "Develop and hit d4.",
-                 "level": 2,
-                 "children": [
-                  {
-                   "san": "Bb5",
-                   "comment": null,
-                   "level": 2,
-                   "children": [
-                    {
-                     "san": "Bd7",
-                     "comment": "Break the pin and develop.",
-                     "level": 2,
-                     "children": []
                     }
                    ]
                   }
@@ -475,7 +573,7 @@
            "children": [
             {
              "san": "dxe4",
-             "comment": "Take the pawn. They must take back. You open the c8 bishop.",
+             "comment": "Take the pawn. You open the c8 bishop.",
              "children": [
               {
                "san": "Nxe4",
@@ -494,18 +592,24 @@
                   {
                    "san": "Ng3",
                    "comment": "They hit your bishop.",
+                   "tags": [
+                    "main"
+                   ],
                    "children": [
                     {
                      "san": "Bg6",
-                     "comment": "Keep the bishop. It stays on the good diagonal and watches the knight and the h-file.",
+                     "comment": "Keep the bishop. It stays on the long diagonal and keeps an eye on d3 and c2.",
                      "children": [
                       {
                        "san": "h4",
                        "comment": "They want h5 to trap the bishop.",
+                       "tags": [
+                        "main"
+                       ],
                        "children": [
                         {
                          "san": "h6",
-                         "comment": "Stop h5-h6 ideas. Now the bishop can retreat to h7 if they push.",
+                         "comment": "Make room: if h5 comes, your bishop goes to h7. Never leave a bishop without a retreat square.",
                          "children": [
                           {
                            "san": "Nf3",
@@ -513,15 +617,16 @@
                            "children": [
                             {
                              "san": "Nd7",
-                             "comment": "Develop and prepare ...Ngf6. Do not worry about the h-pawn yet.",
+                             "comment": "Develop and get ready for ...Ngf6 and ...e6.",
                              "children": [
                               {
                                "san": "h5",
                                "comment": null,
+                               "level": 2,
                                "children": [
                                 {
                                  "san": "Bh7",
-                                 "comment": "Retreat to h7. The bishop still eyes their bishop on d3.",
+                                 "comment": "Retreat to h7. The bishop keeps the long diagonal, so Bd3 will meet a trade.",
                                  "children": [
                                   {
                                    "san": "Bd3",
@@ -529,7 +634,7 @@
                                    "children": [
                                     {
                                      "san": "Bxd3",
-                                     "comment": "Trade their good bishop. Fewer pieces means less danger for you.",
+                                     "comment": "Trade their active bishop. Fewer pieces means less danger for you.",
                                      "children": [
                                       {
                                        "san": "Qxd3",
@@ -538,37 +643,31 @@
                                         {
                                          "san": "e6",
                                          "comment": "Open the way for your dark bishop and keep a solid centre.",
-                                         "level": 2,
                                          "children": [
                                           {
                                            "san": "Bf4",
                                            "comment": null,
-                                           "level": 2,
                                            "children": [
                                             {
                                              "san": "Ngf6",
-                                             "comment": "Develop the knight. You are ready to castle soon.",
-                                             "level": 2,
+                                             "comment": "Develop the knight. Next you bring out the last bishop and castle.",
                                              "children": [
                                               {
                                                "san": "O-O-O",
                                                "comment": null,
-                                               "level": 2,
+                                               "level": 3,
                                                "children": [
                                                 {
                                                  "san": "Be7",
-                                                 "comment": "Develop and get ready to castle. You are solid and have no weak points.",
-                                                 "level": 2,
+                                                 "comment": "Develop and get ready to castle. Your pawns are solid.",
                                                  "children": [
                                                   {
                                                    "san": "Kb1",
                                                    "comment": null,
-                                                   "level": 3,
                                                    "children": [
                                                     {
                                                      "san": "O-O",
-                                                     "comment": "King safe. Now play ...c5 or ...Qb6 to hit their centre.",
-                                                     "level": 3,
+                                                     "comment": "King safe. Now ...c5 attacks d4.",
                                                      "children": []
                                                     }
                                                    ]
@@ -611,7 +710,6 @@
                         {
                          "san": "e6",
                          "comment": "Solid. This blocks the bishop line to f7 and prepares ...Nf6.",
-                         "level": 2,
                          "children": [
                           {
                            "san": "N1e2",
@@ -620,8 +718,7 @@
                            "children": [
                             {
                              "san": "Nf6",
-                             "comment": "Develop with a plan to castle. Watch for Nxf6+ tricks, but you can recapture.",
-                             "level": 2,
+                             "comment": "Develop the knight and get ready to castle. Your centre is solid.",
                              "children": []
                             }
                            ]
@@ -633,12 +730,13 @@
                       {
                        "san": "Nf3",
                        "comment": "A calm developing move.",
-                       "level": 2,
+                       "tags": [
+                        "sideline"
+                       ],
                        "children": [
                         {
                          "san": "Nd7",
                          "comment": "Develop. You plan ...Ngf6 and ...e6, then castle.",
-                         "level": 2,
                          "children": [
                           {
                            "san": "h4",
@@ -647,8 +745,7 @@
                            "children": [
                             {
                              "san": "h6",
-                             "comment": "Do not let h5 trap your bishop. Make a hole at h7.",
-                             "level": 2,
+                             "comment": "Make room: if h5 comes, your bishop goes to h7. Never leave a bishop without a retreat square.",
                              "children": []
                             }
                            ]
@@ -664,22 +761,21 @@
                   {
                    "san": "Bd3",
                    "comment": "They offer a trade.",
-                   "level": 2,
+                   "tags": [
+                    "sideline"
+                   ],
                    "children": [
                     {
                      "san": "Bxe4",
                      "comment": "Take the knight first. After they take back, you hit their bishop with a developing move.",
-                     "level": 2,
                      "children": [
                       {
                        "san": "Bxe4",
                        "comment": null,
-                       "level": 2,
                        "children": [
                         {
                          "san": "Nf6",
                          "comment": "Hit the bishop and develop. You are fine.",
-                         "level": 2,
                          "children": []
                         }
                        ]
@@ -705,7 +801,7 @@
            "children": [
             {
              "san": "dxe4",
-             "comment": "Take it. They will take back.",
+             "comment": "Take the pawn. You open the c8 bishop.",
              "children": [
               {
                "san": "Nxe4",
@@ -724,18 +820,25 @@
                   {
                    "san": "Ng3",
                    "comment": "They hit your bishop.",
+                   "tags": [
+                    "main"
+                   ],
                    "children": [
                     {
                      "san": "Bg6",
-                     "comment": "Keep the bishop. It stays on the good diagonal and watches the knight and the h-file.",
+                     "comment": "Keep the bishop. It stays on the long diagonal and keeps an eye on d3 and c2.",
                      "children": [
                       {
                        "san": "h4",
                        "comment": "They want h5 to trap the bishop.",
+                       "tags": [
+                        "main"
+                       ],
+                       "level": 2,
                        "children": [
                         {
                          "san": "h6",
-                         "comment": "Stop h5-h6 ideas. Now the bishop can retreat to h7 if they push.",
+                         "comment": "Make room: if h5 comes, your bishop goes to h7. Never leave a bishop without a retreat square.",
                          "children": [
                           {
                            "san": "Nf3",
@@ -743,7 +846,7 @@
                            "children": [
                             {
                              "san": "Nd7",
-                             "comment": "Develop and prepare ...Ngf6. Do not worry about the h-pawn yet.",
+                             "comment": "Develop and get ready for ...Ngf6 and ...e6.",
                              "children": [
                               {
                                "san": "h5",
@@ -751,7 +854,7 @@
                                "children": [
                                 {
                                  "san": "Bh7",
-                                 "comment": "Retreat to h7. The bishop still eyes their bishop on d3.",
+                                 "comment": "Retreat to h7. The bishop keeps the long diagonal, so Bd3 will meet a trade.",
                                  "children": [
                                   {
                                    "san": "Bd3",
@@ -759,7 +862,7 @@
                                    "children": [
                                     {
                                      "san": "Bxd3",
-                                     "comment": "Trade their good bishop. Fewer pieces means less danger for you.",
+                                     "comment": "Trade their active bishop. Fewer pieces means less danger for you.",
                                      "children": [
                                       {
                                        "san": "Qxd3",
@@ -768,18 +871,40 @@
                                         {
                                          "san": "e6",
                                          "comment": "Open the way for your dark bishop and keep a solid centre.",
-                                         "level": 2,
                                          "children": [
                                           {
                                            "san": "Bf4",
                                            "comment": null,
-                                           "level": 2,
                                            "children": [
                                             {
                                              "san": "Ngf6",
-                                             "comment": "Develop the knight. You are ready to castle soon.",
-                                             "level": 2,
-                                             "children": []
+                                             "comment": "Develop the knight. Next you bring out the last bishop and castle.",
+                                             "children": [
+                                              {
+                                               "san": "O-O-O",
+                                               "comment": null,
+                                               "level": 3,
+                                               "children": [
+                                                {
+                                                 "san": "Be7",
+                                                 "comment": "Develop and get ready to castle. Your pawns are solid.",
+                                                 "children": [
+                                                  {
+                                                   "san": "Kb1",
+                                                   "comment": null,
+                                                   "children": [
+                                                    {
+                                                     "san": "O-O",
+                                                     "comment": "King safe. Now ...c5 attacks d4.",
+                                                     "children": []
+                                                    }
+                                                   ]
+                                                  }
+                                                 ]
+                                                }
+                                               ]
+                                              }
+                                             ]
                                             }
                                            ]
                                           }
@@ -809,21 +934,19 @@
                        "tags": [
                         "sideline"
                        ],
+                       "level": 2,
                        "children": [
                         {
                          "san": "e6",
                          "comment": "Solid. This blocks the bishop line to f7 and prepares ...Nf6.",
-                         "level": 2,
                          "children": [
                           {
                            "san": "N1e2",
                            "comment": null,
-                           "level": 2,
                            "children": [
                             {
                              "san": "Nf6",
-                             "comment": "Develop with a plan to castle. Watch for Nxf6+ tricks, but you can recapture.",
-                             "level": 2,
+                             "comment": "Develop the knight and get ready to castle. Your centre is solid.",
                              "children": []
                             }
                            ]
@@ -835,22 +958,22 @@
                       {
                        "san": "Nf3",
                        "comment": "A calm developing move.",
+                       "tags": [
+                        "sideline"
+                       ],
                        "level": 2,
                        "children": [
                         {
                          "san": "Nd7",
                          "comment": "Develop. You plan ...Ngf6 and ...e6, then castle.",
-                         "level": 2,
                          "children": [
                           {
                            "san": "h4",
                            "comment": null,
-                           "level": 2,
                            "children": [
                             {
                              "san": "h6",
-                             "comment": "Do not let h5 trap your bishop. Make a hole at h7.",
-                             "level": 2,
+                             "comment": "Make room: if h5 comes, your bishop goes to h7. Never leave a bishop without a retreat square.",
                              "children": []
                             }
                            ]
@@ -866,22 +989,22 @@
                   {
                    "san": "Bd3",
                    "comment": "They offer a trade.",
+                   "tags": [
+                    "sideline"
+                   ],
                    "level": 2,
                    "children": [
                     {
                      "san": "Bxe4",
                      "comment": "Take the knight first. After they take back, you hit their bishop with a developing move.",
-                     "level": 2,
                      "children": [
                       {
                        "san": "Bxe4",
                        "comment": null,
-                       "level": 2,
                        "children": [
                         {
                          "san": "Nf6",
                          "comment": "Hit the bishop and develop. You are fine.",
-                         "level": 2,
                          "children": []
                         }
                        ]
@@ -923,14 +1046,18 @@
                   {
                    "san": "Nf3",
                    "comment": null,
+                   "tags": [
+                    "main"
+                   ],
                    "children": [
                     {
                      "san": "Bg4",
-                     "comment": "Pin the knight and develop. Do not move the queen early.",
+                     "comment": "Pin the knight to the queen and develop. Do not move the queen early.",
                      "children": [
                       {
                        "san": "Bd3",
                        "comment": null,
+                       "level": 2,
                        "children": [
                         {
                          "san": "Nd7",
@@ -949,7 +1076,10 @@
                    "children": [
                     {
                      "san": "Qh4+",
-                     "comment": "Check! This wins the e4 pawn back with a good game.",
+                     "comment": "Check! After they block, you take the e4 pawn with check.",
+                     "tags": [
+                      "trap"
+                     ],
                      "children": [
                       {
                        "san": "g3",
@@ -957,7 +1087,19 @@
                        "children": [
                         {
                          "san": "Qxe4+",
-                         "comment": "Take the pawn with check. You fork king and rook.",
+                         "comment": "Take the pawn with check. You fork the king and the h1 rook.",
+                         "children": []
+                        }
+                       ]
+                      },
+                      {
+                       "san": "Ke2",
+                       "comment": null,
+                       "level": 2,
+                       "children": [
+                        {
+                         "san": "Qxe4+",
+                         "comment": "Take the pawn with check. Their king has lost the right to castle.",
                          "children": []
                         }
                        ]
@@ -983,7 +1125,7 @@
            "children": [
             {
              "san": "Bg4",
-             "comment": "Pin the knight and develop. You may have to trade.",
+             "comment": "Develop the bishop before ...e6. White may trade; that is fine.",
              "children": [
               {
                "san": "h3",
@@ -999,7 +1141,7 @@
                    "children": [
                     {
                      "san": "e6",
-                     "comment": "Solid and safe. You have the better structure.",
+                     "comment": "Solid and safe. Your pawns are healthy. Next play ...Nf6 and ...Nd7.",
                      "children": []
                     }
                    ]
@@ -1063,9 +1205,6 @@
             {
              "san": "Bg4",
              "comment": "Pin the knight before you play ...e6. Develop with a plan.",
-             "tags": [
-              "main"
-             ],
              "children": [
               {
                "san": "h3",
@@ -1089,7 +1228,8 @@
                        "children": [
                         {
                          "san": "Nf6",
-                         "comment": "Develop and hit e4. You are comfortable.",
+                         "comment": "Develop and attack e4. You are comfortable.",
+                         "level": 2,
                          "children": []
                         }
                        ]
@@ -1123,7 +1263,8 @@
                "children": [
                 {
                  "san": "Bf5",
-                 "comment": "Same key idea. Bring the bishop out before ...e6.",
+                 "comment": "Bring the bishop out before you play ...e6. This is the key Caro-Kann idea.",
+                 "level": 2,
                  "children": []
                 }
                ]
@@ -1138,6 +1279,7 @@
            "tags": [
             "sideline"
            ],
+           "level": 2,
            "children": [
             {
              "san": "cxd5",
@@ -1183,7 +1325,7 @@
        "children": [
         {
          "san": "d5",
-         "comment": "Take space in the centre. Take the centre while they are slow.",
+         "comment": "Take the centre while they are slow. Your pawn attacks e4.",
          "children": [
           {
            "san": "Nd2",
@@ -1195,6 +1337,7 @@
             {
              "san": "e5",
              "comment": "Now you have a big centre. Develop pieces and castle.",
+             "level": 2,
              "children": [
               {
                "san": "Ngf3",
@@ -1202,7 +1345,7 @@
                "children": [
                 {
                  "san": "Nd7",
-                 "comment": "Develop and guard e5. The c6 pawn blocks the other knight.",
+                 "comment": "Develop and guard e5. The c6 pawn takes the c6 square, so this knight goes to d7.",
                  "children": [
                   {
                    "san": "g3",
@@ -1232,7 +1375,7 @@
            "children": [
             {
              "san": "Bg4",
-             "comment": "Pin the knight and develop.",
+             "comment": "Pin the knight to the queen and develop.",
              "children": [
               {
                "san": "Be2",
@@ -1241,6 +1384,7 @@
                 {
                  "san": "e6",
                  "comment": "Solid. Next ...Nf6 and castle.",
+                 "level": 2,
                  "children": []
                 }
                ]
@@ -1270,10 +1414,11 @@
            "tags": [
             "sideline"
            ],
+           "level": 2,
            "children": [
             {
              "san": "Bg4",
-             "comment": "Pin the knight before you play ...e6. Your bishop is outside the chain.",
+             "comment": "Pin the knight to the queen before you play ...e6. Your bishop stays outside the chain.",
              "children": [
               {
                "san": "d4",
@@ -1308,6 +1453,7 @@
            "tags": [
             "sideline"
            ],
+           "level": 2,
            "children": [
             {
              "san": "cxd5",
@@ -1334,10 +1480,11 @@
            "tags": [
             "sideline"
            ],
+           "level": 2,
            "children": [
             {
              "san": "Bg4",
-             "comment": "Same pin. Develop the bishop before ...e6.",
+             "comment": "Develop the bishop before ...e6. White may trade; that is fine.",
              "children": [
               {
                "san": "Be2",
@@ -1368,9 +1515,6 @@
         {
          "san": "d5",
          "comment": "Hit the bishop and the centre. You gain time.",
-         "tags": [
-          "common-mistake"
-         ],
          "children": [
           {
            "san": "exd5",
@@ -1395,6 +1539,7 @@
                     {
                      "san": "e6",
                      "comment": "Solid. You keep a strong centre.",
+                     "level": 2,
                      "children": []
                     }
                    ]
@@ -1410,6 +1555,7 @@
                 {
                  "san": "Bd7",
                  "comment": "Block the check and offer a trade. Be careful with your king.",
+                 "level": 2,
                  "children": []
                 }
                ]
@@ -1431,8 +1577,9 @@
                "comment": null,
                "children": [
                 {
-                 "san": "e6",
-                 "comment": "Close the bishop line to f7 and develop. Keep your king safe.",
+                 "san": "Nf6",
+                 "comment": "Develop and guard your extra pawn on e4.",
+                 "level": 2,
                  "children": []
                 }
                ]
@@ -1454,7 +1601,7 @@
        "children": [
         {
          "san": "d5",
-         "comment": "Hit the centre. You develop faster.",
+         "comment": "Their queen is out early. Take the centre with ...d5 and develop with tempo.",
          "children": [
           {
            "san": "Nc3",
@@ -1462,7 +1609,43 @@
            "children": [
             {
              "san": "Nf6",
-             "comment": "Develop and hit e4. Do not worry about the queen.",
+             "comment": "Develop and hit e4. Their queen blocks f3, so the g1 knight has fewer good squares.",
+             "children": []
+            }
+           ]
+          },
+          {
+           "san": "exd5",
+           "comment": null,
+           "level": 2,
+           "children": [
+            {
+             "san": "cxd5",
+             "comment": "Retake and keep a pawn in the centre.",
+             "children": [
+              {
+               "san": "Bb5+",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Nc6",
+                 "comment": "Block the check with the knight and develop. Keep the queen at home.",
+                 "children": []
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "san": "d3",
+           "comment": null,
+           "level": 2,
+           "children": [
+            {
+             "san": "Nf6",
+             "comment": "Develop and attack e4. Your centre is solid.",
              "children": []
             }
            ]
@@ -1480,8 +1663,56 @@
        "children": [
         {
          "san": "d5",
-         "comment": "Take the centre. If they take on d5, retake with ...cxd5. Their queen will have to move again.",
-         "children": []
+         "comment": "Their queen is out early. Take the centre with ...d5, then hit the queen with ...Nf6.",
+         "children": [
+          {
+           "san": "Nc3",
+           "comment": null,
+           "children": [
+            {
+             "san": "Nf6",
+             "comment": "Hit the queen and develop. You gain time.",
+             "children": [
+              {
+               "san": "Qh4",
+               "comment": null,
+               "children": [
+                {
+                 "san": "dxe4",
+                 "comment": "Take on e4. Their queen attacks f6, but the e7 and g7 pawns guard that knight.",
+                 "children": []
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "san": "exd5",
+           "comment": null,
+           "level": 2,
+           "children": [
+            {
+             "san": "cxd5",
+             "comment": "Retake and keep a pawn in the centre.",
+             "children": [
+              {
+               "san": "Bb5+",
+               "comment": null,
+               "children": [
+                {
+                 "san": "Nc6",
+                 "comment": "Block the check with the knight and develop. Keep the queen at home.",
+                 "children": []
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
         }
        ]
       },
