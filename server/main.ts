@@ -3,7 +3,8 @@ import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { createApp } from './app.js';
 import { openDb } from './db/db.js';
-import { closeEnginePool } from './engine/pool.js';
+import { requeuePending } from './analysis/queue.js';
+import { closeEnginePool, lazyEnginePool } from './engine/pool.js';
 import { recoverInterruptedJobs } from './jobs.js';
 
 if (existsSync('.env')) process.loadEnvFile('.env');
@@ -11,6 +12,7 @@ if (existsSync('.env')) process.loadEnvFile('.env');
 mkdirSync('data', { recursive: true });
 const db = openDb('data/chess.db');
 recoverInterruptedJobs(db, Date.now());
+requeuePending(db, { pool: lazyEnginePool });
 const app = createApp({ db });
 
 if (existsSync('dist')) {

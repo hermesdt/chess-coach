@@ -1,5 +1,5 @@
 import type { DatabaseSync, SQLInputValue } from 'node:sqlite';
-import type { GameList, GameListQuery, GameSummary, NewGame, Source } from '../../shared/types.js';
+import type { AnalysisBadge, GameList, GameListQuery, GameSummary, NewGame, Source } from '../../shared/types.js';
 import { transaction } from './db.js';
 
 type Row = Record<string, unknown>;
@@ -23,6 +23,17 @@ function toSummary(r: Row): GameSummary {
     openingName: r.opening_name as string | null,
     url: r.url as string | null,
     plyCount: r.ply_count as number,
+    ...badge(r),
+  };
+}
+
+function badge(r: Row): { analysis?: AnalysisBadge } {
+  if (r.a_status === null || r.a_status === undefined) return {};
+  const status = r.a_status as AnalysisBadge['status'];
+  if (status !== 'done') return { analysis: { accuracyUser: null, blunders: 0, mistakes: 0, status } };
+  const counts = JSON.parse(String(r.a_counts)) as { blunder: number; mistake: number };
+  return {
+    analysis: { accuracyUser: (r.a_accuracy as number | null) ?? null, blunders: counts.blunder, mistakes: counts.mistake, status },
   };
 }
 
@@ -59,7 +70,11 @@ export function listGames(db: DatabaseSync, q: GameListQuery): GameList {
   const clause = where.length ? `WHERE ${where.join(' AND ')}` : '';
   const total = Number(db.prepare(`SELECT COUNT(*) AS n FROM games ${clause}`).get(...params)?.n ?? 0);
   const rows = db
-    .prepare(`SELECT * FROM games ${clause} ORDER BY played_at DESC, id DESC LIMIT ? OFFSET ?`)
+    .prepare(
+      `SELECT g.*, a.status AS a_status, a.accuracy_user AS a_accuracy, a.counts_json AS a_counts
+       FROM games g LEFT JOIN game_analysis a ON a.game_id = g.id
+       ${clause} ORDER BY g.played_at DESC, g.id DESC LIMIT ? OFFSET ?`,
+    )
     .all(...params, q.limit ?? 50, q.offset ?? 0);
   return { items: rows.map(toSummary), total };
 }

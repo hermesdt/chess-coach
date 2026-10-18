@@ -16,8 +16,8 @@ export interface MoveInfo { ply: number; san: string; uci: string; fenBefore: st
 export interface GameDetail extends GameSummary { pgn: string; startFen: string; moves: MoveInfo[] }
 export interface GameListQuery { source?: Source; color?: Color; result?: GameResult; q?: string; limit?: number; offset?: number }
 export interface GameList { items: GameSummary[]; total: number }
-export interface SettingsDTO { chesscomUsername: string | null; lichessUsername: string | null; lichessTokenSet: boolean; syncInitialMonths: number }
-export interface SettingsUpdate { chesscomUsername?: string; lichessUsername?: string; lichessToken?: string; syncInitialMonths?: number }
+export interface SettingsDTO { chesscomUsername: string | null; lichessUsername: string | null; lichessTokenSet: boolean; syncInitialMonths: number; engineNodes: number }
+export interface SettingsUpdate { chesscomUsername?: string; lichessUsername?: string; lichessToken?: string; syncInitialMonths?: number; engineNodes?: number }
 export type JobStatus = 'queued' | 'running' | 'done' | 'error';
 export interface Job { id: number; kind: string; status: JobStatus; progress: number; total: number | null; message: string | null; error: string | null; createdAt: number; finishedAt: number | null }
 export interface ImportPreviewItem { index: number; white: string; black: string; date: string | null; detectedColor: Color | null; skippedReason: string | null }

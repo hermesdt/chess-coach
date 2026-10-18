@@ -1,0 +1,107 @@
+import type { DatabaseSync } from 'node:sqlite';
+import type { GameDetail } from '../../shared/types.js';
+import { parsePgn } from '../chess/pgn.js';
+import { getSettings } from '../config.js';
+import { getGameRow } from '../db/games-repo.js';
+import type { EnginePool } from '../engine/pool.js';
+import { runJob } from '../jobs.js';
+import { currentLevel } from '../level.js';
+import { analyseGame } from './analyse-game.js';
+import { ANALYSIS_VERSION, markAnalysis, saveAnalysis } from './analysis-repo.js';
+
+export interface QueueDeps { pool: Pick<EnginePool, 'analyse'>; nodes?: number }
+
+interface ActiveRun { jobId: number; pending: number[]; seen: Set<number>; total: number }
+
+// One analysis job per database at a time. The queue lives in this process only.
+const active = new WeakMap<DatabaseSync, ActiveRun>();
+
+/** White needs ply_count >= 11 and Black >= 12 for at least 6 user moves. */
+const MIN_USER_MOVES = 6;
+export const minPlyCount = (color: 'white' | 'black'): number => MIN_USER_MOVES * 2 - (color === 'white' ? 1 : 0);
+
+export function eligibleUnanalysed(db: DatabaseSync, limit: number): number[] {
+  const rows = db.prepare(
+    `SELECT g.id FROM games g
+     LEFT JOIN game_analysis a ON a.game_id = g.id
+     WHERE g.user_color IS NOT NULL
+       AND g.ply_count >= CASE g.user_color WHEN 'white' THEN ? ELSE ? END
+       AND NOT (COALESCE(a.status, '') = 'done' AND COALESCE(a.version, -1) = ?)
+     ORDER BY g.played_at DESC, g.id DESC LIMIT ?`,
+  ).all(minPlyCount('white'), minPlyCount('black'), ANALYSIS_VERSION, limit);
+  return rows.map((r) => r.id as number);
+}
+
+function isCurrent(db: DatabaseSync, id: number): boolean {
+  const row = db.prepare('SELECT status, version FROM game_analysis WHERE game_id = ?').get(id);
+  return row !== undefined && row.status === 'done' && row.version === ANALYSIS_VERSION;
+}
+
+function loadGame(db: DatabaseSync, id: number): GameDetail {
+  const row = getGameRow(db, id);
+  if (!row) throw new Error(`Game ${id} not found`);
+  const { startFen, moves } = parsePgn(row.pgn);
+  return { ...row, startFen, moves };
+}
+
+async function analyseOne(db: DatabaseSync, id: number, deps: QueueDeps): Promise<void> {
+  try {
+    markAnalysis(db, id, 'running');
+    const game = loadGame(db, id);
+    const nodes = deps.nodes ?? getSettings(db).engineNodes;
+    const result = await analyseGame(game, deps.pool, { nodes, level: currentLevel(db).level });
+    saveAnalysis(db, { ...result, status: 'done', error: null });
+  } catch (e) {
+    markAnalysis(db, id, 'error', e instanceof Error ? e.message : String(e));
+  }
+}
+
+export function enqueueAnalysis(db: DatabaseSync, gameIds: number[], deps: QueueDeps): { jobId: number; queued: number } {
+  const run = active.get(db);
+  const fresh: number[] = [];
+  for (const id of gameIds) {
+    if (run?.seen.has(id) || fresh.includes(id) || isCurrent(db, id)) continue;
+    fresh.push(id);
+  }
+  for (const id of fresh) markAnalysis(db, id, 'pending');
+
+  if (run) {
+    for (const id of fresh) run.seen.add(id);
+    run.pending.push(...fresh);
+    run.total += fresh.length;
+    return { jobId: run.jobId, queued: fresh.length };
+  }
+
+  const state: ActiveRun = { jobId: 0, pending: [...fresh], seen: new Set(fresh), total: fresh.length };
+  active.set(db, state);
+  try {
+    const job = runJob(db, 'analysis', async (report) => {
+      let processed = 0;
+      try {
+        report(0, state.total, `Analysed 0 of ${state.total}`);
+        for (let id = state.pending.shift(); id !== undefined; id = state.pending.shift()) {
+          await analyseOne(db, id, deps);
+          processed += 1;
+          report(processed, state.total, `Analysed ${processed} of ${state.total}`);
+        }
+        return `Analysed ${processed} of ${state.total}`;
+      } finally {
+        active.delete(db);
+      }
+    });
+    state.jobId = job.id;
+    return { jobId: job.id, queued: fresh.length };
+  } catch (e) {
+    active.delete(db);
+    throw e;
+  }
+}
+
+/** Re-queues games whose analysis was interrupted by a restart. */
+export function requeuePending(db: DatabaseSync, deps: QueueDeps): { jobId: number; queued: number } | null {
+  const rows = db.prepare(
+    "SELECT game_id FROM game_analysis WHERE status IN ('pending', 'running') ORDER BY game_id",
+  ).all();
+  if (rows.length === 0) return null;
+  return enqueueAnalysis(db, rows.map((r) => r.game_id as number), deps);
+}

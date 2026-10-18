@@ -124,3 +124,8 @@ export async function closeEnginePool(): Promise<void> {
   singleton = null;
   await pool?.close();
 }
+
+/** Pool facade that creates the real engine pool on first use. */
+export const lazyEnginePool: Pick<EnginePool, 'analyse'> = {
+  analyse: (fen, opts) => getEnginePool().analyse(fen, opts),
+};

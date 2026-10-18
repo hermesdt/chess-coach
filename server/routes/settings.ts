@@ -5,8 +5,8 @@ import { getSettings } from '../config.js';
 import { setSetting } from '../db/settings-repo.js';
 
 function toDto(db: DatabaseSync): SettingsDTO {
-  const { chesscomUsername, lichessUsername, lichessTokenSet, syncInitialMonths } = getSettings(db);
-  return { chesscomUsername, lichessUsername, lichessTokenSet, syncInitialMonths };
+  const { chesscomUsername, lichessUsername, lichessTokenSet, syncInitialMonths, engineNodes } = getSettings(db);
+  return { chesscomUsername, lichessUsername, lichessTokenSet, syncInitialMonths, engineNodes };
 }
 
 const STRING_FIELDS = [
@@ -25,6 +25,10 @@ export function settingsRoutes(db: DatabaseSync): Hono {
       if (months !== undefined && !(Number.isInteger(months) && months >= 1 && months <= 120)) {
         return c.json({ error: 'syncInitialMonths must be an integer from 1 to 120' }, 400);
       }
+      const nodes = body.engineNodes;
+      if (nodes !== undefined && !(Number.isInteger(nodes) && nodes >= 10_000 && nodes <= 5_000_000)) {
+        return c.json({ error: 'engineNodes must be an integer from 10000 to 5000000' }, 400);
+      }
       for (const [field] of STRING_FIELDS) {
         if (body[field] !== undefined && typeof body[field] !== 'string') {
           return c.json({ error: `${field} must be a string` }, 400);
@@ -35,6 +39,7 @@ export function settingsRoutes(db: DatabaseSync): Hono {
         if (value !== undefined) setSetting(db, key, value.trim() === '' ? null : value.trim());
       }
       if (months !== undefined) setSetting(db, 'sync_initial_months', String(months));
+      if (nodes !== undefined) setSetting(db, 'engine_nodes', String(nodes));
       return c.json(toDto(db));
     });
 }

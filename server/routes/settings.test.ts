@@ -15,7 +15,7 @@ const put = (body: unknown) =>
 
 it('GET returns defaults', async () => {
   const res = await app.request('/api/settings');
-  expect(await res.json()).toEqual({ chesscomUsername: null, lichessUsername: null, lichessTokenSet: false, syncInitialMonths: 12 });
+  expect(await res.json()).toEqual({ chesscomUsername: null, lichessUsername: null, lichessTokenSet: false, syncInitialMonths: 12, engineNodes: 400000 });
 });
 
 it('PUT stores values and never leaks the token', async () => {
@@ -45,4 +45,21 @@ it('DB value wins over env', async () => {
   await put({ chesscomUsername: 'DbUser' });
   expect((await (await app.request('/api/settings')).json()).chesscomUsername).toBe('DbUser');
   delete process.env.CHESSCOM_USERNAME;
+});
+
+it('validates engineNodes', async () => {
+  expect((await put({ engineNodes: 9999 })).status).toBe(400);
+  expect((await put({ engineNodes: 5_000_001 })).status).toBe(400);
+  expect((await put({ engineNodes: 1000.5 })).status).toBe(400);
+  const res = await put({ engineNodes: 50_000 });
+  expect(res.status).toBe(200);
+  expect((await res.json()).engineNodes).toBe(50_000);
+});
+
+it('engineNodes falls back to ENGINE_NODES env, then ignores invalid env', async () => {
+  process.env.ENGINE_NODES = '123456';
+  expect((await (await app.request('/api/settings')).json()).engineNodes).toBe(123456);
+  process.env.ENGINE_NODES = 'abc';
+  expect((await (await app.request('/api/settings')).json()).engineNodes).toBe(400000);
+  delete process.env.ENGINE_NODES;
 });
