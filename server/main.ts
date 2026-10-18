@@ -1,0 +1,20 @@
+import { existsSync, mkdirSync } from 'node:fs';
+import { DatabaseSync } from 'node:sqlite';
+import { serve } from '@hono/node-server';
+import { serveStatic } from '@hono/node-server/serve-static';
+import { createApp } from './app.js';
+
+if (existsSync('.env')) process.loadEnvFile('.env');
+
+mkdirSync('data', { recursive: true });
+const db = new DatabaseSync('data/chess.db');
+const app = createApp({ db });
+
+if (existsSync('dist')) {
+  app.use('/*', serveStatic({ root: './dist' }));
+  app.get('*', serveStatic({ path: './dist/index.html' }));
+}
+
+serve({ fetch: app.fetch, hostname: '127.0.0.1', port: 8787 }, (info) => {
+  console.log(`chess-coach listening on http://127.0.0.1:${info.port}`);
+});
