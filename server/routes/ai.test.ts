@@ -113,3 +113,11 @@ it('settings: AI defaults, env keys, clearing and validation', async () => {
   await json('PUT', '/api/settings', { aiModels: { 'codex-cli': '' } });
   expect((await get()).aiModels['codex-cli']).toBeNull();
 });
+
+it('POST test does not redact very short key values', async () => {
+  await json('PUT', '/api/settings', { openrouterApiKey: 'ab' });
+  complete = async () => {
+    throw new Error('table is unavailable');
+  };
+  expect(await (await json('POST', '/api/ai/providers/openrouter/test')).json()).toEqual({ ok: false, error: 'table is unavailable' });
+});

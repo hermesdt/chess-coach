@@ -1,7 +1,7 @@
-import type { ProviderId } from '../../shared/types.js';
+import { PROVIDER_IDS, type ProviderId } from '../../shared/types.js';
 
+export { PROVIDER_IDS };
 export type { ProviderId };
-export const PROVIDER_IDS: readonly ProviderId[] = ['claude-cli', 'codex-cli', 'anthropic-api', 'openrouter', 'opencode-cli'];
 /** Order used by `auto`. */
 export const AUTO_ORDER = PROVIDER_IDS;
 

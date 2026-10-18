@@ -17,7 +17,9 @@ export interface GameDetail extends GameSummary { pgn: string; startFen: string;
 export interface GameListQuery { source?: Source; color?: Color; result?: GameResult; q?: string; limit?: number; offset?: number }
 export interface GameList { items: GameSummary[]; total: number }
 // M5: AI coach providers
-export type ProviderId = 'claude-cli' | 'codex-cli' | 'opencode-cli' | 'openrouter' | 'anthropic-api';
+/** Single source of truth for provider ids; the order is the `auto` order. */
+export const PROVIDER_IDS = ['claude-cli', 'codex-cli', 'anthropic-api', 'openrouter', 'opencode-cli'] as const;
+export type ProviderId = (typeof PROVIDER_IDS)[number];
 export type AiProviderSetting = 'auto' | ProviderId | 'none';
 export interface SettingsDTO { chesscomUsername: string | null; lichessUsername: string | null; lichessTokenSet: boolean; syncInitialMonths: number; engineNodes: number; reviewDailyLimit: number; reviewNewPerDay: number; aiProvider: AiProviderSetting; aiModels: Record<ProviderId, string | null>; openrouterKeySet: boolean; anthropicKeySet: boolean }
 export interface SettingsUpdate { chesscomUsername?: string; lichessUsername?: string; lichessToken?: string; syncInitialMonths?: number; engineNodes?: number; reviewDailyLimit?: number; reviewNewPerDay?: number; aiProvider?: AiProviderSetting; aiModels?: Partial<Record<ProviderId, string>>; openrouterApiKey?: string; anthropicApiKey?: string }
