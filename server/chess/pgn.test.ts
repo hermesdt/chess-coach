@@ -93,6 +93,13 @@ describe('gameFromPgn', () => {
   it('skips non-standard variants', () => {
     expect(gameFromPgn(games[3]!, base)).toEqual({ skipped: 'non-standard variant' });
   });
+  it('accepts From Position as standard chess from a custom FEN', () => {
+    const fen = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
+    const pgn = `[White "a"]\n[Black "b"]\n[Variant "From Position"]\n[FEN "${fen}"]\n[SetUp "1"]\n\n2. Nf3 Nc6 *`;
+    const g = gameFromPgn(pgn, base);
+    expect('skipped' in g).toBe(false);
+    expect((g as { plyCount: number }).plyCount).toBe(2);
+  });
   it('skips variants chess.js cannot parse as non-standard', () => {
     const pgn = '[White "a"]\n[Black "b"]\n[Variant "Crazyhouse"]\n\n1. e4 d5 2. exd5 Qxd5 3. P@e5 *';
     expect(gameFromPgn(pgn, base)).toEqual({ skipped: 'non-standard variant' });

@@ -1,7 +1,7 @@
 import type { DatabaseSync } from 'node:sqlite';
 import type { Source } from '../../shared/types.js';
 import { getSettings } from '../config.js';
-import { insertGames, latestPlayedAt } from '../db/games-repo.js';
+import { insertGames, latestPlayedAtFor } from '../db/games-repo.js';
 import type { Report } from '../jobs.js';
 import { fetchChesscomGames } from './chesscom.js';
 import { LichessTokenRequiredError, SyncError } from './errors.js';
@@ -19,6 +19,8 @@ export interface SyncDeps {
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+// lichess `since` filters by game start time, so re-read a window; the unique key drops duplicates.
+const LICHESS_OVERLAP_MS = 14 * DAY_MS;
 
 export function getLastSyncedAt(db: DatabaseSync, source: Source): number | null {
   const row = db.prepare('SELECT last_synced_at AS t FROM sync_state WHERE source = ?').get(source);
@@ -35,9 +37,10 @@ export async function syncAll(db: DatabaseSync, deps: SyncDeps, report: Report):
   const now = deps.now ?? Date.now;
   const settings = getSettings(db);
   const summary: SyncSummary = { chesscom: null, lichess: null, errors: [] };
-  const sinceFor = (source: Source): number => {
-    const latest = latestPlayedAt(db, source);
-    return latest !== null ? latest + 1 : now() - settings.syncInitialMonths * 30 * DAY_MS;
+  const sinceFor = (source: 'chesscom' | 'lichess', username: string): number => {
+    const latest = latestPlayedAtFor(db, source, username);
+    if (latest === null) return now() - settings.syncInitialMonths * 30 * DAY_MS;
+    return source === 'lichess' ? latest - LICHESS_OVERLAP_MS : latest + 1;
   };
 
   const sources: { key: 'chesscom' | 'lichess'; label: string; run: (username: string) => Promise<void> }[] = [];
@@ -54,7 +57,7 @@ export async function syncAll(db: DatabaseSync, deps: SyncDeps, report: Report):
       key: 'chesscom',
       label: 'chess.com',
       run: async (username) => {
-        await fetchChesscomGames(username, { sinceMs: sinceFor('chesscom'), fetchFn: deps.fetchFn, onMonth: store('chesscom') });
+        await fetchChesscomGames(username, { sinceMs: sinceFor('chesscom', username), fetchFn: deps.fetchFn, onMonth: store('chesscom') });
       },
     });
   }
@@ -64,7 +67,7 @@ export async function syncAll(db: DatabaseSync, deps: SyncDeps, report: Report):
       label: 'lichess',
       run: async (username) => {
         await fetchLichessGames(username, {
-          sinceMs: sinceFor('lichess'),
+          sinceMs: sinceFor('lichess', username),
           token: settings.lichessToken,
           fetchFn: deps.fetchFn,
           onBatch: store('lichess'),

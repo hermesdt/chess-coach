@@ -32,7 +32,7 @@ function timeClassOf(speed: string): TimeClass {
 }
 
 export function mapLichessGame(g: LichessGame, username: string): NewGame | null {
-  if (g.variant !== 'standard') return null;
+  if (g.variant !== 'standard' && g.variant !== 'fromPosition') return null;
   const parsed = gameFromPgn(g.pgn, { source: 'lichess', sourceId: g.id, usernames: [username] });
   if ('skipped' in parsed) return null;
   const is = (p: LichessPlayer) => p.user?.name.toLowerCase() === username.toLowerCase();
@@ -64,9 +64,10 @@ export async function fetchLichessGames(
   const fetchFn = opts.fetchFn ?? fetch;
   const query = new URLSearchParams({
     since: String(opts.sinceMs),
+    sort: 'dateAsc',
     pgnInJson: 'true',
     opening: 'true',
-    clocks: 'false',
+    clocks: 'true',
     evals: 'false',
   });
   const headers: Record<string, string> = { Accept: 'application/x-ndjson' };
@@ -81,6 +82,9 @@ export async function fetchLichessGames(
   if (res.status === 404) {
     if (!opts.token) throw new LichessTokenRequiredError();
     throw new SyncError('Lichess user not found');
+  }
+  if (res.status === 401 || res.status === 403) {
+    throw new SyncError('Lichess rejected the token. Create a new one in Settings.');
   }
   if (!res.ok) throw new SyncError(`lichess request failed with status ${res.status}`);
   if (!res.body) throw new SyncError('lichess response had no body');

@@ -118,7 +118,7 @@ export function gameFromPgn(
 ): NewGame | { skipped: string } {
   const text = normalise(pgn).trim();
   const variant = /^\[Variant\s+"([^"]*)"\]/im.exec(text)?.[1];
-  if (variant && variant.toLowerCase() !== 'standard') return { skipped: 'non-standard variant' };
+  if (variant && !['standard', 'from position'].includes(variant.toLowerCase())) return { skipped: 'non-standard variant' };
   let parsed: ReturnType<typeof parsePgn>;
   try {
     parsed = parsePgn(text);

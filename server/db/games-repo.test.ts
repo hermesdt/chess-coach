@@ -2,7 +2,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { NewGame } from '../../shared/types.js';
 import { openDb } from './db.js';
-import { getGameRow, insertGames, latestPlayedAt, listGames } from './games-repo.js';
+import { getGameRow, insertGames, latestPlayedAt, latestPlayedAtFor, listGames } from './games-repo.js';
 import { migrate } from './migrate.js';
 
 function game(over: Partial<NewGame>): NewGame {
@@ -54,6 +54,17 @@ describe('games repo', () => {
     insertGames(db, [game({ sourceId: 'a', playedAt: 1000 }), game({ sourceId: 'b', playedAt: 5000 }), game({ source: 'lichess', sourceId: 'c', playedAt: 9000 })]);
     expect(latestPlayedAt(db, 'chesscom')).toBe(5000);
     expect(latestPlayedAt(db, 'import')).toBeNull();
+  });
+
+  it('latestPlayedAtFor only counts games of that username, case-insensitively', () => {
+    insertGames(db, [
+      game({ sourceId: 'a', playedAt: 1000, white: 'Me', black: 'x' }),
+      game({ sourceId: 'b', playedAt: 4000, white: 'y', black: 'ME' }),
+      game({ sourceId: 'c', playedAt: 9000, white: 'y', black: 'z' }),
+    ]);
+    expect(latestPlayedAtFor(db, 'chesscom', 'me')).toBe(4000);
+    expect(latestPlayedAtFor(db, 'chesscom', 'nobody')).toBeNull();
+    expect(latestPlayedAtFor(db, 'lichess', 'me')).toBeNull();
   });
 
   it('migrate twice does not throw', () => {

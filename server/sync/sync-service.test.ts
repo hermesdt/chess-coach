@@ -11,6 +11,7 @@ const load = (name: string) => readFileSync(new URL(`./__fixtures__/${name}`, im
 const ARCHIVES = 'https://api.chess.com/pub/player/hikaru/games/archives';
 const MONTH_2023 = 'https://api.chess.com/pub/player/hikaru/games/2023/12';
 const MONTH_2024 = 'https://api.chess.com/pub/player/hikaru/games/2024/01';
+const JSON_HEADERS = { 'content-type': 'application/json' };
 const NOW = Date.UTC(2024, 1, 15);
 
 let db: ReturnType<typeof openDb>;
@@ -25,6 +26,7 @@ const fakeFetch = (async (input: string | URL | Request) => {
   return route ? route() : new Response('not found', { status: 404 });
 }) as typeof fetch;
 
+const DAY = 24 * 60 * 60 * 1000;
 const emptyMonth = () => new Response(JSON.stringify({ games: [] }));
 
 beforeEach(() => {
@@ -46,7 +48,7 @@ beforeEach(() => {
 const app = () => createApp({ db, fetchFn: fakeFetch, now: () => NOW });
 
 async function runSync(): Promise<Job> {
-  const res = await app().request('/api/sync', { method: 'POST' });
+  const res = await app().request('/api/sync', { method: 'POST', headers: JSON_HEADERS });
   const { jobId } = (await res.json()) as { jobId: number };
   return waitForJob(db, jobId, 5000);
 }
@@ -103,7 +105,7 @@ describe('sync', () => {
     expect(listGames(db, { source: 'chesscom' }).total).toBeGreaterThan(0);
   });
 
-  it('inserts nothing on the second run and sends since = latest + 1 to lichess', async () => {
+  it('inserts nothing on the second run and sends since = latest - 14 days to lichess', async () => {
     setSetting(db, 'chesscom_username', 'hikaru');
     setSetting(db, 'lichess_username', 'lance5500');
     const first = await runSync();
@@ -117,6 +119,31 @@ describe('sync', () => {
     expect(second.message).toContain('lichess: 0 new');
     expect(listGames(db, {}).total).toBe(total);
     const lichessUrl = calls.find((u) => u.startsWith('https://lichess.org/'))!;
-    expect(new URL(lichessUrl).searchParams.get('since')).toBe(String(latest + 1));
+    expect(new URL(lichessUrl).searchParams.get('since')).toBe(String(latest - 14 * DAY));
+    // chess.com: since = latest + 1 ms, so only months from the newest game on are fetched
+    expect(calls).not.toContain(MONTH_2023);
+    expect(calls).toContain(MONTH_2024);
+  });
+
+  it('starts from now - syncInitialMonths on the first sync', async () => {
+    setSetting(db, 'sync_initial_months', '1');
+    setSetting(db, 'chesscom_username', 'hikaru');
+    setSetting(db, 'lichess_username', 'lance5500');
+    await runSync();
+    const lichessUrl = calls.find((u) => u.startsWith('https://lichess.org/'))!;
+    expect(new URL(lichessUrl).searchParams.get('since')).toBe(String(NOW - 30 * DAY));
+    // 2024-01-16 is in 2024/01, so 2023/12 is not fetched
+    expect(calls).not.toContain(MONTH_2023);
+    expect(calls).toContain(MONTH_2024);
+  });
+
+  it('starts from the initial window again when the username changes', async () => {
+    setSetting(db, 'lichess_username', 'lance5500');
+    await runSync();
+    setSetting(db, 'lichess_username', 'someone-else');
+    calls = [];
+    await runSync();
+    const lichessUrl = calls.find((u) => u.startsWith('https://lichess.org/'))!;
+    expect(new URL(lichessUrl).searchParams.get('since')).toBe(String(NOW - 120 * 30 * DAY));
   });
 });

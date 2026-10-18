@@ -77,3 +77,10 @@ export function latestPlayedAt(db: DatabaseSync, source: Source): number | null 
   const row = db.prepare('SELECT MAX(played_at) AS m FROM games WHERE source = ?').get(source);
   return row && row.m !== null ? Number(row.m) : null;
 }
+
+export function latestPlayedAtFor(db: DatabaseSync, source: Source, username: string): number | null {
+  const row = db
+    .prepare('SELECT MAX(played_at) AS m FROM games WHERE source = ? AND (LOWER(white) = LOWER(?) OR LOWER(black) = LOWER(?))')
+    .get(source, username, username);
+  return row && row.m !== null ? Number(row.m) : null;
+}

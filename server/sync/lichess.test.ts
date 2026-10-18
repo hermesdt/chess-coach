@@ -60,6 +60,14 @@ describe('mapLichessGame', () => {
     expect(mapLichessGame(games[2]!, 'lance5500')).toBeNull();
   });
 
+  it('accepts fromPosition games as standard chess from a custom FEN', () => {
+    const fen = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
+    const pgn = `[Event "Casual"]\n[Result "1-0"]\n[Variant "From Position"]\n[FEN "${fen}"]\n[SetUp "1"]\n\n2. Nf3 Nc6 1-0`;
+    const g = mapLichessGame({ ...games[0]!, variant: 'fromPosition', pgn }, 'lance5500')!;
+    expect(g).not.toBeNull();
+    expect(g.plyCount).toBe(2);
+  });
+
   it('names anonymous and AI players', () => {
     const g: LichessGame = {
       ...games[0]!,
@@ -84,6 +92,8 @@ describe('fetchLichessGames', () => {
     expect(url.origin + url.pathname).toBe('https://lichess.org/api/games/user/Lance5500');
     expect(url.searchParams.get('since')).toBe('12345');
     expect(url.searchParams.get('pgnInJson')).toBe('true');
+    expect(url.searchParams.get('sort')).toBe('dateAsc');
+    expect(url.searchParams.get('clocks')).toBe('true');
     const h1 = calls[0]!.init?.headers as Record<string, string>;
     const h2 = calls[1]!.init?.headers as Record<string, string>;
     expect(h1.Accept).toBe('application/x-ndjson');
@@ -131,6 +141,15 @@ describe('fetchLichessGames', () => {
     const err = await fetchLichessGames('x', { sinceMs: 0, token: null, fetchFn }).catch((e: unknown) => e);
     expect(err).toBeInstanceOf(LichessTokenRequiredError);
     expect((err as Error).message).toContain('https://lichess.org/account/oauth/token');
+  });
+
+  it('throws a token error on 401 and 403', async () => {
+    for (const status of [401, 403]) {
+      const fetchFn = recordingFetch(() => new Response('', { status }));
+      const err = await fetchLichessGames('x', { sinceMs: 0, token: 't', fetchFn }).catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(SyncError);
+      expect((err as Error).message).toBe('Lichess rejected the token. Create a new one in Settings.');
+    }
   });
 
   it('throws "user not found" on 404 with a token', async () => {
