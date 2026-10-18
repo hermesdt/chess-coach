@@ -8,6 +8,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
+    "validate:content": "tsx scripts/validate-content.ts",
     "smoke:start": "bash scripts/smoke-server.sh",
     "smoke:stop": "bash scripts/smoke-stop.sh"
   },

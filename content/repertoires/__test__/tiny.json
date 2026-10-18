@@ -1,0 +1,2 @@
+{ "id": "tiny", "name": "Tiny Test", "color": "black",
+  "moves": [ { "san": "e4", "comment": null, "children": [ { "san": "e5", "comment": "Take the centre too.", "tags": ["main"], "children": [ { "san": "Nf3", "children": [ { "san": "Nc6", "comment": "Develop and guard e5." } ] } ] } ] } ] }
