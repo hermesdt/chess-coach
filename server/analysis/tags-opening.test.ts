@@ -47,6 +47,12 @@ describe('slow_development', () => {
     expect(plyOf(pgn, 'white', 'slow_development')).toEqual([]);
     expect(plyOf(pgn, 'black', 'slow_development')).toEqual([]);
   });
+  it('does not tag when exactly one minor is still at home', () => {
+    const pgn =
+      '1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. d3 d6 5. Be3 Be7 6. h3 h6 7. a3 a6 8. b3 b6 9. h4 h5 10. a4 a5';
+    expect(plyOf(pgn, 'white', 'slow_development')).toEqual([]);
+    expect(plyOf(pgn, 'black', 'slow_development')).toEqual([]);
+  });
   it('does not tag a game shorter than 10 moves', () => {
     expect(plyOf('1. e4 e5 2. d3 d6 3. a3 a6', 'white', 'slow_development')).toEqual([]);
   });
@@ -65,6 +71,15 @@ describe('no_castle', () => {
   it('does not tag a side that castled on move 12', () => {
     expect(plyOf(CASTLED_AT_12, 'white', 'no_castle')).toEqual([]);
     expect(plyOf(CASTLED_AT_12, 'black', 'no_castle')).toEqual([]);
+  });
+  it('tags a king on the e file that left its start square (Ke2)', () => {
+    const pgn = NOT_CASTLED.replace('12. a4 a5', '12. Ke2 a5');
+    expect(plyOf(pgn, 'white', 'no_castle')).toEqual([23]);
+  });
+  it('does not tag an uncastled king that walked to the g file', () => {
+    const pgn =
+      '1. e4 e5 2. Ke2 Nc6 3. Kf3 Nf6 4. Kg3 d6 5. a3 a6 6. a4 a5 7. h3 h6 8. h4 h5 9. b3 b6 10. c3 Rb8 11. d3 Bd7 12. Bd2 Qe7';
+    expect(plyOf(pgn, 'white', 'no_castle')).toEqual([]);
   });
   it('does not tag a side that castled early', () => {
     const pgn = '1. e4 e5 2. Bc4 Nf6 3. Qf3 Nc6 4. Nc3 Be7 5. d3 O-O';
@@ -95,6 +110,11 @@ describe('same_piece_twice', () => {
   });
   it('does not tag moving different pieces or pawns twice', () => {
     expect(plyOf('1. e4 e5 2. Nf3 Nc6 3. Nc3', 'white', 'same_piece_twice')).toEqual([]);
+  });
+  it('treats a piece captured on its square as gone, and a recapturing piece as new', () => {
+    const base = '1. Nf3 d5 2. e3 Bg4 3. h3 Bxf3 4. Qxf3 e6';
+    expect(plyOf(`${base} 5. Be2`, 'white', 'same_piece_twice')).toEqual([]);
+    expect(plyOf(`${base} 5. Qg3`, 'white', 'same_piece_twice')).toEqual([9]);
   });
   it('follows a piece by square: the g1 knight on f3 moved again', () => {
     expect(plyOf('1. Nf3 d5 2. e3 d4 3. Ne5', 'white', 'same_piece_twice')).toEqual([5]);

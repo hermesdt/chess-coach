@@ -41,21 +41,16 @@ export function openingTags(moves: MoveInfo[], userColor: Color): Map<number, Ta
   const userParity = userColor === 'white' ? 1 : 0;
 
   let userMoveNo = 0;
-  let castled = false;
   let queenTagged = false;
   let twiceTagged = false;
   const movedPieces = new Set<string>(); // squares of user's non-pawn, non-king pieces that have moved
 
   for (const move of moves) {
     const to = move.uci.slice(2, 4);
-    if (move.ply % 2 !== userParity) {
-      movedPieces.delete(to); // opponent captured a tracked piece
-      continue;
-    }
+    if (move.ply % 2 !== userParity) continue;
     userMoveNo += 1;
     const from = move.uci.slice(0, 2);
     const piece = new Chess(move.fenBefore).get(from as Parameters<Chess['get']>[0]);
-    if (move.san.startsWith('O-O')) castled = true;
 
     if (
       !queenTagged &&
@@ -86,10 +81,12 @@ export function openingTags(moves: MoveInfo[], userColor: Color): Map<number, Ta
 
     if (userMoveNo === 10 && minorsAtHome(move.fenAfter, userColor) >= 2) add(move.ply, 'slow_development');
 
-    if (userMoveNo === 12 && !castled) {
+    // A castled king stands on c/g, so the file check also rules out castled kings.
+    if (userMoveNo === 12) {
       const king = kingSquare(move.fenAfter, userColor);
       if (king && (king === KING_HOME[userColor] || king[0] === 'd' || king[0] === 'e')) add(move.ply, 'no_castle');
     }
+    if (userMoveNo === 12) break;
   }
   return result;
 }
