@@ -61,3 +61,16 @@ export interface ReviewSubmit { rating: Rating; answerUci: string | null; durati
 export interface ReviewResult { cardId: number; nextDue: number }
 export interface ReviewSession { cards: CardWithState[]; dueCount: number; newAvailable: number }
 export interface CardFlag { id: number; cardId: number; note: string; createdAt: number }
+
+export interface RepNodeDTO {
+  id: string; san: string; uci: string; comment: string | null; tags: string[];
+  level: 1 | 2 | 3; ply: number; mover: Color; fenAfter: string;
+  locked: boolean; // level is above the user's current level
+  children: RepNodeDTO[];
+}
+export interface OpeningSummary {
+  id: string; name: string; color: Color; nodeCount: number; cardCount: number;
+  stats: { games: number; win: number; draw: number; loss: number };
+}
+export interface OpeningDetail { id: string; name: string; color: Color; level: 1 | 2 | 3; roots: RepNodeDTO[] }
+export interface OpeningLeakGroup { nodeId: string; expectedSan: string; playedSan: string; count: number; gameIds: number[] }

@@ -11,6 +11,8 @@ import { closeEnginePool, lazyEnginePool } from './engine/pool.js';
 import { recoverInterruptedJobs } from './jobs.js';
 import { currentLevel } from './level.js';
 import { loadAllRepertoires } from './repertoire/load.js';
+import { scanLeaks } from './repertoire/leaks.js';
+import type { Repertoire } from './repertoire/types.js';
 import { syncOpeningCards } from './repertoire/opening-cards.js';
 
 if (existsSync('.env')) process.loadEnvFile('.env');
@@ -42,12 +44,15 @@ const server = serve(
     recoverInterruptedJobs(db, Date.now());
     requeuePending(db, { pool: lazyEnginePool });
     backfillMistakeCards(db, lazyEnginePool);
+    let repertoires: Repertoire[] = [];
     try {
-      syncOpeningCards(db, loadAllRepertoires(), currentLevel(db).level);
+      repertoires = loadAllRepertoires();
+      syncOpeningCards(db, repertoires, currentLevel(db).level);
+      scanLeaks(db, repertoires);
     } catch (err) {
-      console.error('opening card sync failed:', err);
+      console.error('opening card sync or leak scan failed:', err);
     }
-    const app = createApp({ db });
+    const app = createApp({ db, repertoires });
 
     if (existsSync('dist')) {
       app.use('/*', serveStatic({ root: './dist' }));

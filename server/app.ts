@@ -8,6 +8,9 @@ import { lazyEnginePool } from './engine/pool.js';
 import { healthRoutes } from './routes/health.js';
 import { importRoutes } from './routes/import.js';
 import { jobsRoutes } from './routes/jobs.js';
+import { openingsRoutes } from './routes/openings.js';
+import { loadAllRepertoires } from './repertoire/load.js';
+import type { Repertoire } from './repertoire/types.js';
 import { reviewRoutes } from './routes/review.js';
 import { settingsRoutes } from './routes/settings.js';
 import { syncRoutes } from './routes/sync.js';
@@ -18,6 +21,8 @@ export interface AppDeps {
   now?: () => number;
   /** Engine pool for analysis. Defaults to the shared Stockfish pool, created on first use. */
   pool?: Pick<EnginePool, 'analyse'>;
+  /** Repertoires for the openings API. Defaults to `content/repertoires`, loaded on first use. */
+  repertoires?: Repertoire[];
 }
 
 const LOCAL_HOST = /^(127\.0\.0\.1|localhost)(:\d+)?$/i;
@@ -37,15 +42,18 @@ const localOnly: MiddlewareHandler = async (c, next) => {
 export function createApp(deps: AppDeps): Hono {
   const app = new Hono();
   const pool = deps.pool ?? lazyEnginePool;
+  let reps = deps.repertoires;
+  const getReps = () => (reps ??= loadAllRepertoires());
   app.use('/api/*', localOnly);
   app.route('/api', healthRoutes);
   app.route('/api', settingsRoutes(deps.db));
-  app.route('/api', syncRoutes(deps.db, { fetchFn: deps.fetchFn, now: deps.now, pool }));
+  app.route('/api', syncRoutes(deps.db, { fetchFn: deps.fetchFn, now: deps.now, pool }, getReps));
   app.route('/api', jobsRoutes(deps.db));
   app.route('/api', gamesRoutes(deps.db));
   app.route('/api', importRoutes(deps.db));
   app.route('/api', analysisRoutes(deps.db, pool));
   app.route('/api', reviewRoutes(deps.db, deps.now ?? Date.now, pool));
+  app.route('/api', openingsRoutes(deps.db, getReps));
   app.route('/api', dashboardRoutes(deps.db, deps.now ?? Date.now));
   app.all('/api/*', (c) => c.json({ error: 'not found' }, 404));
   return app;
