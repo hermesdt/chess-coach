@@ -38,3 +38,6 @@ export class AiTimeoutError extends Error {
 export class AiProviderError extends Error {
   override name = 'AiProviderError';
 }
+export class AiRefusalError extends Error {
+  override name = 'AiRefusalError';
+}

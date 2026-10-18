@@ -1,0 +1,74 @@
+/**
+ * Anthropic API adapter (@anthropic-ai/sdk).
+ * Choice: `client.beta.messages.create` with `output_config.format = { type: 'json_schema', schema }`
+ * and the JSON text returned as-is. The caller gives a JSON schema (not zod), and the shared runner
+ * already extracts and validates the JSON. `messages.parse` + `zodOutputFormat` would need a zod
+ * schema we do not have here, and `parse` on the beta namespace adds nothing we use.
+ * Beta `server-side-fallback-2026-07-01` with `fallbacks: 'default'` re-runs a refused request
+ * on a fallback model server-side. The model default is claude-opus-5-5 at effort `low`.
+ * Never sent: `thinking` (always on for this model) and `budget_tokens`.
+ * `stop_reason` is checked before the content is read: refusal -> AiRefusalError, max_tokens -> AiProviderError.
+ */
+import Anthropic from '@anthropic-ai/sdk';
+import { redact } from '../redact.js';
+import { AiProviderError, AiRefusalError, AiTimeoutError, type AiProvider } from '../types.js';
+
+export const ANTHROPIC_DEFAULT_MODEL = 'claude-opus-5-5';
+const TIMEOUT_MS = 180_000;
+
+type ContentBlock = { type: string; text?: string };
+/** The slice of the SDK that this adapter uses. Tests inject a fake. */
+export interface AnthropicLike {
+  beta: {
+    messages: {
+      create(
+        params: Record<string, unknown>,
+        options?: { signal?: AbortSignal },
+      ): Promise<{ model?: string; stop_reason: string | null; content: ContentBlock[] }>;
+    };
+  };
+}
+
+export interface AnthropicApiDeps { getKey: () => string | null; client?: AnthropicLike }
+
+export function createAnthropicApi(deps: AnthropicApiDeps): AiProvider {
+  return {
+    id: 'anthropic-api',
+    label: 'Anthropic API',
+    async available() {
+      return deps.getKey() ? { ok: true } : { ok: false, reason: 'No Anthropic API key is set.' };
+    },
+    async complete(req, opts) {
+      const key = deps.getKey();
+      if (!key) throw new AiProviderError('No Anthropic API key is set.');
+      const client = deps.client ?? (new Anthropic({ apiKey: key, maxRetries: 1 }) as unknown as AnthropicLike);
+      const model = opts.model ?? ANTHROPIC_DEFAULT_MODEL;
+      const timeout = AbortSignal.timeout(TIMEOUT_MS);
+      let res: Awaited<ReturnType<AnthropicLike['beta']['messages']['create']>>;
+      try {
+        res = await client.beta.messages.create(
+          {
+            model,
+            max_tokens: 16000,
+            betas: ['server-side-fallback-2026-07-01'],
+            fallbacks: 'default',
+            cache_control: { type: 'ephemeral' },
+            system: req.system,
+            messages: [{ role: 'user', content: req.user }],
+            output_config: { effort: 'low', format: { type: 'json_schema', schema: req.jsonSchema } },
+          },
+          { signal: opts.signal ? AbortSignal.any([opts.signal, timeout]) : timeout },
+        );
+      } catch (e) {
+        if (e instanceof Error && (e.name === 'TimeoutError' || e.name === 'AbortError' || e.name === 'APIUserAbortError')) throw new AiTimeoutError('The Anthropic API did not answer in time.');
+        const status = e instanceof Anthropic.APIError && e.status ? ` ${e.status}` : '';
+        throw new AiProviderError(redact(`Anthropic API error${status}: ${e instanceof Error ? e.message : String(e)}`.slice(0, 500), key));
+      }
+      if (res.stop_reason === 'refusal') throw new AiRefusalError('The Anthropic API refused this request.');
+      if (res.stop_reason === 'max_tokens') throw new AiProviderError('The Anthropic API answer was cut off (max_tokens).');
+      const text = res.content.find((b) => b.type === 'text')?.text;
+      if (typeof text !== 'string' || text === '') throw new AiProviderError('The Anthropic API returned no text.');
+      return { text, model: res.model ?? model };
+    },
+  };
+}

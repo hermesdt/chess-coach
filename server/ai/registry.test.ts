@@ -47,7 +47,7 @@ describe('registry', () => {
     expect(await reg.pick('openrouter')).toBeNull();
   });
 
-  it('registers the three CLI adapters by default', () => {
-    expect(createRegistry({ db: openDb(':memory:') }).list().map((p) => p.id)).toEqual(['claude-cli', 'codex-cli', 'opencode-cli']);
+  it('registers all five adapters by default', () => {
+    expect(createRegistry({ db: openDb(':memory:') }).list().map((p) => p.id)).toEqual(['claude-cli', 'codex-cli', 'anthropic-api', 'openrouter', 'opencode-cli']);
   });
 });
