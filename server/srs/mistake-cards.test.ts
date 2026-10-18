@@ -3,16 +3,24 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import type { Classification, GameAnalysis, MoveAnalysis, Tag } from '../../shared/types.js';
 import { openDb } from '../db/db.js';
 import type { EngineLine } from '../engine/uci.js';
+import { winPct } from '../analysis/winpct.js';
 import { listCardsByRef } from './cards-repo.js';
 import { acceptedMoves, buildMistakeCards } from './mistake-cards.js';
 
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const PROMO_FEN = '4k3/4P3/8/8/8/8/8/4K3 w - - 0 1';
 
-/** Engine line whose side-to-move win % is `win`. Inverts winPct: cp = ln(w / (100 - w)) / k. */
-const line = (multipv: number, win: number, move: string): EngineLine => ({
-  multipv, score: { cp: Math.round(Math.log(win / (100 - win)) / 0.00368208), mate: null }, pv: [move],
-});
+/** Engine line whose side-to-move win % is close to `win`. Finds the cp by bisection on winPct. */
+const line = (multipv: number, win: number, move: string): EngineLine => {
+  let lo = -1000;
+  let hi = 1000;
+  while (hi - lo > 1) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (winPct({ cp: mid, mate: null }) < win) lo = mid;
+    else hi = mid;
+  }
+  return { multipv, score: { cp: hi, mate: null }, pv: [move] };
+};
 
 function move(over: Partial<MoveAnalysis> = {}): MoveAnalysis {
   return {
@@ -89,12 +97,44 @@ describe('buildMistakeCards', () => {
     await buildMistakeCards(db, analysis(1, [move()]), pool(three), { nodes: 10 });
     const res = await buildMistakeCards(db, analysis(1, [move({ classification: 'good' })]), pool(three), { nodes: 10 });
     expect(res).toEqual({ created: 0, updated: 0, suspended: 1 });
-    expect(listCardsByRef(db, 1)[0]?.suspended).toBe(true);
+    expect(db.prepare('SELECT suspended FROM cards').get()).toEqual({ suspended: 1 });
   });
 
   it('stores a promotion answer with the piece letter', async () => {
     const m = move({ fenBefore: PROMO_FEN, san: 'e8=N', uci: 'e7e8n' });
     await buildMistakeCards(db, analysis(1, [m]), pool([line(1, 90, 'e7e8q'), line(2, 20, 'e7e8n')]), { nodes: 10 });
     expect(listCardsByRef(db, 1)[0]?.solution).toMatchObject({ accepted: ['e7e8q'], best: 'e7e8q' });
+  });
+
+  const good = (ply = 1): MoveAnalysis => move({ ply, classification: 'good' });
+
+  it('suspends a two-game card once both games no longer have the mistake', async () => {
+    await buildMistakeCards(db, analysis(1, [move()]), pool(three), { nodes: 10 });
+    await buildMistakeCards(db, analysis(2, [move({ ply: 5 })]), pool(three), { nodes: 10 });
+    const r1 = await buildMistakeCards(db, analysis(1, [good()]), pool(three), { nodes: 10 });
+    expect(r1.suspended).toBe(0);
+    expect(listCardsByRef(db, 2)[0]).toMatchObject({ suspended: false, refs: [{ gameId: 2, ply: 5 }] });
+    const r2 = await buildMistakeCards(db, analysis(2, [good(5)]), pool(three), { nodes: 10 });
+    expect(r2.suspended).toBe(1);
+    const card = db.prepare('SELECT suspended, refs_json FROM cards').get() as { suspended: number; refs_json: string };
+    expect(card).toEqual({ suspended: 1, refs_json: '[]' });
+  });
+
+  it('keeps a two-game card active with one ref while the other game still has the mistake', async () => {
+    await buildMistakeCards(db, analysis(1, [move()]), pool(three), { nodes: 10 });
+    await buildMistakeCards(db, analysis(2, [move({ ply: 5 })]), pool(three), { nodes: 10 });
+    await buildMistakeCards(db, analysis(1, [good()]), pool(three), { nodes: 10 });
+    const card = listCardsByRef(db, 2)[0];
+    expect(card?.suspended).toBe(false);
+    expect(card?.refs).toEqual([{ gameId: 2, ply: 5 }]);
+  });
+
+  it('un-suspends a card when the mistake is found again', async () => {
+    await buildMistakeCards(db, analysis(1, [move()]), pool(three), { nodes: 10 });
+    await buildMistakeCards(db, analysis(1, [good()]), pool(three), { nodes: 10 });
+    expect(db.prepare('SELECT suspended FROM cards').get()).toEqual({ suspended: 1 });
+    const res = await buildMistakeCards(db, analysis(1, [move()]), pool(three), { nodes: 10 });
+    expect(res).toEqual({ created: 0, updated: 1, suspended: 0 });
+    expect(listCardsByRef(db, 1)[0]).toMatchObject({ suspended: false, refs: [{ gameId: 1, ply: 1 }] });
   });
 });

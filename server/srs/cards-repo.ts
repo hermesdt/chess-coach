@@ -88,6 +88,10 @@ export function setSuspended(db: DatabaseSync, id: number, suspended: boolean): 
   db.prepare('UPDATE cards SET suspended = ? WHERE id = ?').run(suspended ? 1 : 0, id);
 }
 
+export function setRefs(db: DatabaseSync, id: number, refs: CardRef[]): void {
+  db.prepare('UPDATE cards SET refs_json = ? WHERE id = ?').run(JSON.stringify(refs), id);
+}
+
 export function listCardsByRef(db: DatabaseSync, gameId: number): Card[] {
   return db.prepare('SELECT * FROM cards ORDER BY id').all()
     .map(toCard)

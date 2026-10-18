@@ -4,7 +4,7 @@ import { CLASSIFICATION_TEXT, TAG_TEXT } from '../../shared/tag-text.js';
 import { winPct } from '../analysis/winpct.js';
 import type { EnginePool } from '../engine/pool.js';
 import type { EngineLine } from '../engine/uci.js';
-import { listCardsByRef, positionKey, setSuspended, upsertCard } from './cards-repo.js';
+import { listCardsByRef, positionKey, setRefs, setSuspended, upsertCard } from './cards-repo.js';
 
 const MULTIPV = 3;
 const ACCEPT_WITHIN = 5;
@@ -63,11 +63,14 @@ export async function buildMistakeCards(
     result[existed ? 'updated' : 'created'] += 1;
   }
 
+  // Drop this game's refs that are no longer a blunder or mistake. An empty card is suspended.
   const current = new Set(mistakes.map((m) => m.ply));
   for (const card of listCardsByRef(db, analysis.gameId)) {
-    if (card.kind !== 'mistake' || card.suspended) continue;
-    const stale = card.refs.every((r) => r.gameId === analysis.gameId && !current.has(r.ply ?? -1));
-    if (stale) {
+    if (card.kind !== 'mistake') continue;
+    const refs = card.refs.filter((r) => r.gameId !== analysis.gameId || current.has(r.ply ?? -1));
+    if (refs.length === card.refs.length) continue;
+    setRefs(db, card.id, refs);
+    if (refs.length === 0 && !card.suspended) {
       setSuspended(db, card.id, true);
       result.suspended += 1;
     }
