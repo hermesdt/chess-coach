@@ -1,16 +1,8 @@
 import { NavLink, Route, Routes } from 'react-router';
 import { DashboardPage } from './pages/DashboardPage';
 import { GamesPage } from './pages/GamesPage';
+import { GameViewerPage } from './pages/GameViewerPage';
 import { SettingsPage } from './pages/SettingsPage';
-
-function Placeholder({ title }: { title: string }) {
-  return (
-    <section>
-      <h1>{title}</h1>
-      <p>Coming soon.</p>
-    </section>
-  );
-}
 
 export function App() {
   return (
@@ -24,7 +16,7 @@ export function App() {
         <Routes>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/games" element={<GamesPage />} />
-          <Route path="/games/:id" element={<Placeholder title="Game" />} />
+          <Route path="/games/:id" element={<GameViewerPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>
