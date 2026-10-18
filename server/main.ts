@@ -1,13 +1,13 @@
 import { existsSync, mkdirSync } from 'node:fs';
-import { DatabaseSync } from 'node:sqlite';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { createApp } from './app.js';
+import { openDb } from './db/db.js';
 
 if (existsSync('.env')) process.loadEnvFile('.env');
 
 mkdirSync('data', { recursive: true });
-const db = new DatabaseSync('data/chess.db');
+const db = openDb('data/chess.db');
 const app = createApp({ db });
 
 if (existsSync('dist')) {

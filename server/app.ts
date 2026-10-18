@@ -1,6 +1,7 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Hono } from 'hono';
 import { healthRoutes } from './routes/health.js';
+import { settingsRoutes } from './routes/settings.js';
 
 export interface AppDeps {
   db: DatabaseSync;
@@ -9,8 +10,8 @@ export interface AppDeps {
 }
 
 export function createApp(deps: AppDeps): Hono {
-  void deps; // db is used from Task 2 on
   const app = new Hono();
   app.route('/api', healthRoutes);
+  app.route('/api', settingsRoutes(deps.db));
   return app;
 }
