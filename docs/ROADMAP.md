@@ -23,7 +23,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | # | Milestone | Status | Plan |
 |---|-----------|--------|------|
 | M1 | Foundation + sync + games list/viewer | done | `docs/superpowers/plans/2026-10-18-m1-foundation-sync.md` |
-| M2 | Engine analysis + review screen + level | in progress | `docs/superpowers/plans/2026-10-18-m2-engine-analysis.md` |
+| M2 | Engine analysis + review screen + level | done | `docs/superpowers/plans/2026-10-18-m2-engine-analysis.md` |
 | M3 | SRS core + mistake cards + dashboard v1 | planned | `docs/superpowers/plans/2026-10-18-m3-srs-mistake-cards.md` |
 | M4 | Openings: London, Caro-Kann, Slav/anti-London; validator, explorer, drill, leaks; levels | planned | `docs/superpowers/plans/2026-10-18-m4-openings.md` |
 | M5 | AI coach (claude-cli, codex-cli, opencode-cli, openrouter, anthropic-api) | planned | `docs/superpowers/plans/2026-10-18-m5-ai-coach.md` |
@@ -54,3 +54,18 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 - Known minor gaps carried forward: chess.com has no 429 retry; LIKE search
   is case-insensitive for ASCII only; a cleared setting falls back to `.env`.
 - 2026-10-18 — Owner: the app should adapt as they improve; free choice of openings. Added spec §18 (levels 1–3 from rating; level-gated repertoire depth, lessons, key moments, AI tone) and the Slav/anti-London repertoire for Black vs 1.d4. M8 added for level 2–3 content.
+- 2026-10-18 — **M2 done.** 259 tests. Smoke: real sync → 50 newest games
+  auto-analysed in ~410 s (~8 s per long blitz game, 400k nodes, 8 engines),
+  0 errors; Légal's-mate test game classified correctly. Final review (opus)
+  fixes applied: no `hung_piece` on even trades, on-demand analysis jumps the
+  queue, key moments show human reasons (tags), key moments follow the
+  current level.
+- M2 rulings (review these):
+  - A move that allows a forced mate is always a blunder (lichess rule),
+    even when the win-% loss is below 30.
+  - Failed analyses are not retried automatically; the game page has "Try again".
+  - Key moments are recomputed at the current level when read.
+  - `bad_trade` may fire on an even trade when the eval still drops ≥ 1.5
+    (spec definition). Check tag precision on the owner's real games once
+    usernames are set.
+  - Settings UI for the engine budget comes in M7 (API setting exists).
