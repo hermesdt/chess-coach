@@ -24,7 +24,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 |---|-----------|--------|------|
 | M1 | Foundation + sync + games list/viewer | done | `docs/superpowers/plans/2026-10-18-m1-foundation-sync.md` |
 | M2 | Engine analysis + review screen + level | done | `docs/superpowers/plans/2026-10-18-m2-engine-analysis.md` |
-| M3 | SRS core + mistake cards + dashboard v1 | planned | `docs/superpowers/plans/2026-10-18-m3-srs-mistake-cards.md` |
+| M3 | SRS core + mistake cards + dashboard v1 | done | `docs/superpowers/plans/2026-10-18-m3-srs-mistake-cards.md` |
 | M4 | Openings: London, Caro-Kann, Slav/anti-London; validator, explorer, drill, leaks; levels | planned | `docs/superpowers/plans/2026-10-18-m4-openings.md` |
 | M5 | AI coach (claude-cli, codex-cli, opencode-cli, openrouter, anthropic-api) | planned | `docs/superpowers/plans/2026-10-18-m5-ai-coach.md` |
 | M6 | Principles course (12 level-1 lessons) | planned | `docs/superpowers/plans/2026-10-18-m6-course.md` |
@@ -69,3 +69,17 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
     (spec definition). Check tag precision on the owner's real games once
     usernames are set.
   - Settings UI for the engine budget comes in M7 (API setting exists).
+- 2026-10-18 — **M3 done.** 339 tests. Daily review with mistake cards from
+  the owner's games (FSRS, day intervals; Again cards repeat once at the end of
+  the session), dashboard v1 with level and level-up banner, card backfill for
+  older analyses. Final review fixes: session size drives "Start review",
+  tag severity order, promotion test.
+- 2026-10-18 — **Incident:** a controller smoke test deleted the owner's live
+  `data/chess.db` (shared path and port with the owner's `pnpm dev`). Data was
+  not recoverable; the owner must re-enter usernames/lichess token and re-sync.
+  Fixes: `CHESS_DB_PATH` / `PORT`, `pnpm smoke:start|stop` on a temp DB and
+  port 8788, port bound before any DB work, daily backups in `data/backups/`
+  (7 kept), safety rule in CLAUDE.md.
+- M3 rulings (review these): FSRS short-term steps off; card explanations use
+  only material tags in severity order; DrillBoard always shows a promotion
+  picker; per-level new-card mix deferred to M8.
