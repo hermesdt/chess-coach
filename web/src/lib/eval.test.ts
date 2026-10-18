@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { MoveAnalysis } from '../../../shared/types';
-import { glyph, reasonText, whiteWinSeries } from './eval';
+import { glyph, momentLine, momentText, reasonText, whiteWinSeries } from './eval';
 
 const move = (ply: number, winBefore: number, winAfter: number): MoveAnalysis =>
   ({ ply, color: ply % 2 === 1 ? 'white' : 'black', winBefore, winAfter }) as MoveAnalysis;
@@ -38,5 +38,31 @@ describe('glyph', () => {
     expect(glyph('inaccuracy')).toBe('?!');
     expect(glyph('good')).toBe('');
     expect(glyph('best')).toBe('');
+  });
+});
+
+describe('momentText', () => {
+  const tagged = (classification: MoveAnalysis['classification'], tags: MoveAnalysis['tags']) =>
+    ({ classification, tags }) as MoveAnalysis;
+
+  it('uses the classification as the title and every tag as a reason', () => {
+    expect(momentText(tagged('blunder', ['hung_piece', 'allowed_mate']))).toEqual({
+      title: 'Blunder',
+      reasons: ['You left a piece undefended', 'This allowed a checkmate'],
+    });
+    expect(momentLine(tagged('blunder', ['hung_piece']))).toBe('Blunder \u2014 You left a piece undefended');
+  });
+
+  it('shows the classification text only when there is no tag', () => {
+    expect(momentText(tagged('mistake', []))).toEqual({ title: 'Mistake', reasons: [] });
+    expect(momentLine(tagged('inaccuracy', []))).toBe('Inaccuracy');
+  });
+
+  it('promotes the first tag when the classification has no label', () => {
+    expect(momentText(tagged('good', ['missed_capture', 'missed_mate']))).toEqual({
+      title: 'You missed free material',
+      reasons: ['You missed a checkmate'],
+    });
+    expect(momentText(tagged('good', []))).toEqual({ title: 'Good', reasons: [] });
   });
 });

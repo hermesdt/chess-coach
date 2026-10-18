@@ -179,8 +179,12 @@ export function GameViewerPage() {
             <AnalyseButton
               label={analysis.status === 'error' ? 'Try again' : 'Analyse this game'}
               runningLabel="Analysing..."
-              start={async () => (await api.analyseGame(game.id)).jobId}
-              onFinished={loadAnalysis}
+              start={async () => {
+                const { jobId } = await api.analyseGame(game.id);
+                // Follow this game's own status with the page polling, not the whole job.
+                loadAnalysis();
+                return jobId;
+              }}
             />
           ) : (
             <p className="muted">Set your colour for this game to analyse it.</p>

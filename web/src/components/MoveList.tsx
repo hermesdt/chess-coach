@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { MoveAnalysis, MoveInfo } from '../../../shared/types';
-import { glyph } from '../lib/eval';
+import { glyph, momentLine } from '../lib/eval';
 
 interface Props {
   moves: MoveInfo[];
@@ -26,6 +26,7 @@ export function MoveList({ moves, currentPly, onSelect, analysis }: Props) {
         ref={move.ply === currentPly ? currentRef : undefined}
         className={move.ply === currentPly ? 'move current' : 'move'}
         onClick={() => onSelect(move.ply)}
+        title={a && a.isUserMove && (g || a.tags.length > 0) ? momentLine(a) : undefined}
       >
         {move.san}
         {g && <span className={`glyph ${a?.classification}`}>{g}</span>}

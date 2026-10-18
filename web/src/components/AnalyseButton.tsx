@@ -4,8 +4,8 @@ import { useJob } from '../hooks/useJob';
 interface Props {
   label: string;
   runningLabel: string;
-  /** Starts the job and returns its id. */
-  start: () => Promise<number>;
+  /** Starts the job and returns its id, or null when there is nothing to analyse. */
+  start: () => Promise<number | null>;
   onFinished?: () => void;
 }
 
@@ -13,6 +13,7 @@ interface Props {
 export function AnalyseButton({ label, runningLabel, start, onFinished }: Props) {
   const [jobId, setJobId] = useState<number | null>(null);
   const [startError, setStartError] = useState<string | null>(null);
+  const [nothing, setNothing] = useState(false);
   const { job, error: pollError } = useJob(jobId);
   const reported = useRef<number | null>(null);
 
@@ -28,8 +29,14 @@ export function AnalyseButton({ label, runningLabel, start, onFinished }: Props)
 
   const click = async () => {
     setStartError(null);
+    setNothing(false);
     try {
-      setJobId(await start());
+      const id = await start();
+      setJobId(id);
+      if (id === null) {
+        setNothing(true);
+        onFinished?.();
+      }
     } catch (e) {
       setStartError((e as Error).message);
     }
@@ -47,6 +54,7 @@ export function AnalyseButton({ label, runningLabel, start, onFinished }: Props)
       )}
       {job?.status === 'error' && <span className="error">{job.error ?? 'Analysis failed.'}</span>}
       {pollError && <span className="error">Lost contact with the server: {pollError}</span>}
+      {nothing && <span className="muted">Nothing to analyse</span>}
       {startError && <span className="error">{startError}</span>}
     </div>
   );

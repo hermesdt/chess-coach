@@ -1,5 +1,5 @@
 import type { KeyMoment, MoveAnalysis } from '../../../shared/types';
-import { reasonText } from '../lib/eval';
+import { momentLine } from '../lib/eval';
 
 interface Props {
   moments: KeyMoment[];
@@ -20,7 +20,7 @@ export function KeyMoments({ moments, moves, onSelect }: Props) {
           <li key={k.ply}>
             <button type="button" onClick={() => onSelect(k.ply)}>
               <strong>{moveLabel(m)}</strong>
-              <span>{reasonText(k.reason)}</span>
+              <span>{momentLine(m)}</span>
               <span className="muted">
                 Best: {m.bestSan} · lost {Math.round(k.winLoss)}%
               </span>
