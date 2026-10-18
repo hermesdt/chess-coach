@@ -1,6 +1,6 @@
-import { glyph } from '../lib/eval';
 import { useEffect, useRef } from 'react';
 import type { MoveAnalysis, MoveInfo } from '../../../shared/types';
+import { glyph } from '../lib/eval';
 
 interface Props {
   moves: MoveInfo[];

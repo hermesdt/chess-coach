@@ -45,6 +45,7 @@ export function GameViewerPage() {
   const [error, setError] = useState<string | null>(null);
   const [ply, setPly] = useState(0);
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [momentPly, setMomentPly] = useState<number | null>(null);
 
   useEffect(() => {
@@ -69,16 +70,41 @@ export function GameViewerPage() {
     };
   }, [id]);
 
-  const loadAnalysis = useCallback(() => {
-    if (!/^\d+$/.test(id ?? '')) return;
-    api.getAnalysis(Number(id)).then(setAnalysis, () => setAnalysis({ status: 'none' }));
-  }, [id]);
+  const [analysisReload, setAnalysisReload] = useState(0);
+  const loadAnalysis = useCallback(() => setAnalysisReload((n) => n + 1), []);
+  const analysisStatus = analysis && 'status' in analysis ? analysis.status : null;
+  const inProgress = analysisStatus === 'pending' || analysisStatus === 'running';
 
   useEffect(() => {
     setAnalysis(null);
+    setAnalysisError(null);
     setMomentPly(null);
-    loadAnalysis();
-  }, [loadAnalysis]);
+  }, [id]);
+
+  useEffect(() => {
+    if (!/^\d+$/.test(id ?? '')) return;
+    let stale = false;
+    api.getAnalysis(Number(id)).then(
+      (a) => {
+        if (stale) return;
+        setAnalysis(a);
+        setAnalysisError(null);
+      },
+      (e: Error) => {
+        if (!stale) setAnalysisError(e.message);
+      },
+    );
+    return () => {
+      stale = true;
+    };
+  }, [id, analysisReload]);
+
+  // Poll while the analysis is queued or running (for example queued from the Games page).
+  useEffect(() => {
+    if (!inProgress) return;
+    const timer = setInterval(loadAnalysis, 2000);
+    return () => clearInterval(timer);
+  }, [inProgress, loadAnalysis]);
 
   const maxPly = game?.moves.length ?? 0;
   const go = useCallback(
@@ -110,14 +136,16 @@ export function GameViewerPage() {
   const arrows = moment
     ? [
         { startSquare: moment.bestUci.slice(0, 2), endSquare: moment.bestUci.slice(2, 4), color: BEST_ARROW },
-        { startSquare: moment.uci.slice(0, 2), endSquare: moment.uci.slice(2, 4), color: PLAYED_ARROW },
+        ...(moment.uci === moment.bestUci
+          ? []
+          : [{ startSquare: moment.uci.slice(0, 2), endSquare: moment.uci.slice(2, 4), color: PLAYED_ARROW }]),
       ]
     : [];
   const selectMoment = (p: number) => {
     setPly(p - 1);
     setMomentPly(p);
   };
-  const last = shownPly > 0 ? game.moves[ply - 1] : null;
+  const last = shownPly > 0 ? game.moves[shownPly - 1] : null;
   const squareStyles = last
     ? { [last.uci.slice(0, 2)]: HIGHLIGHT, [last.uci.slice(2, 4)]: HIGHLIGHT }
     : {};
@@ -140,9 +168,11 @@ export function GameViewerPage() {
           </>
         )}
       </p>
-      {analysis && analysis.status !== 'done' && (
+      {analysisError && <p className="error">Could not load the analysis: {analysisError}</p>}
+      {inProgress && <p className="muted">Analysis in progress...</p>}
+      {analysis && !inProgress && analysis.status !== 'done' && (
         <div className="analysis-box">
-          {(analysis.status === 'error') && (
+          {analysis.status === 'error' && (
             <p className="error">Analysis failed{'error' in analysis && analysis.error ? `: ${analysis.error}` : '.'}</p>
           )}
           {game.userColor ? (

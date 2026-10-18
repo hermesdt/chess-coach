@@ -13,7 +13,7 @@ const PAD_L = 28;
 const PAD_R = 6;
 const PAD_Y = 6;
 
-const DOT_COLOR = { blunder: '#cf222e', mistake: '#eb6834' } as const;
+const DOT_COLOR = { blunder: '#cf222e', mistake: '#d4560b' } as const;
 
 /** White's win % over the game. Light area = White's share, dark area = Black's share. */
 export function EvalGraph({ moves, currentPly, onSelect }: Props) {
@@ -67,7 +67,6 @@ export function EvalGraph({ moves, currentPly, onSelect }: Props) {
             fill={DOT_COLOR[m.classification]}
             stroke="#fcfcfb"
             strokeWidth={2}
-           
           >
             <title>{`${Math.ceil(m.ply / 2)}${m.color === 'white' ? '.' : '...'} ${m.san} (${m.classification})`}</title>
           </circle>

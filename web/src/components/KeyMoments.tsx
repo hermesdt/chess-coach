@@ -1,15 +1,10 @@
 import type { KeyMoment, MoveAnalysis } from '../../../shared/types';
-import { CLASSIFICATION_TEXT, TAG_TEXT } from '../../../shared/tag-text';
-import type { Classification, Tag } from '../../../shared/types';
+import { reasonText } from '../lib/eval';
 
 interface Props {
   moments: KeyMoment[];
   moves: MoveAnalysis[];
   onSelect: (ply: number) => void;
-}
-
-export function reasonText(reason: Classification | Tag): string {
-  return (TAG_TEXT as Record<string, string>)[reason] ?? CLASSIFICATION_TEXT[reason as Classification] ?? reason;
 }
 
 const moveLabel = (m: MoveAnalysis) => `${Math.ceil(m.ply / 2)}${m.color === 'white' ? '.' : '...'} ${m.san}`;
