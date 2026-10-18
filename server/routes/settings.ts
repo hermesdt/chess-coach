@@ -1,19 +1,33 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Hono } from 'hono';
 import type { SettingsDTO, SettingsUpdate } from '../../shared/types.js';
-import { getSettings } from '../config.js';
+import { PROVIDER_IDS } from '../ai/types.js';
+import { getSettings, isAiProviderSetting } from '../config.js';
 import { setSetting } from '../db/settings-repo.js';
 
 function toDto(db: DatabaseSync): SettingsDTO {
-  const { chesscomUsername, lichessUsername, lichessTokenSet, syncInitialMonths, engineNodes, reviewDailyLimit, reviewNewPerDay } =
-    getSettings(db);
-  return { chesscomUsername, lichessUsername, lichessTokenSet, syncInitialMonths, engineNodes, reviewDailyLimit, reviewNewPerDay };
+  const s = getSettings(db);
+  return {
+    chesscomUsername: s.chesscomUsername,
+    lichessUsername: s.lichessUsername,
+    lichessTokenSet: s.lichessTokenSet,
+    syncInitialMonths: s.syncInitialMonths,
+    engineNodes: s.engineNodes,
+    reviewDailyLimit: s.reviewDailyLimit,
+    reviewNewPerDay: s.reviewNewPerDay,
+    aiProvider: s.aiProvider,
+    aiModels: s.aiModels,
+    openrouterKeySet: s.openrouterKeySet,
+    anthropicKeySet: s.anthropicKeySet,
+  };
 }
 
 const STRING_FIELDS = [
   ['chesscomUsername', 'chesscom_username'],
   ['lichessUsername', 'lichess_username'],
   ['lichessToken', 'lichess_token'],
+  ['openrouterApiKey', 'openrouter_api_key'],
+  ['anthropicApiKey', 'anthropic_api_key'],
 ] as const;
 
 export function settingsRoutes(db: DatabaseSync): Hono {
@@ -38,6 +52,17 @@ export function settingsRoutes(db: DatabaseSync): Hono {
       if (newPerDay !== undefined && !(Number.isInteger(newPerDay) && newPerDay >= 0 && newPerDay <= 100)) {
         return c.json({ error: 'reviewNewPerDay must be an integer from 0 to 100' }, 400);
       }
+      if (body.aiProvider !== undefined && !isAiProviderSetting(body.aiProvider)) {
+        return c.json({ error: 'aiProvider must be auto, none or a provider id' }, 400);
+      }
+      const models = body.aiModels;
+      if (models !== undefined) {
+        if (models === null || typeof models !== 'object') return c.json({ error: 'aiModels must be an object' }, 400);
+        for (const [id, model] of Object.entries(models)) {
+          if (!(PROVIDER_IDS as readonly string[]).includes(id)) return c.json({ error: `aiModels has an unknown provider: ${id}` }, 400);
+          if (typeof model !== 'string') return c.json({ error: `aiModels.${id} must be a string` }, 400);
+        }
+      }
       for (const [field] of STRING_FIELDS) {
         if (body[field] !== undefined && typeof body[field] !== 'string') {
           return c.json({ error: `${field} must be a string` }, 400);
@@ -47,6 +72,8 @@ export function settingsRoutes(db: DatabaseSync): Hono {
         const value = body[field];
         if (value !== undefined) setSetting(db, key, value.trim() === '' ? null : value.trim());
       }
+      if (body.aiProvider !== undefined) setSetting(db, 'ai_provider', body.aiProvider);
+      for (const [id, model] of Object.entries(models ?? {})) setSetting(db, `ai_model_${id}`, model.trim() === '' ? null : model.trim());
       if (months !== undefined) setSetting(db, 'sync_initial_months', String(months));
       if (nodes !== undefined) setSetting(db, 'engine_nodes', String(nodes));
       if (daily !== undefined) setSetting(db, 'review_daily_limit', String(daily));

@@ -16,8 +16,11 @@ export interface MoveInfo { ply: number; san: string; uci: string; fenBefore: st
 export interface GameDetail extends GameSummary { pgn: string; startFen: string; moves: MoveInfo[] }
 export interface GameListQuery { source?: Source; color?: Color; result?: GameResult; q?: string; limit?: number; offset?: number }
 export interface GameList { items: GameSummary[]; total: number }
-export interface SettingsDTO { chesscomUsername: string | null; lichessUsername: string | null; lichessTokenSet: boolean; syncInitialMonths: number; engineNodes: number; reviewDailyLimit: number; reviewNewPerDay: number }
-export interface SettingsUpdate { chesscomUsername?: string; lichessUsername?: string; lichessToken?: string; syncInitialMonths?: number; engineNodes?: number; reviewDailyLimit?: number; reviewNewPerDay?: number }
+// M5: AI coach providers
+export type ProviderId = 'claude-cli' | 'codex-cli' | 'opencode-cli' | 'openrouter' | 'anthropic-api';
+export type AiProviderSetting = 'auto' | ProviderId | 'none';
+export interface SettingsDTO { chesscomUsername: string | null; lichessUsername: string | null; lichessTokenSet: boolean; syncInitialMonths: number; engineNodes: number; reviewDailyLimit: number; reviewNewPerDay: number; aiProvider: AiProviderSetting; aiModels: Record<ProviderId, string | null>; openrouterKeySet: boolean; anthropicKeySet: boolean }
+export interface SettingsUpdate { chesscomUsername?: string; lichessUsername?: string; lichessToken?: string; syncInitialMonths?: number; engineNodes?: number; reviewDailyLimit?: number; reviewNewPerDay?: number; aiProvider?: AiProviderSetting; aiModels?: Partial<Record<ProviderId, string>>; openrouterApiKey?: string; anthropicApiKey?: string }
 export type JobStatus = 'queued' | 'running' | 'done' | 'error';
 export interface Job { id: number; kind: string; status: JobStatus; progress: number; total: number | null; message: string | null; error: string | null; createdAt: number; finishedAt: number | null }
 export interface ImportPreviewItem { index: number; white: string; black: string; date: string | null; detectedColor: Color | null; skippedReason: string | null }

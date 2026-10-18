@@ -7,6 +7,8 @@ beforeEach(() => {
   delete process.env.CHESSCOM_USERNAME;
   delete process.env.LICHESS_USERNAME;
   delete process.env.LICHESS_TOKEN;
+  delete process.env.OPENROUTER_API_KEY;
+  delete process.env.ANTHROPIC_API_KEY;
   app = createApp({ db: openDb(':memory:') });
 });
 
@@ -15,7 +17,7 @@ const put = (body: unknown) =>
 
 it('GET returns defaults', async () => {
   const res = await app.request('/api/settings');
-  expect(await res.json()).toEqual({ chesscomUsername: null, lichessUsername: null, lichessTokenSet: false, syncInitialMonths: 12, engineNodes: 400000, reviewDailyLimit: 20, reviewNewPerDay: 10 });
+  expect(await res.json()).toEqual({ chesscomUsername: null, lichessUsername: null, lichessTokenSet: false, syncInitialMonths: 12, engineNodes: 400000, reviewDailyLimit: 20, reviewNewPerDay: 10, aiProvider: 'auto', aiModels: { 'claude-cli': null, 'codex-cli': null, 'opencode-cli': null, openrouter: null, 'anthropic-api': null }, openrouterKeySet: false, anthropicKeySet: false });
 });
 
 it('PUT stores values and never leaks the token', async () => {
