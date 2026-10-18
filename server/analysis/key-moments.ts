@@ -2,6 +2,8 @@ import type { Classification, KeyMoment, MoveAnalysis, Tag } from '../../shared/
 
 const MAX_KEY_MOMENTS = 6;
 const LEVEL2_INACCURACY_MIN_LOSS = 15;
+/** Tag-only moments need a real loss, to avoid noise in won positions. */
+const TAG_MIN_LOSS = 10;
 
 type Reason = Classification | Tag;
 /** Most severe first. */
@@ -10,8 +12,8 @@ const SEVERITY: Reason[] = ['blunder', 'mistake', 'missed_mate', 'missed_capture
 function reasonsFor(m: MoveAnalysis, level: 1 | 2 | 3): Reason[] {
   const reasons: Reason[] = [];
   if (m.classification === 'blunder' || m.classification === 'mistake') reasons.push(m.classification);
-  if (m.tags.includes('missed_mate')) reasons.push('missed_mate');
-  if (m.tags.includes('missed_capture')) reasons.push('missed_capture');
+  if (m.winLoss >= TAG_MIN_LOSS && m.tags.includes('missed_mate')) reasons.push('missed_mate');
+  if (m.winLoss >= TAG_MIN_LOSS && m.tags.includes('missed_capture')) reasons.push('missed_capture');
   if (level >= 2 && m.classification === 'inaccuracy' && m.winLoss >= LEVEL2_INACCURACY_MIN_LOSS) reasons.push('inaccuracy');
   return reasons;
 }

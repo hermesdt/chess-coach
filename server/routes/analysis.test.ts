@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { GameAnalysis, GameList, NewGame } from '../../shared/types.js';
 import { createApp } from '../app.js';
-import { markAnalysis } from '../analysis/analysis-repo.js';
+import { ANALYSIS_VERSION, markAnalysis, saveAnalysis } from '../analysis/analysis-repo.js';
+import { setSetting } from '../db/settings-repo.js';
 import { openDb } from '../db/db.js';
 import { insertGames } from '../db/games-repo.js';
 import { waitForJob } from '../jobs.js';
@@ -64,6 +65,44 @@ describe('analysis routes', () => {
     expect(await (await app.request(`/api/games/${id}/analysis`)).json()).toEqual({ status: 'error', error: 'engine crashed' });
     const list = (await (await app.request('/api/games')).json()) as GameList;
     expect(list.items.find((g) => g.id === id)?.analysis).toEqual({ accuracyUser: null, blunders: 0, mistakes: 0, status: 'error' });
+  });
+
+  it('re-queues a failed game through the single-game route', async () => {
+    const id = idOf('g1');
+    markAnalysis(db, id, 'error', 'engine crashed');
+    const { jobId } = (await (await post(`/api/games/${id}/analyse`)).json()) as { jobId: number };
+    await waitForJob(db, jobId);
+    const analysis = (await (await app.request(`/api/games/${id}/analysis`)).json()) as GameAnalysis;
+    expect(analysis.status).toBe('done');
+  });
+
+  it('returns a null job when the game is already analysed', async () => {
+    const id = idOf('g1');
+    await waitForJob(db, ((await (await post(`/api/games/${id}/analyse`)).json()) as { jobId: number }).jobId);
+    expect(await (await post(`/api/games/${id}/analyse`)).json()).toEqual({ jobId: null });
+  });
+
+  it('does not queue failed games from the queue route', async () => {
+    markAnalysis(db, idOf('g1'), 'error', 'engine crashed');
+    expect(await (await post('/api/analysis/queue', {})).json()).toEqual({ jobId: null, queued: 0 });
+  });
+
+  it('recomputes key moments from the current level on read', async () => {
+    const id = idOf('g1');
+    const move = {
+      ply: 1, san: 'e4', uci: 'e2e4', color: 'white', fenBefore: '', evalBefore: { cp: 0, mate: null }, evalAfter: { cp: 0, mate: null },
+      bestUci: 'd2d4', bestSan: 'd4', pvSan: [], winBefore: 50, winAfter: 33, winLoss: 17, classification: 'inaccuracy', tags: [], isUserMove: true,
+    };
+    saveAnalysis(db, {
+      gameId: id, version: ANALYSIS_VERSION, status: 'done', error: null, accuracyUser: 80, accuracyOpp: 80,
+      counts: { blunder: 0, mistake: 0, inaccuracy: 1 } as GameAnalysis['counts'], moves: [move] as GameAnalysis['moves'],
+      keyMoments: [], analysedAt: 1,
+    });
+    const read = async () => ((await (await app.request(`/api/games/${id}/analysis`)).json()) as GameAnalysis).keyMoments;
+    setSetting(db, 'level_override', '1');
+    expect(await read()).toEqual([]);
+    setSetting(db, 'level_override', '2');
+    expect(await read()).toEqual([{ ply: 1, reason: 'inaccuracy', winLoss: 17 }]);
   });
 
   it('queues eligible games with a clamped limit', async () => {

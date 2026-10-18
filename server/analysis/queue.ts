@@ -11,7 +11,18 @@ import { ANALYSIS_VERSION, markAnalysis, saveAnalysis } from './analysis-repo.js
 
 export interface QueueDeps { pool: Pick<EnginePool, 'analyse'>; nodes?: number }
 
-interface ActiveRun { jobId: number; pending: number[]; seen: Set<number>; total: number }
+interface ActiveRun {
+  jobId: number;
+  /** Explicitly requested games. They run before `pending`. */
+  priority: number[];
+  /** Newest first. */
+  pending: number[];
+  seen: Set<number>;
+  current: number | null;
+  total: number;
+}
+
+export interface EnqueueResult { jobId: number | null; queued: number }
 
 // One analysis job per database at a time. The queue lives in this process only.
 const active = new WeakMap<DatabaseSync, ActiveRun>();
@@ -26,7 +37,7 @@ export function eligibleUnanalysed(db: DatabaseSync, limit: number): number[] {
      LEFT JOIN game_analysis a ON a.game_id = g.id
      WHERE g.user_color IS NOT NULL
        AND g.ply_count >= CASE g.user_color WHEN 'white' THEN ? ELSE ? END
-       AND NOT (COALESCE(a.status, '') = 'done' AND COALESCE(a.version, -1) = ?)
+       AND NOT (COALESCE(a.status, '') IN ('done', 'error') AND COALESCE(a.version, -1) = ?)
      ORDER BY g.played_at DESC, g.id DESC LIMIT ?`,
   ).all(minPlyCount('white'), minPlyCount('black'), ANALYSIS_VERSION, limit);
   return rows.map((r) => r.id as number);
@@ -56,31 +67,76 @@ async function analyseOne(db: DatabaseSync, id: number, deps: QueueDeps): Promis
   }
 }
 
-export function enqueueAnalysis(db: DatabaseSync, gameIds: number[], deps: QueueDeps): { jobId: number; queued: number } {
+/** Sort key that puts newer games first. */
+function playedKey(db: DatabaseSync, id: number): [number, number] {
+  const row = db.prepare('SELECT played_at FROM games WHERE id = ?').get(id);
+  return [(row?.played_at as number | undefined) ?? 0, id];
+}
+
+function insertNewestFirst(db: DatabaseSync, list: number[], id: number): void {
+  const [at, gid] = playedKey(db, id);
+  const index = list.findIndex((other) => {
+    const [oat, oid] = playedKey(db, other);
+    return oat < at || (oat === at && oid < gid);
+  });
+  if (index === -1) list.push(id);
+  else list.splice(index, 0, id);
+}
+
+/**
+ * Adds games to the analysis queue. With `priority`, the games run next, in the given order,
+ * and games that failed earlier in the running job can be queued again.
+ */
+export function enqueueAnalysis(
+  db: DatabaseSync,
+  gameIds: number[],
+  deps: QueueDeps,
+  opts: { priority?: boolean } = {},
+): EnqueueResult {
+  const priority = opts.priority === true;
   const run = active.get(db);
   const fresh: number[] = [];
   for (const id of gameIds) {
-    if (run?.seen.has(id) || fresh.includes(id) || isCurrent(db, id)) continue;
+    if (fresh.includes(id) || isCurrent(db, id)) continue;
+    if (run && priority) {
+      if (run.current === id) continue;
+      const waiting = run.pending.indexOf(id);
+      if (waiting !== -1) {
+        run.pending.splice(waiting, 1);
+        run.priority.push(id);
+        continue;
+      }
+      if (run.priority.includes(id)) continue;
+    } else if (run?.seen.has(id)) continue;
     fresh.push(id);
   }
   for (const id of fresh) markAnalysis(db, id, 'pending');
 
   if (run) {
-    for (const id of fresh) run.seen.add(id);
-    run.pending.push(...fresh);
+    for (const id of fresh) {
+      run.seen.add(id);
+      if (priority) run.priority.push(id);
+      else insertNewestFirst(db, run.pending, id);
+    }
     run.total += fresh.length;
     return { jobId: run.jobId, queued: fresh.length };
   }
+  if (fresh.length === 0) return { jobId: null, queued: 0 };
 
-  const state: ActiveRun = { jobId: 0, pending: [...fresh], seen: new Set(fresh), total: fresh.length };
+  const state: ActiveRun = {
+    jobId: 0, priority: priority ? [...fresh] : [], pending: priority ? [] : [...fresh],
+    seen: new Set(fresh), current: null, total: fresh.length,
+  };
   active.set(db, state);
   try {
     const job = runJob(db, 'analysis', async (report) => {
       let processed = 0;
       try {
         report(0, state.total, `Analysed 0 of ${state.total}`);
-        for (let id = state.pending.shift(); id !== undefined; id = state.pending.shift()) {
+        for (let id = state.priority.shift() ?? state.pending.shift(); id !== undefined; id = state.priority.shift() ?? state.pending.shift()) {
+          state.current = id;
           await analyseOne(db, id, deps);
+          state.current = null;
           processed += 1;
           report(processed, state.total, `Analysed ${processed} of ${state.total}`);
         }
@@ -98,9 +154,10 @@ export function enqueueAnalysis(db: DatabaseSync, gameIds: number[], deps: Queue
 }
 
 /** Re-queues games whose analysis was interrupted by a restart. */
-export function requeuePending(db: DatabaseSync, deps: QueueDeps): { jobId: number; queued: number } | null {
+export function requeuePending(db: DatabaseSync, deps: QueueDeps): EnqueueResult | null {
   const rows = db.prepare(
-    "SELECT game_id FROM game_analysis WHERE status IN ('pending', 'running') ORDER BY game_id",
+    `SELECT a.game_id FROM game_analysis a LEFT JOIN games g ON g.id = a.game_id
+     WHERE a.status IN ('pending', 'running') ORDER BY g.played_at DESC, a.game_id DESC`,
   ).all();
   if (rows.length === 0) return null;
   return enqueueAnalysis(db, rows.map((r) => r.game_id as number), deps);

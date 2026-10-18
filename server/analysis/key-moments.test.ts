@@ -26,18 +26,22 @@ describe('selectKeyMoments', () => {
   });
 
   it('includes missed_capture and missed_mate user moves', () => {
-    const out = selectKeyMoments([bad(1, 3, 'good', ['missed_capture']), bad(3, 4, 'good', ['missed_mate'])]);
+    const out = selectKeyMoments([bad(1, 10, 'good', ['missed_capture']), bad(3, 14, 'good', ['missed_mate'])]);
     expect(out).toEqual([
-      { ply: 3, reason: 'missed_mate', winLoss: 4 },
-      { ply: 1, reason: 'missed_capture', winLoss: 3 },
+      { ply: 3, reason: 'missed_mate', winLoss: 14 },
+      { ply: 1, reason: 'missed_capture', winLoss: 10 },
     ]);
   });
 
+  it('ignores missed_capture and missed_mate when less than 10% was lost', () => {
+    expect(selectKeyMoments([bad(1, 9.9, 'good', ['missed_capture']), bad(3, 3, 'good', ['missed_mate'])])).toEqual([]);
+  });
+
   it('dedupes by ply and keeps the most severe reason', () => {
-    const out = selectKeyMoments([bad(1, 35, 'blunder', ['missed_capture']), bad(3, 5, 'good', ['missed_capture', 'missed_mate'])]);
+    const out = selectKeyMoments([bad(1, 35, 'blunder', ['missed_capture']), bad(3, 12, 'good', ['missed_capture', 'missed_mate'])]);
     expect(out).toEqual([
       { ply: 1, reason: 'blunder', winLoss: 35 },
-      { ply: 3, reason: 'missed_mate', winLoss: 5 },
+      { ply: 3, reason: 'missed_mate', winLoss: 12 },
     ]);
   });
 
