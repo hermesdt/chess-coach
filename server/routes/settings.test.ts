@@ -15,7 +15,7 @@ const put = (body: unknown) =>
 
 it('GET returns defaults', async () => {
   const res = await app.request('/api/settings');
-  expect(await res.json()).toEqual({ chesscomUsername: null, lichessUsername: null, lichessTokenSet: false, syncInitialMonths: 12, engineNodes: 400000 });
+  expect(await res.json()).toEqual({ chesscomUsername: null, lichessUsername: null, lichessTokenSet: false, syncInitialMonths: 12, engineNodes: 400000, reviewDailyLimit: 20, reviewNewPerDay: 10 });
 });
 
 it('PUT stores values and never leaks the token', async () => {
@@ -62,4 +62,14 @@ it('engineNodes falls back to ENGINE_NODES env, then ignores invalid env', async
   process.env.ENGINE_NODES = 'abc';
   expect((await (await app.request('/api/settings')).json()).engineNodes).toBe(400000);
   delete process.env.ENGINE_NODES;
+});
+
+it('validates and stores review limits', async () => {
+  expect((await put({ reviewDailyLimit: 0 })).status).toBe(400);
+  expect((await put({ reviewDailyLimit: 201 })).status).toBe(400);
+  expect((await put({ reviewNewPerDay: -1 })).status).toBe(400);
+  expect((await put({ reviewNewPerDay: 101 })).status).toBe(400);
+  expect((await put({ reviewNewPerDay: 1.5 })).status).toBe(400);
+  const res = await put({ reviewDailyLimit: 50, reviewNewPerDay: 0 });
+  expect(await res.json()).toMatchObject({ reviewDailyLimit: 50, reviewNewPerDay: 0 });
 });

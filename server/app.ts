@@ -7,6 +7,7 @@ import { lazyEnginePool } from './engine/pool.js';
 import { healthRoutes } from './routes/health.js';
 import { importRoutes } from './routes/import.js';
 import { jobsRoutes } from './routes/jobs.js';
+import { reviewRoutes } from './routes/review.js';
 import { settingsRoutes } from './routes/settings.js';
 import { syncRoutes } from './routes/sync.js';
 
@@ -43,6 +44,7 @@ export function createApp(deps: AppDeps): Hono {
   app.route('/api', gamesRoutes(deps.db));
   app.route('/api', importRoutes(deps.db));
   app.route('/api', analysisRoutes(deps.db, pool));
+  app.route('/api', reviewRoutes(deps.db, deps.now ?? Date.now));
   app.all('/api/*', (c) => c.json({ error: 'not found' }, 404));
   return app;
 }
