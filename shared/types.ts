@@ -88,3 +88,13 @@ export interface OpeningSummary {
 }
 export interface OpeningDetail { id: string; name: string; color: Color; level: 1 | 2 | 3; roots: RepNodeDTO[] }
 export interface OpeningLeakGroup { nodeId: string; expectedSan: string; playedSan: string; count: number; gameIds: number[] }
+
+// M6: course
+export interface Exercise { id: string; fen: string; prompt: string; solution: string[]; explanation: string }
+export interface Lesson {
+  id: string; order: number; level: 1 | 2 | 3; title: string; summary: string; tags: Tag[];
+  body: string; exercises: Exercise[]; links: { title: string; url: string }[];
+}
+export type LessonStatus = 'new' | 'done' | 'locked';
+export interface CourseLesson { id: string; order: number; title: string; summary: string; status: LessonStatus; exercises: number }
+export type CourseLessonDetail = Lesson & { status: LessonStatus };

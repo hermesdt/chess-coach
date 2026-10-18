@@ -1,0 +1,41 @@
+{
+  "id": "blunder-check",
+  "order": 1,
+  "level": 1,
+  "title": "Blunder check",
+  "summary": "Ask three short questions before every move and stop the simple blunders.",
+  "tags": [
+    "hung_piece"
+  ],
+  "body": "### Check before you move\n\nMost games at your level end because of one big mistake. A piece is left alone, or a free capture is missed. You can stop this with one short habit.\n\nBefore every move, ask three questions:\n\n- What does my opponent threaten now?\n- Which of my pieces can be taken for free?\n- Does my move leave a piece alone?\n\nLook at the **last move** your opponent made. It often shows a new threat. A queen that moved to a new square may attack your pieces. A bishop that moved may open a line to your king.\n\nThen look at the square where your piece will land. Ask yourself if an enemy piece can take it. If a pawn can take it, the square is usually not safe.\n\nThis check takes only a few seconds. You will not find every danger. But you will stop most simple blunders, and that wins many games.\n\nRule of thumb: before you press the move, say out loud what your opponent can take after it.\n\nPractise this on each move of your next game. Soon it will feel normal and fast.",
+  "exercises": [
+    {
+      "id": "mate-in-one",
+      "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+      "prompt": "White to move. Find the checkmate.",
+      "solution": [
+        "h5f7"
+      ],
+      "explanation": "The queen takes f7. The bishop on c4 guards it, so the king cannot take back."
+    },
+    {
+      "id": "free-queen",
+      "fen": "4k3/8/8/3q4/8/8/8/3RK3 w - - 0 1",
+      "prompt": "White to move. Win material.",
+      "solution": [
+        "d1d5"
+      ],
+      "explanation": "The black queen has no guard. The rook takes it for free."
+    },
+    {
+      "id": "fools-mate",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq - 0 2",
+      "prompt": "Black to move. Find the checkmate.",
+      "solution": [
+        "d8h4"
+      ],
+      "explanation": "The white king has no escape. The queen on h4 gives checkmate."
+    }
+  ],
+  "links": []
+}

@@ -28,4 +28,6 @@ export interface ValidationIssue {
   nodeId: string;
   rule: string;
   detail: string;
+  /** Missing means error. A warning is printed but does not fail the run. */
+  severity?: 'error' | 'warning';
 }

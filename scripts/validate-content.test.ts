@@ -2,6 +2,8 @@ import { afterAll, describe, expect, it } from 'vitest';
 import { closeEnginePool, lazyEnginePool } from '../server/engine/pool.js';
 import { isStockfishAvailable } from '../server/engine/stockfish-path.js';
 import type { EngineLine } from '../server/engine/uci.js';
+import { loadLessons, validateLesson } from '../server/course/load.js';
+import type { Lesson } from '../shared/types.js';
 import { loadRepertoire } from '../server/repertoire/load.js';
 import { validateRepertoire } from '../server/repertoire/validate.js';
 
@@ -125,4 +127,132 @@ describe.skipIf(!isStockfishAvailable())('validateRepertoire (Stockfish)', () =>
     const issues = await validateRepertoire(bad, lazyEnginePool, { nodes: 20000 });
     expect(issues.filter((i) => i.rule === 'engine-loss').map((i) => i.nodeId)).toContain('f3 e5 g4');
   }, 60000);
+});
+
+describe('validateLesson', () => {
+  const sample = () => loadLessons('content/lessons/__test__')[0]!;
+  const withEx = (patch: Partial<Lesson['exercises'][number]>, i = 1): Lesson => {
+    const l = sample();
+    return { ...l, exercises: l.exercises.map((e, j) => (j === i ? { ...e, ...patch } : e)) };
+  };
+  const rules = (issues: { rule: string; severity?: string }[], severity = 'error') =>
+    issues.filter((i) => (i.severity ?? 'error') === severity).map((i) => i.rule);
+
+  /** Fake engine: `lines[fen]` is a list of [uci, cp] (side-to-move view); unknown FENs are one equal line. */
+  function lessonEngine(lines: Record<string, [string, number][]> = {}) {
+    const calls: { fen: string; multipv: number | undefined }[] = [];
+    return {
+      calls,
+      analyse: async (fen: string, o: { nodes?: number; multipv?: number }): Promise<EngineLine[]> => {
+        calls.push({ fen, multipv: o.multipv });
+        const l = lines[fen] ?? [['e2e4', 0]];
+        return l.slice(0, o.multipv ?? 1).map(([uci, c], i) => ({ multipv: i + 1, score: cp(c), pv: [uci] }));
+      },
+    };
+  }
+  const [mate, queen] = sample().exercises;
+  // Clear best move: best +400, second -400 -> big gain; solution in best.
+  const clear = () => lessonEngine({
+    [mate!.fen]: [['h5f7', 900], ['d2d3', 0]],
+    [queen!.fen]: [['d1d5', 900], ['e1e2', 0]],
+    [sample().exercises[2]!.fen]: [['d8h4', 900], ['a7a6', 0]],
+  });
+
+  it('passes the sample lesson with a clear engine', async () => {
+    expect(await validateLesson(sample(), clear(), ok)).toEqual([]);
+  });
+
+  it('flags an invalid FEN and skips the engine for it', async () => {
+    const eng = clear();
+    const issues = await validateLesson(withEx({ fen: 'not a fen' }), eng, ok);
+    expect(rules(issues)).toEqual(['invalid-fen']);
+    expect(eng.calls.some((c) => c.fen === 'not a fen')).toBe(false);
+  });
+
+  it('flags a prompt side that differs from the FEN side', async () => {
+    const issues = await validateLesson(withEx({ prompt: 'Black to move. Win material.' }), clear(), ok);
+    expect(rules(issues)).toEqual(['prompt-side']);
+  });
+
+  it('flags an illegal solution move', async () => {
+    const issues = await validateLesson(withEx({ solution: ['a1a8'] }), clear(), ok);
+    expect(rules(issues)).toContain('illegal-solution');
+  });
+
+  it('flags a solution move that loses 10 win % or more against the engine best', async () => {
+    // Rook takes a different piece? Use e1e2 (legal king move): engine says it is 0 cp vs +900 best.
+    const issues = await validateLesson(withEx({ solution: ['e1e2'] }), clear(), ok);
+    expect(rules(issues)).toEqual(['engine-loss']);
+  });
+
+  it('measures a move outside the top 2 by the position after it', async () => {
+    const eng = lessonEngine({
+      [queen!.fen]: [['d1d5', 900], ['e1e2', 0]],
+      'after': [],
+    });
+    const issues = await validateLesson(withEx({ solution: ['d1d2'] }, 1), eng, ok);
+    expect(rules(issues)).toContain('engine-loss');
+    expect(eng.calls.length).toBeGreaterThan(1);
+  });
+
+  it('warns, without failing, when the best move gains under 5 win % over the second best', async () => {
+    const eng = lessonEngine({
+      [mate!.fen]: [['h5f7', 900], ['d2d3', 890]],
+      [queen!.fen]: [['d1d5', 900], ['e1e2', 0]],
+      [sample().exercises[2]!.fen]: [['d8h4', 900], ['a7a6', 0]],
+    });
+    const issues = await validateLesson(sample(), eng, ok);
+    expect(rules(issues)).toEqual([]);
+    expect(rules(issues, 'warning')).toEqual(['trivial-exercise']);
+    expect(issues.find((i) => i.rule === 'trivial-exercise')!.nodeId).toBe('mate-in-one');
+  });
+
+  it('asks the engine for 2 lines and caches per FEN', async () => {
+    const eng = clear();
+    const cache = new Map();
+    await validateLesson(sample(), eng, ok, cache);
+    const first = eng.calls.length;
+    expect(eng.calls.every((c) => c.multipv === 2)).toBe(true);
+    await validateLesson(sample(), eng, ok, cache);
+    expect(eng.calls.length).toBe(first);
+  });
+
+  it('flags duplicate exercise ids', async () => {
+    const l = sample();
+    const dup: Lesson = { ...l, exercises: [...l.exercises, { ...l.exercises[0]! }] };
+    expect(rules(await validateLesson(dup, clear(), ok))).toContain('duplicate-exercise');
+  });
+
+  it('flags a body outside 150-400 words and a missing "Rule of thumb:" line', async () => {
+    const l = sample();
+    const short = await validateLesson({ ...l, body: 'Rule of thumb: be short.' }, clear(), ok);
+    expect(rules(short)).toEqual(['body-length']);
+    const long = await validateLesson({ ...l, body: `Rule of thumb: x\n\n${'word '.repeat(400)}` }, clear(), ok);
+    expect(rules(long)).toEqual(['body-length']);
+    const noRule = await validateLesson({ ...l, body: l.body.replace('Rule of thumb:', 'Tip:') }, clear(), ok);
+    expect(rules(noRule)).toEqual(['rule-of-thumb']);
+  });
+
+  it('flags a long summary, a wrong exercise count and an order that does not match the id', async () => {
+    const l = sample();
+    expect(rules(await validateLesson({ ...l, summary: 'x'.repeat(141) }, clear(), ok))).toEqual(['summary-length']);
+    expect(rules(await validateLesson({ ...l, exercises: l.exercises.slice(0, 2) }, clear(), ok))).toEqual(['exercise-count']);
+    expect(rules(await validateLesson({ ...l, order: 5 }, clear(), ok))).toEqual(['order']);
+  });
+
+  it('warns when the engine best is in the solution but not listed first', async () => {
+    const l = withEx({ solution: ['e1e2', 'd1d5'] });
+    const issues = await validateLesson(l, clear(), ok);
+    expect(rules(issues, 'warning')).toContain('best-not-first');
+  });
+
+  it('accepts an alternative solution within 10 win % of the engine best', async () => {
+    const eng = lessonEngine({
+      [mate!.fen]: [['h5f7', 900], ['d2d3', 0]],
+      [queen!.fen]: [['d1d5', 900], ['d1d4', 895]],
+      [sample().exercises[2]!.fen]: [['d8h4', 900], ['a7a6', 0]],
+    });
+    const issues = await validateLesson(withEx({ solution: ['d1d4'] }), eng, ok);
+    expect(rules(issues)).toEqual([]);
+  });
 });

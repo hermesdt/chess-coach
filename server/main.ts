@@ -9,6 +9,9 @@ import { backfillMistakeCards } from './srs/backfill.js';
 import { requeuePending } from './analysis/queue.js';
 import { closeEnginePool, lazyEnginePool } from './engine/pool.js';
 import { recoverInterruptedJobs } from './jobs.js';
+import { syncLessonCards } from './course/lesson-cards.js';
+import { loadLessons } from './course/load.js';
+import type { Lesson } from '../shared/types.js';
 import { loadAllRepertoires } from './repertoire/load.js';
 import { refreshOpenings } from './repertoire/refresh.js';
 import type { Repertoire } from './repertoire/types.js';
@@ -49,7 +52,14 @@ const server = serve(
     } catch (err) {
       console.error('opening card sync or leak scan failed:', err);
     }
-    const app = createApp({ db, repertoires });
+    let lessons: Lesson[] = [];
+    try {
+      lessons = loadLessons();
+      syncLessonCards(db, lessons);
+    } catch (err) {
+      console.error('lesson card sync failed:', err);
+    }
+    const app = createApp({ db, repertoires, lessons });
 
     if (existsSync('dist')) {
       app.use('/*', serveStatic({ root: './dist' }));

@@ -4,6 +4,8 @@ import { createRegistry, type Registry } from './ai/registry.js';
 import { aiRoutes } from './routes/ai.js';
 import { analysisRoutes } from './routes/analysis.js';
 import { dashboardRoutes } from './routes/dashboard.js';
+import { loadLessons } from './course/load.js';
+import { courseRoutes } from './routes/course.js';
 import { gamesRoutes } from './routes/games.js';
 import type { EnginePool } from './engine/pool.js';
 import { lazyEnginePool } from './engine/pool.js';
@@ -13,6 +15,7 @@ import { jobsRoutes } from './routes/jobs.js';
 import { openingsRoutes } from './routes/openings.js';
 import { loadAllRepertoires } from './repertoire/load.js';
 import type { Repertoire } from './repertoire/types.js';
+import type { Lesson } from '../shared/types.js';
 import { reviewRoutes } from './routes/review.js';
 import { settingsRoutes } from './routes/settings.js';
 import { syncRoutes } from './routes/sync.js';
@@ -25,6 +28,8 @@ export interface AppDeps {
   pool?: Pick<EnginePool, 'analyse'>;
   /** Repertoires for the openings API. Defaults to `content/repertoires`, loaded on first use. */
   repertoires?: Repertoire[];
+  /** Lessons for the course API. Defaults to `content/lessons`, loaded on first use. */
+  lessons?: Lesson[];
   /** AI provider registry. Defaults to the built-in adapters. */
   ai?: Registry;
   /** Timeout of POST /api/ai/providers/:id/test in ms (default 60000). */
@@ -50,6 +55,8 @@ export function createApp(deps: AppDeps): Hono {
   const pool = deps.pool ?? lazyEnginePool;
   let reps = deps.repertoires;
   const getReps = () => (reps ??= loadAllRepertoires());
+  let lessons = deps.lessons;
+  const getLessons = () => (lessons ??= loadLessons());
   const ai = deps.ai ?? createRegistry({ db: deps.db, fetchFn: deps.fetchFn });
   app.use('/api/*', localOnly);
   app.route('/api', healthRoutes);
@@ -62,6 +69,7 @@ export function createApp(deps: AppDeps): Hono {
   app.route('/api', analysisRoutes(deps.db, pool));
   app.route('/api', reviewRoutes(deps.db, deps.now ?? Date.now, pool));
   app.route('/api', openingsRoutes(deps.db, getReps));
+  app.route('/api', courseRoutes(deps.db, getLessons, deps.now ?? Date.now));
   app.route('/api', dashboardRoutes(deps.db, deps.now ?? Date.now));
   app.all('/api/*', (c) => c.json({ error: 'not found' }, 404));
   return app;
