@@ -74,7 +74,7 @@ function addGame(sans: string, userColor: 'white' | 'black' | null): number {
   const chess = new Chess();
   for (const s of sans.split(' ')) chess.move(s);
   const game: NewGame = {
-    source: 'chesscom', sourceId: `g${seq}`, playedAt: seq, timeClass: 'blitz', rated: true, white: 'Me', black: 'Opp',
+    source: 'chesscom', sourceId: `g${seq}`, playedAt: NOW - seq, timeClass: 'blitz', rated: true, white: 'Me', black: 'Opp',
     whiteElo: 1000, blackElo: 1000, userColor, result: 'win', termination: null, eco: null, openingName: null,
     pgn: chess.pgn(), url: null, plyCount: parsePgn(chess.pgn()).moves.length,
   };
@@ -82,7 +82,7 @@ function addGame(sans: string, userColor: 'white' | 'black' | null): number {
   return Number((db.prepare('SELECT id FROM games WHERE source_id = ?').get(`g${seq}`) as { id: number }).id);
 }
 
-const events = () => db.prepare('SELECT * FROM opening_events ORDER BY game_id').all();
+const events = () => db.prepare('SELECT * FROM opening_events ORDER BY game_id').all() as Record<string, unknown>[];
 
 describe('scanLeaks', () => {
   it('records one event per game and replaces them on rescan', () => {
@@ -130,6 +130,47 @@ describe('scanLeaks', () => {
     db.prepare('UPDATE cards SET suspended = 1 WHERE id = ?').run(card.id);
     scanLeaks(db, [caro], NOW, { rescan: true });
     expect((db.prepare('SELECT due FROM card_state WHERE card_id = ?').get(card.id) as { due: number }).due).toBe(later);
+  });
+
+  it('gives a new opening card priority without creating card_state', () => {
+    syncOpeningCards(db, [caro], 3);
+    const leakFen = movesOf('e4 c6 d4 d5 e5 Bg4')[5]!.fenBefore;
+    const key = positionKey(leakFen);
+    addGame('e4 c6 d4 d5 e5 Bg4', 'black');
+    scanLeaks(db, [caro], NOW);
+    expect(db.prepare("SELECT priority FROM cards WHERE kind = 'opening' AND position_key = ?").get(key)).toEqual({ priority: 1 });
+    expect(db.prepare('SELECT COUNT(*) AS n FROM card_state').get()).toEqual({ n: 0 });
+    expect(db.prepare("SELECT COUNT(*) AS n FROM cards WHERE priority = 1").get()).toEqual({ n: 1 });
+  });
+
+  it('records leaks from games older than 30 days without flagging cards', () => {
+    syncOpeningCards(db, [caro], 3);
+    addGame('e4 c6 d4 d5 e5 Bg4', 'black');
+    db.prepare('UPDATE games SET played_at = ?').run(NOW - 31 * 86_400_000);
+    scanLeaks(db, [caro], NOW);
+    expect(events()).toHaveLength(1);
+    expect(db.prepare('SELECT COUNT(*) AS n FROM cards WHERE priority = 1').get()).toEqual({ n: 0 });
+  });
+
+  it('rescans games recorded at a lower level without flagging known leaks again', () => {
+    syncOpeningCards(db, [caro], 3);
+    const leakFen = movesOf('e4 c6 d4 d5 e5 Bg4')[5]!.fenBefore;
+    const card = db.prepare("SELECT id FROM cards WHERE position_key = ?").get(positionKey(leakFen)) as { id: number };
+    const setLevel = (l: string) =>
+      db.prepare("INSERT INTO settings (key, value) VALUES ('level_override', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(l);
+    setLevel('1');
+    addGame('e4 c6 d4 d5 e5 Bg4', 'black');
+    addGame('e4 c6 d4 d5 e5 Bf5 Nf3 e6', 'black');
+    scanLeaks(db, [caro], NOW);
+    expect(events().map((e) => e.level)).toEqual([1, 1]);
+    // The user reviewed the card and it is scheduled later; a level-up rescan must not make it due again.
+    const later = NOW + 5 * 86_400_000;
+    db.prepare("INSERT INTO card_state (card_id, fsrs_json, due, last_review) VALUES (?, '{}', ?, 1)").run(card.id, later);
+    db.prepare('UPDATE cards SET priority = 0 WHERE id = ?').run(card.id);
+    setLevel('2');
+    scanLeaks(db, [caro], NOW);
+    expect(events().map((e) => e.level)).toEqual([2, 2]);
+    expect(db.prepare('SELECT due FROM card_state WHERE card_id = ?').get(card.id)).toEqual({ due: later });
   });
 
   it('does not touch cards when no card exists at the position', () => {

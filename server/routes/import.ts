@@ -4,6 +4,8 @@ import type { Color, ImportPreviewItem, ImportRequest, ImportResult, NewGame } f
 import { gameFromPgn, splitPgn } from '../chess/pgn.js';
 import { getSettings } from '../config.js';
 import { insertGames } from '../db/games-repo.js';
+import { scanLeaks } from '../repertoire/leaks.js';
+import type { Repertoire } from '../repertoire/types.js';
 
 const tag = (pgn: string, name: string): string | null => {
   const v = new RegExp(`^\\[${name}\\s+"([^"]*)"\\]`, 'im').exec(pgn)?.[1];
@@ -15,7 +17,7 @@ function usernamesOf(db: DatabaseSync): (string | null)[] {
   return [s.chesscomUsername, s.lichessUsername];
 }
 
-export function importRoutes(db: DatabaseSync): Hono {
+export function importRoutes(db: DatabaseSync, getReps: () => Repertoire[]): Hono {
   return new Hono()
     .post('/import/preview', async (c) => {
       const body = (await c.req.json().catch(() => null)) as { pgn?: unknown } | null;
@@ -51,6 +53,13 @@ export function importRoutes(db: DatabaseSync): Hono {
         else games.push(game);
       });
       const { inserted, duplicates } = insertGames(db, games);
+      if (inserted > 0) {
+        try {
+          scanLeaks(db, getReps());
+        } catch (e) {
+          console.error('could not scan opening leaks after import', e);
+        }
+      }
       const result: ImportResult = { inserted, duplicates, skipped };
       return c.json(result);
     });

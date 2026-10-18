@@ -54,6 +54,17 @@ describe('GET /api/openings', () => {
   });
 });
 
+describe('GET /api/openings stats source', () => {
+  it('reads stats from opening events without parsing PGNs in the request', async () => {
+    addGame('e4 c6 d4 d5', 'black', 'win');
+    addGame('e4 c6 Nc3 d5', 'black', 'loss');
+    scanLeaks(db, reps);
+    db.prepare("UPDATE games SET pgn = 'not a pgn'").run();
+    const list = await json<OpeningSummary[]>('/api/openings');
+    expect(list.find((o) => o.id === 'caro-kann')!.stats).toEqual({ games: 2, win: 1, draw: 0, loss: 1 });
+  });
+});
+
 describe('GET /api/openings/:id', () => {
   it('returns the tree with level, comment and locked flag', async () => {
     const body = await json<OpeningDetail>('/api/openings/caro-kann');

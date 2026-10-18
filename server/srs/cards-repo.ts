@@ -106,6 +106,7 @@ export function listCardsByRef(db: DatabaseSync, gameId: number): Card[] {
 export function recordReview(db: DatabaseSync, cardId: number, submit: ReviewSubmit, now: number): ReviewResult {
   return transaction(db, () => {
     mustGetCard(db, cardId);
+    db.prepare('UPDATE cards SET priority = 0 WHERE id = ?').run(cardId);
     const prev = db.prepare('SELECT fsrs_json FROM card_state WHERE card_id = ?').get(cardId);
     const next = schedule(prev ? (prev.fsrs_json as string) : null, submit.rating, now);
     db.prepare(`INSERT INTO card_state (card_id, fsrs_json, due, last_review) VALUES (?, ?, ?, ?)

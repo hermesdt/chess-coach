@@ -1,26 +1,17 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Hono } from 'hono';
-import type { Color, GameResult, OpeningDetail, OpeningLeakGroup, OpeningSummary, RepNodeDTO } from '../../shared/types.js';
-import { parsePgn } from '../chess/pgn.js';
+import type { GameResult, OpeningDetail, OpeningLeakGroup, OpeningSummary, RepNodeDTO } from '../../shared/types.js';
 import { currentLevel } from '../level.js';
-import { matchesRepertoire } from '../repertoire/leaks.js';
+import { scanLeaks } from '../repertoire/leaks.js';
 import type { RepNode, Repertoire } from '../repertoire/types.js';
 import { listCardsByKind } from '../srs/cards-repo.js';
 
-function firstSan(pgn: string): string | undefined {
-  try {
-    return parsePgn(pgn).moves[0]?.san;
-  } catch {
-    return undefined;
-  }
-}
-
+/** W/D/L from the stored opening events: the scan already classified each game. */
 function stats(db: DatabaseSync, rep: Repertoire): OpeningSummary['stats'] {
-  const rows = db.prepare('SELECT pgn, result FROM games WHERE user_color = ?').all(rep.color) as unknown as
-    { pgn: string; result: GameResult | null }[];
+  const rows = db.prepare(`SELECT g.result AS result FROM opening_events e JOIN games g ON g.id = e.game_id
+    WHERE e.repertoire_id = ? AND g.user_color = ?`).all(rep.id, rep.color) as unknown as { result: GameResult | null }[];
   const out = { games: 0, win: 0, draw: 0, loss: 0 };
   for (const r of rows) {
-    if (!matchesRepertoire(rep, firstSan(r.pgn), rep.color as Color)) continue;
     out.games += 1;
     if (r.result) out[r.result] += 1;
   }
@@ -38,6 +29,7 @@ function toDto(node: RepNode, level: number): RepNodeDTO {
 export function openingsRoutes(db: DatabaseSync, getReps: () => Repertoire[]): Hono {
   return new Hono()
     .get('/openings', (c) => {
+      scanLeaks(db, getReps());
       const cards = listCardsByKind(db, 'opening').filter((card) => !card.suspended);
       const list: OpeningSummary[] = getReps().map((rep) => ({
         id: rep.id, name: rep.name, color: rep.color, nodeCount: rep.byId.size,

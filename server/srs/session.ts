@@ -36,6 +36,9 @@ function interleaveKinds(rows: { id: number; kind: string }[]): { id: number }[]
   return out;
 }
 
+/** Opening-leak cards allowed above the daily new-card cap. */
+const PRIORITY_EXTRA = 3;
+
 export interface SessionLimits { daily: number; newPerDay: number }
 
 /**
@@ -50,14 +53,21 @@ export function buildSession(
 ): ReviewSession {
   const due = db.prepare(`SELECT c.id AS id, s.due AS due FROM cards c JOIN card_state s ON s.card_id = c.id
     WHERE c.suspended = 0 AND s.due <= ? ORDER BY s.due, c.id`).all(now) as { id: number; due: number }[];
-  const newIds = interleaveKinds(db.prepare(`SELECT c.id AS id, c.kind AS kind FROM cards c
+  const newRows = db.prepare(`SELECT c.id AS id, c.kind AS kind, c.priority AS priority FROM cards c
     WHERE c.suspended = 0 AND NOT EXISTS (SELECT 1 FROM card_state s WHERE s.card_id = c.id)
-    ORDER BY c.sort_order IS NULL, c.sort_order, c.id`).all() as { id: number; kind: string }[]);
+    ORDER BY c.sort_order IS NULL, c.sort_order, c.id`).all() as { id: number; kind: string; priority: number }[];
+  const priorityIds = newRows.filter((r) => r.priority > 0);
+  const newIds = [...priorityIds, ...interleaveKinds(newRows.filter((r) => r.priority === 0))];
   const introducedToday = count(db, `SELECT COUNT(*) AS n FROM
     (SELECT card_id FROM reviews GROUP BY card_id HAVING MIN(reviewed_at) >= ?)`, startOfLocalDay(now));
 
   const dueCards = due.slice(0, limits.daily);
-  const newSlots = Math.max(0, Math.min(limits.daily - dueCards.length, limits.newPerDay - introducedToday));
+  const room = limits.daily - dueCards.length;
+  const capLeft = Math.max(0, limits.newPerDay - introducedToday);
+  // Priority cards (opening leaks) may go over the new-card cap by up to PRIORITY_EXTRA per day.
+  const extra = Math.max(0, PRIORITY_EXTRA - Math.max(0, introducedToday - limits.newPerDay));
+  const priorityTaken = Math.max(0, Math.min(priorityIds.length, capLeft + extra, room));
+  const newSlots = Math.max(0, Math.min(room, Math.max(capLeft, priorityTaken)));
   const cards = [
     ...dueCards.map((r) => withState(db, r.id, r.due)),
     ...newIds.slice(0, newSlots).map((r) => withState(db, r.id, null)),

@@ -101,3 +101,31 @@ describe('buildSession', () => {
     expect(buildSession(db, NOW, LIMITS).cards).toEqual([]);
   });
 });
+
+describe('priority cards', () => {
+  const addPriority = (): number => {
+    const id = addCard();
+    db.prepare('UPDATE cards SET priority = 1, sort_order = 999 WHERE id = ?').run(id);
+    return id;
+  };
+
+  it('offers a new priority card before cards with an earlier sort_order', () => {
+    const first = addCard();
+    db.prepare('UPDATE cards SET sort_order = 0 WHERE id = ?').run(first);
+    const p = addPriority();
+    expect(buildSession(db, NOW, LIMITS).cards.map((c) => c.id).slice(0, 2)).toEqual([p, first]);
+  });
+
+  it('lets priority cards exceed the new-card cap by up to 3', () => {
+    const ids = Array.from({ length: 6 }, addPriority);
+    for (let i = 0; i < 4; i++) addCard();
+    const s = buildSession(db, NOW, { daily: 20, newPerDay: 2 });
+    expect(s.cards.map((c) => c.id)).toEqual(ids.slice(0, 5));
+  });
+
+  it('clears priority on the first review', () => {
+    const p = addPriority();
+    recordReview(db, p, { rating: 'good', answerUci: null, durationMs: 1 }, NOW);
+    expect(db.prepare('SELECT priority FROM cards WHERE id = ?').get(p)).toEqual({ priority: 0 });
+  });
+});

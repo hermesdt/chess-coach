@@ -44,18 +44,29 @@ interface GameRow {
   id: number;
   pgn: string;
   user_color: Color;
+  played_at: number;
 }
 
-function makeCardsDue(db: DatabaseSync, fenBefore: string, now: number): void {
-  db.prepare(`UPDATE card_state SET due = ?
-    WHERE due > ? AND card_id IN (SELECT id FROM cards WHERE kind = 'opening' AND position_key = ? AND suspended = 0)`)
-    .run(now, now, positionKey(fenBefore));
+/** Leaks in older games are recorded but do not change the review queue. */
+const RECENT_MS = 30 * 24 * 60 * 60 * 1000;
+
+/**
+ * Review the opening card at the leak position now. A reviewed card becomes due. A new card gets
+ * `priority` so the session offers it first. Suspended cards and missing cards are skipped.
+ */
+function flagLeakCard(db: DatabaseSync, fenBefore: string, now: number): void {
+  const card = db.prepare("SELECT id FROM cards WHERE kind = 'opening' AND position_key = ? AND suspended = 0")
+    .get(positionKey(fenBefore)) as { id: number } | undefined;
+  if (!card) return;
+  const state = db.prepare('SELECT due FROM card_state WHERE card_id = ?').get(card.id) as { due: number } | undefined;
+  if (!state) db.prepare('UPDATE cards SET priority = 1 WHERE id = ?').run(card.id);
+  else if (state.due > now) db.prepare('UPDATE card_state SET due = ? WHERE card_id = ?').run(now, card.id);
 }
 
 /**
- * Store one `opening_events` row per game with a user colour. Games that already have a row are
- * skipped unless `rescan` is set. A leak makes the opening card at the leak position due now.
- * No engine is used.
+ * Store one `opening_events` row per game with a user colour. Games without a row, or whose row was
+ * made at a lower level, are scanned; `rescan` scans all. A new leak position (not recorded before
+ * for that game) in a game from the last 30 days flags its opening card. No engine is used.
  */
 export function scanLeaks(
   db: DatabaseSync,
@@ -63,15 +74,18 @@ export function scanLeaks(
   now: number = Date.now(),
   opts: { rescan?: boolean } = {},
 ): void {
-  const games = db.prepare(`SELECT id, pgn, user_color FROM games g
-    WHERE user_color IS NOT NULL ${opts.rescan ? '' : 'AND NOT EXISTS (SELECT 1 FROM opening_events e WHERE e.game_id = g.id)'}
+  const level = currentLevel(db).level;
+  const games = db.prepare(`SELECT id, pgn, user_color, played_at FROM games g
+    WHERE user_color IS NOT NULL ${opts.rescan ? '' : `AND NOT EXISTS
+      (SELECT 1 FROM opening_events e WHERE e.game_id = g.id AND e.level >= ${level})`}
     ORDER BY id`).all() as unknown as GameRow[];
   if (games.length === 0) return;
-  const level = currentLevel(db).level;
+  const previous = db.prepare('SELECT kind, node_id FROM opening_events WHERE game_id = ?');
   const insert = db.prepare(`INSERT OR REPLACE INTO opening_events
-    (game_id, repertoire_id, kind, node_id, ply, expected_san, played_san) VALUES (?, ?, ?, ?, ?, ?, ?)`);
+    (game_id, repertoire_id, kind, node_id, ply, expected_san, played_san, level) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
   transaction(db, () => {
     for (const game of games) {
+      const before = previous.get(game.id) as { kind: string; node_id: string | null } | undefined;
       let moves: MoveInfo[] = [];
       try {
         moves = parsePgn(game.pgn).moves;
@@ -80,7 +94,7 @@ export function scanLeaks(
       }
       const rep = reps.find((r) => matchesRepertoire(r, moves[0]?.san, game.user_color));
       if (!rep) {
-        insert.run(game.id, null, 'not_this_opening', null, null, null, null);
+        insert.run(game.id, null, 'not_this_opening', null, null, null, null, level);
         continue;
       }
       const res = findLeak(rep, moves, game.user_color, level);
@@ -90,8 +104,12 @@ export function scanLeaks(
         'ply' in res ? res.ply : null,
         'expectedSan' in res ? res.expectedSan : null,
         'playedSan' in res ? res.playedSan : null,
+        level,
       );
-      if (res.kind === 'leak') makeCardsDue(db, moves[res.ply - 1]!.fenBefore, now);
+      const isNew = !(before?.kind === 'leak' && 'nodeId' in res && before.node_id === res.nodeId);
+      if (res.kind === 'leak' && isNew && game.played_at >= now - RECENT_MS) {
+        flagLeakCard(db, moves[res.ply - 1]!.fenBefore, now);
+      }
     }
   });
 }
