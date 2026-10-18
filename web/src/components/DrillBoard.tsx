@@ -7,7 +7,7 @@ import { isPromotion, moveToUci } from '../lib/drill';
 export interface DrillArrow {
   from: string;
   to: string;
-  color: 'green' | 'red';
+  color: 'green' | 'red' | 'blue';
 }
 
 export interface DrillBoardProps {
@@ -19,7 +19,7 @@ export interface DrillBoardProps {
   locked: boolean;
 }
 
-const ARROW_COLORS = { green: '#1a7f37', red: '#cf222e' };
+const ARROW_COLORS = { green: '#1a7f37', red: '#cf222e', blue: '#0969da' };
 const LAST_MOVE = { backgroundColor: 'rgba(255, 235, 59, 0.5)' };
 const SELECTED = { backgroundColor: 'rgba(20, 85, 200, 0.4)' };
 const TARGET = { background: 'radial-gradient(circle, rgba(20, 85, 200, 0.45) 22%, transparent 24%)' };
@@ -32,22 +32,15 @@ const PROMOTION_PIECES = [
 
 /** Board for drills. Accepts legal moves only (drag or click-click) and reports them as UCI. */
 export function DrillBoard({ fen, orientation, lastMove, onMove, arrows = [], locked }: DrillBoardProps) {
-  const [shown, setShown] = useState({ source: fen, fen });
+  // The parent gives each drill its own `key`, so state starts fresh for every card.
+  const [position, setPosition] = useState(fen);
   const [selected, setSelected] = useState<string | null>(null);
   const [pending, setPending] = useState<{ from: string; to: string } | null>(null);
-
-  // A new position from the parent replaces what the board shows.
-  if (shown.source !== fen) {
-    setShown({ source: fen, fen });
-    setSelected(null);
-    setPending(null);
-  }
-  const position = shown.fen;
 
   const play = (uci: string) => {
     const chess = new Chess(fen);
     chess.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci.slice(4) || undefined });
-    setShown({ source: fen, fen: chess.fen() });
+    setPosition(chess.fen());
     setSelected(null);
     setPending(null);
     onMove(uci);

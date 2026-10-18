@@ -28,7 +28,7 @@ function arrowsFor(card: CardWithState, answer: Answer | null): DrillArrow[] {
   const { best } = card.solution;
   const arrows: DrillArrow[] = [{ from: best.slice(0, 2), to: best.slice(2, 4), color: 'green' }];
   if (answer.uci !== best) {
-    arrows.push({ from: answer.uci.slice(0, 2), to: answer.uci.slice(2, 4), color: answer.correct ? 'green' : 'red' });
+    arrows.push({ from: answer.uci.slice(0, 2), to: answer.uci.slice(2, 4), color: answer.correct ? 'blue' : 'red' });
   }
   return arrows;
 }
@@ -39,6 +39,9 @@ export function ReviewPage() {
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState<Answer | null>(null);
   const [counts, setCounts] = useState({ again: 0, hard: 0, good: 0, easy: 0 });
+  const [canSkip, setCanSkip] = useState(false);
+  const [skipped, setSkipped] = useState(0);
+  const [flagging, setFlagging] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [flagOpen, setFlagOpen] = useState(false);
   const [flagNote, setFlagNote] = useState('');
@@ -68,6 +71,8 @@ export function ReviewPage() {
     setAnswer(null);
     setFlagOpen(false);
     setFlagNote('');
+    setError(null);
+    setCanSkip(false);
     startedAt.current = Date.now();
   }, []);
 
@@ -91,6 +96,7 @@ export function ReviewPage() {
         next();
       } catch (e) {
         setError((e as Error).message);
+        setCanSkip(true);
       } finally {
         setSubmitting(false);
       }
@@ -99,13 +105,17 @@ export function ReviewPage() {
   );
 
   const flag = async () => {
-    if (!card || !flagNote.trim()) return;
+    if (!card || !flagNote.trim() || flagging) return;
+    setFlagging(true);
     try {
       await api.flagCard(card.id, flagNote.trim());
       // A flagged card is suspended on the server, so move on without rating it.
+      setSkipped((n) => n + 1);
       next();
     } catch (e) {
       setError((e as Error).message);
+    } finally {
+      setFlagging(false);
     }
   };
 
@@ -139,6 +149,7 @@ export function ReviewPage() {
         <p>
           Again: <strong>{counts.again}</strong> · Good: <strong>{counts.good}</strong> · Easy: <strong>{counts.easy}</strong>
           {counts.hard > 0 && <> · Hard: <strong>{counts.hard}</strong></>}
+          {skipped > 0 && <> · Skipped: <strong>{skipped}</strong></>}
         </p>
         <p><Link to="/">Back to dashboard</Link></p>
       </section>
@@ -155,6 +166,7 @@ export function ReviewPage() {
       </div>
       <p>{card.prompt}</p>
       <DrillBoard
+        key={card.id}
         fen={card.fen}
         orientation={card.sideToMove}
         lastMove={card.lastMove?.uci ?? null}
@@ -162,7 +174,25 @@ export function ReviewPage() {
         arrows={arrowsFor(card, answer)}
         locked={answer !== null}
       />
-      {error && <p className="error">{error}</p>}
+      {error && (
+        <p className="error">
+          {error}
+          {canSkip && (
+            <>
+              {' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setSkipped((n) => n + 1);
+                  next();
+                }}
+              >
+                Skip
+              </button>
+            </>
+          )}
+        </p>
+      )}
       {answer && (
         <>
           <p className={`feedback ${answer.correct ? 'correct' : 'wrong'}`}>
@@ -197,7 +227,7 @@ export function ReviewPage() {
           }}
         >
           <input value={flagNote} onChange={(e) => setFlagNote(e.target.value)} placeholder="What is wrong with this card?" aria-label="Problem note" />
-          <button type="submit" disabled={!flagNote.trim()}>Send</button>
+          <button type="submit" disabled={!flagNote.trim() || flagging}>Send</button>
         </form>
       )}
     </section>

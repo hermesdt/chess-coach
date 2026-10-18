@@ -1,4 +1,5 @@
 import type {
+  CardFlag,
   Color,
   ReviewResult,
   ReviewSession,
@@ -71,7 +72,7 @@ export const api = {
   getReviewSession: () => request<ReviewSession>('/review/session'),
   getReviewStats: () => request<ReviewStats>('/review/stats'),
   submitReview: (cardId: number, body: ReviewSubmit) => post<ReviewResult>(`/review/${cardId}`, body),
-  flagCard: (cardId: number, note: string) => post<unknown>(`/cards/${cardId}/flag`, { note }),
+  flagCard: (cardId: number, note: string) => post<CardFlag>(`/cards/${cardId}/flag`, { note }),
   importPgn: (pgn: string, colors?: (Color | null)[]) =>
     post<ImportResult>('/import', { pgn, colors } satisfies ImportRequest),
 };
