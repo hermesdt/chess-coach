@@ -118,3 +118,13 @@ describe('recordReview', () => {
   });
 });
 
+
+describe('upsertCard on conflict', () => {
+  it('updates last move and sort order', () => {
+    const first = upsertCard(db, card({ lastMove: { uci: 'e2e4' }, sortOrder: 3 }));
+    const again = upsertCard(db, card({ lastMove: { uci: 'd2d4' }, sortOrder: 1 }));
+    expect(again.id).toBe(first.id);
+    expect(again.lastMove).toEqual({ uci: 'd2d4' });
+    expect(db.prepare('SELECT sort_order FROM cards WHERE id = ?').get(first.id)!.sort_order).toBe(1);
+  });
+});

@@ -60,28 +60,33 @@ function mustGetCard(db: DatabaseSync, id: number): Card {
  */
 export function upsertCard(
   db: DatabaseSync,
-  c: Omit<Card, 'id' | 'createdAt' | 'suspended'>,
+  c: Omit<Card, 'id' | 'createdAt' | 'suspended'> & { sortOrder?: number | null },
   opts: { mergeRefs?: boolean } = {},
 ): Card {
   return transaction(db, () => {
     const existing = db.prepare('SELECT * FROM cards WHERE kind = ? AND position_key = ?').get(c.kind, c.positionKey);
     if (!existing) {
       const res = db.prepare(`INSERT INTO cards
-        (kind, position_key, fen, side_to_move, prompt, solution_json, refs_json, last_move_uci, suspended, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?)`).run(
+        (kind, position_key, fen, side_to_move, prompt, solution_json, refs_json, last_move_uci, sort_order, suspended, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)`).run(
         c.kind, c.positionKey, c.fen, c.sideToMove, c.prompt, JSON.stringify(c.solution), JSON.stringify(c.refs),
-        c.lastMove?.uci ?? null, Date.now(),
+        c.lastMove?.uci ?? null, c.sortOrder ?? null, Date.now(),
       );
       return mustGetCard(db, Number(res.lastInsertRowid));
     }
     const old = toCard(existing);
     const refs = opts.mergeRefs === false ? c.refs : mergeRefs(old.refs, c.refs);
     const flagged = db.prepare('SELECT 1 FROM card_flags WHERE card_id = ? LIMIT 1').get(old.id) !== undefined;
-    db.prepare(`UPDATE cards SET fen = ?, prompt = ?, solution_json = ?, refs_json = ?, suspended = ? WHERE id = ?`).run(
-      c.fen, c.prompt, JSON.stringify(c.solution), JSON.stringify(refs), flagged && old.suspended ? 1 : 0, old.id,
+    db.prepare(`UPDATE cards SET fen = ?, prompt = ?, solution_json = ?, refs_json = ?, last_move_uci = ?,
+      sort_order = ?, suspended = ? WHERE id = ?`).run(
+      c.fen, c.prompt, JSON.stringify(c.solution), JSON.stringify(refs), c.lastMove?.uci ?? null, c.sortOrder ?? null, flagged && old.suspended ? 1 : 0, old.id,
     );
     return mustGetCard(db, old.id);
   });
+}
+
+export function listCardsByKind(db: DatabaseSync, kind: Card['kind']): Card[] {
+  return db.prepare('SELECT * FROM cards WHERE kind = ? ORDER BY id').all(kind).map(toCard);
 }
 
 export function setSuspended(db: DatabaseSync, id: number, suspended: boolean): void {

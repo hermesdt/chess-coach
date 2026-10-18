@@ -24,10 +24,22 @@ function withState(db: DatabaseSync, id: number, due: number | null): CardWithSt
   return { ...card, due, isNew: due === null };
 }
 
+const KIND_ORDER = ['mistake', 'opening', 'lesson'];
+
+/** Round-robin over kinds (mistake, opening, lesson), skipping a kind that ran out. Keeps order within a kind. */
+function interleaveKinds(rows: { id: number; kind: string }[]): { id: number }[] {
+  const queues = KIND_ORDER.map((k) => rows.filter((r) => r.kind === k));
+  const out: { id: number }[] = [];
+  for (let i = 0; queues.some((q) => i < q.length); i++) {
+    for (const q of queues) if (i < q.length) out.push(q[i]!);
+  }
+  return out;
+}
+
 export interface SessionLimits { daily: number; newPerDay: number }
 
 /**
- * Daily session: due cards first (oldest due first), then new cards (oldest first).
+ * Daily session: due cards first (oldest due first), then new cards (kinds alternate; within a kind by sort_order, then id).
  * Total is capped by `daily`; new cards also by `newPerDay` minus cards first reviewed today.
  * `dueCount` and `newAvailable` are uncapped totals of non-suspended due / new cards.
  */
@@ -38,9 +50,9 @@ export function buildSession(
 ): ReviewSession {
   const due = db.prepare(`SELECT c.id AS id, s.due AS due FROM cards c JOIN card_state s ON s.card_id = c.id
     WHERE c.suspended = 0 AND s.due <= ? ORDER BY s.due, c.id`).all(now) as { id: number; due: number }[];
-  const newIds = db.prepare(`SELECT c.id AS id FROM cards c
+  const newIds = interleaveKinds(db.prepare(`SELECT c.id AS id, c.kind AS kind FROM cards c
     WHERE c.suspended = 0 AND NOT EXISTS (SELECT 1 FROM card_state s WHERE s.card_id = c.id)
-    ORDER BY c.id`).all() as { id: number }[];
+    ORDER BY c.sort_order IS NULL, c.sort_order, c.id`).all() as { id: number; kind: string }[]);
   const introducedToday = count(db, `SELECT COUNT(*) AS n FROM
     (SELECT card_id FROM reviews GROUP BY card_id HAVING MIN(reviewed_at) >= ?)`, startOfLocalDay(now));
 

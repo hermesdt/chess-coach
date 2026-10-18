@@ -91,3 +91,19 @@ describe('loadAllRepertoires', () => {
     expect(rep.byId.size).toBe(4);
   });
 });
+
+describe('loadRepertoire robustness', () => {
+  it('builds node ids from the canonical SAN', () => {
+    const rep = loadRepertoire({ id: 't', name: 'T', color: 'black', moves: [{ san: 'e4', children: [{ san: 'e5', children: [{ san: 'Nf3+' }] }] }] });
+    expect(rep.byId.has('e4 e5 Nf3')).toBe(true);
+    expect(rep.byId.has('e4 e5 Nf3+')).toBe(false);
+  });
+
+  it('throws RepertoireError for a null or non-object child', () => {
+    for (const bad of [null, 'e5', 5]) {
+      const json = { id: 't', name: 'T', color: 'black', moves: [{ san: 'e4', children: [bad] }] };
+      expect(() => loadRepertoire(json)).toThrow(RepertoireError);
+    }
+    expect(() => loadRepertoire({ id: 't', name: 'T', color: 'black', moves: [null] })).toThrow(RepertoireError);
+  });
+});

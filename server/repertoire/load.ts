@@ -41,26 +41,31 @@ export function loadRepertoire(json: unknown): Repertoire {
   }
   const byId = new Map<string, RepNode>();
 
-  const build = (rawNode: RawNode, game: Chess, parent: RepNode | null): RepNode => {
-    const san = rawNode.san;
-    const id = parent ? `${parent.id} ${String(san)}` : String(san);
-    if (typeof san !== 'string') throw new RepertoireError(id, 'Move needs a san string');
-    const level = rawNode.level === undefined ? (parent?.level ?? 1) : rawNode.level;
-    if (!isLevel(level)) throw new RepertoireError(id, 'level must be 1, 2 or 3');
+  const build = (rawNode: unknown, game: Chess, parent: RepNode | null): RepNode => {
+    const rawId = (san: unknown) => (parent ? `${parent.id} ${String(san)}` : String(san));
+    if (typeof rawNode !== 'object' || rawNode === null || Array.isArray(rawNode)) {
+      throw new RepertoireError(rawId('?'), 'Move must be an object');
+    }
+    const fields = rawNode as RawNode;
+    const { san, level: rawLevel } = fields;
+    if (typeof san !== 'string') throw new RepertoireError(rawId(san), 'Move needs a san string');
+    const level = rawLevel === undefined ? (parent?.level ?? 1) : rawLevel;
+    if (!isLevel(level)) throw new RepertoireError(rawId(san), 'level must be 1, 2 or 3');
     const fenBefore = game.fen();
     const mover: Color = game.turn() === 'w' ? 'white' : 'black';
     let move;
     try {
       move = game.move(san);
     } catch {
-      throw new RepertoireError(id, `Illegal move "${san}"`);
+      throw new RepertoireError(rawId(san), `Illegal move "${san}"`);
     }
+    const id = rawId(move.san);
     const node: RepNode = {
       id,
       san: move.san,
       uci: move.from + move.to + (move.promotion ?? ''),
-      comment: typeof rawNode.comment === 'string' ? rawNode.comment : null,
-      tags: Array.isArray(rawNode.tags) ? rawNode.tags.filter((t): t is string => typeof t === 'string') : [],
+      comment: typeof fields.comment === 'string' ? fields.comment : null,
+      tags: Array.isArray(fields.tags) ? (fields.tags as unknown[]).filter((t): t is string => typeof t === 'string') : [],
       level,
       fenBefore,
       fenAfter: game.fen(),
@@ -70,15 +75,15 @@ export function loadRepertoire(json: unknown): Repertoire {
       children: [],
     };
     byId.set(id, node);
-    if (Array.isArray(rawNode.children)) {
-      for (const child of rawNode.children as RawNode[]) {
+    if (Array.isArray(fields.children)) {
+      for (const child of fields.children as unknown[]) {
         node.children.push(build(child, new Chess(node.fenAfter), node));
       }
     }
     return node;
   };
 
-  const roots = (raw.moves as RawNode[]).map((m) => build(m, new Chess(), null));
+  const roots = (raw.moves as unknown[]).map((m) => build(m, new Chess(), null));
   return { id: raw.id, name: raw.name, color: raw.color, roots, byId };
 }
 
