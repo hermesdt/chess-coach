@@ -18,3 +18,9 @@ beginner principles with spaced repetition.
 - Tests never hit the network; use recorded fixtures in `server/**/__fixtures__/`.
 - Commands: `pnpm dev`, `pnpm test`, `pnpm typecheck`, `pnpm lint`.
 - Server binds to 127.0.0.1 only. Secrets live in `.env` (gitignored).
+
+## Safety
+
+Never delete or overwrite `data/chess.db` or stop a process you did not start.
+Manual and smoke runs use `pnpm smoke:start` (temp DB, port 8788) and
+`pnpm smoke:stop <pid>`. Backups live in `data/backups/`.

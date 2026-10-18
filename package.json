@@ -7,7 +7,9 @@
     "start": "tsx server/main.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "smoke:start": "bash scripts/smoke-server.sh",
+    "smoke:stop": "bash scripts/smoke-stop.sh"
   },
   "packageManager": "pnpm@10.32.1",
   "dependencies": {

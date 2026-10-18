@@ -1,8 +1,10 @@
 import { existsSync, mkdirSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { createApp } from './app.js';
 import { openDb } from './db/db.js';
+import { backupDb } from './db/backup.js';
 import { backfillMistakeCards } from './srs/backfill.js';
 import { requeuePending } from './analysis/queue.js';
 import { closeEnginePool, lazyEnginePool } from './engine/pool.js';
@@ -10,8 +12,24 @@ import { recoverInterruptedJobs } from './jobs.js';
 
 if (existsSync('.env')) process.loadEnvFile('.env');
 
-mkdirSync('data', { recursive: true });
-const db = openDb('data/chess.db');
+const DEFAULT_DB_PATH = 'data/chess.db';
+const dbPath = process.env.CHESS_DB_PATH || DEFAULT_DB_PATH;
+const port = Number(process.env.PORT) || 8787;
+mkdirSync(dirname(dbPath), { recursive: true });
+const db = openDb(dbPath);
+
+const backupDir = process.env.BACKUP_DIR || (dbPath === DEFAULT_DB_PATH ? join(dirname(dbPath), 'backups') : null);
+if (backupDir) {
+  const runBackup = () => {
+    try {
+      backupDb(db, backupDir, new Date());
+    } catch (err) {
+      console.error('db backup failed:', err);
+    }
+  };
+  runBackup();
+  setInterval(runBackup, 24 * 60 * 60 * 1000).unref();
+}
 recoverInterruptedJobs(db, Date.now());
 requeuePending(db, { pool: lazyEnginePool });
 backfillMistakeCards(db, lazyEnginePool);
@@ -22,8 +40,16 @@ if (existsSync('dist')) {
   app.get('*', serveStatic({ path: './dist/index.html' }));
 }
 
-serve({ fetch: app.fetch, hostname: '127.0.0.1', port: 8787 }, (info) => {
+const server = serve({ fetch: app.fetch, hostname: '127.0.0.1', port }, (info) => {
   console.log(`chess-coach listening on http://127.0.0.1:${info.port}`);
+});
+
+server.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${port} is already in use — another chess-coach server is running?`);
+    process.exit(1);
+  }
+  throw err;
 });
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
