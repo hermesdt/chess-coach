@@ -23,10 +23,10 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | # | Milestone | Status | Plan |
 |---|-----------|--------|------|
 | M1 | Foundation + sync + games list/viewer | planned | `docs/superpowers/plans/2026-10-18-m1-foundation-sync.md` |
-| M2 | Engine analysis + review screen | todo | — |
+| M2 | Engine analysis + review screen | planned | `docs/superpowers/plans/2026-10-18-m2-engine-analysis.md` |
 | M3 | SRS core + mistake cards + dashboard v1 | todo | — |
 | M4 | Openings: repertoires, validator, explorer, drill, leaks | todo | — |
-| M5 | AI coach (sdk + cli providers) | todo | — |
+| M5 | AI coach (claude-cli, codex-cli, opencode-cli, openrouter, anthropic-api) | todo | — |
 | M6 | Principles course (12 lessons) | todo | — |
 | M7 | Insights + polish + README | todo | — |
 
@@ -34,3 +34,4 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 
 - 2026-10-18 — Design written. Stockfish 19 installed via Homebrew.
   Lichess export needs a personal token (anonymous returns 404).
+- 2026-10-18 — Owner asked for several AI providers. M5 now covers claude-cli, codex-cli, opencode-cli, openrouter, anthropic-api (no LiteLLM).

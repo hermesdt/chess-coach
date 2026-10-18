@@ -92,24 +92,37 @@ into practice, and connect each mistake to a principle they can learn.
   monthly archive. Send a descriptive `User-Agent`. Archives are monthly; only
   re-fetch the current month and months not yet stored.
 - **PGN import** (paste or file) is a fallback for both platforms.
-- **AI** (Claude): no `ANTHROPIC_API_KEY` is set on this machine today, but the
-  `claude` CLI (Claude Code 2.1.x) is installed and logged in. The app uses an
-  AI provider interface with two implementations:
-  1. `anthropic-sdk` — `@anthropic-ai/sdk`, used when `ANTHROPIC_API_KEY` (or
-     other SDK credentials) is present. Use `client.messages.parse()` with
-     `output_config.format = zodOutputFormat(schema)` for structured output;
-     top-level `cache_control: {type: "ephemeral"}`; check `stop_reason`
-     (`refusal`, `max_tokens`) before reading output. Default model
-     `claude-opus-5-5` with `output_config.effort: "low"`, overridable via
-     `AI_MODEL` / `AI_EFFORT`. Opus 5.5 rejects `thinking: disabled` and
-     `budget_tokens`; do not send them.
-  2. `claude-cli` — spawns `claude -p --output-format json` with the prompt on
-     stdin and a JSON-schema instruction; parses and zod-validates the result.
-     Used when no SDK key is present and `claude` is on PATH.
-  If neither is available, AI features show "AI not configured" and everything
-  else still works.
+- **AI providers** (owner request, 2026-10-18: "multiple options, not just
+  Claude"; subscriptions preferred, OpenRouter credits also fine). Installed:
+  `claude` CLI 2.1.x (logged in), `codex` CLI 0.163 (logged in), `opencode`
+  CLI 1.19. No `ANTHROPIC_API_KEY` or `OPENROUTER_API_KEY` in the env today.
+  One interface, five adapters (`server/ai/providers/`):
+
+  | id | How | Credentials | Default model |
+  |---|---|---|---|
+  | `claude-cli` | `claude -p --output-format json`, prompt on stdin | Claude subscription | CLI default (override `--model`) |
+  | `codex-cli` | `codex exec` non-interactive, read-only sandbox, `--skip-git-repo-check`; JSON via `--output-schema`/`--output-last-message` if the installed version supports them, else prompt instruction | ChatGPT subscription | CLI default |
+  | `opencode-cli` | `opencode run --format json -m <provider/model>` | whatever opencode is configured with | opencode default |
+  | `openrouter` | HTTPS `POST https://openrouter.ai/api/v1/chat/completions` with `response_format: {type: "json_schema", ...}` | `OPENROUTER_API_KEY` (env or Settings) | configurable; default an Anthropic Claude model slug (verify the slug via `GET /api/v1/models` at build time) |
+  | `anthropic-api` | `@anthropic-ai/sdk` `client.messages.parse()` + `zodOutputFormat`, top-level `cache_control`, check `stop_reason` | `ANTHROPIC_API_KEY` | `claude-opus-5-5`, `output_config.effort: "low"`; never send `thinking: disabled` or `budget_tokens` |
+
+  - Every adapter returns text that is parsed as JSON and validated with the
+    same zod schema; one retry on parse/validation failure with the error
+    appended. CLI adapters run with a timeout (default 180 s), no tools, and
+    in a temp working directory.
+  - **Selection:** Settings has a default provider (`auto` or an id) and an
+    optional model per provider. `auto` picks the first available in this
+    order: `claude-cli`, `codex-cli`, `anthropic-api`, `openrouter`,
+    `opencode-cli` (subscriptions first). Availability = binary on PATH /
+    key present; Settings shows each provider's status and a "Test" button.
+  - The review screen has "Explain with ▾" to run another provider on the
+    same game; results from several providers show as tabs.
+  - LiteLLM is not used: it needs a separate Python proxy, and OpenRouter +
+    opencode already give access to many models.
+  - If no provider is available, AI features show "AI not configured" and
+    everything else still works.
 - AI output is cached in the DB keyed by (game id, analysis version, prompt
-  version). Never re-call the AI for the same inputs.
+  version, provider id, model). Never re-call the AI for the same inputs.
 - Single user, single process. No auth on the local server; bind to
   `127.0.0.1` only.
 
@@ -126,7 +139,8 @@ chess/
     analysis/    move classification, accuracy, pattern tags, key moments
     repertoire/  repertoire loading, leak detection
     srs/         scheduling (ts-fsrs), card generation
-    ai/          provider interface, sdk + cli providers, prompts, zod schemas
+    ai/          provider interface, adapters (claude-cli, codex-cli,
+                 opencode-cli, openrouter, anthropic-api), prompts, zod schemas
   web/           Vite + React + React Router, react-chessboard, chess.js
   shared/        types shared by server and web (API DTOs)
   content/       authored data: repertoires (JSON), lessons (Markdown + JSON)
@@ -142,8 +156,9 @@ chess/
   fine; no websockets needed).
 - Config from `.env` (gitignored) with `.env.example` committed:
   `CHESSCOM_USERNAME`, `LICHESS_USERNAME`, `LICHESS_TOKEN`, `STOCKFISH_PATH`,
-  `ANTHROPIC_API_KEY`, `AI_PROVIDER` (`auto|sdk|cli|none`), `AI_MODEL`,
-  `AI_EFFORT`. Usernames are also editable on a Settings page (stored in DB,
+  `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY`, `AI_PROVIDER`
+  (`auto|claude-cli|codex-cli|opencode-cli|openrouter|anthropic-api|none`),
+  `AI_MODEL`, `AI_EFFORT`. Usernames are also editable on a Settings page (stored in DB,
   DB wins over `.env`).
 
 ## 7. Data model (outline — builder refines columns)
@@ -158,7 +173,7 @@ chess/
 - `move_analysis(game_id, ply, san, uci, fen_before, eval_before_cp,
   mate_before, eval_after_cp, mate_after, best_uci, best_san, pv json,
   win_pct_loss, classification, tags json)`
-- `ai_notes(game_id, ply NULL for whole game, prompt_version, model, json)`
+- `ai_notes(game_id, ply NULL for whole game, prompt_version, provider, model, json)`
 - `cards(id, kind[opening|mistake|lesson], ref json, fen, side_to_move,
   solution json, prompt text, created_at, suspended)`
 - `card_state(card_id, fsrs state json, due, last_review)`
@@ -353,7 +368,7 @@ status; each milestone gets its own plan in `docs/superpowers/plans/`.
   mistake cards from analysis, dashboard v1.
 - **M4 Openings** — repertoire content (Caro-Kann, London) + validator,
   tree explorer, opening cards + drill, leak detection.
-- **M5 AI coach** — provider interface (sdk + cli), game review notes,
+- **M5 AI coach** — provider interface + 5 adapters, game review notes,
   weakness report, caching.
 - **M6 Course** — 12 lessons with validated exercises, lesson pages, lesson
   cards, tag → lesson links.
@@ -374,8 +389,8 @@ status; each milestone gets its own plan in `docs/superpowers/plans/`.
 - Stack: TypeScript, Hono, Vite + React, node:sqlite, native Stockfish 19
   (installed with Homebrew during setup).
 - Lichess needs a personal token (their API now refuses anonymous export).
-- AI default model `claude-opus-5-5` at low effort via the SDK; falls back to
-  the local `claude` CLI when no API key exists.
+- AI: five provider adapters; `auto` prefers subscriptions (claude CLI, then
+  codex CLI). No LiteLLM.
 - Course list of 12 lessons and the repertoire coverage above.
 - Daily review cap 20, new opening cards 10/day.
 
