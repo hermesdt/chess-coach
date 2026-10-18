@@ -1,5 +1,8 @@
 import type {
   Color,
+  ReviewResult,
+  ReviewSession,
+  ReviewSubmit,
   GameAnalysis,
   GameDetail,
   GameList,
@@ -13,6 +16,13 @@ import type {
 } from '../../shared/types';
 
 export type AnalysisResponse = GameAnalysis | { status: 'none' } | { status: 'pending' | 'running' | 'error'; error?: string | null };
+
+export interface ReviewStats {
+  dueNow: number;
+  dueToday: number;
+  totalCards: number;
+  reviewedToday: number;
+}
 
 export interface SyncStatus {
   chesscom: number | null;
@@ -58,6 +68,10 @@ export const api = {
   getJob: (id: number) => request<Job>(`/jobs/${id}`),
   getSyncStatus: () => request<SyncStatus>('/sync/status'),
   previewImport: (pgn: string) => post<ImportPreviewItem[]>('/import/preview', { pgn }),
+  getReviewSession: () => request<ReviewSession>('/review/session'),
+  getReviewStats: () => request<ReviewStats>('/review/stats'),
+  submitReview: (cardId: number, body: ReviewSubmit) => post<ReviewResult>(`/review/${cardId}`, body),
+  flagCard: (cardId: number, note: string) => post<unknown>(`/cards/${cardId}/flag`, { note }),
   importPgn: (pgn: string, colors?: (Color | null)[]) =>
     post<ImportResult>('/import', { pgn, colors } satisfies ImportRequest),
 };
