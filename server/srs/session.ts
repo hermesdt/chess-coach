@@ -24,6 +24,8 @@ function withState(db: DatabaseSync, id: number, due: number | null): CardWithSt
   return { ...card, due, isNew: due === null };
 }
 
+export interface SessionLimits { daily: number; newPerDay: number }
+
 /**
  * Daily session: due cards first (oldest due first), then new cards (oldest first).
  * Total is capped by `daily`; new cards also by `newPerDay` minus cards first reviewed today.
@@ -32,7 +34,7 @@ function withState(db: DatabaseSync, id: number, due: number | null): CardWithSt
 export function buildSession(
   db: DatabaseSync,
   now: number,
-  limits: { daily: number; newPerDay: number },
+  limits: SessionLimits,
 ): ReviewSession {
   const due = db.prepare(`SELECT c.id AS id, s.due AS due FROM cards c JOIN card_state s ON s.card_id = c.id
     WHERE c.suspended = 0 AND s.due <= ? ORDER BY s.due, c.id`).all(now) as { id: number; due: number }[];
@@ -49,4 +51,9 @@ export function buildSession(
     ...newIds.slice(0, newSlots).map((r) => withState(db, r.id, null)),
   ];
   return { cards, dueCount: due.length, newAvailable: newIds.length };
+}
+
+/** Number of cards in today's session. Shared by the session, stats and dashboard. */
+export function sessionSize(db: DatabaseSync, now: number, limits: SessionLimits): number {
+  return buildSession(db, now, limits).cards.length;
 }

@@ -6,6 +6,7 @@ import { createApp } from '../app.js';
 import { openDb } from '../db/db.js';
 import { insertGames, listGames } from '../db/games-repo.js';
 import { setSetting } from '../db/settings-repo.js';
+import { positionKey, upsertCard } from '../srs/cards-repo.js';
 
 const NOW = new Date(2026, 9, 18, 12, 0, 0).getTime();
 const JSON_HEADERS = { 'content-type': 'application/json' };
@@ -52,7 +53,7 @@ describe('GET /api/dashboard', () => {
     const body = await get();
     expect(body.topTag).toBeNull();
     expect(body.recentGames).toEqual([]);
-    expect(body.review).toEqual({ dueNow: 0, dueToday: 0, totalCards: 0, reviewedToday: 0 });
+    expect(body.review).toEqual({ dueNow: 0, dueToday: 0, totalCards: 0, reviewedToday: 0, sessionSize: 0 });
     expect(body.sync).toEqual({ chesscom: null, lichess: null });
     expect(body.level).toEqual({ level: 1, rating: null, source: 'default' });
     expect(body.levelUp).toBeNull();
@@ -73,6 +74,22 @@ describe('GET /api/dashboard', () => {
     for (let i = 0; i < 30; i++) addGame([[['hung_piece'], true]]);
     const { topTag } = await get();
     expect(topTag).toEqual({ tag: 'hung_piece', count: 30, games: 30 });
+  });
+
+  it('breaks ties by tag severity', async () => {
+    addGame([[['early_queen'], true], [['bad_trade'], true]]);
+    expect((await get()).topTag).toEqual({ tag: 'bad_trade', count: 1, games: 1 });
+  });
+
+  it('reports sessionSize for a database with only new cards', async () => {
+    for (let i = 1; i <= 3; i++) {
+      const fen = `8/8/8/8/8/8/8/${i}K6 w - -`;
+      upsertCard(db, { kind: 'mistake', positionKey: positionKey(fen), fen, sideToMove: 'white', prompt: 'p',
+        solution: { accepted: ['a1a2'], best: 'a1a2', explanation: null }, refs: [], lastMove: null });
+    }
+    const { review } = (await get()) as unknown as { review: { dueNow: number; sessionSize: number } };
+    expect(review.dueNow).toBe(0);
+    expect(review.sessionSize).toBe(3);
   });
 
   it('returns null when no user move has a tag', async () => {
@@ -106,12 +123,19 @@ describe('level-up banner', () => {
   });
 
   it('shows the banner when the level rose, until it is marked as seen', async () => {
+    seed(500);
     await get();
     setSetting(db, 'level_override', '2');
     expect((await get()).levelUp).toEqual({ from: 1, to: 2 });
     expect((await get()).levelUp).toEqual({ from: 1, to: 2 });
     const res = await app.request('/api/dashboard/level-seen', { method: 'POST', headers: JSON_HEADERS, body: '{}' });
     expect(res.status).toBe(200);
+    expect((await get()).levelUp).toBeNull();
+  });
+
+  it('does not store the default level, so the first real level shows no banner', async () => {
+    await get();
+    setSetting(db, 'level_override', '3');
     expect((await get()).levelUp).toBeNull();
   });
 

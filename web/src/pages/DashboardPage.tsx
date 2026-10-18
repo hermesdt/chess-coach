@@ -5,6 +5,7 @@ import { api, type DashboardData } from '../api';
 import { SyncButton } from '../components/SyncButton';
 import { formatDate } from '../lib/format';
 
+const plural = (n: number, word: string) => (n === 1 ? word : `${word}s`);
 const when = (ms: number | null) => (ms === null ? 'never' : new Date(ms).toLocaleString());
 
 export function DashboardPage() {
@@ -48,8 +49,8 @@ export function DashboardPage() {
       <div className="cards">
         <div className="panel">
           <h2>Today</h2>
-          <p>{review.dueNow} {review.dueNow === 1 ? 'card' : 'cards'} to review</p>
-          <button type="button" className="big" disabled={review.dueNow === 0} onClick={() => void navigate('/review')}>
+          <p>{review.sessionSize} {plural(review.sessionSize, 'card')} to review today</p>
+          <button type="button" className="big" disabled={review.sessionSize === 0} onClick={() => void navigate('/review')}>
             Start review
           </button>
         </div>
@@ -63,7 +64,7 @@ export function DashboardPage() {
           <h2>Your focus</h2>
           {topTag ? (
             <>
-              <p>{TAG_TEXT[topTag.tag]} — in {topTag.count} of your last {topTag.games} games</p>
+              <p>{TAG_TEXT[topTag.tag]} — in {topTag.count} of your last {topTag.games} {plural(topTag.games, 'game')}</p>
               <span className="muted">Lesson coming soon</span>
             </>
           ) : (

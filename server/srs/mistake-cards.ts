@@ -1,6 +1,6 @@
 import type { DatabaseSync } from 'node:sqlite';
-import type { GameAnalysis, MoveAnalysis } from '../../shared/types.js';
-import { CLASSIFICATION_TEXT, TAG_TEXT } from '../../shared/tag-text.js';
+import type { GameAnalysis, MoveAnalysis, Tag } from '../../shared/types.js';
+import { bySeverity, CLASSIFICATION_TEXT, TAG_TEXT } from '../../shared/tag-text.js';
 import { winPct } from '../analysis/winpct.js';
 import type { EnginePool } from '../engine/pool.js';
 import type { EngineLine } from '../engine/uci.js';
@@ -8,6 +8,8 @@ import { listCardsByRef, positionKey, setRefs, setSuspended, upsertCard } from '
 
 const MULTIPV = 3;
 const ACCEPT_WITHIN = 5;
+/** Opening-habit tags are noise on a tactical card, so only these tags are explained. */
+const MATERIAL_TAGS: Tag[] = ['allowed_mate', 'missed_mate', 'hung_piece', 'bad_trade', 'missed_capture'];
 
 /** Moves whose win % is within 5 of the best line. The played move is never accepted. */
 export function acceptedMoves(lines: EngineLine[], played: string): string[] {
@@ -22,9 +24,17 @@ export function acceptedMoves(lines: EngineLine[], played: string): string[] {
   return out;
 }
 
+/** True when the played move is one of the lines and within 5 win % of the best one. */
+function playedWithinMargin(lines: EngineLine[], played: string): boolean {
+  const first = lines[0];
+  if (!first) return false;
+  const best = winPct(first.score);
+  return lines.some((l) => l.pv[0] === played && best - winPct(l.score) <= ACCEPT_WITHIN);
+}
+
 function explanation(m: MoveAnalysis): string {
   const label = CLASSIFICATION_TEXT[m.classification] ?? m.classification;
-  const tags = m.tags.map((t) => TAG_TEXT[t]);
+  const tags = bySeverity(m.tags.filter((t) => MATERIAL_TAGS.includes(t))).map((t) => TAG_TEXT[t]);
   return tags.length === 0 ? label : `${label} — ${tags.join('. ')}.`;
 }
 
@@ -47,6 +57,8 @@ export async function buildMistakeCards(
 
   for (const m of mistakes) {
     const lines = await pool.analyse(m.fenBefore, { nodes: opts.nodes, multipv: MULTIPV });
+    // The played move is within the accepted margin of the best line: not a real mistake at this depth.
+    if (playedWithinMargin(lines, m.uci)) continue;
     const accepted = acceptedMoves(lines, m.uci);
     const first = lines[0]?.pv[0];
     const best = first && first !== m.uci ? first : accepted[0];

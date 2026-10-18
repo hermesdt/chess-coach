@@ -1,5 +1,23 @@
 import type { Classification, Tag } from './types';
 
+/** Tags from most to least serious. Used to order explanations and break ties. */
+export const TAG_SEVERITY: Tag[] = [
+  'allowed_mate',
+  'missed_mate',
+  'hung_piece',
+  'bad_trade',
+  'missed_capture',
+  'no_castle',
+  'early_queen',
+  'slow_development',
+  'same_piece_twice',
+];
+
+/** Sorts tags by severity. Does not change the input. */
+export function bySeverity(tags: readonly Tag[]): Tag[] {
+  return [...tags].sort((a, b) => TAG_SEVERITY.indexOf(a) - TAG_SEVERITY.indexOf(b));
+}
+
 /** Plain-words explanation for every tag. */
 export const TAG_TEXT: Record<Tag, string> = {
   hung_piece: 'You left a piece undefended',

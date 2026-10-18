@@ -73,6 +73,21 @@ describe('buildMistakeCards', () => {
     });
   });
 
+  it('lists material tags by severity and leaves out opening-habit tags', async () => {
+    const tags: Tag[] = ['early_queen', 'hung_piece', 'allowed_mate', 'no_castle'];
+    await buildMistakeCards(db, analysis(1, [move({ tags })]), pool(three), { nodes: 10 });
+    expect(listCardsByRef(db, 1)[0]?.solution.explanation).toBe(
+      'Blunder — This allowed a checkmate. You left a piece undefended.',
+    );
+  });
+
+  it('creates no card when the played move is within 5 win % of the best line', async () => {
+    const lines = [line(1, 80, 'e2e4'), line(2, 77, 'a2a3')];
+    const res = await buildMistakeCards(db, analysis(1, [move()]), pool(lines), { nodes: 10 });
+    expect(res).toEqual({ created: 0, updated: 0, suspended: 0 });
+    expect(listCardsByRef(db, 1)).toEqual([]);
+  });
+
   it('uses the classification text alone when there are no tags', async () => {
     await buildMistakeCards(db, analysis(1, [move({ classification: 'mistake' })]), pool(three), { nodes: 10 });
     expect(listCardsByRef(db, 1)[0]?.solution.explanation).toBe('Mistake');

@@ -1,4 +1,4 @@
-import { CLASSIFICATION_TEXT, TAG_TEXT } from '../../../shared/tag-text';
+import { bySeverity, CLASSIFICATION_TEXT, TAG_TEXT } from '../../../shared/tag-text';
 import type { Classification, MoveAnalysis, Tag } from '../../../shared/types';
 
 /**
@@ -30,7 +30,7 @@ const capitalise = (text: string) => text.charAt(0).toUpperCase() + text.slice(1
  * Without a classification label (a tag-only moment) the first tag becomes the heading.
  */
 export function momentText(move: MoveAnalysis): { title: string; reasons: string[] } {
-  const reasons = move.tags.map((t) => TAG_TEXT[t]);
+  const reasons = bySeverity(move.tags).map((t) => TAG_TEXT[t]);
   const label = CLASSIFICATION_TEXT[move.classification];
   if (label) return { title: label, reasons };
   const [first, ...rest] = reasons;

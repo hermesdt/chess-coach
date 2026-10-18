@@ -1,9 +1,12 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Hono } from 'hono';
+import type { EnginePool } from '../engine/pool.js';
+import { backfillMistakeCards } from '../srs/backfill.js';
 import type { Rating, ReviewSubmit } from '../../shared/types.js';
 import { getSettings } from '../config.js';
 import { addFlag, getCard, listFlags, recordReview } from '../srs/cards-repo.js';
-import { buildSession, endOfLocalDay, startOfLocalDay } from '../srs/session.js';
+import { buildSession } from '../srs/session.js';
+import { reviewStats } from '../srs/stats.js';
 
 const RATINGS: readonly string[] = ['again', 'hard', 'good', 'easy'];
 
@@ -20,22 +23,7 @@ function parseSubmit(body: unknown): ReviewSubmit | null {
   return { rating: rating as Rating, answerUci, durationMs };
 }
 
-function count(db: DatabaseSync, sql: string, ...params: number[]): number {
-  return Number((db.prepare(sql).get(...params) as { n: number }).n);
-}
-
-export function reviewStats(db: DatabaseSync, t: number) {
-  return {
-    dueNow: count(db, `SELECT COUNT(*) AS n FROM cards c JOIN card_state s ON s.card_id = c.id
-      WHERE c.suspended = 0 AND s.due <= ?`, t),
-    dueToday: count(db, `SELECT COUNT(*) AS n FROM cards c JOIN card_state s ON s.card_id = c.id
-      WHERE c.suspended = 0 AND s.due < ?`, endOfLocalDay(t)),
-    totalCards: count(db, 'SELECT COUNT(*) AS n FROM cards WHERE suspended = 0'),
-    reviewedToday: count(db, 'SELECT COUNT(*) AS n FROM reviews WHERE reviewed_at >= ? AND reviewed_at <= ?', startOfLocalDay(t), t),
-  };
-}
-
-export function reviewRoutes(db: DatabaseSync, now: () => number): Hono {
+export function reviewRoutes(db: DatabaseSync, now: () => number, pool: Pick<EnginePool, 'analyse'>): Hono {
   return new Hono()
     .get('/review/session', (c) => {
       const { reviewDailyLimit, reviewNewPerDay } = getSettings(db);
@@ -51,6 +39,7 @@ export function reviewRoutes(db: DatabaseSync, now: () => number): Hono {
       if (card.suspended) return c.json({ error: 'card is suspended' }, 409);
       return c.json(recordReview(db, id, submit, now()));
     })
+    .post('/cards/backfill', (c) => c.json(backfillMistakeCards(db, pool)))
     .get('/cards/flags', (c) => c.json(listFlags(db)))
     .post('/cards/:id/flag', async (c) => {
       const id = parseId(c.req.param('id'));

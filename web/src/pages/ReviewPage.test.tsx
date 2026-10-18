@@ -10,7 +10,7 @@ import { ReviewPage } from './ReviewPage';
 vi.mock('react-chessboard', () => ({
   Chessboard: ({ options }: { options: { position: string; onSquareClick: (a: { piece: null; square: string }) => void } }) => (
     <div data-testid="board" data-position={options.position}>
-      {['e2', 'e4'].map((square) => (
+      {['e2', 'e4', 'e7', 'e8'].map((square) => (
         <button key={square} type="button" onClick={() => options.onSquareClick({ piece: null, square })}>
           sq-{square}
         </button>
@@ -48,5 +48,40 @@ describe('ReviewPage', () => {
     await screen.findByText('Prompt 2');
     expect(screen.queryByText('Correct')).toBeNull();
     expect(position()).toBe(START);
+  });
+
+  it('shows an Again card once more at the end, and only once', async () => {
+    vi.spyOn(api, 'getReviewSession').mockResolvedValue({ cards: [card(1), card(2)], dueCount: 0, newAvailable: 2 });
+    const submit = vi.spyOn(api, 'submitReview').mockResolvedValue({ cardId: 1, nextDue: 0 });
+    render(<MemoryRouter><ReviewPage /></MemoryRouter>);
+    const play = async (prompt: string, button: string) => {
+      await screen.findByText(prompt);
+      fireEvent.click(screen.getByText('sq-e2'));
+      fireEvent.click(screen.getByText('sq-e4'));
+      await screen.findByText('Correct');
+      fireEvent.click(screen.getByText(button));
+    };
+    await play('Prompt 1', '1 Again');
+    await play('Prompt 2', '3 Good');
+    await play('Prompt 1', '1 Again');
+    await screen.findByText('Done');
+    expect(submit.mock.calls.map((c) => c[0])).toEqual([1, 2, 1]);
+  });
+
+  it('submits e7e8q after clicking e7, e8 and choosing Queen', async () => {
+    const promo: CardWithState = {
+      ...card(1), fen: '7k/4P3/8/8/8/8/8/4K3 w - - 0 1', solution: { accepted: ['e7e8q'], best: 'e7e8q', explanation: null },
+    };
+    vi.spyOn(api, 'getReviewSession').mockResolvedValue({ cards: [promo], dueCount: 0, newAvailable: 1 });
+    const submit = vi.spyOn(api, 'submitReview').mockResolvedValue({ cardId: 1, nextDue: 0 });
+    render(<MemoryRouter><ReviewPage /></MemoryRouter>);
+    await screen.findByText('Prompt 1');
+    fireEvent.click(screen.getByText('sq-e7'));
+    fireEvent.click(screen.getByText('sq-e8'));
+    fireEvent.click(screen.getByText('Queen'));
+    await screen.findByText('Correct');
+    fireEvent.click(screen.getByText('3 Good'));
+    await vi.waitFor(() => expect(submit).toHaveBeenCalled());
+    expect(submit.mock.calls[0]![1].answerUci).toBe('e7e8q');
   });
 });

@@ -1,7 +1,8 @@
 import { type Card as FsrsCard, createEmptyCard, fsrs, Rating as FsrsRating } from 'ts-fsrs';
 import type { Rating } from '../../shared/types.js';
 
-const scheduler = fsrs();
+// Daily scheduling: the app reviews once a day, so intervals are whole days, not minutes.
+const scheduler = fsrs({ enable_short_term: false });
 
 const RATINGS = {
   again: FsrsRating.Again,

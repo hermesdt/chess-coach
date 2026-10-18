@@ -4,6 +4,7 @@ import type { CardWithState, Rating } from '../../../shared/types';
 import { api } from '../api';
 import { DrillBoard, type DrillArrow } from '../components/DrillBoard';
 import { bestSan, checkAnswer } from '../lib/drill';
+import { REVIEW_FINISHED } from '../lib/events';
 
 const RATINGS: { rating: Rating; label: string }[] = [
   { rating: 'again', label: 'Again' },
@@ -46,6 +47,8 @@ export function ReviewPage() {
   const [flagOpen, setFlagOpen] = useState(false);
   const [flagNote, setFlagNote] = useState('');
   const startedAt = useRef(Date.now());
+  // Cards rated Again return once at the end of the session. This remembers which already did.
+  const requeued = useRef(new Set<number>());
 
   useEffect(() => {
     let stale = false;
@@ -93,6 +96,10 @@ export function ReviewPage() {
       try {
         await api.submitReview(card.id, { rating, answerUci: answer.uci, durationMs: Date.now() - startedAt.current });
         setCounts((c) => ({ ...c, [rating]: c[rating] + 1 }));
+        if (rating === 'again' && !requeued.current.has(card.id)) {
+          requeued.current.add(card.id);
+          setCards((list) => (list ? [...list, card] : list));
+        }
         next();
       } catch (e) {
         setError((e as Error).message);
@@ -132,6 +139,11 @@ export function ReviewPage() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [answer, submit]);
+
+  const finished = cards !== null && cards.length > 0 && !card;
+  useEffect(() => {
+    if (finished) window.dispatchEvent(new Event(REVIEW_FINISHED));
+  }, [finished]);
 
   if (!cards) return error ? <p className="error">{error}</p> : <p>Loading...</p>;
   if (cards.length === 0) {

@@ -8,6 +8,10 @@ describe('schedule', () => {
     expect(schedule(null, 'good', t0).due).toBeGreaterThan(t0);
   });
 
+  it('schedules Again on a new card at least a day out (no minute steps)', () => {
+    expect(schedule(null, 'again', t0).due - t0).toBeGreaterThanOrEqual(24 * 3_600_000);
+  });
+
   it('orders due times again < good < easy', () => {
     const again = schedule(null, 'again', t0).due;
     const good = schedule(null, 'good', t0).due;

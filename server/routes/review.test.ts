@@ -112,6 +112,15 @@ describe('GET /api/review/stats', () => {
     setDue.run(NOW - 1000, d);
     setSuspended(db, d, true);
     const res = await app.request('/api/review/stats');
-    expect(await res.json()).toEqual({ dueNow: 1, dueToday: 2, totalCards: 4, reviewedToday: 4 });
+    expect(await res.json()).toEqual({ dueNow: 1, dueToday: 2, totalCards: 4, reviewedToday: 4, sessionSize: 2 });
+  });
+
+  it('counts new cards without state in sessionSize, within the caps', async () => {
+    for (let i = 0; i < 5; i++) addCard();
+    const stats = (await (await app.request('/api/review/stats')).json()) as { dueNow: number; sessionSize: number };
+    expect(stats.dueNow).toBe(0);
+    expect(stats.sessionSize).toBe(5);
+    const session = (await (await app.request('/api/review/session')).json()) as ReviewSession;
+    expect(stats.sessionSize).toBe(session.cards.length);
   });
 });

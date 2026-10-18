@@ -8,7 +8,7 @@ import { runJob } from '../jobs.js';
 import { currentLevel } from '../level.js';
 import { buildMistakeCards } from '../srs/mistake-cards.js';
 import { analyseGame } from './analyse-game.js';
-import { ANALYSIS_VERSION, markAnalysis, saveAnalysis } from './analysis-repo.js';
+import { ANALYSIS_VERSION, markAnalysis, markCardsBuilt, saveAnalysis } from './analysis-repo.js';
 
 export interface QueueDeps { pool: Pick<EnginePool, 'analyse'>; nodes?: number }
 
@@ -73,6 +73,7 @@ async function analyseOne(db: DatabaseSync, id: number, deps: QueueDeps): Promis
   // Cards never change the analysis status. A failure only shows on the job message.
   try {
     await buildMistakeCards(db, { ...result, status: 'done', error: null }, deps.pool, { nodes });
+    markCardsBuilt(db, id, Date.now());
     return '';
   } catch (e) {
     console.error(`Card building failed for game ${id}:`, e);

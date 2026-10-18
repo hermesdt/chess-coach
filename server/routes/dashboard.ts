@@ -1,12 +1,13 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Hono } from 'hono';
+import { TAG_SEVERITY } from '../../shared/tag-text.js';
 import type { Tag } from '../../shared/types.js';
 import { getAnalysis } from '../analysis/analysis-repo.js';
 import { listGames } from '../db/games-repo.js';
 import { getSetting, setSetting } from '../db/settings-repo.js';
-import { currentLevel } from '../level.js';
+import { type CurrentLevel, currentLevel } from '../level.js';
 import { getLastSyncedAt } from '../sync/sync-service.js';
-import { reviewStats } from './review.js';
+import { reviewStats } from '../srs/stats.js';
 
 const RECENT_GAMES = 10;
 const FOCUS_GAMES = 30;
@@ -31,11 +32,17 @@ function topTag(db: DatabaseSync): { tag: Tag; count: number; games: number } | 
     for (const t of seen) perTag.set(t, (perTag.get(t) ?? 0) + 1);
   }
   let best: { tag: Tag; count: number } | null = null;
-  for (const [tag, count] of perTag) if (!best || count > best.count) best = { tag, count };
+  const rank = (t: Tag) => TAG_SEVERITY.indexOf(t);
+  for (const [tag, count] of perTag) {
+    if (!best || count > best.count || (count === best.count && rank(tag) < rank(best.tag))) best = { tag, count };
+  }
   return best && { ...best, games };
 }
 
-function levelUp(db: DatabaseSync, level: number): { from: number; to: number } | null {
+function levelUp(db: DatabaseSync, current: CurrentLevel): { from: number; to: number } | null {
+  // The default level is a guess. Remember a level only once it comes from real data or an override.
+  if (current.source === 'default') return null;
+  const level = current.level;
   const stored = getSetting(db, LAST_SEEN_LEVEL);
   if (stored === null) {
     setSetting(db, LAST_SEEN_LEVEL, String(level));
@@ -55,7 +62,7 @@ export function dashboardRoutes(db: DatabaseSync, now: () => number): Hono {
         recentGames: listGames(db, { limit: RECENT_GAMES }).items,
         topTag: topTag(db),
         level: { level: level.level, rating: level.rating, source: level.source },
-        levelUp: levelUp(db, level.level),
+        levelUp: levelUp(db, level),
       });
     })
     .post('/dashboard/level-seen', (c) => {

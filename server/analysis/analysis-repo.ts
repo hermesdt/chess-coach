@@ -15,7 +15,7 @@ export function saveAnalysis(db: DatabaseSync, a: GameAnalysis): void {
          version = excluded.version, status = excluded.status, error = excluded.error,
          accuracy_user = excluded.accuracy_user, accuracy_opp = excluded.accuracy_opp,
          counts_json = excluded.counts_json, key_moments_json = excluded.key_moments_json,
-         analysed_at = excluded.analysed_at`,
+         analysed_at = excluded.analysed_at, cards_built_at = NULL`,
     ).run(
       a.gameId, a.version, a.status, a.error, a.accuracyUser, a.accuracyOpp,
       JSON.stringify(a.counts), JSON.stringify(a.keyMoments), a.analysedAt,
@@ -50,4 +50,9 @@ export function markAnalysis(db: DatabaseSync, gameId: number, status: GameAnaly
     `INSERT INTO game_analysis (game_id, version, status, error) VALUES (?, ?, ?, ?)
      ON CONFLICT(game_id) DO UPDATE SET status = excluded.status, error = excluded.error`,
   ).run(gameId, ANALYSIS_VERSION, status, error);
+}
+
+/** Records that the mistake cards of an analysis are built. */
+export function markCardsBuilt(db: DatabaseSync, gameId: number, at: number): void {
+  db.prepare('UPDATE game_analysis SET cards_built_at = ? WHERE game_id = ?').run(at, gameId);
 }

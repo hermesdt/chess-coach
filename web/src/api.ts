@@ -25,6 +25,8 @@ export interface ReviewStats {
   dueToday: number;
   totalCards: number;
   reviewedToday: number;
+  /** Cards in today's session: due cards plus new cards within the daily limits. */
+  sessionSize: number;
 }
 
 export interface SyncStatus {

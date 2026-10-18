@@ -48,7 +48,11 @@ describe('momentText', () => {
   it('uses the classification as the title and every tag as a reason', () => {
     expect(momentText(tagged('blunder', ['hung_piece', 'allowed_mate']))).toEqual({
       title: 'Blunder',
-      reasons: ['You left a piece undefended', 'This allowed a checkmate'],
+      reasons: ['This allowed a checkmate', 'You left a piece undefended'],
+    });
+    expect(momentText(tagged('blunder', ['allowed_mate', 'hung_piece']))).toEqual({
+      title: 'Blunder',
+      reasons: ['This allowed a checkmate', 'You left a piece undefended'],
     });
     expect(momentLine(tagged('blunder', ['hung_piece']))).toBe('Blunder \u2014 You left a piece undefended');
   });
@@ -60,8 +64,8 @@ describe('momentText', () => {
 
   it('promotes the first tag when the classification has no label', () => {
     expect(momentText(tagged('good', ['missed_capture', 'missed_mate']))).toEqual({
-      title: 'You missed free material',
-      reasons: ['You missed a checkmate'],
+      title: 'You missed a checkmate',
+      reasons: ['You missed free material'],
     });
     expect(momentText(tagged('good', []))).toEqual({ title: 'Good', reasons: [] });
   });
