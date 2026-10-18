@@ -17,8 +17,8 @@ export interface AiProvider {
 export type CliRunner = (
   cmd: string,
   args: string[],
-  opts: { input?: string; cwd?: string; timeoutMs?: number; signal?: AbortSignal },
-) => Promise<{ stdout: string; stderr: string; code: number | null }>;
+  opts: { stdin?: string; timeoutMs: number; cwd: string },
+) => Promise<{ code: number | null; stdout: string; stderr: string; timedOut: boolean }>;
 
 export class AiParseError extends Error {
   override name = 'AiParseError';
@@ -31,4 +31,10 @@ export class AiGroundingError extends Error {
   constructor(public readonly moves: string[]) {
     super(`The coach answer mentioned moves I could not verify: ${moves.join(', ')}`);
   }
+}
+export class AiTimeoutError extends Error {
+  override name = 'AiTimeoutError';
+}
+export class AiProviderError extends Error {
+  override name = 'AiProviderError';
 }
