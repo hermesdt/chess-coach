@@ -10,6 +10,7 @@ import { findWeaknessNote, latestWeaknessNote, saveNote, weaknessKey } from './n
 import { buildUserPrompt, PROMPT_VERSION, SYSTEM } from './prompts/weakness.js';
 import type { Registry } from './registry.js';
 import { runStructured } from './runner.js';
+import type { AiProvider } from './types.js';
 import { NOT_CONFIGURED } from './game-review.js';
 import { DEFAULT_LAST_N, weaknessAllowedSan, weaknessFacts, weaknessFactsText } from './weakness-facts.js';
 
@@ -34,7 +35,7 @@ export const latestWeakness = (db: DatabaseSync): WeaknessReportNote | null => l
 export async function weaknessReport(
   db: DatabaseSync,
   registry: Registry,
-  opts: { provider?: ProviderId; signal?: AbortSignal; reps?: Pick<Repertoire, 'id' | 'name'>[]; lastN?: number },
+  opts: { provider?: ProviderId; signal?: AbortSignal; onProvider?: (provider: AiProvider) => void; reps?: Pick<Repertoire, 'id' | 'name'>[]; lastN?: number },
 ): Promise<WeaknessReportNote> {
   const facts = weaknessFacts(db, opts.lastN ?? DEFAULT_LAST_N, opts.reps ?? []);
   if (facts.games === 0) throw new Error(NO_GAMES);
@@ -45,9 +46,11 @@ export async function weaknessReport(
   const hash = createHash('sha1').update(weaknessFactsText(facts)).digest('hex');
   const promptVersion = `${PROMPT_VERSION}:${hash}`;
   const configured = settings.aiModels[provider.id] ?? null;
-  const cached = findWeaknessNote(db, { promptVersion, provider: provider.id, model: configured });
+  const requested = configured ?? 'default';
+  const cached = findWeaknessNote(db, { promptVersion, provider: provider.id, model: requested });
   if (cached) return cached;
 
+  opts.onProvider?.(provider);
   const hasTags = Object.values(facts.tagCounts).some((n) => n > 0);
   const { value, model } = await runStructured(
     provider,
@@ -61,6 +64,6 @@ export async function weaknessReport(
     },
   );
   const report: WeaknessReport = value;
-  saveNote(db, weaknessKey(promptVersion, provider.id, model), report);
+  saveNote(db, weaknessKey(promptVersion, provider.id, requested), model, report);
   return { provider: provider.id, model, createdAt: Date.now(), report };
 }

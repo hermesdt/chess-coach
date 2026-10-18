@@ -92,6 +92,16 @@ describe('weaknessReport', () => {
     expect(latestWeakness(db)?.report.headline).toBe('You hang pieces a lot.');
   });
 
+  it('keys the cache by the requested model, not the reported one', async () => {
+    db.prepare("INSERT INTO settings (key, value) VALUES ('ai_model_claude-cli', 'sonnet')").run();
+    game(1, 1, { moves: [mv(1)] });
+    const first = await weaknessReport(db, registry(), {});
+    const again = await weaknessReport(db, registry(), {});
+    expect(calls).toHaveLength(1);
+    expect(first.model).toBe('claude-cli-model');
+    expect(again.model).toBe('claude-cli-model');
+  });
+
   it('calls again when the facts change, and per provider', async () => {
     game(1, 1, { moves: [mv(1)] });
     await weaknessReport(db, registry(), {});

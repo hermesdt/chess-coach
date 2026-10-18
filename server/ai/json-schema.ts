@@ -30,3 +30,6 @@ export function toStrictJsonSchema(schema: ZodType): object {
   strictify(json, '#');
   return json;
 }
+
+/** JSON text of a schema for a CLI flag or file, without any `$schema` key (`claude --json-schema` rejects it). */
+export const schemaJsonText = (schema: object): string => JSON.stringify(schema, (key, value: unknown) => (key === '$schema' ? undefined : value));

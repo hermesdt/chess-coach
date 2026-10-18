@@ -1,7 +1,7 @@
 import { LESSON_IDS, LESSON_TITLES } from '../../../shared/lessons.js';
 import { weaknessFactsText, type WeaknessFacts } from '../weakness-facts.js';
 
-export const PROMPT_VERSION = 'weakness-1';
+export const PROMPT_VERSION = 'weakness-2';
 
 export const SYSTEM = `You are a friendly chess coach for an adult beginner. You look at the patterns across many of the player's games.
 You get FACTS. The facts come from a chess engine and are correct.

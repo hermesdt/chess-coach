@@ -10,6 +10,24 @@ describe('realCliRunner', () => {
     expect(Date.now() - started).toBeLessThan(3000);
   });
 
+  it('kills the process group when the signal aborts', async () => {
+    const controller = new AbortController();
+    const started = Date.now();
+    setTimeout(() => controller.abort(), 100);
+    const res = await realCliRunner('sh', ['-c', 'sleep 5 & wait'], { timeoutMs: 10_000, cwd: process.cwd(), signal: controller.signal });
+    expect(res.aborted).toBe(true);
+    expect(res.timedOut).toBe(false);
+    expect(Date.now() - started).toBeLessThan(3500);
+  });
+
+  it('does not start a run that is already aborted, and uses the given env', async () => {
+    const controller = new AbortController();
+    controller.abort();
+    expect((await realCliRunner('sleep', ['5'], { timeoutMs: 10_000, cwd: process.cwd(), signal: controller.signal })).aborted).toBe(true);
+    const res = await realCliRunner('sh', ['-c', 'echo "$ONLY_VAR"'], { timeoutMs: 5000, cwd: process.cwd(), env: { ONLY_VAR: 'v', PATH: process.env.PATH } });
+    expect(res.stdout.trim()).toBe('v');
+  });
+
   it('passes stdin and returns stdout and the exit code', async () => {
     const res = await realCliRunner('cat', [], { stdin: 'hello', timeoutMs: 5000, cwd: process.cwd() });
     expect(res).toMatchObject({ code: 0, stdout: 'hello', timedOut: false });

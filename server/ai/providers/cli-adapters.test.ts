@@ -1,12 +1,12 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { AiProviderError, AiTimeoutError, type AiRequest, type CliRunner } from '../types.js';
+import { AiCancelledError, AiProviderError, AiTimeoutError, type AiRequest, type CliRunner } from '../types.js';
 import { createClaudeCli } from './claude-cli.js';
 import { createCodexCli } from './codex-cli.js';
 import { createOpencodeCli } from './opencode-cli.js';
 
 const req: AiRequest = { system: 'SYS', user: 'USER', schemaName: 'x', jsonSchema: { type: 'object' } };
-type Call = { cmd: string; args: string[]; stdin?: string; cwd: string; timeoutMs: number };
+type Call = { cmd: string; args: string[]; stdin?: string; cwd: string; timeoutMs: number; env?: NodeJS.ProcessEnv; signal?: AbortSignal };
 const fake = (result: Partial<Awaited<ReturnType<CliRunner>>>, calls: Call[] = [], onRun?: (c: Call) => void): CliRunner =>
   async (cmd, args, opts) => {
     const call = { cmd, args, ...opts };
@@ -28,6 +28,31 @@ describe('claude-cli', () => {
     expect(calls[0]!.stdin).toBe('SYS\n\nUSER');
     expect(calls[0]!.timeoutMs).toBe(180_000);
     expect(calls[0]!.cwd).toMatch(/chess-coach-ai-/);
+  });
+  it('drops $schema from the schema it passes', async () => {
+    const calls: Call[] = [];
+    const withMeta = { ...req, jsonSchema: { $schema: 'https://json-schema.org/draft/2020-12/schema', type: 'object' } };
+    await createClaudeCli(fake({ stdout: ok }, calls), async () => true).complete(withMeta, { model: null });
+    expect(after(calls[0]!.args, '--json-schema')).toBe('{"type":"object"}');
+  });
+  it('runs without API key variables (subscription first) and passes the abort signal', async () => {
+    process.env.ANTHROPIC_API_KEY = 'k1';
+    process.env.ANTHROPIC_AUTH_TOKEN = 'k2';
+    process.env.CHESS_TEST_KEEP = 'yes';
+    try {
+      const calls: Call[] = [];
+      const controller = new AbortController();
+      await createClaudeCli(fake({ stdout: ok }, calls), async () => true).complete(req, { model: null, signal: controller.signal });
+      expect(calls[0]!.env).toBeDefined();
+      expect(calls[0]!.env).not.toHaveProperty('ANTHROPIC_API_KEY');
+      expect(calls[0]!.env).not.toHaveProperty('ANTHROPIC_AUTH_TOKEN');
+      expect(calls[0]!.env).toHaveProperty('CHESS_TEST_KEEP', 'yes');
+      expect(calls[0]!.signal).toBe(controller.signal);
+    } finally {
+      delete process.env.ANTHROPIC_API_KEY;
+      delete process.env.ANTHROPIC_AUTH_TOKEN;
+      delete process.env.CHESS_TEST_KEEP;
+    }
   });
   it('omits --model when unset', async () => {
     const calls: Call[] = [];
@@ -83,6 +108,20 @@ describe('codex-cli', () => {
     expect(JSON.parse(schema)).toEqual({ type: 'object' });
     expect(c.stdin).toBe('SYS\n\nUSER');
   });
+  it('drops $schema from the schema file and runs without OPENAI_API_KEY', async () => {
+    process.env.OPENAI_API_KEY = 'k';
+    try {
+      const calls: Call[] = [];
+      let schema = '';
+      const withMeta = { ...req, jsonSchema: { $schema: 'x', type: 'object' } };
+      await createCodexCli(fake({}, calls, (c) => { schema = readFileSync(after(c.args, '--output-schema'), 'utf8'); writer('{}')(c); }), async () => true).complete(withMeta, { model: null });
+      expect(JSON.parse(schema)).toEqual({ type: 'object' });
+      expect(calls[0]!.env).not.toHaveProperty('OPENAI_API_KEY');
+      expect(calls[0]!.env).toHaveProperty('PATH');
+    } finally {
+      delete process.env.OPENAI_API_KEY;
+    }
+  });
   it('omits -m when unset and reports "default" model', async () => {
     const calls: Call[] = [];
     const out = await createCodexCli(fake({}, calls, writer('{}')), async () => true).complete(req, { model: null });
@@ -114,6 +153,11 @@ describe('opencode-cli', () => {
     expect(calls[0]!.cmd).toBe('opencode');
     expect(calls[0]!.args).toEqual(['run', '--format', 'json', '--agent', 'plan', '-m', 'openai/gpt-5']);
     expect(calls[0]!.stdin).toBe('SYS\n\nUSER');
+  });
+  it('maps an aborted run to a cancelled error', async () => {
+    const controller = new AbortController();
+    controller.abort();
+    await expect(createOpencodeCli(fake({ aborted: true, code: null }), async () => true).complete(req, { model: null, signal: controller.signal })).rejects.toBeInstanceOf(AiCancelledError);
   });
   it('uses only the text of the final message and skips non-object JSON lines', async () => {
     const ev = (messageID: string, text: string) => JSON.stringify({ type: 'text', part: { type: 'text', messageID, text } });

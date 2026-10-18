@@ -8,14 +8,14 @@ import { getSettings } from '../config.js';
 import { getGameRow } from '../db/games-repo.js';
 import { currentLevel, type Level } from '../level.js';
 import { applyCoachExplanations } from '../srs/mistake-cards.js';
-import { allowedSan, gameFacts } from './facts.js';
+import { allowedSan, gameFacts, momentAllowedSan } from './facts.js';
 import { toStrictJsonSchema } from './json-schema.js';
 import { findNote, listNotes, saveNote } from './notes-repo.js';
 import { buildUserPrompt, PROMPT_VERSION, SYSTEM } from './prompts/game-review.js';
 import { redact } from './redact.js';
 import type { Registry } from './registry.js';
 import { runStructured } from './runner.js';
-import { AiCancelledError, AiGroundingError, AiRefusalError, AiTimeoutError } from './types.js';
+import { AiCancelledError, AiGroundingError, AiRefusalError, AiTimeoutError, type AiProvider } from './types.js';
 
 const reviewSchema = z.object({
   summary: z.string(),
@@ -58,7 +58,7 @@ export async function reviewGame(
   db: DatabaseSync,
   registry: Registry,
   gameId: number,
-  opts: { provider?: ProviderId; signal?: AbortSignal },
+  opts: { provider?: ProviderId; signal?: AbortSignal; onProvider?: (provider: AiProvider) => void },
 ): Promise<GameReviewNote> {
   const game = loadGame(db, gameId);
   if (!game) throw new Error('Game not found.');
@@ -72,12 +72,14 @@ export async function reviewGame(
   const subject = subjectOf(gameId);
   const promptVersion = promptVersionFor(level);
   const configured = settings.aiModels[provider.id] ?? null;
-  const cached = findNote(db, { subject, promptVersion, analysisVersion: analysis.version, provider: provider.id, model: configured });
+  const requested = configured ?? 'default';
+  const cached = findNote(db, { subject, promptVersion, analysisVersion: analysis.version, provider: provider.id, model: requested });
   if (cached) {
     applyCoachExplanations(db, analysis, cached.review);
     return cached;
   }
 
+  opts.onProvider?.(provider);
   const facts = gameFacts(game, analysis, { level, rating });
   const plies = new Set(facts.keyMoments.map((k) => k.ply));
   const { value, model } = await runStructured(
@@ -87,14 +89,19 @@ export async function reviewGame(
     {
       model: configured,
       allowedSan: allowedSan(facts),
-      textOf: (r) => [r.summary, r.openingNote, r.oneThingToPractice, ...r.moments.flatMap((m) => [m.whatHappened, m.whyItMatters, m.principle])],
+      textOf: (r) => [r.summary, r.openingNote, r.oneThingToPractice],
+      // Each moment may only name its own moves and the moves before it. Unknown plies are dropped later.
+      scopedTextOf: (r) => r.moments.flatMap((m) => {
+        const moment = facts.keyMoments.find((k) => k.ply === m.ply);
+        return moment ? [{ texts: [m.whatHappened, m.whyItMatters, m.principle], allowedSan: momentAllowedSan(facts, moment) }] : [];
+      }),
       signal: opts.signal,
     },
   );
   const seen = new Set<number>();
   const moments = value.moments.filter((m) => plies.has(m.ply) && !seen.has(m.ply) && seen.add(m.ply));
   const review: GameReview = { ...value, moments };
-  saveNote(db, { subject, promptVersion, analysisVersion: analysis.version, provider: provider.id, model }, review);
+  saveNote(db, { subject, promptVersion, analysisVersion: analysis.version, provider: provider.id, model: requested }, model, review);
   applyCoachExplanations(db, analysis, review);
   return { provider: provider.id, model, createdAt: Date.now(), review };
 }

@@ -90,6 +90,38 @@ describe('reviewGame', () => {
     expect((await reviewGame(db, registry(), 1, {})).review.moments).toEqual([]);
   });
 
+  it('flags a moment that recommends a move played later in the game', async () => {
+    const moment = { ...review().moments[0]!, whyItMatters: 'Qxf7 would have been stronger.' };
+    reply = () => JSON.stringify(review({ moments: [moment] }));
+    await expect(reviewGame(db, registry(), 1, {})).rejects.toBeInstanceOf(AiGroundingError);
+    reply = () => JSON.stringify(review({ summary: 'The game ended with Qxf7.', moments: [] }));
+    await expect(reviewGame(db, registry(), 1, {})).resolves.toBeDefined();
+  });
+
+  it('keys the cache by the requested model, not by the model the provider reports', async () => {
+    db.prepare("INSERT INTO settings (key, value) VALUES ('ai_model_claude-cli', 'sonnet')").run();
+    const first = await reviewGame(db, registry(), 1, {});
+    expect(first.model).toBe('claude-cli-model');
+    const again = await reviewGame(db, registry(), 1, {});
+    expect(calls).toHaveLength(1);
+    expect(again.model).toBe('claude-cli-model');
+    expect(listNotes(db, 'game:1', promptVersionFor(1), 1)[0]!.model).toBe('claude-cli-model');
+  });
+
+  it('asks again when the configured model changes', async () => {
+    await reviewGame(db, registry(), 1, {});
+    db.prepare("INSERT INTO settings (key, value) VALUES ('ai_model_claude-cli', 'opus')").run();
+    await reviewGame(db, registry(), 1, {});
+    expect(calls).toHaveLength(2);
+  });
+
+  it('tells the caller which provider it asks', async () => {
+    const asked: string[] = [];
+    await reviewGame(db, registry(), 1, { onProvider: (p) => asked.push(p.label) });
+    await reviewGame(db, registry(), 1, { onProvider: (p) => asked.push(p.label) });
+    expect(asked).toEqual(['claude-cli']);
+  });
+
   it('serves the cache on the second call', async () => {
     await reviewGame(db, registry(), 1, {});
     const again = await reviewGame(db, registry(), 1, {});
@@ -167,6 +199,23 @@ describe('routes', () => {
     const notes = (await (await app.request('/api/games/1/coach')).json()) as { provider: string; review: unknown }[];
     expect(notes.map((n) => n.provider)).toEqual(['codex-cli', 'claude-cli']);
     expect(notes[0]).toHaveProperty('review.summary');
+  });
+
+  it('shows who the coach job asks while it runs', async () => {
+    let seen: string | null = null;
+    let release: () => void = () => undefined;
+    const gate = new Promise<void>((r) => (release = r));
+    const slow: AiProvider = { ...fake('claude-cli'), label: 'Claude Code CLI', complete: async () => { await gate; return { text: reply('claude-cli'), model: 'm' }; } };
+    const app = createApp({ db, ai: createRegistry({ db, providers: [slow] }) });
+    const res = await app.request('/api/games/1/coach', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+    const { jobId } = (await res.json()) as { jobId: number };
+    for (let i = 0; i < 50 && seen === null; i++) {
+      await new Promise((r) => setTimeout(r, 10));
+      seen = ((await (await app.request(`/api/jobs/${jobId}`)).json()) as { message: string | null }).message;
+    }
+    release();
+    await waitForJob(db, jobId);
+    expect(seen).toBe('Asking Claude Code CLI…');
   });
 
   it('reports a friendly job error', async () => {

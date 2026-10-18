@@ -17,8 +17,8 @@ export interface AiProvider {
 export type CliRunner = (
   cmd: string,
   args: string[],
-  opts: { stdin?: string; timeoutMs: number; cwd: string },
-) => Promise<{ code: number | null; stdout: string; stderr: string; timedOut: boolean }>;
+  opts: { stdin?: string; timeoutMs: number; cwd: string; env?: NodeJS.ProcessEnv; signal?: AbortSignal },
+) => Promise<{ code: number | null; stdout: string; stderr: string; timedOut: boolean; aborted?: boolean }>;
 
 export class AiParseError extends Error {
   override name = 'AiParseError';

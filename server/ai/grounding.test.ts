@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { findUngroundedMoves, groundingSet } from './grounding.js';
 
 it('flags moves that are not in the facts', () => {
@@ -91,4 +91,47 @@ it('keeps looking for a move verb across a colon or a newline', () => {
   expect(findUngroundedMoves('I would play: e4', nxe4)).toEqual(['e4']);
   expect(findUngroundedMoves('play\ne4', nxe4)).toEqual(['e4']);
   expect(findUngroundedMoves('Play. e4 is a square', nxe4)).toEqual([]);
+});
+
+describe('hardened grounding', () => {
+  const cases: [string, string[]][] = [
+    ['Move your knight to g5 instead.', ['Ng5']],
+    ['Knight to d5 was stronger.', ['Nd5']],
+    ['Push the d-pawn to d5.', ['d5']],
+    ['Better was nf3 or ng5.', ['Nf3', 'Ng5']],
+    ['Ｎg5 is best', ['Ng5']],
+    ['Nｇ5', ['Ng5']],
+    ['Nf3-g5 was the idea', ['Nf3-g5']],
+    ['♘f3', ['Nf3']],
+    ['e2-e4 is the move', ['e2-e4']],
+    ['The bishop takes e5 here.', ['Be5']],
+  ];
+  it.each(cases)('flags %s when the facts do not have it', (text, bad) => {
+    expect(findUngroundedMoves(text, new Set(['Qh5']))).toEqual(bad);
+  });
+  it.each([
+    ['Move your knight to g5 instead.', ['Nxg5']],
+    ['Knight to d5 was stronger.', ['Nbd5']],
+    ['Push the d-pawn to d5.', ['exd5']],
+    ['Better was nf3 or ng5.', ['Nf3', 'Ng5']],
+    ['Ｎg5 is best', ['Ng5']],
+    ['Nｇ5', ['Ng5+']],
+    ['Nf3-g5 was the idea', ['Ng5']],
+    ['♘f3', ['Nf3']],
+    ['e2-e4 is the move', ['e4']],
+    ['The bishop takes e5 here.', ['Bxe5']],
+  ])('accepts %s when the matching SAN is in the facts', (text, sans) => {
+    expect(findUngroundedMoves(text, groundingSet(sans))).toEqual([]);
+  });
+  it('needs the same piece, not just the same square', () => {
+    expect(findUngroundedMoves('Knight to g5', new Set(['Bg5']))).toEqual(['Ng5']);
+    expect(findUngroundedMoves('Push the d-pawn to d5.', new Set(['Nd5']))).toEqual(['d5']);
+  });
+  it('does not flag ordinary sentences', () => {
+    const allowed = groundingSet(['Nf3'], 'knight on f3');
+    for (const text of ['The knight on f3 is strong.', 'Watch your bishop.', 'The pawn on e4 is safe.', 'Your king is safe.', 'Be careful, bc4 is not a word here.']) {
+      expect(findUngroundedMoves(text, new Set(['Nf3', '@f3', '@e4']))).toEqual([]);
+    }
+    expect(allowed.has('@f3')).toBe(true);
+  });
 });

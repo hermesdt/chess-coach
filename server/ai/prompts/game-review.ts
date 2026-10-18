@@ -2,7 +2,7 @@ import type { GameFacts } from '../facts.js';
 import { factsText } from '../facts.js';
 import { LESSON_IDS } from '../../../shared/lessons.js';
 
-export const PROMPT_VERSION = 'game-review-1';
+export const PROMPT_VERSION = 'game-review-2';
 
 export const SYSTEM = `You are a friendly chess coach for an adult beginner. You review one finished game.
 You get FACTS about the game. The facts come from a chess engine and are correct.

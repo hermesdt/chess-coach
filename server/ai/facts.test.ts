@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { GameAnalysis, GameDetail, MoveAnalysis } from '../../shared/types.js';
 import { parsePgn } from '../chess/pgn.js';
-import { allowedSan, gameFacts } from './facts.js';
+import { allowedSan, gameFacts, momentAllowedSan } from './facts.js';
 import { findUngroundedMoves } from './grounding.js';
 
 const PGN = '1. e4 e5 2. Qh5 Nc6 3. Bc4 Nf6 4. Qxf7# 1-0';
@@ -40,7 +40,7 @@ describe('gameFacts', () => {
       opening: "King's Pawn Game", movesSan: ['e4', 'e5', 'Qh5', 'Nc6', 'Bc4', 'Nf6', 'Qxf7#'],
     });
     expect(f.keyMoments).toEqual([
-      { ply: 3, moveNumber: 2, side: 'white', played: 'Qh5', best: 'Nf3', bestLine: ['Nf3', 'Nc6', 'Bc4', 'Nf6', 'd4', 'exd4'], winBefore: 80, winAfter: 40, tags: ['hung_piece'], classification: 'blunder' },
+      { ply: 3, moveNumber: 2, side: 'white', fen: moves[2]!.fenBefore, played: 'Qh5', best: 'Nf3', bestLine: ['Nf3', 'Nc6', 'Bc4', 'Nf6', 'd4', 'exd4'], winBefore: 80, winAfter: 40, tags: ['hung_piece'], classification: 'blunder' },
     ]);
   });
 
@@ -55,5 +55,15 @@ describe('allowedSan', () => {
     const set = allowedSan(gameFacts(game, analysis, { level: 1, rating: 800 }));
     expect(findUngroundedMoves('Nf3 was better than Qh5. The f3 square matters.', set)).toEqual([]);
     expect(findUngroundedMoves('You should play Bb5 or play h4.', set)).toEqual(['Bb5', 'h4']);
+  });
+});
+
+describe('momentAllowedSan', () => {
+  it('has the moment moves and the earlier game moves, but not later game moves', () => {
+    const facts = gameFacts(game, analysis, { level: 1, rating: 800 });
+    const set = momentAllowedSan(facts, facts.keyMoments[0]!);
+    expect(findUngroundedMoves('After e4 e5, Qh5 was early. Nf3 was better, then Nc6.', set)).toEqual([]);
+    expect(findUngroundedMoves('Qxf7 comes later in the game.', set)).toEqual(['Qxf7']);
+    expect(findUngroundedMoves('Qxf7 comes later in the game.', allowedSan(facts))).toEqual([]);
   });
 });

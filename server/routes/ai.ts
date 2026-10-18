@@ -1,6 +1,7 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Hono } from 'hono';
 import { z } from 'zod';
+import { toStrictJsonSchema } from '../ai/json-schema.js';
 import { runStructured } from '../ai/runner.js';
 import type { Registry } from '../ai/registry.js';
 import { getSettings } from '../config.js';
@@ -50,9 +51,9 @@ export function aiRoutes(db: DatabaseSync, registry: Registry, timeoutMs = TEST_
       if (requested !== undefined && !(PROVIDER_IDS as readonly unknown[]).includes(requested)) return c.json({ error: 'unknown provider' }, 400);
       if (getAnalysis(db, game.id)?.status !== 'done') return c.json({ error: 'Analyse this game first.' }, 400);
       const provider = requested as ProviderId | undefined;
-      const job = runJob(db, 'coach', async () => {
+      const job = runJob(db, 'coach', async (report) => {
         try {
-          await reviewGame(db, registry, game.id, { provider });
+          await reviewGame(db, registry, game.id, { provider, onProvider: (p) => report(0, null, `Asking ${p.label}…`) });
         } catch (err) {
           const settings = getSettings(db);
           throw new Error(coachErrorMessage(err, [settings.openrouterApiKey, settings.anthropicApiKey]), { cause: err });
@@ -67,9 +68,9 @@ export function aiRoutes(db: DatabaseSync, registry: Registry, timeoutMs = TEST_
       if (requested !== undefined && !(PROVIDER_IDS as readonly unknown[]).includes(requested)) return c.json({ error: 'unknown provider' }, 400);
       if (weaknessFacts(db, 1).games === 0) return c.json({ error: NO_GAMES }, 400);
       const provider = requested as ProviderId | undefined;
-      const job = runJob(db, 'coach', async () => {
+      const job = runJob(db, 'coach', async (report) => {
         try {
-          await weaknessReport(db, registry, { provider, reps: getReps() });
+          await weaknessReport(db, registry, { provider, reps: getReps(), onProvider: (p) => report(0, null, `Asking ${p.label}…`) });
         } catch (err) {
           const settings = getSettings(db);
           throw new Error(coachErrorMessage(err, [settings.openrouterApiKey, settings.anthropicApiKey]), { cause: err });
@@ -96,7 +97,7 @@ export function aiRoutes(db: DatabaseSync, registry: Registry, timeoutMs = TEST_
             system: 'You reply with one JSON object only.',
             user: 'Reply with {"ok": true}.',
             schemaName: 'ping',
-            jsonSchema: z.toJSONSchema(testSchema),
+            jsonSchema: toStrictJsonSchema(testSchema),
           },
           testSchema,
           { model: settings.aiModels[known.id], allowedSan: new Set(), textOf: () => [], signal: controller.signal },

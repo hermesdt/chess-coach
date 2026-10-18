@@ -8,6 +8,8 @@ export interface RunOptions<T> {
   allowedSan: Set<string>;
   /** Every free-text field of the answer; checked for moves that are not in the facts. */
   textOf: (value: T) => string[];
+  /** Texts that are checked against their own, smaller set of moves (for example one key moment). */
+  scopedTextOf?: (value: T) => { texts: string[]; allowedSan: Set<string> }[];
   signal?: AbortSignal;
 }
 
@@ -30,6 +32,9 @@ export async function runStructured<T>(
         failure = new AiValidationError(message);
       } else {
         const bad = findUngroundedMoves(opts.textOf(parsed.data).join('\n'), opts.allowedSan);
+        for (const scope of opts.scopedTextOf?.(parsed.data) ?? []) {
+          for (const move of findUngroundedMoves(scope.texts.join('\n'), scope.allowedSan)) if (!bad.includes(move)) bad.push(move);
+        }
         if (bad.length === 0) return { value: parsed.data, model };
         message = `You mentioned moves that are not in the facts: ${bad.join(', ')}. Use only moves from the facts.`;
         failure = new AiGroundingError(bad);

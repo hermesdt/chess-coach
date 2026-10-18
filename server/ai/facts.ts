@@ -6,7 +6,7 @@ import { groundingSet } from './grounding.js';
 const MAX_BEST_LINE = 6;
 
 export interface KeyMomentFacts {
-  ply: number; moveNumber: number; side: Color; played: string; best: string; bestLine: string[];
+  ply: number; moveNumber: number; side: Color; fen: string; played: string; best: string; bestLine: string[];
   winBefore: number; winAfter: number; tags: Tag[]; classification: Classification;
 }
 export interface GameFacts {
@@ -23,7 +23,7 @@ export function gameFacts(game: GameDetail, analysis: GameAnalysis, lvl: Pick<Cu
     const m = byPly.get(k.ply);
     if (!m) continue;
     keyMoments.push({
-      ply: m.ply, moveNumber: Math.ceil(m.ply / 2), side: m.color, played: m.san, best: m.bestSan,
+      ply: m.ply, moveNumber: Math.ceil(m.ply / 2), side: m.color, fen: m.fenBefore, played: m.san, best: m.bestSan,
       bestLine: m.pvSan.slice(0, MAX_BEST_LINE), winBefore: Math.round(m.winBefore), winAfter: Math.round(m.winAfter),
       tags: m.tags, classification: m.classification,
     });
@@ -44,4 +44,10 @@ export const factsText = (facts: GameFacts): string => JSON.stringify(facts, nul
 export function allowedSan(facts: GameFacts): Set<string> {
   const sans = [...facts.movesSan, ...facts.keyMoments.flatMap((k) => [k.played, k.best, ...k.bestLine])];
   return groundingSet(sans, factsText(facts));
+}
+
+/** What one key moment's text may name: its own moves, the moves played before it, and the squares in its facts. */
+export function momentAllowedSan(facts: GameFacts, moment: KeyMomentFacts): Set<string> {
+  const before = facts.movesSan.slice(0, Math.max(0, moment.ply - 1));
+  return groundingSet([...before, moment.played, moment.best, ...moment.bestLine], JSON.stringify(moment));
 }

@@ -46,6 +46,14 @@ it('POST test returns ok, model and ms', async () => {
   expect(typeof body.ms).toBe('number');
 });
 
+it('POST test sends a strict schema without $schema', async () => {
+  let schema: Record<string, unknown> = {};
+  complete = async (r) => ((schema = r.jsonSchema as Record<string, unknown>), { text: '{"ok":true}', model: 'x' });
+  await json('POST', '/api/ai/providers/openrouter/test');
+  expect(schema).not.toHaveProperty('$schema');
+  expect(schema).toMatchObject({ type: 'object', additionalProperties: false, required: ['ok'] });
+});
+
 it('POST test passes the configured model to the provider', async () => {
   let seen: string | null = 'unset';
   complete = async (_r, o) => ((seen = o.model), { text: '{"ok":true}', model: 'x' });

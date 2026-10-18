@@ -12,7 +12,8 @@
  */
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { binaryOnPath, realCliRunner, runCli, withTempDir } from '../cli-runner.js';
+import { binaryOnPath, envWithout, realCliRunner, runCli, withTempDir } from '../cli-runner.js';
+import { schemaJsonText } from '../json-schema.js';
 import { AiProviderError, type AiProvider, type CliRunner } from '../types.js';
 
 export function createCodexCli(run: CliRunner = realCliRunner, onPath: (bin: string) => Promise<boolean> = binaryOnPath): AiProvider {
@@ -26,11 +27,11 @@ export function createCodexCli(run: CliRunner = realCliRunner, onPath: (bin: str
       const text = await withTempDir(async (cwd) => {
         const schemaFile = join(cwd, 'schema.json');
         const outFile = join(cwd, 'last-message.txt');
-        await writeFile(schemaFile, JSON.stringify(req.jsonSchema));
+        await writeFile(schemaFile, schemaJsonText(req.jsonSchema));
         const args = ['exec', '--skip-git-repo-check', '--ephemeral', '-s', 'read-only', '--output-schema', schemaFile, '-o', outFile];
         if (opts.model) args.push('-m', opts.model);
         args.push('-');
-        await runCli(run, 'codex', 'codex', args, `${req.system}\n\n${req.user}`, cwd);
+        await runCli(run, 'codex', 'codex', args, `${req.system}\n\n${req.user}`, cwd, { env: envWithout('OPENAI_API_KEY'), signal: opts.signal });
         return readFile(outFile, 'utf8').catch(() => '');
       });
       if (!text.trim()) throw new AiProviderError('codex wrote no final message.');

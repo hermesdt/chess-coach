@@ -1,33 +1,35 @@
 import type { DatabaseSync } from 'node:sqlite';
 import type { GameReview, GameReviewNote, ProviderId, WeaknessReport, WeaknessReportNote } from '../../shared/types.js';
 
+/** `model` is the REQUESTED model ('default' when none is configured); it is part of the cache key. */
 export interface NoteKey { subject: string; promptVersion: string; analysisVersion: number; provider: ProviderId; model: string }
 
-export function saveNote(db: DatabaseSync, key: NoteKey, review: GameReview | WeaknessReport, now = Date.now()): void {
+/** `modelUsed` is the model the provider reported; it is only shown to the user. */
+export function saveNote(db: DatabaseSync, key: NoteKey, modelUsed: string, review: GameReview | WeaknessReport, now = Date.now()): void {
   db.prepare(
-    `INSERT INTO ai_notes (subject, prompt_version, analysis_version, provider, model, json, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO ai_notes (subject, prompt_version, analysis_version, provider, model, model_used, json, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(subject, prompt_version, analysis_version, provider, model)
-     DO UPDATE SET json = excluded.json, created_at = excluded.created_at`,
-  ).run(key.subject, key.promptVersion, key.analysisVersion, key.provider, key.model, JSON.stringify(review), now);
+     DO UPDATE SET json = excluded.json, model_used = excluded.model_used, created_at = excluded.created_at`,
+  ).run(key.subject, key.promptVersion, key.analysisVersion, key.provider, key.model, modelUsed, JSON.stringify(review), now);
 }
 
 function toNote(r: Record<string, unknown>): GameReviewNote {
   return {
-    provider: r.provider as ProviderId, model: r.model as string, createdAt: r.created_at as number,
+    provider: r.provider as ProviderId, model: (r.model_used ?? r.model) as string, createdAt: r.created_at as number,
     review: JSON.parse(String(r.json)) as GameReview,
   };
 }
 
-/** Newest note of a provider. When `model` is given, only notes of that model count. */
+/** Newest note of a provider for the requested model (the cache key). */
 export function findNote(
   db: DatabaseSync,
-  q: { subject: string; promptVersion: string; analysisVersion: number; provider: ProviderId; model: string | null },
+  q: { subject: string; promptVersion: string; analysisVersion: number; provider: ProviderId; model: string },
 ): GameReviewNote | null {
   const row = db.prepare(
-    `SELECT * FROM ai_notes WHERE subject = ? AND prompt_version = ? AND analysis_version = ? AND provider = ?
-       AND (? IS NULL OR model = ?) ORDER BY created_at DESC, id DESC LIMIT 1`,
-  ).get(q.subject, q.promptVersion, q.analysisVersion, q.provider, q.model, q.model);
+    `SELECT * FROM ai_notes WHERE subject = ? AND prompt_version = ? AND analysis_version = ? AND provider = ? AND model = ?
+       ORDER BY created_at DESC, id DESC LIMIT 1`,
+  ).get(q.subject, q.promptVersion, q.analysisVersion, q.provider, q.model);
   return row ? toNote(row) : null;
 }
 
@@ -53,14 +55,14 @@ export const weaknessKey = (promptVersion: string, provider: ProviderId, model: 
   ({ subject: WEAKNESS_SUBJECT, promptVersion, analysisVersion: 0, provider, model });
 
 function toWeaknessNote(r: Record<string, unknown>): WeaknessReportNote {
-  return { provider: r.provider as ProviderId, model: r.model as string, createdAt: r.created_at as number, report: JSON.parse(String(r.json)) as WeaknessReport };
+  return { provider: r.provider as ProviderId, model: (r.model_used ?? r.model) as string, createdAt: r.created_at as number, report: JSON.parse(String(r.json)) as WeaknessReport };
 }
 
-export function findWeaknessNote(db: DatabaseSync, q: { promptVersion: string; provider: ProviderId; model: string | null }): WeaknessReportNote | null {
+export function findWeaknessNote(db: DatabaseSync, q: { promptVersion: string; provider: ProviderId; model: string }): WeaknessReportNote | null {
   const row = db.prepare(
-    `SELECT * FROM ai_notes WHERE subject = ? AND prompt_version = ? AND provider = ?
-       AND (? IS NULL OR model = ?) ORDER BY created_at DESC, id DESC LIMIT 1`,
-  ).get(WEAKNESS_SUBJECT, q.promptVersion, q.provider, q.model, q.model);
+    `SELECT * FROM ai_notes WHERE subject = ? AND prompt_version = ? AND provider = ? AND model = ?
+       ORDER BY created_at DESC, id DESC LIMIT 1`,
+  ).get(WEAKNESS_SUBJECT, q.promptVersion, q.provider, q.model);
   return row ? toWeaknessNote(row) : null;
 }
 

@@ -1,7 +1,7 @@
 // Plan regex, with a lookbehind instead of `\b` (so `_Nf3_` and `abe4` are handled), a trailing guard,
 // and an optional promotion on captures.
 const SAN_RE =
-  /(?<![A-Za-z0-9])(?:[KQRBN][a-h]?[1-8]?x?[a-h][1-8]|[a-h]x[a-h][1-8](?:=[QRBN])?|[a-h][1-8](?:=[QRBN])?|O-O(?:-O)?)[+#]?(?![A-Za-z0-9])/g;
+  /(?<![A-Za-z0-9])(?:[KQRBNnrqk][a-h]?[1-8]?x?[a-h][1-8]|[a-h]x[a-h][1-8](?:=[QRBN])?|[a-h][1-8](?:=[QRBN])?|O-O(?:-O)?)[+#]?(?![A-Za-z0-9])/g;
 const SQUARE_RE = /(?<![A-Za-z0-9])[a-h][1-8](?![A-Za-z0-9])/g;
 const BARE_SQUARE = /^[a-h][1-8]$/;
 const MOVE_VERB =
@@ -42,12 +42,61 @@ export function groundingSet(sans: Iterable<string>, factsText = ''): Set<string
   return out;
 }
 
+const PIECE_SYMBOLS: Record<string, string> = { '♔': 'K', '♕': 'Q', '♖': 'R', '♗': 'B', '♘': 'N', '♚': 'K', '♛': 'Q', '♜': 'R', '♝': 'B', '♞': 'N' };
+const PIECE_WORDS: Record<string, string> = { king: 'K', queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: 'P' };
+/** "knight to g5", "rook d1", "pawn takes e5". A bare "pawn e4" is only a description, so pawns need a connective. */
+const WORD_MOVE_RE = /(?<![A-Za-z])(king|queen|rook|bishop|knight|pawn)(?:\s+(?:to|takes|captures|x)\s+|\s+x\s*|\s+)([a-h][1-8])(?![A-Za-z0-9])/gi;
+/** "push the d-pawn to d5". */
+const FILE_PAWN_RE = /(?<![A-Za-z])[a-h]-?\s?pawn(?:\s+(?:to|takes|captures|x)\s+|\s+x\s*)([a-h][1-8])(?![A-Za-z0-9])/gi;
+/** "Nf3-g5", "e2-e4", "g1 to f3". The origin square is ignored; the piece letter, when given, must match. */
+const COORD_MOVE_RE = /(?<![A-Za-z0-9])([KQRBN])?[a-h][1-8](?:\s*[-x]\s*|\s+to\s+)([a-h][1-8])(?![A-Za-z0-9])/g;
+
 function prepare(text: string): string {
   const cleaned = text
+    .normalize('NFKC')
+    .replace(/[♔♕♖♗♘♚♛♜♝♞]/g, (c) => PIECE_SYMBOLS[c] ?? c)
+    .replace(/[♙♟]x?/g, ' pawn to ')
     .replace(/[‐-―−]/g, '-')
     .replace(/[_*`~]/g, ' ')
     .replace(/(?<![A-Za-z0-9])0-0(-0)?(?![A-Za-z0-9])/g, (m) => m.replaceAll('0', 'O'));
   return splitGlued(cleaned);
+}
+
+/** Lowercase piece letters (n, r, q, k) are pieces; `b` stays a file. */
+const canon = (token: string): string => (/^[nrqk]/.test(token) ? token[0]!.toUpperCase() + token.slice(1) : token);
+
+/** `piece + destination` ("Ng5", "Pd5") for every move in the set; castling and `@` entries are skipped. */
+function pieceDestinations(allowed: Set<string>): Set<string> {
+  const out = new Set<string>();
+  for (const entry of allowed) {
+    const m = /^([KQRBN])?[a-h]?[1-8]?x?([a-h][1-8])(?:=[QRBN])?$/.exec(normalise(entry));
+    if (m?.[2] !== undefined) out.add(`${m[1] ?? 'P'}${m[2]}`);
+  }
+  return out;
+}
+
+/** Plain-language and coordinate moves. Matched spans are blanked so the SAN scan does not see them twice. */
+function plainMoves(prepared: string, allowed: Set<string>): { rest: string; bad: string[] } {
+  const known = pieceDestinations(allowed);
+  const anyPiece = (dest: string): boolean => [...known].some((k) => k.endsWith(dest));
+  const bad: string[] = [];
+  const flag = (label: string): void => {
+    if (!bad.includes(label)) bad.push(label);
+  };
+  let rest = prepared.replace(COORD_MOVE_RE, (whole, piece: string | undefined, dest: string) => {
+    if (!(piece === undefined ? anyPiece(dest) : known.has(`${piece}${dest}`))) flag(whole.trim());
+    return ' '.repeat(whole.length);
+  });
+  rest = rest.replace(FILE_PAWN_RE, (whole, dest: string) => {
+    if (!known.has(`P${dest}`)) flag(`${dest}`);
+    return whole.replace(/[a-h][1-8]$/, (s) => ' '.repeat(s.length));
+  });
+  rest = rest.replace(WORD_MOVE_RE, (whole, word: string, dest: string) => {
+    const piece = PIECE_WORDS[word.toLowerCase()]!;
+    if (!known.has(`${piece}${dest}`)) flag(`${piece === 'P' ? '' : piece}${dest}`);
+    return whole.replace(/[a-h][1-8]$/, '  ');
+  });
+  return { rest, bad };
 }
 
 /** True when one of the two words before `index` is a move verb ("play e4", "reply with e4"). */
@@ -72,10 +121,9 @@ export function findUngroundedMoves(text: string, allowedSan: Set<string>): stri
     const pawn = /^(?:[a-h]x)?([a-h][1-8])(?:=[QRBN])?$/.exec(n);
     if (pawn?.[1] !== undefined) pawnDestinations.add(pawn[1]);
   }
-  const prepared = prepare(text);
-  const bad: string[] = [];
+  const { rest: prepared, bad } = plainMoves(prepare(text), allowed);
   for (const match of prepared.matchAll(SAN_RE)) {
-    const token = normalise(match[0]);
+    const token = canon(normalise(match[0]));
     let ok: boolean;
     if (BARE_SQUARE.test(token)) {
       ok = afterMoveVerb(prepared, match.index) ? pawnDestinations.has(token) : allowed.has(token) || allowed.has(`@${token}`) || pawnDestinations.has(token);

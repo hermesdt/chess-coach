@@ -51,7 +51,7 @@ export function weaknessFacts(db: DatabaseSync, lastN = DEFAULT_LAST_N, reps: Pi
         const m = byPly.get(k.ply);
         if (!m || examples.length >= MAX_EXAMPLES) continue;
         examples.push({
-          ply: m.ply, moveNumber: Math.ceil(m.ply / 2), side: m.color, played: m.san, best: m.bestSan,
+          ply: m.ply, moveNumber: Math.ceil(m.ply / 2), side: m.color, fen: m.fenBefore, played: m.san, best: m.bestSan,
           bestLine: m.pvSan.slice(0, MAX_BEST_LINE), winBefore: Math.round(m.winBefore), winAfter: Math.round(m.winAfter),
           tags: m.tags, classification: m.classification,
         });

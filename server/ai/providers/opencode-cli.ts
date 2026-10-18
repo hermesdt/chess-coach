@@ -28,7 +28,7 @@ export function createOpencodeCli(run: CliRunner = realCliRunner, onPath: (bin: 
     async complete(req, opts) {
       const args = ['run', '--format', 'json', '--agent', 'plan'];
       if (opts.model) args.push('-m', opts.model);
-      const stdout = await withTempDir((cwd) => runCli(run, 'opencode', 'opencode', args, `${req.system}\n\n${req.user}`, cwd));
+      const stdout = await withTempDir((cwd) => runCli(run, 'opencode', 'opencode', args, `${req.system}\n\n${req.user}`, cwd, { signal: opts.signal }));
       const texts: { messageID: string | undefined; text: string }[] = [];
       for (const line of stdout.split('\n')) {
         let event: OpencodeEvent;
