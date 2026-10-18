@@ -1,0 +1,55 @@
+import type {
+  Color,
+  GameDetail,
+  GameList,
+  GameListQuery,
+  ImportPreviewItem,
+  ImportRequest,
+  ImportResult,
+  Job,
+  SettingsDTO,
+  SettingsUpdate,
+} from '../../shared/types';
+
+export interface SyncStatus {
+  chesscom: number | null;
+  lichess: number | null;
+}
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(`/api${path}`, {
+    ...init,
+    headers: init?.body ? { 'Content-Type': 'application/json' } : undefined,
+  });
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(body?.error ?? `Request failed (${res.status})`);
+  }
+  return (await res.json()) as T;
+}
+
+const post = <T>(path: string, body?: unknown) =>
+  request<T>(path, { method: 'POST', body: body === undefined ? undefined : JSON.stringify(body) });
+
+function queryString(q: GameListQuery): string {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(q)) {
+    if (value !== undefined && value !== '') params.set(key, String(value));
+  }
+  const s = params.toString();
+  return s ? `?${s}` : '';
+}
+
+export const api = {
+  getSettings: () => request<SettingsDTO>('/settings'),
+  putSettings: (update: SettingsUpdate) =>
+    request<SettingsDTO>('/settings', { method: 'PUT', body: JSON.stringify(update) }),
+  listGames: (q: GameListQuery = {}) => request<GameList>(`/games${queryString(q)}`),
+  getGame: (id: number) => request<GameDetail>(`/games/${id}`),
+  startSync: () => post<{ jobId: number }>('/sync'),
+  getJob: (id: number) => request<Job>(`/jobs/${id}`),
+  getSyncStatus: () => request<SyncStatus>('/sync/status'),
+  previewImport: (pgn: string) => post<ImportPreviewItem[]>('/import/preview', { pgn }),
+  importPgn: (pgn: string, colors?: (Color | null)[]) =>
+    post<ImportResult>('/import', { pgn, colors } satisfies ImportRequest),
+};

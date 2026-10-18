@@ -1,5 +1,7 @@
 import { NavLink, Route, Routes } from 'react-router';
 import { DashboardPage } from './pages/DashboardPage';
+import { GamesPage } from './pages/GamesPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 function Placeholder({ title }: { title: string }) {
   return (
@@ -21,8 +23,9 @@ export function App() {
       <main className="main">
         <Routes>
           <Route path="/" element={<DashboardPage />} />
-          <Route path="/games" element={<Placeholder title="Games" />} />
-          <Route path="/settings" element={<Placeholder title="Settings" />} />
+          <Route path="/games" element={<GamesPage />} />
+          <Route path="/games/:id" element={<Placeholder title="Game" />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>
     </>
