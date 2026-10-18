@@ -1,0 +1,41 @@
+import type { DatabaseSync } from 'node:sqlite';
+import { Hono } from 'hono';
+import type { Color, GameDetail, GameListQuery, GameResult, Source } from '../../shared/types.js';
+import { parsePgn } from '../chess/pgn.js';
+import { getGameRow, listGames } from '../db/games-repo.js';
+
+const SOURCES: readonly string[] = ['chesscom', 'lichess', 'import'];
+const COLORS: readonly string[] = ['white', 'black'];
+const RESULTS: readonly string[] = ['win', 'loss', 'draw'];
+
+const oneOf = <T extends string>(allowed: readonly string[], v: string | undefined): T | undefined =>
+  v !== undefined && allowed.includes(v) ? (v as T) : undefined;
+
+function intOr(v: string | undefined, fallback: number, min: number, max: number): number {
+  if (v === undefined || !/^\d+$/.test(v)) return fallback;
+  return Math.min(max, Math.max(min, Number(v)));
+}
+
+export function gamesRoutes(db: DatabaseSync): Hono {
+  return new Hono()
+    .get('/games', (c) => {
+      const p = c.req.query();
+      const query: GameListQuery = {
+        source: oneOf<Source>(SOURCES, p.source),
+        color: oneOf<Color>(COLORS, p.color),
+        result: oneOf<GameResult>(RESULTS, p.result),
+        q: p.q || undefined,
+        limit: intOr(p.limit, 50, 1, 200),
+        offset: intOr(p.offset, 0, 0, Number.MAX_SAFE_INTEGER),
+      };
+      return c.json(listGames(db, query));
+    })
+    .get('/games/:id', (c) => {
+      const id = c.req.param('id');
+      const row = /^\d+$/.test(id) ? getGameRow(db, Number(id)) : null;
+      if (!row) return c.json({ error: 'not found' }, 404);
+      const { startFen, moves } = parsePgn(row.pgn);
+      const detail: GameDetail = { ...row, startFen, moves };
+      return c.json(detail);
+    });
+}
