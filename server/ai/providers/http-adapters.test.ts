@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AiProviderError, AiRefusalError, AiTimeoutError, type AiRequest } from '../types.js';
+import { AiCancelledError, AiProviderError, AiRefusalError, AiTimeoutError, type AiRequest } from '../types.js';
 import { createAnthropicApi, type AnthropicLike } from './anthropic-api.js';
 import { createOpenRouter } from './openrouter.js';
 
@@ -50,6 +50,25 @@ describe('openrouter', () => {
   it('maps an abort to AiTimeoutError', async () => {
     const aborting = (async () => { throw new DOMException('aborted', 'TimeoutError'); }) as unknown as typeof fetch;
     await expect(createOpenRouter({ getKey: () => KEY, fetchFn: aborting }).complete(req, { model: null })).rejects.toBeInstanceOf(AiTimeoutError);
+  });
+  it('maps a caller abort to AiCancelledError', async () => {
+    const ac = new AbortController();
+    const aborting = (async () => { ac.abort(); throw new DOMException('aborted', 'AbortError'); }) as unknown as typeof fetch;
+    await expect(createOpenRouter({ getKey: () => KEY, fetchFn: aborting }).complete(req, { model: null, signal: ac.signal })).rejects.toBeInstanceOf(AiCancelledError);
+  });
+  it('does not swallow an abort during res.json()', async () => {
+    const f = (async () => ({ ok: true, status: 200, json: async () => { throw new DOMException('t', 'TimeoutError'); } })) as unknown as typeof fetch;
+    await expect(createOpenRouter({ getKey: () => KEY, fetchFn: f }).complete(req, { model: null })).rejects.toBeInstanceOf(AiTimeoutError);
+  });
+  it('redacts the key before truncating the message', async () => {
+    const p = createOpenRouter({ getKey: () => KEY, fetchFn: fakeFetch(500, { error: { message: `${'a'.repeat(470)}${KEY}` } }) });
+    const err = (await p.complete(req, { model: null }).catch((e: unknown) => e)) as Error;
+    expect(err.message).not.toContain('sk-or');
+  });
+  it('requires provider support for the parameters', async () => {
+    const seen: Seen[] = [];
+    await createOpenRouter({ getKey: () => KEY, fetchFn: fakeFetch(200, { choices: [{ message: { content: '{}' } }] }, seen) }).complete(req, { model: null });
+    expect(JSON.parse(seen[0]!.init.body as string).provider).toEqual({ require_parameters: true });
   });
   it('fails on empty content', async () => {
     const p = createOpenRouter({ getKey: () => KEY, fetchFn: fakeFetch(200, { choices: [] }) });
@@ -111,6 +130,24 @@ describe('anthropic-api', () => {
     expect(err).toBeInstanceOf(AiProviderError);
     expect(err.message).toContain('401');
     expect(err.message).not.toContain(AKEY);
+  });
+  it('uses only the text after the last fallback block', async () => {
+    const content = [{ type: 'text', text: 'partial' }, { type: 'fallback' }, { type: 'text', text: '{"a":1}' }];
+    const p = createAnthropicApi({ getKey: () => AKEY, client: fakeClient({ ...okResponse, content }) });
+    expect((await p.complete(req, { model: null })).text).toBe('{"a":1}');
+  });
+  it('maps timeout to AiTimeoutError and caller abort to AiCancelledError', async () => {
+    const t = new DOMException('t', 'TimeoutError');
+    await expect(createAnthropicApi({ getKey: () => AKEY, client: fakeClient(t) }).complete(req, { model: null })).rejects.toBeInstanceOf(AiTimeoutError);
+    const ac = new AbortController();
+    ac.abort();
+    const a = new DOMException('a', 'AbortError');
+    await expect(createAnthropicApi({ getKey: () => AKEY, client: fakeClient(a) }).complete(req, { model: null, signal: ac.signal })).rejects.toBeInstanceOf(AiCancelledError);
+  });
+  it('redacts the key before truncating the message', async () => {
+    const p = createAnthropicApi({ getKey: () => AKEY, client: fakeClient(new Error(`${'a'.repeat(470)}${AKEY}`)) });
+    const err = (await p.complete(req, { model: null }).catch((e: unknown) => e)) as Error;
+    expect(err.message).not.toContain('sk-ant');
   });
   it('available() = key set', async () => {
     expect((await createAnthropicApi({ getKey: () => AKEY }).available()).ok).toBe(true);

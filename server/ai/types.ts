@@ -41,3 +41,6 @@ export class AiProviderError extends Error {
 export class AiRefusalError extends Error {
   override name = 'AiRefusalError';
 }
+export class AiCancelledError extends Error {
+  override name = 'AiCancelledError';
+}

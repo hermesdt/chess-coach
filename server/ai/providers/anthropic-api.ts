@@ -11,7 +11,7 @@
  */
 import Anthropic from '@anthropic-ai/sdk';
 import { redact } from '../redact.js';
-import { AiProviderError, AiRefusalError, AiTimeoutError, type AiProvider } from '../types.js';
+import { AiCancelledError, AiProviderError, AiRefusalError, AiTimeoutError, type AiProvider } from '../types.js';
 
 export const ANTHROPIC_DEFAULT_MODEL = 'claude-opus-5-5';
 const TIMEOUT_MS = 180_000;
@@ -60,14 +60,21 @@ export function createAnthropicApi(deps: AnthropicApiDeps): AiProvider {
           { signal: opts.signal ? AbortSignal.any([opts.signal, timeout]) : timeout },
         );
       } catch (e) {
+        if (opts.signal?.aborted) throw new AiCancelledError('The Anthropic API request was cancelled.');
         if (e instanceof Error && (e.name === 'TimeoutError' || e.name === 'AbortError' || e.name === 'APIUserAbortError')) throw new AiTimeoutError('The Anthropic API did not answer in time.');
         const status = e instanceof Anthropic.APIError && e.status ? ` ${e.status}` : '';
-        throw new AiProviderError(redact(`Anthropic API error${status}: ${e instanceof Error ? e.message : String(e)}`.slice(0, 500), key));
+        throw new AiProviderError(redact(`Anthropic API error${status}: ${e instanceof Error ? e.message : String(e)}`, key).slice(0, 500));
       }
       if (res.stop_reason === 'refusal') throw new AiRefusalError('The Anthropic API refused this request.');
       if (res.stop_reason === 'max_tokens') throw new AiProviderError('The Anthropic API answer was cut off (max_tokens).');
-      const text = res.content.find((b) => b.type === 'text')?.text;
-      if (typeof text !== 'string' || text === '') throw new AiProviderError('The Anthropic API returned no text.');
+      // A mid-stream decline can leave partial text before a `fallback` block; only the last model's text counts.
+      const lastFallback = res.content.map((b) => b.type).lastIndexOf('fallback');
+      const text = res.content
+        .slice(lastFallback + 1)
+        .filter((b) => b.type === 'text' && typeof b.text === 'string')
+        .map((b) => b.text)
+        .join('');
+      if (text === '') throw new AiProviderError('The Anthropic API returned no text.');
       return { text, model: res.model ?? model };
     },
   };

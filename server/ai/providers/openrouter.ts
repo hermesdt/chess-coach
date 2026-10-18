@@ -7,7 +7,7 @@
  * The key comes from `getKey` on every call, so a settings change applies at once.
  */
 import { redact } from '../redact.js';
-import { AiProviderError, AiTimeoutError, type AiProvider } from '../types.js';
+import { AiCancelledError, AiProviderError, AiTimeoutError, type AiProvider } from '../types.js';
 
 export const OPENROUTER_DEFAULT_MODEL = 'anthropic/claude-sonnet-5.5';
 const URL = 'https://openrouter.ai/api/v1/chat/completions';
@@ -30,7 +30,13 @@ export function createOpenRouter(deps: OpenRouterDeps): AiProvider {
       if (!key) throw new AiProviderError('No OpenRouter API key is set.');
       const model = opts.model ?? OPENROUTER_DEFAULT_MODEL;
       const timeout = AbortSignal.timeout(TIMEOUT_MS);
+      const fail = (e: unknown): never => {
+        if (opts.signal?.aborted) throw new AiCancelledError('The OpenRouter request was cancelled.');
+        if (e instanceof Error && (e.name === 'TimeoutError' || e.name === 'AbortError')) throw new AiTimeoutError('OpenRouter did not answer in time.');
+        throw new AiProviderError(redact(`OpenRouter request failed: ${e instanceof Error ? e.message : String(e)}`, key).slice(0, 500));
+      };
       let res: Response;
+      let body: Completion | null;
       try {
         res = await fetchFn(URL, {
           method: 'POST',
@@ -38,18 +44,21 @@ export function createOpenRouter(deps: OpenRouterDeps): AiProvider {
           body: JSON.stringify({
             model,
             messages: [{ role: 'system', content: req.system }, { role: 'user', content: req.user }],
+            provider: { require_parameters: true },
             response_format: { type: 'json_schema', json_schema: { name: req.schemaName, strict: true, schema: req.jsonSchema } },
           }),
           signal: opts.signal ? AbortSignal.any([opts.signal, timeout]) : timeout,
         });
+        body = (await res.json().catch((e: unknown) => {
+          if (e instanceof Error && (e.name === 'TimeoutError' || e.name === 'AbortError')) throw e;
+          return null;
+        })) as Completion | null;
       } catch (e) {
-        if (e instanceof Error && (e.name === 'TimeoutError' || e.name === 'AbortError')) throw new AiTimeoutError('OpenRouter did not answer in time.');
-        throw new AiProviderError(redact(`OpenRouter request failed: ${e instanceof Error ? e.message : String(e)}`, key));
+        return fail(e);
       }
-      const body = (await res.json().catch(() => null)) as Completion | null;
       if (!res.ok) {
         const detail = typeof body?.error?.message === 'string' ? body.error.message : res.statusText;
-        throw new AiProviderError(redact(`OpenRouter error ${res.status}: ${detail}`.slice(0, 500), key));
+        throw new AiProviderError(redact(`OpenRouter error ${res.status}: ${detail}`, key).slice(0, 500));
       }
       const content = body?.choices?.[0]?.message?.content;
       if (typeof content !== 'string' || content === '') throw new AiProviderError('OpenRouter returned no content.');
