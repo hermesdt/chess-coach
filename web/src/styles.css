@@ -65,3 +65,11 @@ tr.clickable:focus-visible { outline: 2px solid #0969da; outline-offset: -2px; }
 .ratings button.default { border-color: #0969da; box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.3); font-weight: 600; }
 .flag-form { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
 .flag-form input { flex: 1; }
+
+.level { font-size: 1rem; font-weight: 400; margin-left: 0.5rem; }
+.banner { display: flex; gap: 1rem; align-items: center; justify-content: space-between; padding: 0.6rem 0.9rem; margin-bottom: 1rem; border: 1px solid #54aeff; border-radius: 6px; background: #ddf4ff; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.panel { padding: 0.75rem 1rem; border: 1px solid #d0d7de; border-radius: 8px; }
+.panel h2 { margin-top: 0; font-size: 1.1rem; }
+button.big { padding: 0.7rem 1.6rem; font-size: 1.1rem; font-weight: 600; background: #0969da; border-color: #0969da; color: #fff; }
+button.big:hover:not(:disabled) { background: #0757b3; }

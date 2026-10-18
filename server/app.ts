@@ -1,6 +1,7 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Hono, type MiddlewareHandler } from 'hono';
 import { analysisRoutes } from './routes/analysis.js';
+import { dashboardRoutes } from './routes/dashboard.js';
 import { gamesRoutes } from './routes/games.js';
 import type { EnginePool } from './engine/pool.js';
 import { lazyEnginePool } from './engine/pool.js';
@@ -45,6 +46,7 @@ export function createApp(deps: AppDeps): Hono {
   app.route('/api', importRoutes(deps.db));
   app.route('/api', analysisRoutes(deps.db, pool));
   app.route('/api', reviewRoutes(deps.db, deps.now ?? Date.now));
+  app.route('/api', dashboardRoutes(deps.db, deps.now ?? Date.now));
   app.all('/api/*', (c) => c.json({ error: 'not found' }, 404));
   return app;
 }

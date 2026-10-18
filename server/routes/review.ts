@@ -24,23 +24,24 @@ function count(db: DatabaseSync, sql: string, ...params: number[]): number {
   return Number((db.prepare(sql).get(...params) as { n: number }).n);
 }
 
+export function reviewStats(db: DatabaseSync, t: number) {
+  return {
+    dueNow: count(db, `SELECT COUNT(*) AS n FROM cards c JOIN card_state s ON s.card_id = c.id
+      WHERE c.suspended = 0 AND s.due <= ?`, t),
+    dueToday: count(db, `SELECT COUNT(*) AS n FROM cards c JOIN card_state s ON s.card_id = c.id
+      WHERE c.suspended = 0 AND s.due < ?`, endOfLocalDay(t)),
+    totalCards: count(db, 'SELECT COUNT(*) AS n FROM cards WHERE suspended = 0'),
+    reviewedToday: count(db, 'SELECT COUNT(*) AS n FROM reviews WHERE reviewed_at >= ? AND reviewed_at <= ?', startOfLocalDay(t), t),
+  };
+}
+
 export function reviewRoutes(db: DatabaseSync, now: () => number): Hono {
   return new Hono()
     .get('/review/session', (c) => {
       const { reviewDailyLimit, reviewNewPerDay } = getSettings(db);
       return c.json(buildSession(db, now(), { daily: reviewDailyLimit, newPerDay: reviewNewPerDay }));
     })
-    .get('/review/stats', (c) => {
-      const t = now();
-      return c.json({
-        dueNow: count(db, `SELECT COUNT(*) AS n FROM cards c JOIN card_state s ON s.card_id = c.id
-          WHERE c.suspended = 0 AND s.due <= ?`, t),
-        dueToday: count(db, `SELECT COUNT(*) AS n FROM cards c JOIN card_state s ON s.card_id = c.id
-          WHERE c.suspended = 0 AND s.due < ?`, endOfLocalDay(t)),
-        totalCards: count(db, 'SELECT COUNT(*) AS n FROM cards WHERE suspended = 0'),
-        reviewedToday: count(db, 'SELECT COUNT(*) AS n FROM reviews WHERE reviewed_at >= ? AND reviewed_at <= ?', startOfLocalDay(t), t),
-      });
-    })
+    .get('/review/stats', (c) => c.json(reviewStats(db, now())))
     .post('/review/:cardId', async (c) => {
       const id = parseId(c.req.param('cardId'));
       const submit = parseSubmit(await c.req.json().catch(() => null));

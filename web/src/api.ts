@@ -7,6 +7,7 @@ import type {
   GameAnalysis,
   GameDetail,
   GameList,
+  GameSummary,
   GameListQuery,
   ImportPreviewItem,
   ImportRequest,
@@ -14,6 +15,7 @@ import type {
   Job,
   SettingsDTO,
   SettingsUpdate,
+  Tag,
 } from '../../shared/types';
 
 export type AnalysisResponse = GameAnalysis | { status: 'none' } | { status: 'pending' | 'running' | 'error'; error?: string | null };
@@ -29,6 +31,15 @@ export interface SyncStatus {
   chesscom: number | null;
   lichess: number | null;
   runningJobId: number | null;
+}
+
+export interface DashboardData {
+  review: ReviewStats;
+  sync: { chesscom: number | null; lichess: number | null };
+  recentGames: GameSummary[];
+  topTag: { tag: Tag; count: number; games: number } | null;
+  level: { level: number; rating: number | null; source: 'override' | 'games' | 'default' };
+  levelUp: { from: number; to: number } | null;
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -69,6 +80,8 @@ export const api = {
   getJob: (id: number) => request<Job>(`/jobs/${id}`),
   getSyncStatus: () => request<SyncStatus>('/sync/status'),
   previewImport: (pgn: string) => post<ImportPreviewItem[]>('/import/preview', { pgn }),
+  getDashboard: () => request<DashboardData>('/dashboard'),
+  markLevelSeen: () => post<{ ok: true }>('/dashboard/level-seen', {}),
   getReviewSession: () => request<ReviewSession>('/review/session'),
   getReviewStats: () => request<ReviewStats>('/review/stats'),
   submitReview: (cardId: number, body: ReviewSubmit) => post<ReviewResult>(`/review/${cardId}`, body),
