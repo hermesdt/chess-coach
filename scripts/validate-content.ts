@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { basename } from 'node:path';
 import { closeEnginePool, lazyEnginePool } from '../server/engine/pool.js';
 import { LessonError, listLessonFiles, loadLesson, validateLesson } from '../server/course/load.js';
@@ -6,15 +6,17 @@ import type { LessonEngineCache } from '../server/course/validate.js';
 import { listRepertoireFiles, loadRepertoire, RepertoireError } from '../server/repertoire/load.js';
 import { validateRepertoire, type EngineCache } from '../server/repertoire/validate.js';
 import type { ValidationIssue } from '../server/repertoire/types.js';
+import { parseValidateArgs } from './validate-args.js';
 
 const NODES = 1_000_000;
 const PROGRESS_EVERY = 20;
 
-async function lessonIssues(): Promise<ValidationIssue[]> {
+async function lessonIssues(paths: string[]): Promise<ValidationIssue[]> {
   const issues: ValidationIssue[] = [];
   const cache: LessonEngineCache = new Map();
   const seen = new Map<string, string>();
-  for (const path of listLessonFiles()) {
+  const seenFens = new Map<string, string>();
+  for (const path of paths) {
     const file = basename(path);
     try {
       const lesson = loadLesson(JSON.parse(readFileSync(path, 'utf8')));
@@ -22,7 +24,7 @@ async function lessonIssues(): Promise<ValidationIssue[]> {
       if (other) issues.push({ file, nodeId: '(lesson)', rule: 'duplicate-lesson', detail: `Lesson id "${lesson.id}" is already used by ${other}` });
       seen.set(lesson.id, file);
       console.log(`${file}: checking ${lesson.exercises.length} exercises`);
-      issues.push(...(await validateLesson(lesson, lazyEnginePool, { nodes: NODES }, cache)).map((i) => ({ ...i, file })));
+      issues.push(...(await validateLesson(lesson, lazyEnginePool, { nodes: NODES, seenFens }, cache)).map((i) => ({ ...i, file })));
     } catch (e) {
       if (!(e instanceof LessonError || e instanceof SyntaxError)) throw e;
       issues.push({ file, nodeId: '(file)', rule: 'invalid-lesson', detail: e.message });
@@ -31,11 +33,11 @@ async function lessonIssues(): Promise<ValidationIssue[]> {
   return issues;
 }
 
-async function main(): Promise<number> {
+async function repertoireIssues(paths: string[]): Promise<ValidationIssue[]> {
   const issues: ValidationIssue[] = [];
   const cache: EngineCache = new Map();
   let total = 0;
-  for (const path of listRepertoireFiles()) {
+  for (const path of paths) {
     const file = basename(path);
     try {
       const rep = loadRepertoire(JSON.parse(readFileSync(path, 'utf8')));
@@ -54,7 +56,31 @@ async function main(): Promise<number> {
       issues.push({ file, nodeId: e instanceof RepertoireError ? e.nodeId : '(file)', rule: 'illegal-san', detail: e.message });
     }
   }
-  issues.push(...(await lessonIssues()));
+  return issues;
+}
+
+/** A file with an `exercises` key is a lesson, any other file is a repertoire. */
+function isLessonFile(path: string): boolean {
+  try {
+    return 'exercises' in (JSON.parse(readFileSync(path, 'utf8')) as object);
+  } catch {
+    return path.includes('lessons');
+  }
+}
+
+async function main(): Promise<number> {
+  const args = parseValidateArgs(process.argv.slice(2));
+  const issues: ValidationIssue[] = [];
+  if (args.file !== null) {
+    if (!existsSync(args.file)) {
+      console.log(`File not found: ${args.file}`);
+      return 1;
+    }
+    issues.push(...(await (isLessonFile(args.file) ? lessonIssues([args.file]) : repertoireIssues([args.file]))));
+  } else {
+    if (args.repertoires) issues.push(...(await repertoireIssues(listRepertoireFiles())));
+    if (args.lessons) issues.push(...(await lessonIssues(listLessonFiles())));
+  }
   const errors = issues.filter((i) => i.severity !== 'warning');
   const warnings = issues.filter((i) => i.severity === 'warning');
   const files = [...new Set(issues.map((i) => i.file))];

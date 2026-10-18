@@ -4,6 +4,7 @@ import type { Exercise, Lesson } from '../../shared/types.js';
 import { moverWinAfter, winPct } from '../analysis/winpct.js';
 import type { EnginePool } from '../engine/pool.js';
 import type { EngineLine } from '../engine/uci.js';
+import { positionKey } from '../srs/cards-repo.js';
 import type { ValidationIssue } from '../repertoire/types.js';
 
 export const MAX_WIN_LOSS = 10;
@@ -19,9 +20,11 @@ export type LessonEngineCache = Map<string, EngineLine[]>;
 
 export interface LessonValidateOptions {
   nodes: number;
+  /** Position key -> "lesson/exercise" already seen. Share one map across lessons to find duplicates between lessons. */
+  seenFens?: Map<string, string>;
 }
 
-function sanFromUci(fen: string, uci: string | undefined): string {
+export function sanFromUci(fen: string, uci: string | undefined): string {
   if (!uci) return '?';
   try {
     return new Chess(fen).move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] }).san;
@@ -59,7 +62,7 @@ function staticIssues(lesson: Lesson, file: string): ValidationIssue[] {
   if (words < MIN_BODY_WORDS || words > MAX_BODY_WORDS) {
     add(root, 'body-length', `Body has ${words} words (allowed ${MIN_BODY_WORDS}-${MAX_BODY_WORDS})`);
   }
-  if (!lesson.body.includes('Rule of thumb:')) add(root, 'rule-of-thumb', 'Body has no "Rule of thumb:" line');
+  if (!/^\s*(\*\*)?Rule of thumb:/m.test(lesson.body)) add(root, 'rule-of-thumb', 'Body has no line that starts with "Rule of thumb:"');
   if (lesson.exercises.length < MIN_EXERCISES || lesson.exercises.length > MAX_EXERCISES) {
     add(root, 'exercise-count', `Lesson has ${lesson.exercises.length} exercises (allowed ${MIN_EXERCISES}-${MAX_EXERCISES})`);
   }
@@ -79,6 +82,7 @@ export async function validateLesson(
 ): Promise<ValidationIssue[]> {
   const file = `${lesson.id}.json`;
   const issues = staticIssues(lesson, file);
+  const seenFens = opts.seenFens ?? new Map<string, string>();
   const add = (nodeId: string, rule: string, detail: string, severity: 'error' | 'warning' = 'error') =>
     issues.push({ file, nodeId, rule, detail, severity });
 
@@ -98,6 +102,11 @@ export async function validateLesson(
   };
 
   const checkExercise = async (ex: Exercise): Promise<void> => {
+    const key = positionKey(ex.fen);
+    const where = `${lesson.id}/${ex.id}`;
+    const prior = seenFens.get(key);
+    if (prior) add(ex.id, 'duplicate-fen', `Same position as ${prior}`);
+    else seenFens.set(key, where);
     let chess: Chess;
     try {
       chess = new Chess(ex.fen);

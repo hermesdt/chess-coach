@@ -2,7 +2,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { Chess } from 'chess.js';
 import type { Lesson, LessonStatus } from '../../shared/types.js';
 import { transaction } from '../db/db.js';
-import { positionKey, upsertCard } from '../srs/cards-repo.js';
+import { listCardsByKind, positionKey, setSuspended, upsertCard } from '../srs/cards-repo.js';
 
 /** Order the cards of lesson N before those of lesson N+1 (at most 99 exercises per lesson). */
 const SORT_STRIDE = 100;
@@ -29,7 +29,18 @@ function upsertLessonCards(db: DatabaseSync, lesson: Lesson): number {
     }, { mergeRefs: false });
     if (!exists) created += 1;
   });
+  suspendOrphans(db, lesson);
   return created;
+}
+
+/** Suspend cards of this lesson whose exercise was removed or whose position changed. FSRS state is kept. */
+function suspendOrphans(db: DatabaseSync, lesson: Lesson): void {
+  const exerciseByKey = new Map(lesson.exercises.map((ex) => [positionKey(ex.fen), ex.id]));
+  for (const card of listCardsByKind(db, 'lesson')) {
+    const ref = card.refs.find((r) => r.lessonId === lesson.id);
+    if (!ref || card.suspended) continue;
+    if (exerciseByKey.get(card.positionKey) !== ref.exerciseId) setSuspended(db, card.id, true);
+  }
 }
 
 /** Mark the lesson done and create its cards. Safe to call again: no duplicates, first completion time kept. */

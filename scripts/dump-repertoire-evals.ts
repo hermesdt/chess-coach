@@ -3,6 +3,7 @@ import { Chess } from 'chess.js';
 import { winPct } from '../server/analysis/winpct.js';
 import { closeEnginePool, lazyEnginePool } from '../server/engine/pool.js';
 import { loadLessons } from '../server/course/load.js';
+import { sanFromUci } from '../server/course/validate.js';
 import { loadRepertoire } from '../server/repertoire/load.js';
 import type { RepNode } from '../server/repertoire/types.js';
 
@@ -13,20 +14,12 @@ if (!file) {
   process.exit(2);
 }
 
-function sanOf(fen: string, uci: string): string {
-  try {
-    return new Chess(fen).move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] }).san;
-  } catch {
-    return uci;
-  }
-}
-
 async function dumpLessons(): Promise<void> {
   for (const lesson of loadLessons(process.argv[3])) {
     for (const ex of lesson.exercises) {
       const lines = await lazyEnginePool.analyse(ex.fen, { nodes: 1_000_000, multipv: 2 });
-      const top2 = lines.map((l) => `${sanOf(ex.fen, l.pv[0] ?? '')} (${winPct(l.score).toFixed(0)}%)`).join(' ');
-      const solution = ex.solution.map((u) => sanOf(ex.fen, u)).join(', ');
+      const top2 = lines.map((l) => `${sanFromUci(ex.fen, l.pv[0] ?? '')} (${winPct(l.score).toFixed(0)}%)`).join(' ');
+      const solution = ex.solution.map((u) => sanFromUci(ex.fen, u)).join(', ');
       console.log(`${lesson.id} | ${ex.id} | ${ex.prompt} | ${solution} | ${ex.explanation} | top2: ${top2}`);
     }
   }

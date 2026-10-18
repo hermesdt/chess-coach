@@ -27,6 +27,17 @@ describe('loadLessons', () => {
     expect(listLessonFiles(dir)).toHaveLength(2);
   });
 
+  it('skips a malformed file, reports it and keeps the valid lessons', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'lessons-'));
+    writeFileSync(join(dir, 'good.json'), JSON.stringify(loadLessons(SAMPLE_DIR)[0]));
+    writeFileSync(join(dir, 'bad.json'), JSON.stringify({ id: 'nope' }));
+    writeFileSync(join(dir, 'broken.json'), '{ not json');
+    const errors: string[] = [];
+    const lessons = loadLessons(dir, (file) => errors.push(file));
+    expect(lessons.map((l) => l.id)).toEqual(['blunder-check']);
+    expect(errors.map((f) => f.split('/').pop())).toEqual(['bad.json', 'broken.json']);
+  });
+
   it('returns an empty list when the directory does not exist', () => {
     expect(loadLessons(join(tmpdir(), 'no-such-lessons-dir'))).toEqual([]);
   });

@@ -59,6 +59,18 @@ describe('syncLessonCards', () => {
     expect(card.solution).toEqual({ accepted: ['d1d5', 'd1d4'], best: 'd1d5', explanation: 'New text.' });
   });
 
+  it('suspends cards whose exercise was removed or whose position changed', () => {
+    completeLesson(db, lesson, 1000);
+    const [a, b, c] = lesson.exercises;
+    const moved = { ...b!, fen: '4k3/8/8/3q4/8/8/8/2R1K3 w - - 0 1', solution: ['c1c8'] };
+    syncLessonCards(db, [{ ...lesson, exercises: [a!, moved] }]);
+    const cards = listCardsByKind(db, 'lesson');
+    const state = (id: string) => cards.filter((x) => x.refs[0]?.exerciseId === id).map((x) => x.suspended);
+    expect(state(a!.id)).toEqual([false]);
+    expect(state(b!.id)).toEqual([true, false]);
+    expect(state(c!.id)).toEqual([true]);
+  });
+
   it('keeps a flagged card suspended', () => {
     completeLesson(db, lesson, 1000);
     const card = listCardsByKind(db, 'lesson')[0]!;

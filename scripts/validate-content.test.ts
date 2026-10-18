@@ -3,6 +3,7 @@ import { closeEnginePool, lazyEnginePool } from '../server/engine/pool.js';
 import { isStockfishAvailable } from '../server/engine/stockfish-path.js';
 import type { EngineLine } from '../server/engine/uci.js';
 import { loadLessons, validateLesson } from '../server/course/load.js';
+import { parseValidateArgs } from './validate-args.js';
 import type { Lesson } from '../shared/types.js';
 import { loadRepertoire } from '../server/repertoire/load.js';
 import { validateRepertoire } from '../server/repertoire/validate.js';
@@ -188,7 +189,6 @@ describe('validateLesson', () => {
   it('measures a move outside the top 2 by the position after it', async () => {
     const eng = lessonEngine({
       [queen!.fen]: [['d1d5', 900], ['e1e2', 0]],
-      'after': [],
     });
     const issues = await validateLesson(withEx({ solution: ['d1d2'] }, 1), eng, ok);
     expect(rules(issues)).toContain('engine-loss');
@@ -254,5 +254,53 @@ describe('validateLesson', () => {
     });
     const issues = await validateLesson(withEx({ solution: ['d1d4'] }), eng, ok);
     expect(rules(issues)).toEqual([]);
+  });
+});
+
+describe('validateLesson (fix round 1)', () => {
+  const sample = () => loadLessons('content/lessons/__test__')[0]!;
+  const eng = {
+    analyse: async (_fen: string, o: { multipv?: number }): Promise<EngineLine[]> =>
+      [{ multipv: 1, score: cp(900), pv: ['e2e4'] }, { multipv: 2, score: cp(0), pv: ['d2d4'] }].slice(0, o.multipv ?? 1),
+  };
+
+  it('flags the same FEN twice within a lesson', async () => {
+    const l = sample();
+    const dup: Lesson = { ...l, exercises: l.exercises.map((e, i) => (i === 2 ? { ...e, fen: l.exercises[0]!.fen } : e)) };
+    const issues = await validateLesson(dup, eng, { nodes: 1 });
+    expect(issues.filter((i) => i.rule === 'duplicate-fen').map((i) => i.nodeId)).toEqual([l.exercises[2]!.id]);
+  });
+
+  it('flags the same FEN across lessons through a shared map', async () => {
+    const l = sample();
+    const seenFens = new Map<string, string>();
+    await validateLesson(l, eng, { nodes: 1, seenFens });
+    const other: Lesson = { ...l, id: 'free-material', order: 2 };
+    const issues = await validateLesson(other, eng, { nodes: 1, seenFens });
+    expect(issues.filter((i) => i.rule === 'duplicate-fen')).toHaveLength(3);
+  });
+
+  it('needs "Rule of thumb:" at the start of a line', async () => {
+    const l = sample();
+    const body = l.body.replace('Rule of thumb:', 'Our Rule of thumb:');
+    const issues = await validateLesson({ ...l, body }, eng, { nodes: 1 });
+    expect(issues.map((i) => i.rule)).toContain('rule-of-thumb');
+  });
+});
+
+describe('parseValidateArgs', () => {
+  it('defaults to everything', () => {
+    expect(parseValidateArgs([])).toEqual({ lessons: true, repertoires: true, file: null });
+  });
+  it('--lessons and --repertoires select one side', () => {
+    expect(parseValidateArgs(['--lessons'])).toEqual({ lessons: true, repertoires: false, file: null });
+    expect(parseValidateArgs(['--repertoires'])).toEqual({ lessons: false, repertoires: true, file: null });
+  });
+  it('a file path validates just that file', () => {
+    expect(parseValidateArgs(['content/lessons/01-blunder-check.json']))
+      .toEqual({ lessons: false, repertoires: false, file: 'content/lessons/01-blunder-check.json' });
+  });
+  it('rejects unknown flags', () => {
+    expect(() => parseValidateArgs(['--nope'])).toThrow(/Unknown option/);
   });
 });

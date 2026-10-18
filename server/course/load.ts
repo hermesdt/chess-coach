@@ -75,8 +75,19 @@ export function listLessonFiles(dir: string = DEFAULT_DIR): string[] {
     .sort();
 }
 
-export function loadLessons(dir: string = DEFAULT_DIR): Lesson[] {
-  return listLessonFiles(dir)
-    .map((f) => loadLesson(JSON.parse(readFileSync(f, 'utf8'))))
-    .sort((a, b) => a.order - b.order);
+/** Loads every valid lesson. A malformed file is skipped and reported to `onError`, so one bad file never empties the course. */
+export function loadLessons(
+  dir: string = DEFAULT_DIR,
+  onError: (file: string, error: Error) => void = (file, e) => console.error(`lesson file skipped: ${file}: ${e.message}`),
+): Lesson[] {
+  const lessons: Lesson[] = [];
+  for (const file of listLessonFiles(dir)) {
+    try {
+      lessons.push(loadLesson(JSON.parse(readFileSync(file, 'utf8'))));
+    } catch (e) {
+      if (!(e instanceof LessonError || e instanceof SyntaxError)) throw e;
+      onError(file, e);
+    }
+  }
+  return lessons.sort((a, b) => a.order - b.order);
 }
