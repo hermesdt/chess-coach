@@ -106,7 +106,7 @@ export function DataSection() {
         <dt>Database file</dt>
         <dd><code>{info.dbPath}</code></dd>
         <dt>Games</dt>
-        <dd>{`${info.games} games${dupes}`}</dd>
+        <dd>{`${info.games - info.duplicateGames} games${dupes}`}</dd>
         <dt>Cards</dt>
         <dd>{`${info.cards} cards`}</dd>
         <dt>Backups</dt>

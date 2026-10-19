@@ -114,7 +114,7 @@ describe('data section', () => {
   it('shows path and counts with hidden duplicates', async () => {
     mockPage();
     render(<SettingsPage />);
-    expect(await screen.findByText('812 games (3 duplicate copies hidden)')).toBeTruthy();
+    expect(await screen.findByText('809 games (3 duplicate copies hidden)')).toBeTruthy();
     expect(screen.getByText('data/chess.db')).toBeTruthy();
     expect(screen.getByText('40 cards')).toBeTruthy();
   });

@@ -59,4 +59,27 @@ describe('InsightsPage', () => {
     expect(screen.getByTestId('summary').textContent).toBe('6 games, 4 analysed, you won 50%.');
     expect(screen.getByText(/Lesson:/)).toBeTruthy();
   });
+
+  it('keeps the series with most points and says how many are hidden', async () => {
+    const pts = (n: number) => Array.from({ length: n }, (_, k) => ({ t: Date.UTC(2026, 8, 1 + k), elo: 500 + k }));
+    vi.spyOn(api, 'getInsights').mockResolvedValue({
+      ...empty,
+      rating: [
+        { series: 'a few', points: pts(1) },
+        { series: 'b some', points: pts(3) },
+        { series: 'c most', points: pts(9) },
+        { series: 'd two', points: pts(2) },
+        { series: 'e many', points: pts(6) },
+        { series: 'f lots', points: pts(7) },
+      ],
+      summary: { games: 28, analysed: 0, winRate: null },
+    });
+    vi.spyOn(api, 'getDashboard').mockResolvedValue(dash(null));
+    render(<MemoryRouter><InsightsPage /></MemoryRouter>);
+    expect(await screen.findByText('2 more series not shown.')).toBeTruthy();
+    expect(screen.getAllByText('c most').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('f lots').length).toBeGreaterThan(0);
+    expect(screen.queryByText('a few')).toBeNull();
+    expect(screen.queryByText('d two')).toBeNull();
+  });
 });

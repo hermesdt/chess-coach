@@ -80,7 +80,9 @@ export function InsightsPage() {
 
   const { summary } = data;
   const accuracySeries = [{ name: 'Accuracy', color: SERIES_COLORS[0]!, points: data.accuracyByMonth.map((a) => ({ x: monthStart(a.month), y: Math.round(a.avg) })) }];
-  const ratingSeries = data.rating.slice(0, SERIES_COLORS.length).map((s, i) => ({
+  const byPoints = [...data.rating].sort((a, b) => b.points.length - a.points.length);
+  const hiddenSeries = Math.max(0, byPoints.length - SERIES_COLORS.length);
+  const ratingSeries = byPoints.slice(0, SERIES_COLORS.length).map((s, i) => ({
     name: s.series,
     color: SERIES_COLORS[i]!,
     points: s.points.map((p) => ({ x: p.t, y: p.elo })),
@@ -122,7 +124,10 @@ export function InsightsPage() {
           {ratingSeries.length === 0 ? (
             <p className="muted">No rated games in this window. Sync your games to see your rating.</p>
           ) : (
-            <LineSeries series={ratingSeries} formatX={formatDay} xLabel="Date" yLabel="Rating" />
+            <>
+              <LineSeries series={ratingSeries} formatX={formatDay} xLabel="Date" yLabel="Rating" />
+              {hiddenSeries > 0 && <p className="muted viz-caption">{hiddenSeries} more series not shown.</p>}
+            </>
           )}
         </Card>
         <Card title="Recommended focus">
