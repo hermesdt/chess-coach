@@ -1,0 +1,127 @@
+{
+  "_spike": "SPIKE FIXTURE. Hand-written values for timing only. Not real engine output. Never shown to the owner.",
+  "turnPrefix": "spike",
+  "anchor": {
+    "fen": "rnbq1rk1/ppppppbp/5np1/8/3P1B2/4PN2/PPP2PPP/RN1QKB1R w KQ - 3 5",
+    "sideToMove": "white",
+    "ply": 8,
+    "path": [],
+    "inBranch": false,
+    "isUserToMove": true,
+    "describe": "move 5 for White, after 4...O-O"
+  },
+  "played": null,
+  "lines": [
+    {
+      "id": "L1",
+      "kind": "best",
+      "startFen": "rnbq1rk1/ppppppbp/5np1/8/3P1B2/4PN2/PPP2PPP/RN1QKB1R w KQ - 3 5",
+      "san": [
+        "Be2",
+        "d6",
+        "O-O",
+        "Nbd7"
+      ],
+      "uci": [
+        "f1e2",
+        "d7d6",
+        "e1g1",
+        "b8d7"
+      ],
+      "evalCp": 18,
+      "evalMate": null,
+      "winPctForUser": 52,
+      "materialEnd": {
+        "white": 39,
+        "black": 39
+      },
+      "captures": [],
+      "checks": 0
+    },
+    {
+      "id": "L2",
+      "kind": "named",
+      "startFen": "rnbq1rk1/ppppppbp/5np1/8/3P1B2/4PN2/PPP2PPP/RN1QKB1R w KQ - 3 5",
+      "san": [
+        "Bh6",
+        "Bxh6"
+      ],
+      "uci": [
+        "f4h6",
+        "g7h6"
+      ],
+      "evalCp": -320,
+      "evalMate": null,
+      "winPctForUser": 12,
+      "materialEnd": {
+        "white": 36,
+        "black": 39
+      },
+      "captures": [
+        {
+          "ply": 2,
+          "piece": "b",
+          "square": "h6",
+          "by": "black"
+        }
+      ],
+      "checks": 0,
+      "comment": "Spike fixture: the owner idea. White loses a bishop for nothing."
+    },
+    {
+      "id": "L3",
+      "kind": "best",
+      "startFen": "rnbq1rk1/ppppppbp/5np1/8/3P1B2/4PN2/PPP2PPP/RN1QKB1R w KQ - 3 5",
+      "san": [
+        "h3",
+        "d6",
+        "Nbd2",
+        "c5"
+      ],
+      "uci": [
+        "h2h3",
+        "d7d6",
+        "b1d2",
+        "c7c5"
+      ],
+      "evalCp": 12,
+      "evalMate": null,
+      "winPctForUser": 51,
+      "materialEnd": {
+        "white": 39,
+        "black": 39
+      },
+      "captures": [],
+      "checks": 0
+    }
+  ],
+  "threat": null,
+  "named": [
+    {
+      "text": "Bh6",
+      "status": "legal",
+      "lineId": "L2"
+    }
+  ],
+  "game": {
+    "level": 1,
+    "rating": 550,
+    "userColor": "white",
+    "userRating": 550,
+    "opponentRating": 560,
+    "result": null,
+    "opening": "London System",
+    "movesSan": [
+      "d4",
+      "Nf6",
+      "Bf4",
+      "g6",
+      "e3",
+      "Bg7",
+      "Nf3",
+      "O-O"
+    ],
+    "keyMoments": []
+  },
+  "isFinal": null
+}
