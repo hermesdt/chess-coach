@@ -1,0 +1,59 @@
+{
+  "id": "castling-sides",
+  "order": 8,
+  "level": 1,
+  "title": "Opposite-side and same-side castling",
+  "summary": "Same-side castling is safe. Opposite-side castling is a race: use it when you can storm fast.",
+  "tags": [],
+  "body": "### Which side should I castle?\n\nYou may know the advice: castle on the same side as your opponent. At your level, this is good advice.\n\nWhen both kings are on the same side, a pawn storm is dangerous. You push pawns towards the enemy king, but those pawns leave holes next to your own king. The game stays calm. You can fight for the centre and use your pieces.\n\nBut sometimes opposite-side castling is better. Both kings are then far apart, and the game becomes a race. Each player pushes pawns towards the enemy king and opens files for the rooks. The faster side wins.\n\nOpposite-side castling is a good choice when:\n\n- you want to attack and you know the plan;\n- your pieces are developed faster than your opponent's pieces;\n- your opponent has already moved pawns in front of their king.\n\nIt has a cost. You use the pawns that protect your own king. If your attack is slow, your opponent attacks first and your king has no shield. Do not storm when your pieces are not developed.\n\nUse this plan:\n\n- Look at where the enemy king is.\n- If it is on your side, castle the same way and play in the centre.\n- If it is on the other side, ask who is faster.\n- If you are faster, push the pawns next to the enemy king and bring your pieces.\n\nA pawn storm needs speed. Do not stop halfway.\n\nRule of thumb: castle on the same side to stay safe. Castle on the opposite side only when you plan a fast pawn storm.",
+  "exercises": [
+    {
+      "id": "storm-white-1",
+      "fen": "r1bq1rk1/1p2bppp/p1nppn2/8/3NP3/2N1BP2/PPPQ2PP/2KR1B1R w - - 2 10",
+      "prompt": "White to move. Kings are on opposite sides. Start your pawn storm.",
+      "solution": [
+        "g2g4",
+        "h2h4"
+      ],
+      "explanation": "Your king is on c1 and Black's king is on g8. Pushing the g- or h-pawn opens the files in front of the Black king. Your king is far from the fight."
+    },
+    {
+      "id": "storm-white-2",
+      "fen": "r1b2rk1/1pq1bppp/p1nppn2/8/3NP1P1/2N1BP2/PPPQ3P/2KR1B1R w - - 1 11",
+      "prompt": "White to move. Continue your pawn storm.",
+      "solution": [
+        "g4g5",
+        "h2h4"
+      ],
+      "explanation": "g5 attacks the knight on f6, so the storm gains time. h4 brings the next pawn forward. A slow move like Kb1 gives Black time to start a counterattack."
+    },
+    {
+      "id": "storm-black-1",
+      "fen": "r2q1rk1/1p1nbppp/p2pbn2/4p3/4P3/1NN1BP2/PPPQ2PP/1K1R1B1R b - - 6 11",
+      "prompt": "Black to move. Kings are on opposite sides. Start your pawn storm.",
+      "solution": [
+        "b7b5"
+      ],
+      "explanation": "White's king is on b1, so you push the pawns on the queenside. b5 starts the storm, and the pawn can later go to b4. Your own king is safe on the other side."
+    },
+    {
+      "id": "storm-black-2",
+      "fen": "rnbq1rk1/p3ppbp/2pp1np1/1p6/3PP2P/2N1BP2/PPPQ2P1/2KR1BNR b - - 0 8",
+      "prompt": "Black to move. Continue your pawn storm.",
+      "solution": [
+        "b5b4"
+      ],
+      "explanation": "b4 attacks the knight on c3 and brings the pawn closer to the White king on c1. White has used the h-pawn on the other side, so Black can hurry with the queenside storm."
+    },
+    {
+      "id": "same-side",
+      "fen": "r1bqk2r/ppp1npp1/3p1n1p/4p3/1b2P3/1BNP1N2/PPPB1PPP/R2Q1RK1 b kq - 3 8",
+      "prompt": "Black to move. White castled short. Make your king safe on the same side.",
+      "solution": [
+        "e8g8"
+      ],
+      "explanation": "With both kings on the kingside, neither side can storm the other without risk. O-O keeps your king safe and leaves you free to play in the centre."
+    }
+  ],
+  "links": []
+}

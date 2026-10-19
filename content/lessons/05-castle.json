@@ -1,0 +1,59 @@
+{
+  "id": "castle",
+  "order": 5,
+  "level": 1,
+  "title": "Castle early",
+  "summary": "Castle by move 8. A king in the middle is a target. Develop first, then castle short in most games.",
+  "tags": [
+    "no_castle"
+  ],
+  "body": "### Castle early\n\nCastling does two jobs. It moves your king to safety. It also brings a rook into the game.\n\nAt your level, a king in the middle is a big target. Your opponent opens the e-file or the d-file and attacks the king with checks. You then lose a piece or the game. A castled king hides behind its pawns.\n\nUse this plan:\n\n- Develop your knights and bishops first.\n- Clear the squares between your king and your rook.\n- Castle by move 8 if you can. Castling short (O-O) is quicker and safer for most players.\n- Then connect your rooks and fight for the centre.\n\nCheck these points before you castle:\n\n- Your king is not in check.\n- Your king does not cross or land on a square that your opponent attacks.\n- You have not moved your king or that rook before.\n\nAfter you castle, keep the pawns in front of your king at home. They are your shield. A pawn move like g4 or h3 early in the game makes holes next to your king.\n\nSometimes you cannot castle yet. A piece blocks the way, or an enemy piece attacks a square on the path. Solve that problem first. Do not waste time with a move like Ke2 when you can still castle.\n\nA king can stay in the centre for a while when the centre is closed. Pawns then block the files. If your opponent opens the centre, castle at once.\n\nRule of thumb: develop your knights and bishops, then castle. A king in the centre is a target.",
+  "exercises": [
+    {
+      "id": "castle-1",
+      "fen": "r1bqkb1r/pppp1pp1/2n2n1p/4p3/2B1P3/3P1N2/PPP2PPP/RNBQK2R w KQkq - 0 5",
+      "prompt": "White to move. Make your king safe.",
+      "solution": [
+        "e1g1"
+      ],
+      "explanation": "O-O puts the king behind its pawns and brings the rook towards the centre. You have a knight and a bishop out, so there is no reason to wait."
+    },
+    {
+      "id": "castle-2",
+      "fen": "rnbqk2r/pp2bppp/4p3/2p5/3PP3/2P2N2/P3BPPP/R1BQK2R b KQkq - 3 8",
+      "prompt": "Black to move. Make your king safe.",
+      "solution": [
+        "e8g8"
+      ],
+      "explanation": "Black moved the bishop to e7, so the squares between king and rook are empty. O-O keeps the king safe when the centre opens and brings the rook to f8."
+    },
+    {
+      "id": "castle-3",
+      "fen": "r1bqk2r/pppp1pp1/2n2n1p/4p3/1bB1P3/2NP1N2/PPP2PPP/R1BQK2R w KQkq - 2 6",
+      "prompt": "White to move. Make your king safe.",
+      "solution": [
+        "e1g1"
+      ],
+      "explanation": "The bishop on b4 pins the knight on c3 to your king. O-O removes the pin and puts the king in a safe place."
+    },
+    {
+      "id": "castle-4",
+      "fen": "r1bqk1nr/1pppbppp/p1n5/4p3/B3P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 5",
+      "prompt": "White to move. Make your king safe.",
+      "solution": [
+        "e1g1"
+      ],
+      "explanation": "The knight and the bishop are out, and f1 and g1 are empty. O-O is the natural next step. Waiting leaves the king on e1 for no reason."
+    },
+    {
+      "id": "castle-5",
+      "fen": "r1bqk2r/pppp1pp1/2n2n1p/4p3/1bB1P3/2NP1N2/PPPB1PPP/R2QK2R b KQkq - 3 6",
+      "prompt": "Black to move. Make your king safe.",
+      "solution": [
+        "e8g8"
+      ],
+      "explanation": "Black has two knights and a bishop out, so the king can go to safety. O-O gets the king out of the centre before White opens the position."
+    }
+  ],
+  "links": []
+}

@@ -1,0 +1,51 @@
+{
+  "id": "bishop-pair",
+  "order": 7,
+  "level": 1,
+  "title": "The bishop pair",
+  "summary": "Two bishops are strong in open positions. Keep them, and trade one only when you get something real.",
+  "tags": [],
+  "body": "### The bishop pair\n\nTwo bishops cover both colours of squares. One bishop moves on light squares. The other moves on dark squares. Together they leave no weak colour for your opponent to use.\n\nBishops are long-range pieces. They are strongest in open positions, where few pawns block the diagonals. In a closed position, a knight can be just as good. A bishop that looks at its own pawns does little.\n\nTwo bishops work well as a team. They attack from far away. They support each other, and they hit your opponent's pawns and king on both colours. A player with only knights and one bishop finds it hard to defend every square.\n\nAt your level, players often trade a bishop for a knight with no reason. That trade gives up your best pair for nothing.\n\nHow to keep the pair:\n\n- When a knight or a pawn attacks a bishop, retreat it to a safe square. Do not trade it for a knight.\n- Open the position. Trade pawns and open lines for your bishops.\n- Do not put your bishops behind your own pawns.\n\nWhen to give one up:\n\n- The trade damages your opponent's pawns, for example doubled pawns.\n- The trade wins material.\n- The trade removes a strong enemy attacker, and your king is in danger.\n\nGive up a bishop only when you get something real in return.\n\nRule of thumb: keep both bishops in open positions, and trade one only when you get something real.",
+  "exercises": [
+    {
+      "id": "keep-ruy",
+      "fen": "r1bqkbnr/2pp1ppp/p1n5/1p2p3/B3P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 5",
+      "prompt": "White to move. Your bishop is attacked. Keep your two bishops.",
+      "solution": [
+        "a4b3"
+      ],
+      "explanation": "Bb3 saves the bishop and keeps both bishops. Bxc6 dxc6 gives up a bishop and wins nothing. Other moves leave the bishop to the b5 pawn."
+    },
+    {
+      "id": "keep-london",
+      "fen": "rnbqk2r/ppppppbp/6p1/7n/2PP1B2/5N2/PP2PPPP/RN1QKB1R w KQkq - 1 5",
+      "prompt": "White to move. Your bishop is attacked. Keep your two bishops.",
+      "solution": [
+        "f4c1",
+        "f4e3",
+        "f4d2"
+      ],
+      "explanation": "The knight on h5 attacks the bishop on f4. Retreat to c1, e3 or d2 and you keep both bishops. Bg3 allows Nxg3, and after hxg3 you have only one bishop."
+    },
+    {
+      "id": "keep-black",
+      "fen": "r2qk2r/1p2np1p/p1n1b3/2bp2p1/1P6/P3P1B1/3NNPPP/R2QKB1R b KQkq - 0 11",
+      "prompt": "Black to move. Your bishop is attacked. Keep your two bishops.",
+      "solution": [
+        "c5a7",
+        "c5b6"
+      ],
+      "explanation": "The pawn on b4 attacks the bishop on c5. Ba7 and Bb6 keep the bishop on the same diagonal and keep both bishops. Bxe3 fxe3 gives a bishop for a pawn."
+    },
+    {
+      "id": "give-up-french",
+      "fen": "rnbqk1nr/ppp2ppp/4p3/3p4/1b1PP3/P1N5/1PP2PPP/R1BQKBNR b KQkq - 0 4",
+      "prompt": "Black to move. Give up a bishop to damage the enemy pawns.",
+      "solution": [
+        "b4c3"
+      ],
+      "explanation": "Bxc3+ bxc3 gives White doubled pawns on the c-file, and these pawns are hard to defend. This is a good reason to give up a bishop. Ba5 keeps the pair but leaves the White pawns as they are."
+    }
+  ],
+  "links": []
+}
