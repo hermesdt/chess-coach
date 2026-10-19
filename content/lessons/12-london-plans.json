@@ -5,7 +5,7 @@
   "title": "London plans",
   "summary": "The London is one set-up for many games: Bf4, e3, Nf3, Bd3, c3. Then use Ne5, keep your bishop, and aim at the kingside.",
   "tags": [],
-  "body": "### The London set-up\n\nThe London is a plan, not a list of moves to learn. You play the same set-up against many openings. You make the same pawn and piece moves, so you know where everything goes.\n\nThe set-up has five parts:\n\n- **Bf4 first.** Bring the c1 bishop out before you play e3. After e3 the bishop is shut in.\n- **e3, c3 and Nf3.** The pawns on d4, e3 and c3 protect each other. The knight on f3 guards d4.\n- **Bd3 and Nbd2.** The bishop on d3 aims at the black kingside. The second knight goes to d2. Then you castle.\n- **Ne5.** A knight on e5 is a strong outpost. Your d4 pawn and your bishop support it. Check that no black pawn can kick it away.\n- **Keep your bishop.** Black often attacks your bishop on f4. For example, ...Bd6 hits it, or ...Nh5 hits it. Step back to g3, or play h3 first, so the bishop can go to h2.\n\nWhy keep the bishop? It is the best piece in your set-up. When you trade it for a knight, your plan is weaker.\n\nWhen your pieces are ready, you can attack the kingside. The bishop on d3 and the knight on e5 aim at it. Bring the queen to the attack too. Do not attack with only one piece.\n\nDo not move pawns on the kingside before your pieces are out. And look at what your opponent threatens. The London is safe, but it does not play itself.\n\nThe exercises use positions from your London repertoire. Find the set-up move in each one.\n\nRule of thumb: bishop out before e3, knight to e5, keep your bishop, then bring the queen to the attack.",
+  "body": "### The London set-up\n\nThe London is a plan, not a list of moves to learn. You play the same set-up against many openings. You make the same pawn and piece moves, so you know where everything goes.\n\nThe set-up has five parts:\n\n- **Bf4 first.** Bring the c1 bishop out before you play e3. After e3 the bishop is shut in.\n- **e3, c3 and Nf3.** The pawns on d4, e3 and c3 protect each other. The knight on f3 guards d4.\n- **Bd3 and Nbd2.** The bishop on d3 aims at the black kingside. The second knight goes to d2. Then you castle.\n- **Ne5.** A knight on e5 is a strong outpost. Your d4 pawn and your bishop support it. Check that no black pawn can kick it away.\n- **Keep your bishop.** Black often attacks your bishop on f4. For example, ...Bd6 hits it, or ...Nh5 hits it. Step back to g3, or play h3 first, so the bishop can go to h2.\n\nWhy keep the bishop? It is the best piece in your set-up. When you trade it for a knight, your plan is weaker.\n\nWhen your pieces are ready, you can attack the kingside. The bishop on d3 and the knight on e5 aim at it. Do not attack with only one piece.\n\nDo not move kingside pawns before your pieces are out, except h3 to save your bishop. And look at what your opponent threatens. The London is safe, but it does not play itself.\n\nThe exercises use positions from your London repertoire. Find the set-up move in each one.\n\nRule of thumb: bishop out before e3, bishop to d3, knight to e5, and keep your bishop.",
   "exercises": [
     {
       "id": "bishop-first",
@@ -50,16 +50,16 @@
       "solution": [
         "h2h3"
       ],
-      "explanation": "h3 gives the bishop the h2 square. After ...Nh5 you play Bh2 and keep your bishop. Without h3, ...Nh5 forces you to trade it."
+      "explanation": "h3 gives the bishop the h2 square. After ...Nh5 you play Bh2 and keep your bishop. Without h3, ...Nh5 usually forces you to trade it or lose time."
     },
     {
-      "id": "queen-joins",
-      "fen": "r2q1rk1/pb2bppp/1pn1pn2/2ppN3/3P1B2/2PBP3/PP1N1PPP/R2Q1RK1 w - - 2 10",
-      "prompt": "White to move. Bring your queen into the attack.",
+      "id": "bishop-d3",
+      "fen": "r1bq1rk1/pp3ppp/2nbpn2/2pp4/3P4/2P1PNB1/PP1N1PPP/R2QKB1R w KQ - 4 8",
+      "prompt": "White to move. Develop your light-squared bishop so that it aims at the black kingside.",
       "solution": [
-        "d1f3"
+        "f1d3"
       ],
-      "explanation": "Your knight on e5 and bishop on d3 already aim at the kingside. Qf3 adds the queen, and it can go to g3 or h3 next."
+      "explanation": "Bd3 aims along the diagonal at h7 and gets the bishop out so you can castle. Be2 and Bb5 develop too, but they do not aim at the kingside."
     }
   ],
   "links": []

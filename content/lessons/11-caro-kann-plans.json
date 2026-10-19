@@ -5,7 +5,7 @@
   "title": "Caro-Kann plans",
   "summary": "In the Caro-Kann and the Slav, bring out the light-squared bishop before ...e6. Then break the centre with ...c5.",
   "tags": [],
-  "body": "### One plan for two openings\n\nThe Caro-Kann and the Slav have the same shape. Black plays ...c6 and ...d5. This gives a solid pawn centre. But it also gives one problem: the light-squared bishop on c8.\n\nIf you play ...e6 first, your bishop stays behind your own pawns. It does nothing for a long time. So use this order:\n\n- **Bishop first.** Play the bishop outside the pawn chain, usually to f5. In the Caro-Kann you play it after White plays e5, or after White takes on e4. In the Slav you play it before ...e6.\n- **Then ...e6.** This pawn guards your bishop and your centre.\n- **Knights and the other bishop.** Play ...Nf6. Put the second knight on d7 or e7. Put the dark-squared bishop on e7 or d6. Then castle.\n- **Break with ...c5.** This pawn attacks White's d4 pawn. It is the main plan in both openings. Later you can also play ...e5, when your pieces are ready.\n\nWatch your bishop on f5. White can attack it with a knight, or with the g-pawn. Keep a piece nearby that guards it. In the Advance Caro-Kann, the knight on e7 does this job.\n\nDo not rush ...c5 before your bishop is out. The Semi-Slav is an exception: with ...dxc4 and ...b5, the bishop goes to b7 later and ...c5 comes first.\n\nThe exercises use positions from your repertoire. Find the idea in each one: bishop out, knight to guard, pawn break.\n\nRule of thumb: bishop out before ...e6, then break with ...c5.",
+  "body": "### One plan for two openings\n\nThe Caro-Kann and the Slav have the same shape. Black plays ...c6 and ...d5. This gives a solid pawn centre. But it also gives one problem: the light-squared bishop on c8.\n\nIf you play ...e6 first, your bishop stays behind your own pawns. It does nothing for a long time. So use this order:\n\n- **Bishop first.** Play the bishop outside the pawn chain, usually to f5. In the Caro-Kann you play it after White plays e5, or after White takes on e4. In the Slav you play it before ...e6.\n- **Then ...e6.** This pawn guards your bishop and your centre.\n- **Knights and the other bishop.** Play ...Nf6 (or ...Ne7 in the Advance). Put the second knight on d7 or e7. Put the dark-squared bishop on e7 or d6. Then castle.\n- **Break with ...c5.** This pawn attacks White's d4 pawn. It is the main plan in both openings. In some Slav lines you can also play ...e5.\n\nWatch your bishop on f5. White can attack it with a knight, or with the g-pawn. Keep a piece nearby that guards it. In the Advance Caro-Kann, the knight on e7 does this job.\n\nDo not rush ...c5 before your bishop is out. The Semi-Slav is an exception: with ...dxc4 and ...b5, the bishop goes to b7 later and ...c5 comes first.\n\nThe exercises use positions from your repertoire. Find the idea in each one: bishop out, knight to guard, pawn break.\n\nRule of thumb: bishop out before ...e6, then break with ...c5.",
   "exercises": [
     {
       "id": "advance-bishop",
@@ -21,10 +21,9 @@
       "fen": "rnbqkb1r/pp2pppp/2p2n2/3p4/2PP4/4PN2/PP3PPP/RNBQKB1R b KQkq - 0 4",
       "prompt": "Black to move. Develop your light-squared bishop outside the pawn chain.",
       "solution": [
-        "c8f5",
-        "c8g4"
+        "c8f5"
       ],
-      "explanation": "In the Slav you play the bishop before ...e6. Bf5 is the usual square and Bg4 also works. After ...e6 first, the bishop is shut in."
+      "explanation": "In the Slav you play the bishop before ...e6. Bf5 is the plan. Bg4 is also fine, but it is not our plan. After ...e6 first, the bishop is shut in."
     },
     {
       "id": "caro-break",

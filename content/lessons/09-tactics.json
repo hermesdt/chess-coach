@@ -22,9 +22,10 @@
       "prompt": "White to move. Win material.",
       "solution": [
         "d5d6",
-        "d3a3"
+        "d3a3",
+        "d3e4"
       ],
-      "explanation": "The rook on e1 pins the bishop on e7 to the king, so the bishop cannot move. d6 attacks it with a pawn, and Qa3 attacks it again. Black cannot save it."
+      "explanation": "The rook on e1 pins the bishop on e7 to the king, so the bishop cannot move. d6 attacks it with a pawn. Qa3 and Qe4 attack it again. Black cannot save it."
     },
     {
       "id": "bishop-skewer",
