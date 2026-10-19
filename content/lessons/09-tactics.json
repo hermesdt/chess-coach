@@ -1,0 +1,40 @@
+{
+  "id": "tactics",
+  "order": 9,
+  "level": 1,
+  "title": "Basic tactics",
+  "summary": "Look for forks, pins and skewers. One move that hits two targets wins material.",
+  "tags": [],
+  "body": "### Hit two things at once\n\nA tactic is a short trick that wins material. Three tricks win most games at your level.\n\n- **Fork.** One piece attacks two enemy pieces at once. Your opponent can save only one. Knights fork very well. Pawns and queens fork too.\n- **Pin.** An enemy piece stands in front of a more valuable piece. If it moves, you take the piece behind it. A piece pinned to the king cannot move at all. Attack a pinned piece a second time. It is hard to defend.\n- **Skewer.** This is a pin in reverse. You attack a valuable piece, often the king. It must move. Then you take the piece behind it. Bishops, rooks and queens skewer along a line.\n\nAt your level, one tactic often decides the game. You win when you see it first. You lose when you miss your opponent's tactic.\n\nFollow these steps on every move:\n\n- List your checks, captures and threats (lesson 2).\n- Look for two enemy pieces that one of your pieces can attack together.\n- Look for enemy pieces on one line, for example a king and a queen.\n- Look for a piece that cannot move because of a pin.\n- Before you play the move, check that your piece is safe on its new square (lesson 1).\n\nA check is a very good way to start a fork or a skewer. The king must answer. Then you take the other piece.\n\nThe exercises below show one fork, one pin and one skewer. Look at the board first. Find the two targets or the line. Then choose your move.\n\nRule of thumb: look for a move that hits two targets at once, and check that your piece is safe.",
+  "exercises": [
+    {
+      "id": "knight-fork",
+      "fen": "r1q2rk1/pp3ppp/8/3N4/8/8/PPP2PPP/2KR3R w - - 0 1",
+      "prompt": "White to move. Win material.",
+      "solution": [
+        "d5e7"
+      ],
+      "explanation": "Ne7 gives check and attacks the queen on c8 too. The king must move, then Nxc8 wins the queen for a knight. A quiet move gives Black time to save the queen."
+    },
+    {
+      "id": "win-pinned-piece",
+      "fen": "r1q1k2r/pp2bppp/8/3P4/8/3Q4/PPP2PPP/R3R1K1 w - - 0 1",
+      "prompt": "White to move. Win material.",
+      "solution": [
+        "d5d6",
+        "d3a3"
+      ],
+      "explanation": "The rook on e1 pins the bishop on e7 to the king, so the bishop cannot move. d6 attacks it with a pawn, and Qa3 attacks it again. Black cannot save it."
+    },
+    {
+      "id": "bishop-skewer",
+      "fen": "rn5q/ppp3kp/6p1/8/8/1P3N2/P1P2PPP/R1B2RK1 w - - 0 1",
+      "prompt": "White to move. Win material.",
+      "solution": [
+        "c1b2"
+      ],
+      "explanation": "Bb2 checks the king on g7 along the long diagonal. No black piece can block on c3, d4, e5 or f6. The king moves, and Bxh8 wins the queen for a bishop."
+    }
+  ],
+  "links": []
+}

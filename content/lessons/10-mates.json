@@ -1,0 +1,68 @@
+{
+  "id": "mates",
+  "order": 10,
+  "level": 1,
+  "title": "Mating patterns",
+  "summary": "Learn three simple mates: back rank, queen and king, two rooks. Then check your own king for the same traps.",
+  "tags": [
+    "missed_mate",
+    "allowed_mate"
+  ],
+  "body": "### Mate patterns\n\nCheckmate ends the game. A few simple patterns win most games at your level. Learn them and you will also see them coming.\n\n- **Back-rank mate.** The king stands on its first row. Its own pawns block it. A rook or a queen gives check on that row. The king cannot escape.\n- **Queen and king.** Bring your king next to your queen. The queen gives check. The king guards the queen, so the enemy king cannot take it.\n- **Two rooks.** Use the rooks like a ladder. One rook controls one row. The other rook gives check on the next row. The king has no square left.\n\nBe careful with a lone king. If the enemy king has no move and is not in check, the game is a draw by stalemate. Before you play a quiet queen move, check that the enemy king still has a move or that you give mate.\n\nYour own king can fall to the same patterns. Ask these questions before every move:\n\n- What check can my opponent give next move?\n- Does my king have an escape square?\n- Do both of my opponent's pieces aim at f7 or f2? Scholar's mate uses the queen and the bishop on this square.\n\nIf your king has no escape square, make one. Move a pawn in front of the king, for example h3 or g3. This small hole in the pawns is called luft. It stops the back-rank mate.\n\nYou do not need luft in every game. Make it when an enemy rook or queen can reach your back row and no piece of yours guards it.\n\nThe exercises show each pattern once. Two of them ask you to defend.\n\nRule of thumb: before you move, look for your opponent's mate threat. Then look for your own.",
+  "exercises": [
+    {
+      "id": "back-rank",
+      "fen": "6k1/5ppp/1q6/8/8/8/5PPP/4R1K1 w - - 0 1",
+      "prompt": "White to move. Checkmate in one move.",
+      "solution": [
+        "e1e8"
+      ],
+      "explanation": "The king on g8 has no square, because its own pawns block it. The rook on e8 gives check and nothing can block or take it. Other moves let Black escape."
+    },
+    {
+      "id": "make-luft",
+      "fen": "4r1k1/5ppp/8/8/8/2N5/PB3PPP/6K1 w - - 0 1",
+      "prompt": "White to move. Keep your king safe.",
+      "solution": [
+        "g1f1",
+        "f2f3",
+        "g2g3",
+        "h2h3",
+        "h2h4",
+        "f2f4"
+      ],
+      "explanation": "Black threatens Re1 mate. Your king has no escape square. A pawn move or Kf1 stops it. Almost every other move, such as a4 or Nd5, loses to Re1#."
+    },
+    {
+      "id": "queen-and-king",
+      "fen": "7k/5K2/8/8/8/3Q4/8/8 w - - 0 1",
+      "prompt": "White to move. Checkmate in one move.",
+      "solution": [
+        "d3h3"
+      ],
+      "explanation": "Qh3 checks along the h-file. Your king on f7 guards g8 and g7, so the black king has no square. Qg6 looks good but it is stalemate: a draw."
+    },
+    {
+      "id": "two-rooks",
+      "fen": "6k1/R7/8/8/8/8/8/1R4K1 w - - 0 1",
+      "prompt": "White to move. Checkmate in one move.",
+      "solution": [
+        "b1b8"
+      ],
+      "explanation": "The rook on a7 controls the seventh row. Rb8 checks on the eighth row. The king cannot reach row seven or row eight, so it is mate."
+    },
+    {
+      "id": "scholars-threat",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+      "prompt": "Black to move. Keep your king safe.",
+      "solution": [
+        "g7g6",
+        "d8e7",
+        "d8f6",
+        "g8h6"
+      ],
+      "explanation": "The queen and the bishop both attack f7, and only your king guards it. g6 attacks the queen. Qe7, Qf6 and Nh6 guard f7. Moves such as Nf6 or Bc5 lose to Qxf7#."
+    }
+  ],
+  "links": []
+}
