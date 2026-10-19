@@ -13,7 +13,7 @@ export interface ChatAnchor { ply: number; path: string[]; describe: string }
 
 export interface ChatRecord {
   id: number; gameId: number; turn: number; question: string; anchor: ChatAnchor;
-  pack: FactPack | null; answer: ChatAnswer | null; status: 'pending' | 'done' | 'error';
+  pack: FactPack | null; answer: ChatAnswer | null; status: 'pending' | 'streaming' | 'done' | 'error';
   error: string | null; provider: ProviderId | null; model: string | null; createdAt: number;
 }
 
@@ -45,7 +45,7 @@ export function listRecords(db: DatabaseSync, gameId: number): ChatRecord[] {
 }
 
 export function hasPending(db: DatabaseSync, gameId: number): boolean {
-  return db.prepare("SELECT 1 FROM chat_messages WHERE game_id = ? AND status = 'pending' LIMIT 1").get(gameId) !== undefined;
+  return db.prepare("SELECT 1 FROM chat_messages WHERE game_id = ? AND status IN ('pending', 'streaming') LIMIT 1").get(gameId) !== undefined;
 }
 
 export function insertPending(db: DatabaseSync, m: { gameId: number; question: string; anchor: ChatAnchor }): ChatRecord {
@@ -60,6 +60,11 @@ export function insertPending(db: DatabaseSync, m: { gameId: number; question: s
 /** Puts an error message back to pending for a retry. */
 export function resetToPending(db: DatabaseSync, id: number): void {
   db.prepare("UPDATE chat_messages SET status = 'pending', error = NULL, answer_json = NULL, fact_pack_json = NULL WHERE id = ?").run(id);
+}
+
+/** The first text arrived. One UPDATE per answer, not per delta. */
+export function markStreaming(db: DatabaseSync, id: number): void {
+  db.prepare("UPDATE chat_messages SET status = 'streaming' WHERE id = ? AND status = 'pending'").run(id);
 }
 
 export function savePack(db: DatabaseSync, id: number, pack: FactPack): void {
@@ -78,9 +83,9 @@ export function failMessage(db: DatabaseSync, id: number, error: string, provide
   db.prepare("UPDATE chat_messages SET status = 'error', error = ?, provider = COALESCE(?, provider) WHERE id = ?").run(error, provider, id);
 }
 
-/** Startup: a message left pending by a restart becomes an error. */
+/** Startup: a message left pending or streaming by a restart becomes an error. */
 export function markInterruptedChats(db: DatabaseSync): number {
-  return Number(db.prepare("UPDATE chat_messages SET status = 'error', error = ? WHERE status = 'pending'").run(RESTART_ERROR).changes);
+  return Number(db.prepare("UPDATE chat_messages SET status = 'error', error = ? WHERE status IN ('pending', 'streaming')").run(RESTART_ERROR).changes);
 }
 
 /** The last done turns before `beforeTurn`, oldest first, with answer and pack. */
@@ -108,7 +113,7 @@ export function toDto(r: ChatRecord): ChatMessageDTO {
     answer = { text: r.answer.answer, lines, rule: r.answer.rule, lessonId: r.answer.lessonId };
   }
   return {
-    id: r.id, turn: r.turn, question: r.question, anchor: r.anchor, status: r.status, error: r.error, answer,
+    id: r.id, turn: r.turn, question: r.question, anchor: r.anchor, status: r.status === 'streaming' ? 'pending' : r.status, error: r.error, answer,
     provider: r.provider, model: r.model, createdAt: r.createdAt,
   };
 }

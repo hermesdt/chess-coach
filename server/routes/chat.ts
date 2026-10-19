@@ -1,6 +1,7 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Chess } from 'chess.js';
 import { Hono } from 'hono';
+import { streamSSE } from 'hono/streaming';
 import { askCoach } from '../ai/chat.js';
 import { coachErrorMessage, loadGame } from '../ai/game-review.js';
 import type { Registry } from '../ai/registry.js';
@@ -8,9 +9,10 @@ import { PROVIDER_IDS, type ProviderId } from '../ai/types.js';
 import { getAnalysis } from '../analysis/analysis-repo.js';
 import { chatCard } from '../chat/chat-card.js';
 import {
-  canonicalGameId, completeMessage, doneTurns, failMessage, getRecord, hasPending, insertPending, listRecords, resetToPending, savePack, toDto,
+  canonicalGameId, completeMessage, doneTurns, failMessage, getRecord, hasPending, insertPending, listRecords, markStreaming, resetToPending, savePack, toDto,
   type ChatRecord,
 } from '../chat/chat-repo.js';
+import type { StreamEvent, StreamHub } from '../chat/stream-hub.js';
 import { buildFactPack, describeAnchorOf } from '../chat/fact-pack.js';
 import { getSettings, type ResolvedSettings } from '../config.js';
 import type { EnginePool } from '../engine/pool.js';
@@ -43,9 +45,12 @@ function anchorError(db: DatabaseSync, gameId: number, anchor: unknown): string 
   return null;
 }
 
-export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<EnginePool, 'analyse'>, getReps: () => Repertoire[]): Hono {
+export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<EnginePool, 'analyse'>, getReps: () => Repertoire[], hub: StreamHub): Hono {
+  const HEARTBEAT_MS = 15_000;
+
   /** Runs the answer for a pending message as a job. The result goes on the message row. */
   function startAnswer(rec: ChatRecord, requested: ProviderId | undefined): number {
+    hub.reset(rec.id);
     return runJob(db, 'chat', async (report) => {
       let settings: ResolvedSettings | null = null;
       let providerId: ProviderId | null = null;
@@ -54,6 +59,7 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
         const provider = await registry.pick(requested ?? settings.aiProvider);
         if (!provider) {
           failMessage(db, rec.id, NO_COACH);
+          hub.publish(rec.id, { type: 'error', message: NO_COACH });
           return;
         }
         providerId = provider.id;
@@ -65,6 +71,7 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
         savePack(db, rec.id, pack);
         const prior = doneTurns(db, rec.gameId, rec.turn);
         const { level, rating } = currentLevel(db);
+        let streaming = false;
         const { answer, model } = await askCoach(provider, {
           pack,
           question: rec.question,
@@ -73,10 +80,21 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
           level,
           rating,
           model: settings.aiModels[provider.id] ?? null,
+          onText: (text) => {
+            if (!streaming) {
+              streaming = true;
+              markStreaming(db, rec.id);
+            }
+            hub.publish(rec.id, { type: 'delta', text });
+          },
+          onRetry: () => hub.publish(rec.id, { type: 'retry' }),
         });
         completeMessage(db, rec.id, { answer, provider: provider.id, model });
+        hub.publish(rec.id, { type: 'done' });
       } catch (err) {
-        failMessage(db, rec.id, coachErrorMessage(err, [settings?.openrouterApiKey ?? null, settings?.anthropicApiKey ?? null]), providerId);
+        const message = coachErrorMessage(err, [settings?.openrouterApiKey ?? null, settings?.anthropicApiKey ?? null]);
+        failMessage(db, rec.id, message, providerId);
+        hub.publish(rec.id, { type: 'error', message });
       }
     }).id;
   }
@@ -111,6 +129,36 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
       const describe = describeAnchorOf(loadGame(db, gameId)!, anchor);
       const rec = insertPending(db, { gameId, question, anchor: { ply: anchor.ply, path: anchor.path, describe } });
       return c.json({ messageId: rec.id, jobId: startAnswer(rec, provider) });
+    })
+    .get('/chat/:messageId/stream', (c) => {
+      const id = parseId(c.req.param('messageId'));
+      const rec = id === null ? null : getRecord(db, id);
+      if (!rec) return c.json({ error: 'not found' }, 404);
+      return streamSSE(c, async (stream) => {
+        const send = (e: StreamEvent) => stream.writeSSE({ event: e.type, data: JSON.stringify(e.type === 'delta' ? { text: e.text } : e.type === 'error' ? { message: e.message } : {}) });
+        const now = getRecord(db, rec.id) ?? rec;
+        if (now.status === 'done' || now.status === 'error') {
+          await send(now.status === 'done' ? { type: 'done' } : { type: 'error', message: now.error ?? 'The coach could not answer.' });
+          return;
+        }
+        let finish!: () => void;
+        const finished = new Promise<void>((resolve) => (finish = resolve));
+        let chain: Promise<unknown> = Promise.resolve();
+        const push = (e: StreamEvent) => {
+          chain = chain.then(() => send(e)).catch(() => finish());
+          if (e.type === 'done' || e.type === 'error') chain = chain.then(finish);
+        };
+        const unsubscribe = hub.subscribe(rec.id, push);
+        const heartbeat = setInterval(() => void stream.write(': ping\n\n').catch(() => finish()), HEARTBEAT_MS);
+        stream.onAbort(finish);
+        const known = hub.last(rec.id);
+        if (known?.text) push({ type: 'delta', text: known.text });
+        if (known?.end) push(known.end);
+        await finished;
+        clearInterval(heartbeat);
+        unsubscribe();
+        await chain;
+      });
     })
     .post('/chat/:messageId/retry', async (c) => {
       const id = parseId(c.req.param('messageId'));

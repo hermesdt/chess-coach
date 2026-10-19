@@ -40,6 +40,8 @@ export interface AskCoachInput {
   rating: number | null;
   model: string | null;
   signal?: AbortSignal;
+  onText?: (partialAnswerText: string) => void;
+  onRetry?: () => void;
 }
 
 function historyMessages(history: AskCoachInput['history']): AiHistoryMessage[] {
@@ -73,7 +75,7 @@ export async function askCoach(provider: AiProvider, input: AskCoachInput): Prom
       history: historyMessages(input.history),
     },
     schemaFor(new Set(pack.lines.map((l) => l.id))),
-    { model: input.model, allowedSan, textOf: (a) => [a.answer, a.rule, ...a.lines.map((l) => l.why)], signal: input.signal },
+    { model: input.model, allowedSan, textOf: (a) => [a.answer, a.rule, ...a.lines.map((l) => l.why)], signal: input.signal, onText: input.onText, onRetry: input.onRetry },
   );
   return { answer: value, model };
 }

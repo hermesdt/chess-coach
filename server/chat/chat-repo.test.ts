@@ -3,7 +3,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import type { NewGame } from '../../shared/types.js';
 import { openDb } from '../db/db.js';
 import { insertGames } from '../db/games-repo.js';
-import { canonicalGameId, completeMessage, doneTurns, failMessage, getRecord, hasPending, insertPending, listRecords, markInterruptedChats, RESTART_ERROR, savePack, toDto } from './chat-repo.js';
+import { canonicalGameId, completeMessage, doneTurns, failMessage, getRecord, hasPending, insertPending, listRecords, markInterruptedChats, markStreaming, RESTART_ERROR, savePack, toDto } from './chat-repo.js';
 import type { FactPack } from './fact-pack.js';
 
 const game = (id: string): NewGame => ({
@@ -73,6 +73,15 @@ describe('chat repo', () => {
     expect(markInterruptedChats(db)).toBe(1);
     expect(getRecord(db, m.id)).toMatchObject({ status: 'error', error: RESTART_ERROR });
     expect(getRecord(db, f.id)!.error).toBe('boom');
+  });
+
+  it('marks streaming messages as errors on startup', () => {
+    const m = insertPending(db, { gameId: 1, question: 'q', anchor: { ply: 0, path: [], describe: 'x' } });
+    markStreaming(db, m.id);
+    expect(getRecord(db, m.id)!.status).toBe('streaming');
+    expect(hasPending(db, 1)).toBe(true);
+    expect(markInterruptedChats(db)).toBe(1);
+    expect(getRecord(db, m.id)).toMatchObject({ status: 'error', error: RESTART_ERROR });
   });
 
   it('keeps the last 10 done turns before a turn, oldest first', () => {

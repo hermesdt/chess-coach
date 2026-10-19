@@ -8,6 +8,7 @@ import { dashboardRoutes } from './routes/dashboard.js';
 import { loadLessons } from './course/load.js';
 import { courseRoutes } from './routes/course.js';
 import { gamesRoutes } from './routes/games.js';
+import { StreamHub } from './chat/stream-hub.js';
 import type { EnginePool } from './engine/pool.js';
 import { lazyEnginePool } from './engine/pool.js';
 import { healthRoutes } from './routes/health.js';
@@ -36,6 +37,8 @@ export interface AppDeps {
   ai?: Registry;
   /** Timeout of POST /api/ai/providers/:id/test in ms (default 60000). */
   aiTestTimeoutMs?: number;
+  /** Fan-out of streamed chat answers. Defaults to one hub per app. Tests pass a fresh one. */
+  hub?: StreamHub;
 }
 
 const LOCAL_HOST = /^(127\.0\.0\.1|localhost)(:\d+)?$/i;
@@ -64,7 +67,7 @@ export function createApp(deps: AppDeps): Hono {
   app.route('/api', healthRoutes);
   app.route('/api', settingsRoutes(deps.db));
   app.route('/api', aiRoutes(deps.db, ai, deps.aiTestTimeoutMs, getReps));
-  app.route('/api', chatRoutes(deps.db, ai, pool, getReps));
+  app.route('/api', chatRoutes(deps.db, ai, pool, getReps, deps.hub ?? new StreamHub()));
   app.route('/api', syncRoutes(deps.db, { fetchFn: deps.fetchFn, now: deps.now, pool }, getReps));
   app.route('/api', jobsRoutes(deps.db));
   app.route('/api', gamesRoutes(deps.db));
