@@ -52,7 +52,7 @@ export function applyCoachExplanations(db: DatabaseSync, analysis: GameAnalysis,
   for (const card of listCardsByRef(db, analysis.gameId)) {
     if (card.kind !== 'mistake') continue;
     for (const ref of card.refs) {
-      const m = ref.gameId === analysis.gameId && ref.ply !== undefined ? moves.get(ref.ply) : undefined;
+      const m = ref.gameId === analysis.gameId && ref.source !== 'chat' && ref.ply !== undefined ? moves.get(ref.ply) : undefined;
       const text = m ? why.get(m.ply) : undefined;
       if (!m || !text) continue;
       setSolution(db, card.id, { ...card.solution, explanation: explanation(m, text) });
@@ -105,7 +105,7 @@ export async function buildMistakeCards(
   const current = new Set(mistakes.map((m) => m.ply));
   for (const card of listCardsByRef(db, analysis.gameId)) {
     if (card.kind !== 'mistake') continue;
-    const refs = card.refs.filter((r) => r.gameId !== analysis.gameId || current.has(r.ply ?? -1));
+    const refs = card.refs.filter((r) => r.gameId !== analysis.gameId || r.source === 'chat' || current.has(r.ply ?? -1));
     if (refs.length === card.refs.length) continue;
     setRefs(db, card.id, refs);
     if (refs.length === 0 && !card.suspended) {

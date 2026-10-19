@@ -37,7 +37,8 @@ describe('chatCard', () => {
 
   it('leaves the source off when the owner erred from this position in the game', () => {
     const played = { san: 'e4', mover: 'white', classification: 'blunder' };
-    expect(chatCard(pack({ played }), { id: 7 }).refs).toEqual([{ gameId: 7, ply: 5 }]);
+    // the mistake-card convention: the ply of the move played from the anchor position
+    expect(chatCard(pack({ played }), { id: 7 }).refs).toEqual([{ gameId: 7, ply: 6 }]);
   });
 
   it('uses a chosen line as the best move', () => {

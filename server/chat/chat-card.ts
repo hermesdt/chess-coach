@@ -37,7 +37,8 @@ export function chatCard(pack: FactPack, game: { id: number }, lineId?: string):
     sideToMove: pack.anchor.sideToMove,
     prompt: CHAT_CARD_PROMPT,
     solution: { accepted: [...accepted], best: chosen.uci[0], explanation: null },
-    refs: [{ gameId: game.id, ply: pack.anchor.ply, ...(pack.anchor.inBranch || !ownerErred(pack) ? { source: 'chat' as const } : {}) }],
+    // An owner error uses the mistake-card convention (ply of the move played from this position) so it merges with the analysis card.
+    refs: [ownerErred(pack) ? { gameId: game.id, ply: pack.anchor.ply + 1 } : { gameId: game.id, ply: pack.anchor.ply, source: 'chat' as const }],
     lastMove: null,
   };
 }

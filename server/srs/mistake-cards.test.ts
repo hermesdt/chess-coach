@@ -5,7 +5,8 @@ import { openDb } from '../db/db.js';
 import type { EngineLine } from '../engine/uci.js';
 import { winPct } from '../analysis/winpct.js';
 import { listCardsByRef } from './cards-repo.js';
-import { acceptedMoves, buildMistakeCards } from './mistake-cards.js';
+import { positionKey, upsertCard } from './cards-repo.js';
+import { acceptedMoves, applyCoachExplanations, buildMistakeCards } from './mistake-cards.js';
 
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const PROMO_FEN = '4k3/4P3/8/8/8/8/8/4K3 w - - 0 1';
@@ -113,6 +114,22 @@ describe('buildMistakeCards', () => {
     const res = await buildMistakeCards(db, analysis(1, [move({ classification: 'good' })]), pool(three), { nodes: 10 });
     expect(res).toEqual({ created: 0, updated: 0, suspended: 1 });
     expect(db.prepare('SELECT suspended FROM cards').get()).toEqual({ suspended: 1 });
+  });
+
+  it('keeps a chat card through a re-analysis cleanup', async () => {
+    const fen = 'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1';
+    upsertCard(db, { kind: 'mistake', positionKey: positionKey(fen), fen, sideToMove: 'black', prompt: 'p', solution: { accepted: ['d7d5'], best: 'd7d5', explanation: null }, refs: [{ gameId: 1, ply: 1, source: 'chat' }], lastMove: null });
+    const res = await buildMistakeCards(db, analysis(1, [move({ classification: 'good' })]), pool(three), { nodes: 10 });
+    expect(res.suspended).toBe(0);
+    expect(listCardsByRef(db, 1)[0]).toMatchObject({ suspended: false, refs: [{ gameId: 1, ply: 1, source: 'chat' }] });
+  });
+
+  it('does not give a chat card the coach explanation of the move at its ply', () => {
+    const fen = 'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1';
+    upsertCard(db, { kind: 'mistake', positionKey: positionKey(fen), fen, sideToMove: 'black', prompt: 'p', solution: { accepted: ['d7d5'], best: 'd7d5', explanation: null }, refs: [{ gameId: 1, ply: 1, source: 'chat' }], lastMove: null });
+    const review = { summary: '', openingNote: '', oneThingToPractice: '', moments: [{ ply: 1, whatHappened: 'w', whyItMatters: 'It hangs a piece.', principle: 'p', lessonId: null }] };
+    expect(applyCoachExplanations(db, analysis(1, [move()]), review)).toBe(0);
+    expect(listCardsByRef(db, 1)[0]?.solution.explanation).toBeNull();
   });
 
   it('stores a promotion answer with the piece letter', async () => {
