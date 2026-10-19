@@ -34,7 +34,8 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M5 | AI coach (claude-cli, codex-cli, opencode-cli, openrouter, anthropic-api) | done | `docs/superpowers/plans/2026-10-18-m5-ai-coach.md` |
 | M6 | Principles course (12 level-1 lessons) | done | `docs/superpowers/plans/2026-10-18-m6-course.md` |
 | M7 | Insights + polish + README | done | `docs/superpowers/plans/2026-10-18-m7-insights-polish.md` |
-| M8 | Coach chat on the game page (owner request; engine-verified alternative lines) | todo | — (brainstorm with the owner, then spec addendum + plan) |
+| M8a | Coach chat: chat, engine lines as branches, own moves on the board, add to review | planned | `docs/superpowers/plans/2026-10-19-m8a-coach-chat.md` |
+| M8b | Coach chat: streaming, fast model, live Stockfish eval, "Go deeper" | todo | — (write after M8a; spec `docs/superpowers/specs/2026-10-19-coach-chat-design.md`) |
 | M9 | Level 2–3 content (lessons, tags, deeper repertoire) | todo | — (was M8 before 2026-10-19) |
 
 ## Log
@@ -168,8 +169,9 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 
 ## Next session
 
-- Start M8 (coach chat): run `superpowers:brainstorming` with the owner, add a
-  spec addendum, write the plan into `docs/superpowers/plans/`, link it above.
+- M8 design approved by the owner (2026-10-19):
+  `docs/superpowers/specs/2026-10-19-coach-chat-design.md`. Execute M8a
+  (`docs/superpowers/plans/2026-10-19-m8a-coach-chat.md`), then write the M8b plan.
   Design notes so far: the owner writes their idea for a move; the server sends
   the position, the move's eval and Stockfish MultiPV lines to the AI; the AI
   judges the idea and may name candidate moves; chess.js checks legality and
