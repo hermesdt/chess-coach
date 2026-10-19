@@ -56,7 +56,7 @@ function LineButton({ line, onClick }: { line: ChatLineDTO; onClick: () => void 
   const cut = !all && line.san.length > MAX_PLIES;
   return (
     <div className="chat-line">
-      <button type="button" onClick={onClick}>
+      <button type="button" className="chat-line-button" onClick={onClick}>
         {line.label}: {lineText(line, all ? line.san.length : MAX_PLIES)}
         {cut ? ' …' : ''}
       </button>{' '}
@@ -79,7 +79,9 @@ function Answer({ message, props, added, onAdd }: { message: ChatMessageDTO; pro
   const lesson = answer.lessonId;
   return (
     <div className="chat-answer">
-      <p>{answer.text}</p>
+      {answer.text.split(/\n\s*\n/).map((para, i) => (
+        <p key={i}>{para.trim()}</p>
+      ))}
       {answer.lines.map((l) => (
         <LineButton key={l.id} line={l} onClick={() => props.onShowLine(l, message.anchor)} />
       ))}

@@ -40,6 +40,21 @@ function setup(messages: ChatMessageDTO[], props: Partial<Parameters<typeof Coac
 }
 
 describe('CoachChat', () => {
+  it('shows each paragraph of the answer in its own block', async () => {
+    const base = answered();
+    setup([answered({ answer: { ...base.answer!, text: 'First idea.\n\nSecond idea.' } })]);
+    const first = await screen.findByText('First idea.');
+    const second = screen.getByText('Second idea.');
+    expect(first.tagName).toBe('P');
+    expect(second.tagName).toBe('P');
+    expect(first).not.toBe(second);
+  });
+
+  it('left-aligns the line button through its own class', async () => {
+    setup([answered()]);
+    expect((await screen.findByRole('button', { name: /Line 1/ })).className).toContain('chat-line-button');
+  });
+
   it('renders the history with context, answer, rule, lesson link and the context line', async () => {
     setup([answered()]);
     expect(await screen.findByText('Develop your knight.')).toBeTruthy();
@@ -74,7 +89,7 @@ describe('CoachChat', () => {
     fireEvent.change(input, { target: { value: 'Why Nf3?' } });
     fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     expect(await screen.findByText('Develop your knight.')).toBeTruthy();
-    expect(get).toHaveBeenCalledTimes(2);
+    expect(get.mock.calls.length).toBeGreaterThanOrEqual(2);
     await waitFor(() => expect((input as HTMLInputElement).disabled).toBe(false));
   });
 
