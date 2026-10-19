@@ -26,6 +26,29 @@ beforeEach(() => {
   insertGames(db, [game('a')]);
 });
 
+describe('chat_messages schema', () => {
+  it('deletes a game\'s messages with the game', () => {
+    insertPending(db, { gameId: 1, question: 'q', anchor: { ply: 0, path: [] } });
+    db.prepare('DELETE FROM games WHERE id = 1').run();
+    expect(db.prepare('SELECT COUNT(*) AS n FROM chat_messages').get()).toEqual({ n: 0 });
+  });
+
+  it('rejects a message for an unknown game', () => {
+    expect(() => insertPending(db, { gameId: 99, question: 'q', anchor: { ply: 0, path: [] } })).toThrow();
+  });
+
+  it('rejects a second message with the same game and turn', () => {
+    const insert = () => db.prepare("INSERT INTO chat_messages (game_id, turn, question, anchor_json, status, created_at) VALUES (1, 1, 'q', '{}', 'pending', 1)").run();
+    insert();
+    expect(insert).toThrow(/UNIQUE/);
+  });
+
+  it('accepts the streaming status', () => {
+    db.prepare("INSERT INTO chat_messages (game_id, turn, question, anchor_json, status, created_at) VALUES (1, 1, 'q', '{}', 'streaming', 1)").run();
+    expect(() => db.prepare("UPDATE chat_messages SET status = 'bogus'").run()).toThrow();
+  });
+});
+
 describe('chat repo', () => {
   it('round-trips a message and resolves lines in answer order', () => {
     const m = insertPending(db, { gameId: 1, question: 'why?', anchor: { ply: 2, path: [] } });
