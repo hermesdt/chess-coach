@@ -30,7 +30,7 @@ const move = (ply: number, tags: Tag[], isUserMove: boolean): MoveAnalysis => ({
 function addGame(moves: [Tag[], boolean][], status: GameAnalysis['status'] = 'done'): number {
   seq += 1;
   insertGames(db, [{
-    source: 'chesscom', sourceId: `g${seq}`, playedAt: seq * 1000, timeClass: 'blitz', rated: true, white: 'Me', black: 'Opp',
+    source: 'chesscom', sourceId: `g${seq}`, playedAt: seq * 1000, timeClass: 'blitz', rated: true, white: 'Me', black: `Opp${seq}`,
     whiteElo: 1500, blackElo: 1500, userColor: 'white', result: 'win', termination: null, eco: null, openingName: null,
     pgn: '1. e4 e5 *', url: null, plyCount: 2,
   }]);
@@ -108,7 +108,7 @@ describe('level-up banner', () => {
     for (let i = 0; i < 5; i++) {
       seq += 1;
       insertGames(db, [{
-        source: 'chesscom', sourceId: `r${seq}`, playedAt: seq, timeClass: 'blitz', rated: true, white: 'Me', black: 'Opp',
+        source: 'chesscom', sourceId: `r${seq}`, playedAt: seq, timeClass: 'blitz', rated: true, white: 'Me', black: `Opp${seq}`,
         whiteElo: rating, blackElo: 1000, userColor: 'white', result: 'win', termination: null, eco: null, openingName: null,
         pgn: '*', url: null, plyCount: 0,
       }]);

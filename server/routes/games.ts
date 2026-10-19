@@ -25,6 +25,7 @@ export function gamesRoutes(db: DatabaseSync): Hono {
         color: oneOf<Color>(COLORS, p.color),
         result: oneOf<GameResult>(RESULTS, p.result),
         q: p.q || undefined,
+        includeDuplicates: p.includeDuplicates === '1' || undefined,
         limit: intOr(p.limit, 50, 1, 200),
         offset: intOr(p.offset, 0, 0, Number.MAX_SAFE_INTEGER),
       };

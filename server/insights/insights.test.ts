@@ -13,7 +13,7 @@ const NOW = Date.UTC(2026, 9, 18, 12);
 function game(over: Partial<NewGame>): NewGame {
   return {
     source: 'chesscom', sourceId: 'a', playedAt: NOW - DAY, timeClass: 'blitz', rated: true,
-    white: 'Me', black: 'Opp', whiteElo: 550, blackElo: 600, userColor: 'white', result: 'win',
+    white: 'Me', black: `Opp-${over.sourceId ?? 'a'}`, whiteElo: 550, blackElo: 600, userColor: 'white', result: 'win',
     termination: 'resigned', eco: 'B12', openingName: 'Caro-Kann Defense: Advance Variation', pgn: '1. e4 c6 *',
     url: null, plyCount: 2, ...over,
   };

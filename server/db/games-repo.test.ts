@@ -8,7 +8,7 @@ import { migrate } from './migrate.js';
 function game(over: Partial<NewGame>): NewGame {
   return {
     source: 'chesscom', sourceId: 'a', playedAt: 1000, timeClass: 'blitz', rated: true,
-    white: 'Me', black: 'Opp', whiteElo: 1500, blackElo: 1480, userColor: 'white', result: 'win',
+    white: 'Me', black: `Opp-${over.sourceId ?? 'a'}`, whiteElo: 1500, blackElo: 1480, userColor: 'white', result: 'win',
     termination: 'resigned', eco: 'B12', openingName: 'Caro-Kann Defense', pgn: '1. e4 c6 *',
     url: 'https://example.com/a', plyCount: 2, ...over,
   };

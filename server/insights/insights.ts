@@ -37,11 +37,11 @@ interface GameRow {
 }
 
 /**
- * One filter shared by every query: games with a user colour inside the window. Task 3 adds the
- * duplicate filter here, so every insight keeps counting each game once.
+ * One filter shared by every query: games with a user colour inside the window. Duplicate copies are
+ * excluded here, so every insight counts each game once.
  */
 function baseFilter(window: InsightsWindow, now: number): { where: string; params: number[] } {
-  const clauses = ['g.user_color IS NOT NULL'];
+  const clauses = ['g.user_color IS NOT NULL', 'g.duplicate_of IS NULL'];
   const params: number[] = [];
   if (window !== 'all') {
     clauses.push('g.played_at >= ?');

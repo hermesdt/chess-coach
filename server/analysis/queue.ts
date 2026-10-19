@@ -36,7 +36,7 @@ export function eligibleUnanalysed(db: DatabaseSync, limit: number): number[] {
   const rows = db.prepare(
     `SELECT g.id FROM games g
      LEFT JOIN game_analysis a ON a.game_id = g.id
-     WHERE g.user_color IS NOT NULL
+     WHERE g.user_color IS NOT NULL AND g.duplicate_of IS NULL
        AND g.ply_count >= CASE g.user_color WHEN 'white' THEN ? ELSE ? END
        AND NOT (COALESCE(a.status, '') IN ('done', 'error') AND COALESCE(a.version, -1) = ?)
      ORDER BY g.played_at DESC, g.id DESC LIMIT ?`,

@@ -18,7 +18,7 @@ function topTag(db: DatabaseSync): { tag: Tag; count: number; games: number } | 
   const rows = db
     .prepare(
       `SELECT g.id FROM games g JOIN game_analysis a ON a.game_id = g.id
-       WHERE a.status = 'done' ORDER BY g.played_at DESC, g.id DESC LIMIT ?`,
+       WHERE a.status = 'done' AND g.duplicate_of IS NULL ORDER BY g.played_at DESC, g.id DESC LIMIT ?`,
     )
     .all(FOCUS_GAMES);
   const perTag = new Map<Tag, number>();

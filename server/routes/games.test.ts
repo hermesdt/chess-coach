@@ -20,6 +20,14 @@ beforeEach(() => {
 const list = async (qs: string) => (await (await app.request(`/api/games${qs}`)).json()) as GameList;
 
 describe('GET /api/games', () => {
+  it('hides duplicate copies unless includeDuplicates=1', async () => {
+    const db = openDb(':memory:');
+    insertGames(db, [game(1, { source: 'import', black: 'opp' }), game(2, { black: 'opp' })]);
+    app = createApp({ db });
+    expect((await list('')).items.map((g) => g.sourceId)).toEqual(['g2']);
+    expect((await list('?includeDuplicates=1')).total).toBe(2);
+  });
+
   it('lists newest first with total', async () => {
     const res = await list('');
     expect(res.total).toBe(3);

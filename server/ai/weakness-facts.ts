@@ -28,6 +28,7 @@ export function weaknessFacts(db: DatabaseSync, lastN = DEFAULT_LAST_N, reps: Pi
     `SELECT g.id, g.user_color, g.result, g.opening_name, e.repertoire_id
      FROM games g JOIN game_analysis a ON a.game_id = g.id AND a.status = 'done'
      LEFT JOIN opening_events e ON e.game_id = g.id
+     WHERE g.duplicate_of IS NULL
      ORDER BY g.played_at DESC, g.id DESC LIMIT ?`,
   ).all(lastN) as unknown as Row[];
   const tagCounts = Object.fromEntries(TAGS.map((t) => [t, 0])) as Record<Tag, number>;

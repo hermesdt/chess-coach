@@ -12,7 +12,7 @@ const SANS = 'e4 e5 Nf3 Nc6 Bc4 Bc5 c3 Nf6 d3 d6 O-O O-O';
 const pgn = `[Event "x"]\n\n${SANS.split(' ').map((s, i) => (i % 2 === 0 ? `${i / 2 + 1}. ${s}` : s)).join(' ')} *`;
 const game = (id: string, over: Partial<NewGame> = {}): NewGame => ({
   source: 'chesscom', sourceId: id, playedAt: Number(id.slice(1)) * 1000, timeClass: 'blitz', rated: true,
-  white: 'Me', black: 'Opp', whiteElo: 1500, blackElo: 1500, userColor: 'white', result: 'win', termination: null,
+  white: 'Me', black: `Opp${id}`, whiteElo: 1500, blackElo: 1500, userColor: 'white', result: 'win', termination: null,
   eco: null, openingName: null, pgn, url: null, plyCount: 12, ...over,
 });
 

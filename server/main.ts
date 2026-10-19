@@ -4,6 +4,7 @@ import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { createApp } from './app.js';
 import { openDb } from './db/db.js';
+import { linkAllDuplicates } from './games/duplicates.js';
 import { backupDb } from './db/backup.js';
 import { backfillMistakeCards } from './srs/backfill.js';
 import { requeuePending } from './analysis/queue.js';
@@ -41,6 +42,11 @@ const server = serve(
       };
       runBackup();
       setInterval(runBackup, 24 * 60 * 60 * 1000).unref();
+    }
+    try {
+      linkAllDuplicates(db);
+    } catch (err) {
+      console.error('duplicate linking failed:', err);
     }
     recoverInterruptedJobs(db, Date.now());
     requeuePending(db, { pool: lazyEnginePool });

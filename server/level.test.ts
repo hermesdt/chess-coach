@@ -18,7 +18,7 @@ function add(over: Partial<NewGame> & { elo?: number }): void {
   counter += 1;
   insertGames(db, [{
     source: 'chesscom', sourceId: `g${counter}`, playedAt: 1000 + counter, timeClass: 'rapid', rated: true,
-    white: 'Me', black: 'Opp',
+    white: 'Me', black: `Opp${counter}`,
     whiteElo: userColor === 'white' ? (elo ?? 1000) : 1000, blackElo: userColor === 'black' ? (elo ?? 1000) : 1000,
     userColor, result: 'win', termination: null, eco: null, openingName: null,
     pgn: '1. e4 *', url: null, plyCount: 1, ...rest,

@@ -15,7 +15,7 @@ export interface NewGame {
 export interface GameSummary extends Omit<NewGame, 'pgn'> { id: number; analysis?: AnalysisBadge }
 export interface MoveInfo { ply: number; san: string; uci: string; fenBefore: string; fenAfter: string }
 export interface GameDetail extends GameSummary { pgn: string; startFen: string; moves: MoveInfo[] }
-export interface GameListQuery { source?: Source; color?: Color; result?: GameResult; q?: string; limit?: number; offset?: number }
+export interface GameListQuery { source?: Source; color?: Color; result?: GameResult; q?: string; limit?: number; offset?: number; includeDuplicates?: boolean }
 export interface GameList { items: GameSummary[]; total: number }
 // M5: AI coach providers
 /** Single source of truth for provider ids; the order is the `auto` order. */

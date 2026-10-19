@@ -23,7 +23,7 @@ function median(values: number[]): number {
 function recentRatings(db: DatabaseSync, onlyFast: boolean): number[] {
   const rows = db.prepare(
     `SELECT source, user_color, white_elo, black_elo FROM games
-     WHERE rated = 1 AND user_color IS NOT NULL ${onlyFast ? "AND time_class IN ('rapid', 'blitz')" : ''}
+     WHERE rated = 1 AND user_color IS NOT NULL AND duplicate_of IS NULL ${onlyFast ? "AND time_class IN ('rapid', 'blitz')" : ''}
      ORDER BY played_at DESC, id DESC LIMIT ${RECENT_GAMES}`,
   ).all();
   const ratings: number[] = [];

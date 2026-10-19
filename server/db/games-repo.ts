@@ -1,5 +1,6 @@
 import type { DatabaseSync, SQLInputValue } from 'node:sqlite';
 import type { AnalysisBadge, GameList, GameListQuery, GameSummary, NewGame, Source } from '../../shared/types.js';
+import { linkDuplicatesOf } from '../games/duplicates.js';
 import { transaction } from './db.js';
 
 type Row = Record<string, unknown>;
@@ -50,7 +51,10 @@ export function insertGames(db: DatabaseSync, games: NewGame[]): { inserted: num
         g.source, g.sourceId, g.playedAt, g.timeClass, g.rated ? 1 : 0, g.white, g.black, g.whiteElo, g.blackElo,
         g.userColor, g.result, g.termination, g.eco, g.openingName, g.pgn, g.url, g.plyCount, now,
       );
-      inserted += Number(res.changes);
+      if (Number(res.changes) > 0) {
+        inserted += 1;
+        linkDuplicatesOf(db, Number(res.lastInsertRowid));
+      }
     }
   });
   return { inserted, duplicates: games.length - inserted };
@@ -59,6 +63,7 @@ export function insertGames(db: DatabaseSync, games: NewGame[]): { inserted: num
 export function listGames(db: DatabaseSync, q: GameListQuery): GameList {
   const where: string[] = [];
   const params: SQLInputValue[] = [];
+  if (!q.includeDuplicates) where.push('duplicate_of IS NULL');
   if (q.source) { where.push('source = ?'); params.push(q.source); }
   if (q.color) { where.push('user_color = ?'); params.push(q.color); }
   if (q.result) { where.push('result = ?'); params.push(q.result); }
