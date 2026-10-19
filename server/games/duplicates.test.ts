@@ -60,6 +60,21 @@ describe('duplicate links', () => {
     expect(links(db)).toEqual([[1, 3], [2, 3], [3, null]]);
   });
 
+  it('never links two platform rows, even with the same players, day and moves', () => {
+    insertGames(db, [game({ source: 'chesscom', sourceId: 'r1' }), game({ source: 'chesscom', sourceId: 'r2' })]);
+    expect(links(db)).toEqual([[1, null], [2, null]]);
+    insertGames(db, [game({ sourceId: 'imp' })]);
+    expect(links(db)).toEqual([[1, null], [2, null], [3, 1]]);
+    db.exec('UPDATE games SET duplicate_of = NULL');
+    linkAllDuplicates(db);
+    expect(links(db)).toEqual([[1, null], [2, null], [3, 1]]);
+  });
+
+  it('counts an imported copy of a synced game as a duplicate, not as inserted', () => {
+    insertGames(db, [game({ source: 'chesscom', sourceId: 'cc' })]);
+    expect(insertGames(db, [game({ sourceId: 'imp' })])).toEqual({ inserted: 0, duplicates: 1 });
+  });
+
   it('backfills existing databases and is idempotent', () => {
     insertGames(db, [game({ sourceId: 'a' }), game({ source: 'chesscom', sourceId: 'b' }), game({ source: 'chesscom', sourceId: 'c', pgn: LINE_B })]);
     db.exec('UPDATE games SET duplicate_of = NULL');
