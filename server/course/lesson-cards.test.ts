@@ -71,6 +71,17 @@ describe('syncLessonCards', () => {
     expect(state(c!.id)).toEqual([true]);
   });
 
+  it('makes a suspended orphan card active again when its exercise returns', () => {
+    completeLesson(db, lesson, 1000);
+    const [a, b, c] = lesson.exercises;
+    syncLessonCards(db, [{ ...lesson, exercises: [a!, b!] }]);
+    const orphan = () => listCardsByKind(db, 'lesson').find((x) => x.refs[0]?.exerciseId === c!.id)!;
+    expect(orphan().suspended).toBe(true);
+    syncLessonCards(db, [lesson]);
+    expect(orphan().suspended).toBe(false);
+    expect(listCardsByKind(db, 'lesson')).toHaveLength(3);
+  });
+
   it('keeps a flagged card suspended', () => {
     completeLesson(db, lesson, 1000);
     const card = listCardsByKind(db, 'lesson')[0]!;

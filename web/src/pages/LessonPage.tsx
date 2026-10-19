@@ -80,7 +80,9 @@ export function LessonPage() {
       )}
       {(finished || lesson.exercises.length === 0) && (
         <div className="lesson-done">
-          {created === null ? (
+          {lesson.status === 'done' ? (
+            <p role="status">You finished this lesson. <Link to="/course">Back to the course</Link></p>
+          ) : created === null ? (
             <button type="button" className="big" disabled={saving} onClick={() => void complete()}>Mark lesson done</button>
           ) : (
             <p role="status">

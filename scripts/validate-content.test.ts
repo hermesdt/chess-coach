@@ -246,6 +246,23 @@ describe('validateLesson', () => {
     expect(rules(issues, 'warning')).toContain('best-not-first');
   });
 
+  it('warns when a non-first accepted move is 5 win % or more below the engine best', async () => {
+    const eng = lessonEngine({
+      [mate!.fen]: [['h5f7', 900], ['d2d3', 0]],
+      [queen!.fen]: [['d1d5', 900], ['d1d4', 540]],
+      [sample().exercises[2]!.fen]: [['d8h4', 900], ['a7a6', 0]],
+    });
+    const issues = await validateLesson(withEx({ solution: ['d1d5', 'd1d4'] }), eng, ok);
+    expect(rules(issues)).toEqual([]);
+    expect(rules(issues, 'warning')).toEqual(['weak-alternative']);
+    const close = lessonEngine({
+      [mate!.fen]: [['h5f7', 900], ['d2d3', 0]],
+      [queen!.fen]: [['d1d5', 900], ['d1d4', 895]],
+      [sample().exercises[2]!.fen]: [['d8h4', 900], ['a7a6', 0]],
+    });
+    expect(rules(await validateLesson(withEx({ solution: ['d1d5', 'd1d4'] }), close, ok), 'warning')).not.toContain('weak-alternative');
+  });
+
   it('accepts an alternative solution within 10 win % of the engine best', async () => {
     const eng = lessonEngine({
       [mate!.fen]: [['h5f7', 900], ['d2d3', 0]],

@@ -63,6 +63,17 @@ describe('LessonPage', () => {
     expect(complete).toHaveBeenCalledWith('center');
   });
 
+  it('shows "You finished this lesson." instead of the mark button when the lesson is done', async () => {
+    vi.spyOn(api, 'getLesson').mockResolvedValue({ ...lesson, status: 'done' });
+    renderPage();
+    await screen.findByText('White to move. Take the centre.');
+    click('e2', 'e4');
+    await screen.findByText('Correct');
+    fireEvent.click(screen.getByText('Finish exercises'));
+    expect(screen.getByText('You finished this lesson.')).toBeTruthy();
+    expect(screen.queryByText('Mark lesson done')).toBeNull();
+  });
+
   it('shows the solution arrow and explanation after a wrong move, then allows a retry', async () => {
     vi.spyOn(api, 'getLesson').mockResolvedValue(lesson);
     renderPage();

@@ -47,6 +47,32 @@ describe('loadLessons', () => {
   });
 });
 
+describe('loadLessons (exercise chess checks)', () => {
+  const withExercise = (patch: Record<string, unknown>) => {
+    const dir = mkdtempSync(join(tmpdir(), 'lessons-'));
+    const base = JSON.parse(JSON.stringify(loadLessons(SAMPLE_DIR)[0]));
+    base.exercises[0] = { ...base.exercises[0], ...patch };
+    writeFileSync(join(dir, 'x.json'), JSON.stringify(base));
+    const errors: string[] = [];
+    const lessons = loadLessons(dir, (_f, e) => errors.push(e.message));
+    return { lessons, errors };
+  };
+
+  it.each([
+    ['an unloadable FEN', { fen: 'not a fen' }],
+    ['an empty solution', { solution: [] }],
+    ['an illegal solution move', { solution: ['a1a8'] }],
+  ])('skips a lesson with %s and reports it', (_name, patch) => {
+    const { lessons, errors } = withExercise(patch);
+    expect(lessons).toEqual([]);
+    expect(errors).toHaveLength(1);
+  });
+
+  it('keeps a lesson whose exercises are legal', () => {
+    expect(withExercise({}).lessons).toHaveLength(1);
+  });
+});
+
 describe('loadLesson (shape checks)', () => {
   const good = () => JSON.parse(JSON.stringify(loadLessons(SAMPLE_DIR)[0]));
 

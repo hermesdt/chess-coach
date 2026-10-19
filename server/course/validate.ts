@@ -145,6 +145,8 @@ export async function validateLesson(
       const loss = bestWin - win;
       if (loss >= MAX_WIN_LOSS) {
         add(ex.id, 'engine-loss', `${sanFromUci(ex.fen, uci)} loses ${loss.toFixed(1)} win % (best: ${sanFromUci(ex.fen, best.pv[0])})`);
+      } else if (loss >= MIN_BEST_GAIN && uci !== ex.solution[0]) {
+        add(ex.id, 'weak-alternative', `Accepted move ${sanFromUci(ex.fen, uci)} is ${loss.toFixed(1)} win % below the best; accept only moves within ${MIN_BEST_GAIN} win %`, 'warning');
       }
     }
     const second = lines[1];

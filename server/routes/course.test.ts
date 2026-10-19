@@ -28,6 +28,14 @@ describe('GET /api/course', () => {
     ]);
   });
 
+  it('shows a completed lesson as done even when it is above the current level', async () => {
+    db.prepare("INSERT INTO lesson_progress (lesson_id, status, completed_at) VALUES ('free-material', 'done', 1)").run();
+    const list = (await (await app.request('/api/course')).json()) as CourseLesson[];
+    expect(list.map((l) => l.status)).toEqual(['new', 'done']);
+    const detail = (await (await app.request('/api/course/free-material')).json()) as CourseLessonDetail;
+    expect(detail.status).toBe('done');
+  });
+
   it('unlocks a lesson when the level reaches it', async () => {
     setSetting(db, 'level_override', '2');
     const list = (await (await app.request('/api/course')).json()) as CourseLesson[];

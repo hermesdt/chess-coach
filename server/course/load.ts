@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { LESSON_IDS } from '../../shared/lessons.js';
+import { Chess } from 'chess.js';
+import { LESSON_IDS, TAG_TO_LESSON } from '../../shared/lessons.js';
 import type { Exercise, Lesson, Tag } from '../../shared/types.js';
 
 export { validateLesson } from './validate.js';
@@ -16,10 +17,7 @@ export class LessonError extends Error {
 }
 
 const DEFAULT_DIR = 'content/lessons';
-const TAGS: readonly string[] = [
-  'hung_piece', 'missed_capture', 'missed_mate', 'allowed_mate', 'bad_trade',
-  'early_queen', 'slow_development', 'no_castle', 'same_piece_twice',
-];
+const TAGS: readonly string[] = Object.keys(TAG_TO_LESSON);
 
 const isString = (v: unknown): v is string => typeof v === 'string';
 const isStringArray = (v: unknown): v is string[] => Array.isArray(v) && v.every(isString);
@@ -31,6 +29,13 @@ function loadExercise(lessonId: string, raw: unknown): Exercise {
     !isStringArray(e.solution) || !isString(e.explanation)
   ) {
     throw new LessonError(lessonId, 'Each exercise needs id, fen, prompt, solution (string[]) and explanation');
+  }
+  const solution = e.solution;
+  try {
+    if (solution.length === 0) throw new Error('empty solution');
+    for (const uci of solution) new Chess(e.fen).move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] });
+  } catch {
+    throw new LessonError(lessonId, `Exercise "${e.id}" needs a loadable FEN and a non-empty solution of legal moves`);
   }
   return { id: e.id, fen: e.fen, prompt: e.prompt, solution: e.solution, explanation: e.explanation };
 }
