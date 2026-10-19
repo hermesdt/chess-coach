@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { AiCancelledError, AiProviderError, AiRefusalError, AiTimeoutError, type AiRequest } from '../types.js';
 import { createAnthropicApi, type AnthropicLike } from './anthropic-api.js';
 import { createOpenRouter } from './openrouter.js';
+import { partialAnswer } from '../partial-answer.js';
 
 const KEY = 'sk-or-secret-123';
 const req: AiRequest = { system: 'SYS', user: 'USER', schemaName: 'coach_out', jsonSchema: { type: 'object', additionalProperties: false, properties: {}, required: [] } };
@@ -85,7 +86,12 @@ describe('openrouter', () => {
 describe('anthropic-api', () => {
   const AKEY = 'sk-ant-secret-456';
   const fakeClient = (response: unknown | Error, calls: unknown[] = []): AnthropicLike => ({
-    beta: { messages: { create: async (params) => { calls.push(params); if (response instanceof Error) throw response; return response as never; } } },
+    beta: {
+      messages: {
+        create: async (params) => { calls.push(params); if (response instanceof Error) throw response; return response as never; },
+        stream: () => { throw new Error('stream not expected'); },
+      },
+    },
   });
   const okResponse = { model: 'claude-opus-5-5', stop_reason: 'end_turn', content: [{ type: 'text', text: '{"a":1}' }] };
 
@@ -152,5 +158,141 @@ describe('anthropic-api', () => {
   it('available() = key set', async () => {
     expect((await createAnthropicApi({ getKey: () => AKEY }).available()).ok).toBe(true);
     expect((await createAnthropicApi({ getKey: () => null }).available()).ok).toBe(false);
+  });
+});
+
+/** Hand-made recorded events of the Anthropic stream (shape of the SDK's `content_block_delta` events). */
+const anthropicEvents: { type: string; index?: number; delta?: { type: string; text?: string; stop_reason?: string }; [k: string]: unknown }[] = [
+  { type: 'message_start', message: { model: 'claude-opus-5-5' } },
+  { type: 'content_block_start', index: 0, content_block: { type: 'text', text: '' } },
+  { type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text: '{"answer":"Bh6' } },
+  { type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text: ' loses a bi' } },
+  { type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text: 'shop.\\nSorry","lines":[]}' } },
+  { type: 'content_block_stop', index: 0 },
+  { type: 'message_delta', delta: { type: 'x', stop_reason: 'end_turn' } },
+];
+const FINAL_TEXT = '{"answer":"Bh6 loses a bishop.\\nSorry","lines":[]}';
+
+describe('anthropic-api stream', () => {
+  const AKEY = 'sk-ant-secret-456';
+  type Final = { model?: string; stop_reason: string | null; content: { type: string; text?: string }[] };
+  const streamClient = (opts: { final?: Final; error?: Error; events?: typeof anthropicEvents }, calls: unknown[] = []): AnthropicLike => ({
+    beta: {
+      messages: {
+        create: async () => { throw new Error('create not expected'); },
+        stream: (params) => {
+          calls.push(params);
+          const handlers: ((delta: string) => void)[] = [];
+          return {
+            on(event: 'text', cb: (delta: string) => void) { if (event === 'text') handlers.push(cb); return this; },
+            async finalMessage() {
+              for (const e of opts.events ?? anthropicEvents) {
+                if (e.type === 'content_block_delta' && e.delta?.type === 'text_delta') handlers.forEach((h) => h(e.delta!.text ?? ''));
+              }
+              if (opts.error) throw opts.error;
+              return opts.final ?? { model: 'claude-opus-5-5', stop_reason: 'end_turn', content: [{ type: 'text', text: FINAL_TEXT }] };
+            },
+          };
+        },
+      },
+    },
+  });
+  it('calls onText with the growing full text and returns the same final text as complete', async () => {
+    const calls: Record<string, unknown>[] = [];
+    const seen: string[] = [];
+    const p = createAnthropicApi({ getKey: () => AKEY, client: streamClient({}, calls) });
+    const out = await p.stream!(req, { model: null, onText: (t) => seen.push(t) });
+    expect(out).toEqual({ text: FINAL_TEXT, model: 'claude-opus-5-5' });
+    expect(seen).toHaveLength(3);
+    for (let i = 1; i < seen.length; i++) expect(seen[i]!.startsWith(seen[i - 1]!)).toBe(true);
+    expect(seen.at(-1)).toBe(FINAL_TEXT);
+    expect(partialAnswer(seen[1]!)).toBe('Bh6 loses a bi');
+    const c = calls[0]!;
+    expect(c.model).toBe('claude-opus-5-5');
+    expect(c.output_config).toEqual({ effort: 'low', format: { type: 'json_schema', schema: req.jsonSchema } });
+    expect(c.betas).toEqual(['server-side-fallback-2026-07-01']);
+    expect(c.messages).toEqual([{ role: 'user', content: 'USER' }]);
+  });
+  it('maps refusal and max_tokens like complete', async () => {
+    await expect(createAnthropicApi({ getKey: () => AKEY, client: streamClient({ final: { stop_reason: 'refusal', content: [] } }) }).stream!(req, { model: null, onText: () => undefined })).rejects.toBeInstanceOf(AiRefusalError);
+    const err = await createAnthropicApi({ getKey: () => AKEY, client: streamClient({ final: { stop_reason: 'max_tokens', content: [] } }) }).stream!(req, { model: null, onText: () => undefined }).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(AiProviderError);
+    expect(err).not.toBeInstanceOf(AiRefusalError);
+  });
+  it('fails when the stream ends with no text, and redacts the key from errors', async () => {
+    await expect(createAnthropicApi({ getKey: () => AKEY, client: streamClient({ events: [], final: { stop_reason: 'end_turn', content: [] } }) }).stream!(req, { model: null, onText: () => undefined })).rejects.toBeInstanceOf(AiProviderError);
+    const err = (await createAnthropicApi({ getKey: () => AKEY, client: streamClient({ error: new Error(`401 ${AKEY}`) }) }).stream!(req, { model: null, onText: () => undefined }).catch((e: unknown) => e)) as Error;
+    expect(err).toBeInstanceOf(AiProviderError);
+    expect(err.message).not.toContain(AKEY);
+  });
+  it('maps timeout and caller abort', async () => {
+    await expect(createAnthropicApi({ getKey: () => AKEY, client: streamClient({ error: new DOMException('t', 'TimeoutError') }) }).stream!(req, { model: null, onText: () => undefined })).rejects.toBeInstanceOf(AiTimeoutError);
+    const ac = new AbortController();
+    ac.abort();
+    await expect(createAnthropicApi({ getKey: () => AKEY, client: streamClient({ error: new DOMException('a', 'AbortError') }) }).stream!(req, { model: null, signal: ac.signal, onText: () => undefined })).rejects.toBeInstanceOf(AiCancelledError);
+  });
+});
+
+describe('openrouter stream', () => {
+  const sse = (chunks: string[], status = 200): { fetchFn: typeof fetch; seen: Seen[] } => {
+    const seen: Seen[] = [];
+    const fetchFn = (async (url: string, init: RequestInit) => {
+      seen.push({ url, init });
+      const enc = new TextEncoder();
+      const body = new ReadableStream<Uint8Array>({
+        start(c) {
+          for (const ch of chunks) c.enqueue(enc.encode(ch));
+          c.close();
+        },
+      });
+      return new Response(body, { status, headers: { 'content-type': 'text/event-stream' } });
+    }) as unknown as typeof fetch;
+    return { fetchFn, seen };
+  };
+  const frame = (delta: unknown, extra: Record<string, unknown> = {}) => `data: ${JSON.stringify({ model: 'm/x', choices: [{ delta }], ...extra })}\n\n`;
+  const full = [
+    ': OPENROUTER PROCESSING\n\n',
+    frame({ role: 'assistant', content: '' }),
+    frame({ content: '{"answer":"No' }),
+    frame({ content: ', it hangs' }),
+    frame({ content: ' a bishop."}' }),
+    'data: [DONE]\n\n',
+  ].join('');
+  it('sends stream: true, calls onText with the growing text and returns the joined content', async () => {
+    const whole = sse([full]);
+    const seen: string[] = [];
+    const out = await createOpenRouter({ getKey: () => KEY, fetchFn: whole.fetchFn }).stream!(req, { model: null, onText: (t) => seen.push(t) });
+    expect(out).toEqual({ text: '{"answer":"No, it hangs a bishop."}', model: 'm/x' });
+    expect(seen).toEqual(['{"answer":"No', '{"answer":"No, it hangs', '{"answer":"No, it hangs a bishop."}']);
+    const body = JSON.parse(whole.seen[0]!.init.body as string);
+    expect(body.stream).toBe(true);
+    expect(body.response_format.type).toBe('json_schema');
+    expect(body.provider).toEqual({ require_parameters: true });
+    expect((whole.seen[0]!.init.headers as Record<string, string>).Authorization).toBe(`Bearer ${KEY}`);
+  });
+  it('handles frames split across network chunks', async () => {
+    const pieces: string[] = [];
+    for (let i = 0; i < full.length; i += 11) pieces.push(full.slice(i, i + 11));
+    const out = await createOpenRouter({ getKey: () => KEY, fetchFn: sse(pieces).fetchFn }).stream!(req, { model: null, onText: () => undefined });
+    expect(out.text).toBe('{"answer":"No, it hangs a bishop."}');
+  });
+  it('fails on a mid-stream error frame, on no content and on an HTTP error, without the key', async () => {
+    const errFrame = `data: ${JSON.stringify({ error: { message: `upstream died ${KEY}` } })}\n\n`;
+    const err = (await createOpenRouter({ getKey: () => KEY, fetchFn: sse([frame({ content: 'x' }), errFrame]).fetchFn }).stream!(req, { model: null, onText: () => undefined }).catch((e: unknown) => e)) as Error;
+    expect(err).toBeInstanceOf(AiProviderError);
+    expect(err.message).toContain('upstream died');
+    expect(err.message).not.toContain(KEY);
+    await expect(createOpenRouter({ getKey: () => KEY, fetchFn: sse(['data: [DONE]\n\n']).fetchFn }).stream!(req, { model: null, onText: () => undefined })).rejects.toBeInstanceOf(AiProviderError);
+    const http = (await createOpenRouter({ getKey: () => KEY, fetchFn: sse([JSON.stringify({ error: { message: 'Invalid key' } })], 401).fetchFn }).stream!(req, { model: null, onText: () => undefined }).catch((e: unknown) => e)) as Error;
+    expect(http).toBeInstanceOf(AiProviderError);
+    expect(http.message).toContain('401');
+    expect(http.message).toContain('Invalid key');
+  });
+  it('maps timeout and caller abort', async () => {
+    const timeout = (async () => { throw new DOMException('t', 'TimeoutError'); }) as unknown as typeof fetch;
+    await expect(createOpenRouter({ getKey: () => KEY, fetchFn: timeout }).stream!(req, { model: null, onText: () => undefined })).rejects.toBeInstanceOf(AiTimeoutError);
+    const ac = new AbortController();
+    const aborting = (async () => { ac.abort(); throw new DOMException('a', 'AbortError'); }) as unknown as typeof fetch;
+    await expect(createOpenRouter({ getKey: () => KEY, fetchFn: aborting }).stream!(req, { model: null, signal: ac.signal, onText: () => undefined })).rejects.toBeInstanceOf(AiCancelledError);
   });
 });

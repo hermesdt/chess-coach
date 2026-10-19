@@ -33,6 +33,14 @@ describe('realCliRunner', () => {
     expect(res).toMatchObject({ code: 0, stdout: 'hello', timedOut: false });
   });
 
+  it('passes stdout chunks to onData as they arrive and still returns the full stdout', async () => {
+    const chunks: string[] = [];
+    const res = await realCliRunner('sh', ['-c', 'printf one; sleep 0.2; printf two'], { timeoutMs: 5000, cwd: process.cwd(), onData: (c) => chunks.push(c) });
+    expect(chunks.length).toBeGreaterThan(1);
+    expect(chunks.join('')).toBe('onetwo');
+    expect(res.stdout).toBe('onetwo');
+  });
+
   it('reports a missing binary as a non-zero result', async () => {
     const res = await realCliRunner('definitely-not-a-binary-xyz', [], { timeoutMs: 5000, cwd: process.cwd() });
     expect(res.code).not.toBe(0);

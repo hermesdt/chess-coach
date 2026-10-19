@@ -154,7 +154,7 @@ describe('history in adapters', () => {
 
   it('anthropic-api sends the history as messages before the user message', async () => {
     const calls: Record<string, unknown>[] = [];
-    const client: AnthropicLike = { beta: { messages: { create: async (p) => { calls.push(p); return { model: 'm', stop_reason: 'end_turn', content: [{ type: 'text', text: '{}' }] }; } } } };
+    const client: AnthropicLike = { beta: { messages: { create: async (p) => { calls.push(p); return { model: 'm', stop_reason: 'end_turn', content: [{ type: 'text', text: '{}' }] }; }, stream: () => { throw new Error('stream not expected'); } } } };
     await createAnthropicApi({ getKey: () => 'k', client }).complete(req, { model: null });
     expect(calls[0]!.messages).toEqual([
       { role: 'user', content: '(about spot 1): q1' },

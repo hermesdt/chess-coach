@@ -1,6 +1,7 @@
 import { execFile, spawn } from 'node:child_process';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
+import { StringDecoder } from 'node:string_decoder';
 import { join } from 'node:path';
 import { AiCancelledError, AiProviderError, AiTimeoutError, type AiRequest, type CliRunner } from './types.js';
 
@@ -70,7 +71,14 @@ export const realCliRunner: CliRunner = (cmd, args, opts) =>
       if (truncated) stderr += '\n[output truncated at 2 MB]';
       resolve({ code, stdout, stderr, timedOut, aborted });
     }
-    child.stdout.on('data', (d: Buffer) => (stdout = append(stdout, d)));
+    const dataDecoder = new StringDecoder('utf8'); // keeps a multi-byte character that a chunk splits
+    child.stdout.on('data', (d: Buffer) => {
+      stdout = append(stdout, d);
+      if (opts.onData) {
+        const text = dataDecoder.write(d);
+        if (text) opts.onData(text);
+      }
+    });
     child.stderr.on('data', (d: Buffer) => (stderr = append(stderr, d)));
     child.on('error', (err) => {
       stderr += err.message;
@@ -118,7 +126,7 @@ export async function runCli(
   args: string[],
   stdin: string,
   cwd: string,
-  extra: { env?: NodeJS.ProcessEnv; signal?: AbortSignal } = {},
+  extra: { env?: NodeJS.ProcessEnv; signal?: AbortSignal; onData?: (chunk: string) => void } = {},
 ): Promise<string> {
   const res = await run(cmd, args, { stdin, timeoutMs: CLI_TIMEOUT_MS, cwd, ...extra });
   if (res.aborted || extra.signal?.aborted) throw new AiCancelledError(`${label} was cancelled.`);

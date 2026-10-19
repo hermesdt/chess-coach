@@ -13,13 +13,18 @@ export interface AiProvider {
   label: string;
   available(): Promise<{ ok: boolean; reason?: string }>;
   complete(req: AiRequest, opts: { model: string | null; signal?: AbortSignal }): Promise<{ text: string; model: string }>;
+  /**
+   * Optional. Same final result as `complete`. `onText` gets the full raw text so far (not only the delta);
+   * callers run `partialAnswer` on it. Providers that only emit whole items leave this undefined.
+   */
+  stream?(req: AiRequest, opts: { model: string | null; signal?: AbortSignal; onText: (fullTextSoFar: string) => void }): Promise<{ text: string; model: string }>;
 }
 
 /** Runs a CLI without a shell. Injected so tests never spawn real processes. */
 export type CliRunner = (
   cmd: string,
   args: string[],
-  opts: { stdin?: string; timeoutMs: number; cwd: string; env?: NodeJS.ProcessEnv; signal?: AbortSignal },
+  opts: { stdin?: string; timeoutMs: number; cwd: string; env?: NodeJS.ProcessEnv; signal?: AbortSignal; onData?: (chunk: string) => void },
 ) => Promise<{ code: number | null; stdout: string; stderr: string; timedOut: boolean; aborted?: boolean }>;
 
 export class AiParseError extends Error {
