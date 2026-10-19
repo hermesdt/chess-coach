@@ -1,6 +1,6 @@
 // Plan regex, with a lookbehind instead of `\b` (so `_Nf3_` and `abe4` are handled), a trailing guard,
 // and an optional promotion on captures.
-const SAN_RE =
+export const SAN_RE =
   /(?<![A-Za-z0-9])(?:[KQRBNnrqk][a-h]?[1-8]?x?[a-h][1-8]|[a-h]x[a-h][1-8](?:=[QRBN])?|[a-h][1-8](?:=[QRBN])?|O-O(?:-O)?)[+#]?(?![A-Za-z0-9])/g;
 const SQUARE_RE = /(?<![A-Za-z0-9])[a-h][1-8](?![A-Za-z0-9])/g;
 const BARE_SQUARE = /^[a-h][1-8]$/;
@@ -45,13 +45,13 @@ export function groundingSet(sans: Iterable<string>, factsText = ''): Set<string
 const PIECE_SYMBOLS: Record<string, string> = { '♔': 'K', '♕': 'Q', '♖': 'R', '♗': 'B', '♘': 'N', '♚': 'K', '♛': 'Q', '♜': 'R', '♝': 'B', '♞': 'N' };
 const PIECE_WORDS: Record<string, string> = { king: 'K', queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: 'P' };
 /** "knight to g5", "rook d1", "pawn takes e5". A bare "pawn e4" is only a description, so pawns need a connective. */
-const WORD_MOVE_RE = /(?<![A-Za-z])(king|queen|rook|bishop|knight|pawn)(?:\s+(?:to|takes|captures|x)\s+|\s+x\s*|\s+)([a-h][1-8])(?![A-Za-z0-9])/gi;
+export const WORD_MOVE_RE = /(?<![A-Za-z])(king|queen|rook|bishop|knight|pawn)(?:\s+(?:to|takes|captures|x)\s+|\s+x\s*|\s+)([a-h][1-8])(?![A-Za-z0-9])/gi;
 /** "push the d-pawn to d5". */
 const FILE_PAWN_RE = /(?<![A-Za-z])[a-h]-?\s?pawn(?:\s+(?:to|takes|captures|x)\s+|\s+x\s*)([a-h][1-8])(?![A-Za-z0-9])/gi;
 /** "Nf3-g5", "e2-e4", "g1 to f3". The origin square is ignored; the piece letter, when given, must match. */
 const COORD_MOVE_RE = /(?<![A-Za-z0-9])([KQRBN])?[a-h][1-8](?:\s*[-x]\s*|\s+to\s+)([a-h][1-8])(?![A-Za-z0-9])/g;
 
-function prepare(text: string): string {
+export function prepare(text: string): string {
   const cleaned = text
     .normalize('NFKC')
     .replace(/[♔♕♖♗♘♚♛♜♝♞]/g, (c) => PIECE_SYMBOLS[c] ?? c)
@@ -63,7 +63,7 @@ function prepare(text: string): string {
 }
 
 /** Lowercase piece letters (n, r, q, k) are pieces; `b` stays a file. */
-const canon = (token: string): string => (/^[nrqk]/.test(token) ? token[0]!.toUpperCase() + token.slice(1) : token);
+export const canon = (token: string): string => (/^[nrqk]/.test(token) ? token[0]!.toUpperCase() + token.slice(1) : token);
 
 /** `piece + destination` ("Ng5", "Pd5") for every move in the set; castling and `@` entries are skipped. */
 function pieceDestinations(allowed: Set<string>): Set<string> {
