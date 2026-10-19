@@ -105,6 +105,31 @@ export function addLine(
   return { tree: current, last: at as NodeId };
 }
 
+const samePosition = (a: string, b: string): boolean => a.split(' ').slice(0, 4).join(' ') === b.split(' ').slice(0, 4).join(' ');
+
+/**
+ * Plays a line that starts at `startFen`: from the node itself, or from its child whose position equals
+ * `startFen` (a REF line starts after the played move). Throws when neither fits or a move is illegal.
+ * `first` is the node of the line's first move, or the start node when the line is empty.
+ */
+export function playLine(
+  tree: VarTree,
+  from: NodeId | 'root',
+  line: { startFen: string; uci: string[] },
+  label: string,
+): { tree: VarTree; first: NodeId | 'root'; last: NodeId | 'root' } {
+  let start: NodeId | 'root' = from;
+  if (!samePosition(fenOf(tree, from), line.startFen)) {
+    const child = childrenOf(tree, from).find((c) => samePosition(tree.nodes[c].fenAfter, line.startFen));
+    if (!child) throw new Error('Line does not start at this position');
+    start = child;
+  }
+  if (line.uci.length === 0) return { tree, first: start, last: start };
+  const res = addLine(tree, start, line.uci, label);
+  const first = addMove(res.tree, start, line.uci[0]);
+  return { tree: res.tree, first: first ? first.node : res.last, last: res.last };
+}
+
 /** Main-line ply where the branch starts (0 for the start position) and the UCI moves after it. */
 export function pathFromMain(tree: VarTree, id: NodeId | 'root'): { ply: number; path: string[] } {
   const path: string[] = [];

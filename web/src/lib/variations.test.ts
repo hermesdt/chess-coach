@@ -1,7 +1,7 @@
 import { Chess } from 'chess.js';
 import { describe, expect, it } from 'vitest';
 import type { MoveInfo } from '../../../shared/types';
-import { addLine, addMove, branchPoint, createTree, describeNode, fenOf, next, pathFromMain, prev } from './variations';
+import { addLine, addMove, playLine, branchPoint, createTree, describeNode, fenOf, next, pathFromMain, prev } from './variations';
 
 function movesFrom(sans: string[]): { start: string; moves: MoveInfo[] } {
   const chess = new Chess();
@@ -112,5 +112,27 @@ describe('variations', () => {
     expect(describeNode(t2, last, 'white')).toBe('a side line: 2. Nc3 Nf6 (after 1...e5)');
     const { tree: t3, last: l3 } = addLine(tree, 'm1', ['c7c5'], 'x');
     expect(describeNode(t3, l3, 'white')).toBe('a side line: 1...c5 (after 1. e4)');
+  });
+});
+
+describe('playLine', () => {
+  it('plays a line that starts at the anchor', () => {
+    const tree = createTree(start, moves);
+    const res = playLine(tree, 'm1', { startFen: moves[0].fenAfter, uci: ['c7c5', 'g1f3'] }, 'Line 1');
+    expect(res.tree.nodes[res.first as string]).toMatchObject({ uci: 'c7c5', label: 'Line 1' });
+    expect(res.tree.nodes[res.last as string]).toMatchObject({ san: 'Nf3' });
+  });
+
+  it('plays a REF line that starts after the played move', () => {
+    const tree = createTree(start, moves);
+    // anchor m1; the played move is m2 (e5); the REF line starts after it
+    const res = playLine(tree, 'm1', { startFen: moves[1].fenAfter, uci: ['g1f3', 'b8c6'] }, 'Line 2');
+    expect(res.tree.nodes[res.first as string]).toMatchObject({ san: 'Nf3', parent: 'm2' });
+    expect(res.tree.nodes[res.last as string]).toMatchObject({ san: 'Nc6' });
+  });
+
+  it('throws when the line does not fit the position', () => {
+    const tree = createTree(start, moves);
+    expect(() => playLine(tree, 'm1', { startFen: moves[2].fenAfter, uci: ['b8c6'] }, 'x')).toThrow();
   });
 });

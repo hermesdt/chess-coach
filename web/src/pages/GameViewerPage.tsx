@@ -22,6 +22,7 @@ import {
   fenOf,
   next,
   pathFromMain,
+  playLine,
   prev,
   type NodeId,
   type VarTree,
@@ -71,6 +72,7 @@ export function GameViewerPage() {
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [momentPly, setMomentPly] = useState<number | null>(null);
+  const [lineError, setLineError] = useState<string | null>(null);
 
   useEffect(() => {
     setGame(null);
@@ -258,12 +260,16 @@ export function GameViewerPage() {
     setCurrent(res.node);
   };
   const showLine = (line: ChatLineDTO, a: { ply: number; path: string[] }) => {
-    const at = nodeForAnchor(tree, a);
-    const res = addLine(at.tree, at.node, line.uci, line.label);
-    const first = addMove(res.tree, at.node, line.uci[0]);
-    setBranches(res.tree);
-    setMomentPly(null);
-    setCurrent(first ? first.node : res.last);
+    try {
+      const at = nodeForAnchor(tree, a);
+      const res = playLine(at.tree, at.node, line, line.label);
+      setLineError(null);
+      setBranches(res.tree);
+      setMomentPly(null);
+      setCurrent(res.first);
+    } catch {
+      setLineError('Could not show this line.');
+    }
   };
   const opening = [game.eco, game.openingName].filter(Boolean).join(' ');
 
@@ -342,6 +348,7 @@ export function GameViewerPage() {
               }}>Back to game</button>
             )}
           </div>
+          {lineError && <p className="error" role="alert">{lineError}</p>}
         </div>
         <GameTabs
           moves={<MoveList tree={tree} current={shown} onSelect={(id) => { setMomentPly(null); setCurrent(id); }} analysis={done?.moves} />}
