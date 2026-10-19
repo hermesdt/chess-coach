@@ -6,6 +6,7 @@ import type { OpeningDetail, OpeningLeakGroup, OpeningSummary, RepNodeDTO } from
 import { createApp } from '../app.js';
 import { openDb } from '../db/db.js';
 import { insertGames } from '../db/games-repo.js';
+import { linkAllDuplicates } from '../games/duplicates.js';
 import { setSetting } from '../db/settings-repo.js';
 import { scanLeaks } from '../repertoire/leaks.js';
 import { loadRepertoire } from '../repertoire/load.js';
@@ -28,13 +29,37 @@ function addGame(sans: string, userColor: 'white' | 'black' | null, result: 'win
   const chess = new Chess();
   for (const s of sans.split(' ')) chess.move(s);
   insertGames(db, [{
-    source: 'chesscom', sourceId: `g${seq}`, playedAt: seq, timeClass: 'blitz', rated: true, white: 'Me', black: 'Opp',
+    source: 'chesscom', sourceId: `g${seq}`, playedAt: seq, timeClass: 'blitz', rated: true, white: 'Me', black: `Opp${seq}`,
     whiteElo: 1000, blackElo: 1000, userColor, result, termination: null, eco: null, openingName: null,
     pgn: chess.pgn(), url: null, plyCount: sans.split(' ').length,
   }]);
   return Number((db.prepare('SELECT id FROM games WHERE source_id = ?').get(`g${seq}`) as { id: number }).id);
 }
 const json = async <T>(path: string) => (await app.request(path)).json() as Promise<T>;
+
+describe('duplicate copies', () => {
+  it('count once in stats and leak groups, even when events were written before linking', async () => {
+    const sans = 'e4 c6 d4 d5 e5 Bg4 Nf3';
+    addGame(sans, 'black', 'win');
+    const chess = new Chess();
+    for (const s of sans.split(' ')) chess.move(s);
+    insertGames(db, [{
+      source: 'lichess', sourceId: 'dup', playedAt: 1, timeClass: 'blitz', rated: true, white: 'Me', black: 'Opp1',
+      whiteElo: 1000, blackElo: 1000, userColor: 'black', result: 'win', termination: null, eco: null, openingName: null,
+      pgn: chess.pgn(), url: null, plyCount: 7,
+    }]);
+    // Write events for both rows as an older version would, then link: stale events stay in the table.
+    db.exec('UPDATE games SET duplicate_of = NULL');
+    scanLeaks(db, reps);
+    expect(db.prepare('SELECT COUNT(*) AS n FROM opening_events').get()?.n).toBe(2);
+    linkAllDuplicates(db);
+    expect(db.prepare('SELECT COUNT(*) AS n FROM games WHERE duplicate_of IS NOT NULL').get()?.n).toBe(1);
+    const list = await json<OpeningSummary[]>('/api/openings');
+    expect(list.find((o) => o.id === 'caro-kann')?.stats.games).toBe(1);
+    const leaks = await json<OpeningLeakGroup[]>('/api/openings/caro-kann/leaks');
+    expect(leaks.reduce((n, l) => n + l.count, 0)).toBe(1);
+  });
+});
 
 describe('GET /api/openings', () => {
   it('lists repertoires with node counts, card counts and W/D/L stats from the user view', async () => {

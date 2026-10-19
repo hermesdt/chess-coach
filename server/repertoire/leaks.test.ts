@@ -85,6 +85,18 @@ function addGame(sans: string, userColor: 'white' | 'black' | null): number {
 const events = () => db.prepare('SELECT * FROM opening_events ORDER BY game_id').all() as Record<string, unknown>[];
 
 describe('scanLeaks', () => {
+  it('skips duplicate copies', () => {
+    const chess = new Chess();
+    for (const s of 'e4 c6 d4 d5 e5 Bg4 Nf3'.split(' ')) chess.move(s);
+    const copy = (source: 'import' | 'chesscom', sourceId: string): NewGame => ({
+      source, sourceId, playedAt: NOW, timeClass: 'blitz', rated: true, white: 'Me', black: 'Opp', whiteElo: 1000, blackElo: 1000,
+      userColor: 'black', result: 'win', termination: null, eco: null, openingName: null, pgn: chess.pgn(), url: null, plyCount: 7,
+    });
+    insertGames(db, [copy('import', 'a'), copy('chesscom', 'b')]);
+    scanLeaks(db, [caro, london], NOW);
+    expect(events().map((e) => e.game_id)).toEqual([2]);
+  });
+
   it('records one event per game and replaces them on rescan', () => {
     const g1 = addGame('e4 c6 d4 d5 e5 Bg4 Nf3', 'black');
     const g2 = addGame('d4 d5 Bf4 Nf6', 'black');

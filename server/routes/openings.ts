@@ -9,7 +9,7 @@ import { listCardsByKind } from '../srs/cards-repo.js';
 /** W/D/L from the stored opening events: the scan already classified each game. */
 function stats(db: DatabaseSync, rep: Repertoire): OpeningSummary['stats'] {
   const rows = db.prepare(`SELECT g.result AS result FROM opening_events e JOIN games g ON g.id = e.game_id
-    WHERE e.repertoire_id = ? AND g.user_color = ?`).all(rep.id, rep.color) as unknown as { result: GameResult | null }[];
+    WHERE e.repertoire_id = ? AND g.user_color = ? AND g.duplicate_of IS NULL`).all(rep.id, rep.color) as unknown as { result: GameResult | null }[];
   const out = { games: 0, win: 0, draw: 0, loss: 0 };
   for (const r of rows) {
     out.games += 1;
@@ -52,8 +52,9 @@ export function openingsRoutes(db: DatabaseSync, getReps: () => Repertoire[]): H
     .get('/openings/:id/leaks', (c) => {
       const id = c.req.param('id');
       if (!getReps().some((r) => r.id === id)) return c.json({ error: 'not found' }, 404);
-      const rows = db.prepare(`SELECT node_id, expected_san, played_san, game_id FROM opening_events
-        WHERE repertoire_id = ? AND kind = 'leak' ORDER BY game_id`).all(id) as unknown as
+      const rows = db.prepare(`SELECT e.node_id, e.expected_san, e.played_san, e.game_id FROM opening_events e
+        JOIN games g ON g.id = e.game_id
+        WHERE e.repertoire_id = ? AND e.kind = 'leak' AND g.duplicate_of IS NULL ORDER BY e.game_id`).all(id) as unknown as
         { node_id: string; expected_san: string; played_san: string; game_id: number }[];
       const groups = new Map<string, OpeningLeakGroup>();
       for (const r of rows) {

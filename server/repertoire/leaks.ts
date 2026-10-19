@@ -114,7 +114,7 @@ export function scanLeaks(
 ): void {
   const level = currentLevel(db).level;
   const games = db.prepare(`SELECT id, pgn, user_color, played_at FROM games g
-    WHERE user_color IS NOT NULL ${opts.rescan ? '' : `AND NOT EXISTS
+    WHERE user_color IS NOT NULL AND duplicate_of IS NULL ${opts.rescan ? '' : `AND NOT EXISTS
       (SELECT 1 FROM opening_events e WHERE e.game_id = g.id AND e.level = ${level})`}
     ORDER BY id`).all() as unknown as GameRow[];
   if (games.length === 0) return;
