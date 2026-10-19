@@ -31,7 +31,7 @@
     {
       "id": "keep-knight-trade",
       "fen": "r1bq1rk1/1ppp1pp1/1bn2n1p/p3p1B1/2B1P3/N1PP1N1P/PP3PP1/R2QK2R w KQ - 0 9",
-      "prompt": "White to move. The pawn on h6 attacks your bishop. Keep your two bishops.",
+      "prompt": "White to move. Keep your two bishops and keep the pin.",
       "solution": [
         "g5h4"
       ],

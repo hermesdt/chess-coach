@@ -52,7 +52,7 @@
       "solution": [
         "f4g3"
       ],
-      "explanation": "The pawn on g5 attacks your bishop, but the f6 pawn guards g5. Bxg5 fxg5 or Nxg5 fxg5 loses a piece for a pawn. Bg3 saves the bishop and takes nothing."
+      "explanation": "The pawn on g5 attacks your bishop, but the f6 pawn guards g5. Bxg5 fxg5 or Nxg5 fxg5 loses a piece for only two pawns. Bg3 saves the bishop and takes nothing."
     }
   ],
   "links": []

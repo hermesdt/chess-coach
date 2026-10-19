@@ -25,11 +25,10 @@
       "prompt": "White to move. Keep your king safe.",
       "solution": [
         "g1f1",
-        "f2f3",
         "g2g3",
         "h2h3"
       ],
-      "explanation": "Black threatens Re1 mate. Your king has no escape square. A pawn move or Kf1 stops it. Almost every other move, such as a4 or Nd5, loses to Re1#."
+      "explanation": "Black threatens Re1 mate. Your king has no escape square. Kf1, g3 or h3 stop it. Almost every other move, such as a4 or Nd5, loses to Re1#."
     },
     {
       "id": "queen-and-king",
