@@ -27,7 +27,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M3 | SRS core + mistake cards + dashboard v1 | done | `docs/superpowers/plans/2026-10-18-m3-srs-mistake-cards.md` |
 | M4 | Openings: London, Caro-Kann, Slav/anti-London; validator, explorer, drill, leaks; levels | done | `docs/superpowers/plans/2026-10-18-m4-openings.md` |
 | M5 | AI coach (claude-cli, codex-cli, opencode-cli, openrouter, anthropic-api) | done | `docs/superpowers/plans/2026-10-18-m5-ai-coach.md` |
-| M6 | Principles course (12 level-1 lessons) | planned | `docs/superpowers/plans/2026-10-18-m6-course.md` |
+| M6 | Principles course (12 level-1 lessons) | done | `docs/superpowers/plans/2026-10-18-m6-course.md` |
 | M7 | Insights + polish + README | planned | `docs/superpowers/plans/2026-10-18-m7-insights-polish.md` |
 | M8 | Level 2–3 content (lessons, tags, deeper repertoire) | todo | — (write when M1–M7 are done) |
 
@@ -110,3 +110,31 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   adapter uses claude-opus-5-5 at low effort with server-side refusal fallbacks.
 - Known minor gaps: lowercase "bb5" style moves are not caught by grounding;
   some descriptive phrases ("Knight f3 is nice") can trigger a retry.
+- 2026-10-19 — **M6 done.** 652 tests; `pnpm validate:content` → content OK
+  (37 accepted warnings). 12 level-1 lessons (blunder check, free material,
+  centre, develop, castle, trades, bishop pair, castling sides, tactics, mates,
+  Caro-Kann + Slav plans, London plans), 52 exercises. Each batch: author with
+  board fact-checks + validator, then a separate content reviewer with chess.js
+  and Stockfish; ~25 content problems fixed (e.g. an exercise that marked the
+  owner's own 1...c6 wrong). Course and lesson pages; completing a lesson adds
+  its exercises to the daily review. `pnpm validate:lessons` validates lessons
+  only (fast).
+- M6 rulings (review these): "principle" exercises (centre, develop, castle,
+  bishop pair, castling sides) accept every on-idea move within 5 win % of the
+  best; the validator warns (`weak-alternative`) when an accepted move is
+  further away; dashboard focus links to both the lesson and the coach report.
+- Known gaps for later: no "Report a problem" button on the lesson page itself
+  (only on review cards); lesson 5 has five similar castling exercises.
+
+## Next session
+
+- Start with M7 (insights + polish + README update): plan
+  `docs/superpowers/plans/2026-10-18-m7-insights-polish.md`. Then M8 (level 2–3
+  content) needs a plan.
+- Branches are stacked and not merged: `m1-foundation` → `m2-engine-analysis` →
+  `m3-srs` → `m4-openings` → `m5-ai-coach` → `m6-course`. Each fast-forwards
+  onto the previous one; merging `m6-course` into `main` brings everything.
+  Merging is the owner's decision.
+- Owner setup after the lost DB: enter chess.com / lichess usernames and the
+  lichess token in Settings, then Sync (analysis, mistake cards and opening
+  leaks follow automatically).
