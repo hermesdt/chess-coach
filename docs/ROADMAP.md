@@ -35,7 +35,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M6 | Principles course (12 level-1 lessons) | done | `docs/superpowers/plans/2026-10-18-m6-course.md` |
 | M7 | Insights + polish + README | done | `docs/superpowers/plans/2026-10-18-m7-insights-polish.md` |
 | M8a | Coach chat: chat, engine lines as branches, own moves on the board, add to review | done | `docs/superpowers/plans/2026-10-19-m8a-coach-chat.md` |
-| M8b | Coach chat: streaming, fast model, live Stockfish eval, "Go deeper" | todo | — (write after M8a; spec `docs/superpowers/specs/2026-10-19-coach-chat-design.md`) |
+| M8b | Coach chat: streaming, fast model, live Stockfish eval, "Go deeper", attack facts | planned | `docs/superpowers/plans/2026-10-19-m8b-coach-chat-speed.md` |
 | M9 | Level 2–3 content (lessons, tags, deeper repertoire) | todo | — (was M8 before 2026-10-19) |
 
 ## Log
