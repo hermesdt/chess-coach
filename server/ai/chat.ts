@@ -53,8 +53,12 @@ function historyMessages(history: AskCoachInput['history']): AiHistoryMessage[] 
   });
 }
 
-/** Every SAN the coach may name from one pack, including the moves the owner named (legal or not, as the owner wrote them). */
-const packSan = (p: FactPack): string[] => [...factPackSan(p), ...p.named.map((n) => n.text)];
+/** Every SAN the coach may name from one pack, including the key-moment best moves and the moves the owner named (legal or not, as the owner wrote them). */
+const packSan = (p: FactPack): string[] => [
+  ...factPackSan(p),
+  ...p.named.map((n) => n.text),
+  ...p.game.keyMoments.flatMap((k) => [k.played, k.best, ...k.bestLine]),
+];
 
 export async function askCoach(provider: AiProvider, input: AskCoachInput): Promise<{ answer: ChatAnswer; model: string }> {
   const { pack } = input;

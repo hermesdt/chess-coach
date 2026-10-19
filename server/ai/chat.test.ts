@@ -89,6 +89,15 @@ describe('askCoach', () => {
     expect(reqs).toHaveLength(1);
   });
 
+  it('accepts the best move and best line of a key moment in one call', async () => {
+    const km = { ply: 5, moveNumber: 3, side: 'white' as const, fen: 'x', played: 'a3', best: 'Nd2', bestLine: ['Nd2', 'Rg8', 'Qxg5'], winBefore: 60, winAfter: 40, tags: [], classification: 'mistake' as const };
+    const p = pack('t2.', ['Nf3'], { game: { ...pack('t2.', []).game, keyMoments: [km] } });
+    const earlier = pack('t1.', ['Nc3'], { game: { ...pack('t1.', []).game, keyMoments: [{ ...km, best: 'Bb5', bestLine: ['Bb5', 'Kf8'] }] } });
+    const { provider, reqs } = fake([answer({ answer: 'You should have played Nd2, then Qxg5. Earlier Bb5 and Kf8 also worked.' })]);
+    await askCoach(provider, base({ pack: p, earlierPacks: [earlier] }));
+    expect(reqs).toHaveLength(1);
+  });
+
   it('retries on an unknown line id', async () => {
     const { provider, reqs } = fake([answer({ lines: [{ id: 't2.L9', why: 'x' }] }), answer()]);
     const out = await askCoach(provider, base());
