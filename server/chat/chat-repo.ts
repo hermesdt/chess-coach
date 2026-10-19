@@ -15,6 +15,7 @@ export interface ChatRecord {
   id: number; gameId: number; turn: number; question: string; anchor: ChatAnchor;
   pack: FactPack | null; answer: ChatAnswer | null; status: 'pending' | 'streaming' | 'done' | 'error';
   error: string | null; provider: ProviderId | null; model: string | null; createdAt: number;
+  deep: boolean; parentId: number | null;
 }
 
 function toRecord(r: Row): ChatRecord {
@@ -25,6 +26,7 @@ function toRecord(r: Row): ChatRecord {
     answer: r.answer_json ? (JSON.parse(r.answer_json as string) as ChatAnswer) : null,
     status: r.status as ChatRecord['status'], error: r.error as string | null,
     provider: r.provider as ProviderId | null, model: r.model as string | null, createdAt: r.created_at as number,
+    deep: r.deep === 1, parentId: r.parent_id as number | null,
   };
 }
 
@@ -48,12 +50,12 @@ export function hasPending(db: DatabaseSync, gameId: number): boolean {
   return db.prepare("SELECT 1 FROM chat_messages WHERE game_id = ? AND status IN ('pending', 'streaming') LIMIT 1").get(gameId) !== undefined;
 }
 
-export function insertPending(db: DatabaseSync, m: { gameId: number; question: string; anchor: ChatAnchor }): ChatRecord {
+export function insertPending(db: DatabaseSync, m: { gameId: number; question: string; anchor: ChatAnchor; deep?: boolean; parentId?: number | null }): ChatRecord {
   const turn = Number(db.prepare('SELECT COALESCE(MAX(turn), 0) + 1 AS t FROM chat_messages WHERE game_id = ?').get(m.gameId)!.t);
   const anchor: ChatAnchor = { ply: m.anchor.ply, path: m.anchor.path, describe: m.anchor.describe };
   const res = db.prepare(
-    "INSERT INTO chat_messages (game_id, turn, question, anchor_json, status, created_at) VALUES (?, ?, ?, ?, 'pending', ?)",
-  ).run(m.gameId, turn, m.question, JSON.stringify(anchor), Date.now());
+    "INSERT INTO chat_messages (game_id, turn, question, anchor_json, status, created_at, deep, parent_id) VALUES (?, ?, ?, ?, 'pending', ?, ?, ?)",
+  ).run(m.gameId, turn, m.question, JSON.stringify(anchor), Date.now(), m.deep ? 1 : 0, m.parentId ?? null);
   return getRecord(db, Number(res.lastInsertRowid))!;
 }
 
@@ -98,7 +100,8 @@ export function doneTurns(db: DatabaseSync, gameId: number, beforeTurn: number):
   return rows.reverse();
 }
 
-export function toDto(r: ChatRecord): ChatMessageDTO {
+/** `deeperAvailable`: the caller knows the settings; true only when a stronger model is set. */
+export function toDto(r: ChatRecord, strongerModel = false): ChatMessageDTO {
   let answer: ChatMessageDTO['answer'] = null;
   if (r.status === 'done' && r.answer) {
     const lines: ChatLineDTO[] = [];
@@ -113,7 +116,8 @@ export function toDto(r: ChatRecord): ChatMessageDTO {
     answer = { text: r.answer.answer, lines, rule: r.answer.rule, lessonId: r.answer.lessonId };
   }
   return {
-    id: r.id, turn: r.turn, question: r.question, anchor: r.anchor, status: r.status === 'streaming' ? 'pending' : r.status, error: r.error, answer,
+    id: r.id, turn: r.turn, question: r.question, anchor: r.anchor, status: r.status === 'streaming' ? 'pending' : r.status, error: r.error,
+    deep: r.deep, parentId: r.parentId, deeperAvailable: strongerModel && r.status === 'done' && !r.deep && r.provider !== null, answer,
     provider: r.provider, model: r.model, createdAt: r.createdAt,
   };
 }

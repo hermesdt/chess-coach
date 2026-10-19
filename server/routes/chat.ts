@@ -14,7 +14,7 @@ import {
 } from '../chat/chat-repo.js';
 import type { StreamEvent, StreamHub } from '../chat/stream-hub.js';
 import { buildFactPack, describeAnchorOf } from '../chat/fact-pack.js';
-import { getSettings, type ResolvedSettings } from '../config.js';
+import { getSettings, hasStrongerModel, resolveChatModel, resolveDeepModel, type ResolvedSettings } from '../config.js';
 import type { EnginePool } from '../engine/pool.js';
 import { runJob } from '../jobs.js';
 import { currentLevel } from '../level.js';
@@ -50,6 +50,7 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
 
   /** Runs the answer for a pending message as a job. The result goes on the message row. */
   function startAnswer(rec: ChatRecord, requested: ProviderId | undefined): number {
+    const deep = rec.deep;
     hub.reset(rec.id);
     return runJob(db, 'chat', async (report) => {
       let settings: ResolvedSettings | null = null;
@@ -79,7 +80,7 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
           earlierPacks: prior.map((t) => t.pack),
           level,
           rating,
-          model: settings.aiModels[provider.id] ?? null,
+          model: deep ? resolveDeepModel(settings, provider.id) : resolveChatModel(settings, provider.id),
           onText: (text) => {
             if (!streaming) {
               streaming = true;
@@ -110,7 +111,13 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
       const id = parseId(c.req.param('id'));
       const gameId = id === null ? null : canonicalGameId(db, id);
       if (gameId === null) return c.json({ error: 'not found' }, 404);
-      return c.json(listRecords(db, gameId).map(toDto));
+      let settings: ResolvedSettings | null = null;
+      try {
+        settings = getSettings(db);
+      } catch {
+        // Unreadable settings: the list still shows, without "Go deeper".
+      }
+      return c.json(listRecords(db, gameId).map((r) => toDto(r, settings !== null && r.provider !== null && hasStrongerModel(settings, r.provider))));
     })
     .post('/games/:id/chat', async (c) => {
       const id = parseId(c.req.param('id'));
@@ -170,6 +177,15 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
       if (hasPending(db, rec.gameId)) return c.json({ error: 'The coach is already answering. Wait for the answer.' }, 409);
       resetToPending(db, rec.id);
       return c.json({ jobId: startAnswer({ ...rec, status: 'pending' }, provider) });
+    })
+    .post('/chat/:messageId/deeper', (c) => {
+      const id = parseId(c.req.param('messageId'));
+      const parent = id === null ? null : getRecord(db, id);
+      if (!parent || parent.status !== 'done' || !parent.answer || !parent.provider) return c.json({ error: 'not found' }, 404);
+      if (hasPending(db, parent.gameId)) return c.json({ error: 'The coach is already answering. Wait for the answer.' }, 409);
+      if (!hasStrongerModel(getSettings(db), parent.provider)) return c.json({ error: 'No stronger model is set for this coach.' }, 409);
+      const rec = insertPending(db, { gameId: parent.gameId, question: parent.question, anchor: parent.anchor, deep: true, parentId: parent.id });
+      return c.json({ messageId: rec.id, jobId: startAnswer(rec, parent.provider) });
     })
     .post('/chat/:messageId/review-card', async (c) => {
       const id = parseId(c.req.param('messageId'));

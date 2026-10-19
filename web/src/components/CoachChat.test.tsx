@@ -13,7 +13,7 @@ const line = (id: string, san: string[], extra: Partial<ChatLineDTO> = {}): Chat
 const anchor = { ply: 2, path: [], describe: 'the position after 1...e5 (your move 2)' };
 const answered = (extra: Partial<ChatMessageDTO> = {}): ChatMessageDTO => ({
   id: 1, turn: 1, question: 'What now?', anchor: { ply: 1, path: [], describe: 'the position after 1. e4 (their move 1)' },
-  status: 'done', error: null, provider: 'claude-cli', model: null, createdAt: 0,
+  status: 'done', error: null, provider: 'claude-cli', model: null, createdAt: 0, deep: false, parentId: null, deeperAvailable: false,
   answer: { text: 'Develop your knight.', lines: [line('1', ['Nf3', 'Nc6', 'Bb5'], { why: 'Knight out first.' })], rule: 'Develop pieces early', lessonId: 'develop' },
   ...extra,
 });

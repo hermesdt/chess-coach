@@ -1,5 +1,5 @@
 import { type FormEvent, useEffect, useState } from 'react';
-import { PROVIDER_IDS, type AiProviderSetting, type ProviderId, type SettingsDTO, type SettingsUpdate } from '../../../shared/types';
+import { CHAT_MODEL_DEFAULTS, DEEP_MODEL_DEFAULTS, PROVIDER_IDS, type AiProviderSetting, type ProviderId, type SettingsDTO, type SettingsUpdate } from '../../../shared/types';
 import { DataSection, ENV_NOTE, EngineReviewSettings, FlagsSection } from '../components/SettingsSections';
 import { api, type ProviderInfo, type ProviderTestResult } from '../api';
 
@@ -8,6 +8,9 @@ function AiSettings({ settings, onSaved }: { settings: SettingsDTO; onSaved: (s:
   const [models, setModels] = useState<Record<ProviderId, string>>(
     () => Object.fromEntries(PROVIDER_IDS.map((id) => [id, settings.aiModels[id] ?? ''])) as Record<ProviderId, string>,
   );
+  const initial = (m: Record<ProviderId, string | null>) => Object.fromEntries(PROVIDER_IDS.map((id) => [id, m[id] ?? ''])) as Record<ProviderId, string>;
+  const [chatModels, setChatModels] = useState(() => initial(settings.aiChatModels));
+  const [deepModels, setDeepModels] = useState(() => initial(settings.aiDeepModels));
   const [openrouterKey, setOpenrouterKey] = useState('');
   const [anthropicKey, setAnthropicKey] = useState('');
   const [providers, setProviders] = useState<ProviderInfo[]>([]);
@@ -25,6 +28,15 @@ function AiSettings({ settings, onSaved }: { settings: SettingsDTO; onSaved: (s:
     setMessage(null);
     setError(null);
     const update: SettingsUpdate = { aiProvider: provider, aiModels: models };
+    const changed = (now: Record<ProviderId, string>, saved: Record<ProviderId, string | null>) => {
+      const out: Partial<Record<ProviderId, string>> = {};
+      for (const id of PROVIDER_IDS) if (now[id].trim() !== (saved[id] ?? '')) out[id] = now[id].trim();
+      return Object.keys(out).length > 0 ? out : undefined;
+    };
+    const chat = changed(chatModels, settings.aiChatModels);
+    const deep = changed(deepModels, settings.aiDeepModels);
+    if (chat) update.aiChatModels = chat;
+    if (deep) update.aiDeepModels = deep;
     if (openrouterKey !== '') update.openrouterApiKey = openrouterKey;
     if (anthropicKey !== '') update.anthropicApiKey = anthropicKey;
     try {
@@ -91,14 +103,32 @@ function AiSettings({ settings, onSaved }: { settings: SettingsDTO; onSaved: (s:
           </select>
         </label>
         {providers.map((p) => (
-          <label key={p.id}>
-            {p.label} model
-            <input
-              value={models[p.id]}
-              placeholder="provider default"
-              onChange={(e) => setModels((m) => ({ ...m, [p.id]: e.target.value }))}
-            />
-          </label>
+          <div key={p.id}>
+            <label>
+              {p.label} model
+              <input
+                value={models[p.id]}
+                placeholder="provider default"
+                onChange={(e) => setModels((m) => ({ ...m, [p.id]: e.target.value }))}
+              />
+            </label>
+            <label>
+              Chat model
+              <input
+                value={chatModels[p.id]}
+                placeholder={`default (${CHAT_MODEL_DEFAULTS[p.id] ?? 'provider default'})`}
+                onChange={(e) => setChatModels((m) => ({ ...m, [p.id]: e.target.value }))}
+              />
+            </label>
+            <label>
+              Deep model
+              <input
+                value={deepModels[p.id]}
+                placeholder={`default (${DEEP_MODEL_DEFAULTS[p.id] ?? 'provider default'})`}
+                onChange={(e) => setDeepModels((m) => ({ ...m, [p.id]: e.target.value }))}
+              />
+            </label>
+          </div>
         ))}
         <label>
           OpenRouter API key

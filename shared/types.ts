@@ -21,9 +21,16 @@ export interface GameList { items: GameSummary[]; total: number }
 /** Single source of truth for provider ids; the order is the `auto` order. */
 export const PROVIDER_IDS = ['claude-cli', 'codex-cli', 'anthropic-api', 'openrouter', 'opencode-cli'] as const;
 export type ProviderId = (typeof PROVIDER_IDS)[number];
+/** Default chat and deep model per provider. null = the provider's own default. */
+export const CHAT_MODEL_DEFAULTS: Record<ProviderId, string | null> = {
+  'claude-cli': 'claude-sonnet-5-5', 'codex-cli': 'gpt-5.6-luna', 'opencode-cli': 'openrouter/z-ai/glm-5.3-flash', openrouter: null, 'anthropic-api': null,
+};
+export const DEEP_MODEL_DEFAULTS: Record<ProviderId, string | null> = {
+  'claude-cli': 'claude-opus-5-5', 'codex-cli': null, 'opencode-cli': null, openrouter: null, 'anthropic-api': 'claude-opus-5-5',
+};
 export type AiProviderSetting = 'auto' | ProviderId | 'none';
-export interface SettingsDTO { chesscomUsername: string | null; lichessUsername: string | null; lichessTokenSet: boolean; syncInitialMonths: number; engineNodes: number; reviewDailyLimit: number; reviewNewPerDay: number; aiProvider: AiProviderSetting; aiModels: Record<ProviderId, string | null>; openrouterKeySet: boolean; anthropicKeySet: boolean }
-export interface SettingsUpdate { chesscomUsername?: string; lichessUsername?: string; lichessToken?: string; syncInitialMonths?: number; engineNodes?: number; reviewDailyLimit?: number; reviewNewPerDay?: number; aiProvider?: AiProviderSetting; aiModels?: Partial<Record<ProviderId, string>>; openrouterApiKey?: string; anthropicApiKey?: string }
+export interface SettingsDTO { chesscomUsername: string | null; lichessUsername: string | null; lichessTokenSet: boolean; syncInitialMonths: number; engineNodes: number; reviewDailyLimit: number; reviewNewPerDay: number; aiProvider: AiProviderSetting; aiModels: Record<ProviderId, string | null>; aiChatModels: Record<ProviderId, string | null>; aiDeepModels: Record<ProviderId, string | null>; openrouterKeySet: boolean; anthropicKeySet: boolean }
+export interface SettingsUpdate { chesscomUsername?: string; lichessUsername?: string; lichessToken?: string; syncInitialMonths?: number; engineNodes?: number; reviewDailyLimit?: number; reviewNewPerDay?: number; aiProvider?: AiProviderSetting; aiModels?: Partial<Record<ProviderId, string>>; aiChatModels?: Partial<Record<ProviderId, string>>; aiDeepModels?: Partial<Record<ProviderId, string>>; openrouterApiKey?: string; anthropicApiKey?: string }
 // M5: AI game review
 export interface GameReviewMoment { ply: number; whatHappened: string; whyItMatters: string; principle: string; lessonId: LessonId | null }
 export interface GameReview { summary: string; openingNote: string; moments: GameReviewMoment[]; oneThingToPractice: string }
@@ -76,6 +83,7 @@ export interface ChatMessageDTO {
   id: number; turn: number; question: string;
   anchor: { ply: number; path: string[]; describe: string };
   status: 'pending' | 'done' | 'error'; error: string | null;
+  deep: boolean; parentId: number | null; deeperAvailable: boolean;
   answer: { text: string; lines: ChatLineDTO[]; rule: string; lessonId: LessonId | null } | null;
   provider: ProviderId | null; model: string | null; createdAt: number;
 }

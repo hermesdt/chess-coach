@@ -37,6 +37,7 @@ let db: DatabaseSync;
 let app: ReturnType<typeof createApp>;
 let reply: () => Promise<string>;
 let calls: number;
+let models: (string | null | undefined)[];
 let available: boolean;
 const ANSWER = JSON.stringify({ answer: 'Look at the centre.', lines: [{ id: 't1.L1', why: 'It is the best try.' }], rule: 'Control the centre.', lessonId: null });
 
@@ -46,11 +47,12 @@ beforeEach(() => {
   db.prepare('UPDATE games SET duplicate_of = 1 WHERE id = 2').run();
   saveAnalysis(db, analysis(1));
   calls = 0;
+  models = [];
   available = true;
   reply = async () => ANSWER;
   const provider: AiProvider = {
     id: 'claude-cli', label: 'Fake', available: async () => ({ ok: available }),
-    complete: async () => ((calls += 1), { text: await reply(), model: 'm-1' }),
+    complete: async (_req, opts) => ((calls += 1), models.push(opts.model), { text: await reply(), model: 'm-1' }),
   };
   app = createApp({ db, pool, repertoires: [], ai: createRegistry({ db, providers: [provider] }) });
 });
@@ -208,6 +210,59 @@ describe('chat routes', () => {
       reply = async () => ANSWER.replaceAll('t1.', 't2.');
       const ok = await askAndWait();
       expect((await post(`/api/chat/${ok}/review-card`, { lineId: 'nope' })).status).toBe(400);
+    });
+  });
+
+  describe('chat and deep models', () => {
+    const put = (body: unknown) => app.request('/api/settings', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+
+    it('uses the default chat model, the stored chat model, and keeps coach notes on aiModels', async () => {
+      await askAndWait();
+      expect(models).toEqual(['claude-sonnet-5-5']);
+      await put({ aiChatModels: { 'claude-cli': 'my-chat' } });
+      reply = async () => ANSWER.replaceAll('t1.', 't2.');
+      await askAndWait(1, 'again');
+      expect(models).toEqual(['claude-sonnet-5-5', 'my-chat']);
+    });
+
+    it('offers go deeper only on a done, non-deep message with a different deep model', async () => {
+      const id = await askAndWait();
+      expect((await list())[0]).toMatchObject({ deep: false, parentId: null, deeperAvailable: true });
+      await put({ aiDeepModels: { 'claude-cli': 'claude-sonnet-5-5' } });
+      expect((await list())[0]!.deeperAvailable).toBe(false);
+      const res = await post(`/api/chat/${id}/deeper`);
+      expect(res.status).toBe(409);
+      expect(await res.json()).toEqual({ error: 'No stronger model is set for this coach.' });
+    });
+
+    it('goes deeper with the deep model, links the parent and streams through the same job', async () => {
+      const id = await askAndWait();
+      reply = async () => ANSWER.replaceAll('t1.', 't2.');
+      const res = await post(`/api/chat/${id}/deeper`);
+      expect(res.status).toBe(200);
+      const { messageId, jobId } = (await res.json()) as { messageId: number; jobId: number };
+      await waitForJob(db, jobId);
+      expect(models).toEqual(['claude-sonnet-5-5', 'claude-opus-5-5']);
+      const all = await list();
+      expect(all[1]).toMatchObject({ id: messageId, turn: 2, question: 'What now?', deep: true, parentId: id, status: 'done', deeperAvailable: false });
+      expect(all[1]!.anchor.ply).toBe(2);
+      expect(all[0]!.deeperAvailable).toBe(true);
+    });
+
+    it('answers 404 without a done parent and 409 while a message is pending', async () => {
+      expect((await post('/api/chat/99/deeper')).status).toBe(404);
+      available = false;
+      const failed = await askAndWait();
+      expect((await post(`/api/chat/${failed}/deeper`)).status).toBe(404);
+      available = true;
+      reply = async () => ANSWER.replaceAll('t1.', 't2.');
+      const ok = await askAndWait(1, 'next');
+      let release: (v: string) => void = () => undefined;
+      reply = () => new Promise<string>((r) => (release = r));
+      const first = (await (await post(`/api/chat/${ok}/deeper`)).json()) as { jobId: number };
+      expect((await post(`/api/chat/${ok}/deeper`)).status).toBe(409);
+      release(ANSWER.replaceAll('t1.', 't3.'));
+      await waitForJob(db, first.jobId);
     });
   });
 });

@@ -17,6 +17,8 @@ function toDto(db: DatabaseSync): SettingsDTO {
     reviewNewPerDay: s.reviewNewPerDay,
     aiProvider: s.aiProvider,
     aiModels: s.aiModels,
+    aiChatModels: s.aiChatModels,
+    aiDeepModels: s.aiDeepModels,
     openrouterKeySet: s.openrouterKeySet,
     anthropicKeySet: s.anthropicKeySet,
   };
@@ -29,6 +31,8 @@ const STRING_FIELDS = [
   ['openrouterApiKey', 'openrouter_api_key'],
   ['anthropicApiKey', 'anthropic_api_key'],
 ] as const;
+
+const MODEL_MAPS = [['aiChatModels', 'ai_chat_model_'], ['aiDeepModels', 'ai_deep_model_']] as const;
 
 export function settingsRoutes(db: DatabaseSync): Hono {
   return new Hono()
@@ -74,6 +78,15 @@ export function settingsRoutes(db: DatabaseSync): Hono {
           if (typeof model !== 'string') return c.json({ error: `aiModels.${id} must be a string` }, 400);
         }
       }
+      for (const [field] of MODEL_MAPS) {
+        const map = body[field];
+        if (map === undefined) continue;
+        if (map === null || typeof map !== 'object') return c.json({ error: `${field} must be an object` }, 400);
+        for (const [id, model] of Object.entries(map)) {
+          if (!(PROVIDER_IDS as readonly string[]).includes(id)) return c.json({ error: `${field} has an unknown provider: ${id}` }, 400);
+          if (typeof model !== 'string') return c.json({ error: `${field}.${id} must be a string` }, 400);
+        }
+      }
       for (const [field] of STRING_FIELDS) {
         if (body[field] !== undefined && typeof body[field] !== 'string') {
           return c.json({ error: `${field} must be a string` }, 400);
@@ -85,6 +98,9 @@ export function settingsRoutes(db: DatabaseSync): Hono {
       }
       if (body.aiProvider !== undefined) setSetting(db, 'ai_provider', body.aiProvider);
       for (const [id, model] of Object.entries(models ?? {})) setSetting(db, `ai_model_${id}`, model.trim() === '' ? null : model.trim());
+      for (const [field, prefix] of MODEL_MAPS) {
+        for (const [id, model] of Object.entries(body[field] ?? {})) setSetting(db, `${prefix}${id}`, model.trim() === '' ? null : model.trim());
+      }
       if (months !== undefined) setSetting(db, 'sync_initial_months', String(months));
       if (nodes !== undefined) setSetting(db, 'engine_nodes', String(nodes));
       if (daily !== undefined) setSetting(db, 'review_daily_limit', String(daily));

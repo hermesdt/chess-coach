@@ -15,9 +15,11 @@ beforeEach(() => {
 const put = (body: unknown) =>
   app.request('/api/settings', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
 
+const none = { 'claude-cli': null, 'codex-cli': null, 'opencode-cli': null, openrouter: null, 'anthropic-api': null };
+
 it('GET returns defaults', async () => {
   const res = await app.request('/api/settings');
-  expect(await res.json()).toEqual({ chesscomUsername: null, lichessUsername: null, lichessTokenSet: false, syncInitialMonths: 12, engineNodes: 400000, reviewDailyLimit: 20, reviewNewPerDay: 10, aiProvider: 'auto', aiModels: { 'claude-cli': null, 'codex-cli': null, 'opencode-cli': null, openrouter: null, 'anthropic-api': null }, openrouterKeySet: false, anthropicKeySet: false });
+  expect(await res.json()).toEqual({ chesscomUsername: null, lichessUsername: null, lichessTokenSet: false, syncInitialMonths: 12, engineNodes: 400000, reviewDailyLimit: 20, reviewNewPerDay: 10, aiProvider: 'auto', aiModels: none, aiChatModels: none, aiDeepModels: none, openrouterKeySet: false, anthropicKeySet: false });
 });
 
 it('PUT stores values and never leaks the token', async () => {
@@ -90,4 +92,13 @@ it('GET /settings/data reports db path, counts and hidden duplicates', async () 
   const body = await (await a.request('/api/settings/data')).json();
   delete process.env.CHESS_DB_PATH;
   expect(body).toEqual({ dbPath: '/tmp/x/chess.db', games: 3, duplicateGames: 1, cards: 0, backupsDir: null });
+});
+
+it('stores chat and deep models, and clears one with an empty string', async () => {
+  let body = await (await put({ aiChatModels: { 'codex-cli': ' fast ' }, aiDeepModels: { 'claude-cli': 'big' } })).json();
+  expect(body).toMatchObject({ aiChatModels: { 'codex-cli': 'fast', 'claude-cli': null }, aiDeepModels: { 'claude-cli': 'big' } });
+  body = await (await put({ aiChatModels: { 'codex-cli': '' } })).json();
+  expect(body).toMatchObject({ aiChatModels: { 'codex-cli': null }, aiDeepModels: { 'claude-cli': 'big' } });
+  expect((await put({ aiDeepModels: { nope: 'x' } })).status).toBe(400);
+  expect((await put({ aiChatModels: { 'codex-cli': 5 } })).status).toBe(400);
 });

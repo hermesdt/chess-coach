@@ -5,10 +5,11 @@ import type { DataInfo, FlagDetail, SettingsDTO } from '../../../shared/types';
 import { api, type ProviderInfo } from '../api';
 import { SettingsPage } from './SettingsPage';
 
+const none = { 'claude-cli': null, 'codex-cli': null, 'opencode-cli': null, openrouter: null, 'anthropic-api': null };
 const settings = (over: Partial<SettingsDTO> = {}): SettingsDTO => ({
   chesscomUsername: null, lichessUsername: null, lichessTokenSet: false, syncInitialMonths: 12,
   engineNodes: 400_000, reviewDailyLimit: 20, reviewNewPerDay: 10,
-  aiProvider: 'auto', aiModels: { 'claude-cli': null, 'codex-cli': null, 'opencode-cli': null, openrouter: null, 'anthropic-api': null },
+  aiProvider: 'auto', aiModels: none, aiChatModels: none, aiDeepModels: none,
   openrouterKeySet: true, anthropicKeySet: false, ...over,
 });
 const providers: ProviderInfo[] = [
@@ -36,6 +37,24 @@ describe('AI settings', () => {
     await waitFor(() => expect(put).toHaveBeenCalledWith({ openrouterApiKey: '' }));
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Remove OpenRouter key' })).toBeNull());
     expect(screen.queryByRole('button', { name: 'Remove Anthropic key' })).toBeNull();
+  });
+
+  it('shows the defaults as placeholders and sends only the changed chat and deep models', async () => {
+    vi.spyOn(api, 'getSettings').mockResolvedValue(settings({ aiDeepModels: { ...none, 'codex-cli': 'old-deep' } }));
+    vi.spyOn(api, 'listProviders').mockResolvedValue(providers);
+    const put = vi.spyOn(api, 'putSettings').mockResolvedValue(settings());
+    render(<SettingsPage />);
+    const chat = await screen.findAllByLabelText('Chat model');
+    expect((chat[0] as HTMLInputElement).placeholder).toBe('default (claude-sonnet-5-5)');
+    expect((screen.getAllByLabelText('Deep model')[0] as HTMLInputElement).placeholder).toBe('default (claude-opus-5-5)');
+    expect((screen.getAllByLabelText('Deep model')[1] as HTMLInputElement).placeholder).toBe('default (provider default)');
+    fireEvent.change(chat[0]!, { target: { value: 'my-chat' } });
+    fireEvent.change(screen.getAllByLabelText('Deep model')[1]!, { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save AI settings' }));
+    await waitFor(() => expect(put).toHaveBeenCalled());
+    const sent = put.mock.calls[0]![0];
+    expect(sent.aiChatModels).toEqual({ 'claude-cli': 'my-chat' });
+    expect(sent.aiDeepModels).toEqual({ 'codex-cli': '' });
   });
 
   it('disables every Test button while one test runs', async () => {

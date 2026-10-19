@@ -49,6 +49,17 @@ describe('chat_messages schema', () => {
   });
 });
 
+describe('migration 015', () => {
+  it('adds deep (default 0) and parent_id, which cascades', () => {
+    const a = insertPending(db, { gameId: 1, question: 'q', anchor: { ply: 0, path: [], describe: 'x' } });
+    expect(getRecord(db, a.id)).toMatchObject({ deep: false, parentId: null });
+    const b = insertPending(db, { gameId: 1, question: 'q', anchor: { ply: 0, path: [], describe: 'x' }, deep: true, parentId: a.id });
+    expect(getRecord(db, b.id)).toMatchObject({ deep: true, parentId: a.id });
+    db.prepare('DELETE FROM chat_messages WHERE id = ?').run(a.id);
+    expect(getRecord(db, b.id)).toBeNull();
+  });
+});
+
 describe('chat repo', () => {
   it('round-trips a message and resolves lines in answer order', () => {
     const m = insertPending(db, { gameId: 1, question: 'why?', anchor: { ply: 2, path: [], describe: 'x' } });
