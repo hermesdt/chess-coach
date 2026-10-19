@@ -92,6 +92,20 @@ describe('LiveEval', () => {
     expect(screen.getByText(/Stockfish: \+0\.8/)).toBeTruthy();
   });
 
+  it('ignores a superseded result: keeps the previous values and shows no error', async () => {
+    const get = vi.spyOn(api, 'getLive').mockResolvedValueOnce(dto(W, 'white', 80, null, [['e4']]));
+    const { rerender, container } = render(<LiveEval fen={W} userColor="white" onArrow={vi.fn()} />);
+    await act(async () => { await vi.advanceTimersByTimeAsync(250); });
+    await flush();
+    get.mockResolvedValue({ superseded: true });
+    rerender(<LiveEval fen={B} userColor="white" onArrow={vi.fn()} />);
+    await act(async () => { await vi.advanceTimersByTimeAsync(250); });
+    await flush();
+    expect(screen.queryByText('Engine not available.')).toBeNull();
+    expect(screen.getByText(/Stockfish: \+0\.8/)).toBeTruthy();
+    expect(container.querySelector('.live-eval.loading')).toBeNull();
+  });
+
   it('shows "Engine not available." on an error', async () => {
     vi.spyOn(api, 'getLive').mockRejectedValue(new Error('Engine not available.'));
     render(<LiveEval fen={W} userColor="white" onArrow={vi.fn()} />);

@@ -58,6 +58,11 @@ export function LiveEval({ fen, userColor, onArrow }: Props) {
       api.getLive(fen, controller.signal).then(
         (d) => {
           if (controller.signal.aborted) return;
+          if ('superseded' in d) {
+            // Another search replaced this one: keep the previous values.
+            setLoading(false);
+            return;
+          }
           setData(d);
           setFailed(false);
           setLoading(false);

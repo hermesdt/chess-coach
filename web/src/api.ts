@@ -13,6 +13,7 @@ import type {
   GameSummary,
   GameReviewNote,
   LiveEvalDTO,
+  LiveSupersededDTO,
   ProviderId,
   WeaknessReportNote,
   GameListQuery,
@@ -103,7 +104,7 @@ export const api = {
   listGames: (q: GameListQuery = {}) => request<GameList>(`/games${queryString(q)}`),
   getGame: (id: number) => request<GameDetail>(`/games/${id}`),
   getAnalysis: (id: number) => request<AnalysisResponse>(`/games/${id}/analysis`),
-  getLive: (fen: string, signal?: AbortSignal) => request<LiveEvalDTO>(`/live?fen=${encodeURIComponent(fen)}`, { signal }),
+  getLive: (fen: string, signal?: AbortSignal) => request<LiveEvalDTO | LiveSupersededDTO>(`/live?fen=${encodeURIComponent(fen)}`, { signal }),
   getChat: (gameId: number) => request<ChatMessageDTO[]>(`/games/${gameId}/chat`),
   sendChat: (gameId: number, body: { question: string; anchor: { ply: number; path: string[] }; provider?: ProviderId }) =>
     post<{ messageId: number; jobId: number }>(`/games/${gameId}/chat`, body),

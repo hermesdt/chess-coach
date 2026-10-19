@@ -70,6 +70,13 @@ describe('GET /api/live', () => {
     await pending.catch(() => undefined);
   });
 
+  it('answers a superseded search with a JSON body, not an empty 204', async () => {
+    const { app } = setup(() => Promise.reject(Object.assign(new Error('superseded'), { name: 'AbortError' })));
+    const res = await app.request(`/api/live?fen=${encodeURIComponent(START)}`);
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ superseded: true });
+  });
+
   it('maps an engine failure to 503', async () => {
     const { app } = setup(() => Promise.reject(new Error('no stockfish')));
     const res = await app.request(`/api/live?fen=${encodeURIComponent(START)}`);

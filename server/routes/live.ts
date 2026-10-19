@@ -1,6 +1,6 @@
 import { Chess } from 'chess.js';
 import { Hono } from 'hono';
-import type { Color, LiveEvalDTO } from '../../shared/types.js';
+import type { Color, LiveEvalDTO, LiveSupersededDTO } from '../../shared/types.js';
 import type { EngineCache } from '../engine/cache.js';
 import { isAbortError, LIVE_MOVETIME_MS, type LiveEngine } from '../engine/live.js';
 
@@ -43,7 +43,7 @@ export function liveRoutes(live: Pick<LiveEngine, 'analyse'>, cache: EngineCache
       return c.json({ fen, sideToMove, lines } satisfies LiveEvalDTO);
     } catch (e) {
       // The client went away or asked for another position: nobody reads this answer.
-      if (isAbortError(e)) return c.body(null, 204);
+      if (isAbortError(e)) return c.json({ superseded: true } satisfies LiveSupersededDTO);
       return c.json({ error: 'Engine not available.' }, 503);
     }
   });

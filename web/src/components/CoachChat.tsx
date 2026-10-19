@@ -236,6 +236,7 @@ export function CoachChat(props: Props) {
     setSendError(null);
     try {
       setJobId((await api.retryChat(id)).jobId);
+      reload();
     } catch (e) {
       setSendError((e as Error).message);
     }

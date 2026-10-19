@@ -23,7 +23,7 @@ export const PROVIDER_IDS = ['claude-cli', 'codex-cli', 'anthropic-api', 'openro
 export type ProviderId = (typeof PROVIDER_IDS)[number];
 /** Default chat and deep model per provider. null = the provider's own default. */
 export const CHAT_MODEL_DEFAULTS: Record<ProviderId, string | null> = {
-  'claude-cli': 'claude-sonnet-5-5', 'codex-cli': 'gpt-5.6-luna', 'opencode-cli': 'openrouter/z-ai/glm-5.3-flash', openrouter: null, 'anthropic-api': null,
+  'claude-cli': 'claude-sonnet-5-5', 'codex-cli': 'gpt-5.6-luna', 'opencode-cli': 'openrouter/z-ai/glm-5.3-flash', openrouter: null, 'anthropic-api': 'claude-sonnet-5-5',
 };
 export const DEEP_MODEL_DEFAULTS: Record<ProviderId, string | null> = {
   'claude-cli': 'claude-opus-5-5', 'codex-cli': null, 'opencode-cli': null, openrouter: null, 'anthropic-api': 'claude-opus-5-5',
@@ -49,6 +49,8 @@ export type Classification = 'best' | 'good' | 'inaccuracy' | 'mistake' | 'blund
 export type Tag = 'hung_piece' | 'missed_capture' | 'missed_mate' | 'allowed_mate' | 'bad_trade'
   | 'early_queen' | 'slow_development' | 'no_castle' | 'same_piece_twice';
 export interface LiveLineDTO { san: string[]; uci: string[]; evalCp: number | null; evalMate: number | null } // from the side to move's view
+/** A newer search replaced this one: the client keeps its previous values. */
+export interface LiveSupersededDTO { superseded: true }
 export interface LiveEvalDTO { fen: string; sideToMove: Color; lines: LiveLineDTO[] }
 export interface EngineScore { cp: number | null; mate: number | null } // from side-to-move view; exactly one non-null
 export interface MoveAnalysis {

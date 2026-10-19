@@ -157,6 +157,18 @@ describe('CoachChat', () => {
     expect(retry).toHaveBeenCalledWith(1);
   });
 
+  it('streams the answer after Try again', async () => {
+    const get = vi.spyOn(api, 'getChat').mockResolvedValueOnce([answered({ status: 'error', error: 'The coach did not answer.', answer: null })]);
+    get.mockResolvedValue([pendingMsg({ id: 1, question: 'What now?' })]);
+    render(<MemoryRouter><CoachChat gameId={5} analysed anchor={anchor} onShowLine={vi.fn()} onShowAnchor={vi.fn()} onAnalyse={vi.fn()} /></MemoryRouter>);
+    vi.spyOn(api, 'retryChat').mockResolvedValue({ jobId: 9 });
+    vi.spyOn(api, 'getJob').mockResolvedValue(job('running'));
+    fireEvent.click(await screen.findByRole('button', { name: 'Try again' }));
+    await waitFor(() => expect(MockEventSource.instances.some((s) => s.url === '/api/chat/1/stream')).toBe(true));
+    stream(1).emit('delta', { text: 'Streamed again.' });
+    expect(await screen.findByText('Streamed again.')).toBeTruthy();
+  });
+
   it('links Settings in the no-provider message', async () => {
     setup([answered({ status: 'error', error: 'No AI coach is set up. Open Settings.', answer: null })]);
     expect((await screen.findByRole('link', { name: 'Settings' })).getAttribute('href')).toBe('/settings');

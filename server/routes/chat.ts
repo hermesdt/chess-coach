@@ -212,10 +212,13 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
       const id = parseId(c.req.param('messageId'));
       const rec = id === null ? null : getRecord(db, id);
       if (!rec) return c.json({ error: 'not found' }, 404);
-      const provider = providerOf((await c.req.json().catch(() => null)) as { provider?: unknown } | null);
-      if (provider === 'bad') return c.json({ error: 'unknown provider' }, 400);
+      const requested = providerOf((await c.req.json().catch(() => null)) as { provider?: unknown } | null);
+      if (requested === 'bad') return c.json({ error: 'unknown provider' }, 400);
       if (rec.status !== 'error') return c.json({ error: 'Only a failed answer can be tried again.' }, 409);
       if (hasPending(db, rec.gameId)) return c.json({ error: 'The coach is already answering. Wait for the answer.' }, 409);
+      // A deep answer keeps its own provider, else its parent's, so "Try again" asks the same coach.
+      const parent = rec.deep && rec.parentId !== null ? getRecord(db, rec.parentId) : null;
+      const provider = requested ?? (rec.deep ? (rec.provider ?? parent?.provider ?? undefined) : undefined);
       resetToPending(db, rec.id);
       return c.json({ jobId: startAnswer({ ...rec, status: 'pending' }, provider) });
     })
@@ -224,7 +227,13 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
       const parent = id === null ? null : getRecord(db, id);
       if (!parent || parent.status !== 'done' || !parent.answer || !parent.provider) return c.json({ error: 'not found' }, 404);
       if (hasPending(db, parent.gameId)) return c.json({ error: 'The coach is already answering. Wait for the answer.' }, 409);
-      if (!hasStrongerModel(getSettings(db), parent.provider)) return c.json({ error: 'No stronger model is set for this coach.' }, 409);
+      let stronger: boolean;
+      try {
+        stronger = hasStrongerModel(getSettings(db), parent.provider);
+      } catch {
+        return c.json({ error: 'Could not read the settings.' }, 500);
+      }
+      if (!stronger) return c.json({ error: 'No stronger model is set for this coach.' }, 409);
       const rec = insertPending(db, { gameId: parent.gameId, question: parent.question, anchor: parent.anchor, deep: true, parentId: parent.id });
       return c.json({ messageId: rec.id, jobId: startAnswer(rec, parent.provider) });
     })

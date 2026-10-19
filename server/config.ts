@@ -29,8 +29,11 @@ export function isAiProviderSetting(value: unknown): value is AiProviderSetting 
 /** The model for a normal chat question: the setting, else the default, else null (provider default). */
 export const resolveChatModel = (s: Pick<SettingsDTO, 'aiChatModels'>, id: ProviderId): string | null => s.aiChatModels[id] || CHAT_MODEL_DEFAULTS[id] || null;
 export const resolveDeepModel = (s: Pick<SettingsDTO, 'aiDeepModels'>, id: ProviderId): string | null => s.aiDeepModels[id] || DEEP_MODEL_DEFAULTS[id] || null;
-/** True when "Go deeper" would use another model than a normal answer. */
-export const hasStrongerModel = (s: Pick<SettingsDTO, 'aiChatModels' | 'aiDeepModels'>, id: ProviderId): boolean => resolveDeepModel(s, id) !== resolveChatModel(s, id);
+/** True when a deep model is known (setting or default) and differs from the chat model. */
+export const hasStrongerModel = (s: Pick<SettingsDTO, 'aiChatModels' | 'aiDeepModels'>, id: ProviderId): boolean => {
+  const deep = resolveDeepModel(s, id);
+  return deep !== null && deep !== resolveChatModel(s, id);
+};
 
 export function getSettings(db: DatabaseSync): ResolvedSettings {
   const openrouterApiKey = pick(db, 'openrouter_api_key', 'OPENROUTER_API_KEY');

@@ -6,7 +6,7 @@ import type { AiProvider } from '../ai/types.js';
 import { createRegistry } from '../ai/registry.js';
 import { saveAnalysis } from '../analysis/analysis-repo.js';
 import { createApp } from '../app.js';
-import { insertPending, markInterruptedChats } from '../chat/chat-repo.js';
+import { completeMessage, failMessage, insertPending, markInterruptedChats } from '../chat/chat-repo.js';
 import { parsePgn } from '../chess/pgn.js';
 import { openDb } from '../db/db.js';
 import { insertGames } from '../db/games-repo.js';
@@ -248,6 +248,41 @@ describe('chat routes', () => {
       expect(all[1]).toMatchObject({ id: messageId, turn: 2, question: 'What now?', deep: true, parentId: id, status: 'done', deeperAvailable: false });
       expect(all[1]!.anchor.ply).toBe(2);
       expect(all[0]!.deeperAvailable).toBe(true);
+    });
+
+    it('answers a clean 500 JSON error when the settings cannot be read on go deeper', async () => {
+      const id = await askAndWait();
+      db.exec('DROP TABLE settings');
+      const res = await post(`/api/chat/${id}/deeper`);
+      expect(res.status).toBe(500);
+      expect(await res.json()).toEqual({ error: 'Could not read the settings.' });
+    });
+
+    it('does not go deeper for a provider without a deep model', async () => {
+      const id = await askAndWait();
+      db.prepare("UPDATE chat_messages SET provider = 'codex-cli' WHERE id = ?").run(id);
+      expect((await post(`/api/chat/${id}/deeper`)).status).toBe(409);
+    });
+
+    it('retries a failed deep answer with the provider of the deep row, else its parent', async () => {
+      const used: string[] = [];
+      const fake = (id: 'claude-cli' | 'codex-cli'): AiProvider => ({
+        id, label: id, available: async () => ({ ok: true }),
+        complete: async () => (used.push(id), { text: ANSWER, model: 'm-1' }),
+      });
+      const app2 = createApp({ db, pool, repertoires: [], ai: createRegistry({ db, providers: [fake('claude-cli'), fake('codex-cli')] }) });
+      const retry = async (id: number) => waitForJob(db, ((await (await app2.request(`/api/chat/${id}/retry`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })).json()) as { jobId: number }).jobId);
+      const anchor = { ply: 2, path: [] as string[], describe: 'x' };
+      const parent = insertPending(db, { gameId: 1, question: 'q', anchor });
+      completeMessage(db, parent.id, { answer: { answer: 't', lines: [], rule: '', lessonId: null }, provider: 'codex-cli', model: 'm' });
+      const own = insertPending(db, { gameId: 1, question: 'q', anchor, deep: true, parentId: parent.id });
+      failMessage(db, own.id, 'boom', 'codex-cli');
+      await retry(own.id);
+      const noOwn = insertPending(db, { gameId: 1, question: 'q', anchor, deep: true, parentId: parent.id });
+      failMessage(db, noOwn.id, 'boom', null);
+      await retry(noOwn.id);
+      expect(used.length).toBeGreaterThan(1);
+      expect(new Set(used)).toEqual(new Set(['codex-cli']));
     });
 
     it('answers 404 without a done parent and 409 while a message is pending', async () => {
