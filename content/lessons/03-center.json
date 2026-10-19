@@ -5,34 +5,46 @@
   "title": "Take the centre",
   "summary": "Fight for d4, e4, d5 and e5. Pieces and pawns in the centre control the whole board.",
   "tags": [],
-  "body": "### Take the centre\n\nThe centre is the four squares d4, e4, d5 and e5. Pieces near these squares reach the whole board. A knight in the centre attacks up to eight squares. A knight on the edge attacks only four.\n\nPawns in the centre also take space. They push enemy pieces back and give your pieces room. If your opponent owns the centre, you have no room and you get squeezed.\n\nHere is how to fight for the centre:\n\n- Start with a centre pawn. Play e4 or d4 as White. Play e5 or d5 as Black.\n- Support your centre pawns with knights and bishops.\n- Look for a pawn move that attacks an enemy piece. The enemy must move it, and you gain time.\n- Do not give up your centre pawns for no reason.\n\nYou do not need to fill the centre with pawns at once. You can also control it with pieces from far away. But you must fight for it.\n\nPawn moves in the centre are often strong because a pawn is worth little. An enemy piece will not take a pawn if a pawn takes it back. So a centre pawn can attack bigger pieces and push them away. The exercises below show this.\n\nRule of thumb: put a pawn in the centre, then support it with your pieces.",
+  "body": "### Take the centre\n\nThe centre is the four squares d4, e4, d5 and e5. Pieces near these squares reach the whole board. A knight in the centre attacks up to eight squares. A knight on the edge attacks only four.\n\nPawns in the centre also take space. They push enemy pieces back and give your pieces room. If your opponent owns the centre, you have no room and you get squeezed.\n\nHere is how to fight for the centre:\n\n- Start with a centre pawn. Play e4 or d4 as White. Play e5 or d5 as Black.\n- Support your centre pawns with knights and bishops.\n- Look for a pawn move that attacks an enemy piece. The enemy must move it, and you gain time.\n- Do not give up your centre pawns for no reason.\n\nOther setups work too. In the Caro-Kann and the Slav, Black plays c6 first and d5 next. That also fights for the centre.\n\nYou do not need to fill the centre with pawns at once. You can also control it with pieces from far away. But you must fight for it.\n\nPawn moves in the centre are often strong because a pawn is worth little. An enemy piece will not take a pawn if a pawn takes it back. So a centre pawn can attack bigger pieces and push them away. The exercises below show this.\n\nRule of thumb: put a pawn in the centre, then support it with your pieces.",
   "exercises": [
     {
-      "id": "d5-vs-ng5",
-      "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p1N1/2B1P3/8/PPPP1PPP/RNBQK2R b KQkq - 5 4",
-      "prompt": "Black to move. White attacks f7. Answer with a pawn in the centre.",
+      "id": "first-move",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "prompt": "White to move. Put a pawn in the centre.",
       "solution": [
+        "e2e4",
+        "d2d4"
+      ],
+      "explanation": "A pawn on e4 or d4 takes space and opens lines for your bishop and queen. Side pawns like a3 or h3 do neither."
+    },
+    {
+      "id": "answer-e4",
+      "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+      "prompt": "Black to move. Put a pawn in the centre.",
+      "solution": [
+        "e7e5",
         "d7d5"
       ],
-      "explanation": "The pawn on d5 attacks the bishop on c4 and blocks the bishop from f7. Bc5 is worse, because the knight then takes f7."
+      "explanation": "A pawn on e5 or d5 fights for the centre at once. Moves like a6 or h6 leave White alone in the centre."
+    },
+    {
+      "id": "strike-d4",
+      "fen": "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2P2N2/PP1P1PPP/RNBQK2R w KQkq - 1 5",
+      "prompt": "White to move. Put a pawn in the centre.",
+      "solution": [
+        "d2d3",
+        "d2d4"
+      ],
+      "explanation": "The c3 pawn prepares d4. The pawn on d4 hits e5 and builds a big centre. d3 is calmer, but it also supports e4."
     },
     {
       "id": "d5-fork",
       "fen": "r1bqkb1r/pppp1ppp/2n5/4p3/2B1N3/5N2/PPPP1PPP/R1BQK2R b KQkq - 0 5",
-      "prompt": "Black to move. Win a piece back with a centre pawn move.",
+      "prompt": "Black to move. Use a centre pawn.",
       "solution": [
         "d7d5"
       ],
       "explanation": "The pawn on d5 attacks the bishop on c4 and the knight on e4 at once. White can save only one of the two pieces, so you win a piece back."
-    },
-    {
-      "id": "qxd5",
-      "fen": "r1bqkbnr/ppp2ppp/2n5/3Pp3/8/2P2N2/PP1P1PPP/RNBQKB1R b KQkq - 0 4",
-      "prompt": "Black to move. Take the pawn back.",
-      "solution": [
-        "d8d5"
-      ],
-      "explanation": "The queen takes back on d5, so you keep your share of the centre. Other moves leave you a pawn down."
     },
     {
       "id": "e5-push",
@@ -41,7 +53,7 @@
       "solution": [
         "e4e5"
       ],
-      "explanation": "The pawn on e5 is guarded by d4. It attacks the bishop on d6 and the knight on f6 at once, and Black cannot save both. A quiet move such as Re1 gives Black time to fix the problem."
+      "explanation": "The pawn on e5 is guarded by d4. It attacks the bishop on d6 and the knight on f6 at once, and Black cannot save both. Taking the pawn only loses more."
     }
   ],
   "links": []

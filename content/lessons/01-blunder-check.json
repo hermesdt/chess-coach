@@ -7,7 +7,7 @@
   "tags": [
     "hung_piece"
   ],
-  "body": "### Ask before you move\n\nMost games at your level end with one big mistake. You leave a piece alone. Or you miss what your opponent attacks. One short habit stops most of these mistakes.\n\nBefore every move, ask two questions:\n\n- What did my opponent's last move attack?\n- After my move, what can my opponent take?\n\nPawns are the most common danger. A pawn that attacks your bishop or knight forces you to move it. A small piece can also attack your queen. Do not forget it.\n\nSometimes one move attacks two pieces at once. This is a **fork**. Look for forks before your opponent finds them.\n\nFollow these steps on every move:\n\n- Look at the piece your opponent just moved.\n- List what it attacks now.\n- Choose your move.\n- Look at the square where your piece will land. Can an enemy piece take it?\n\nThis check takes only a few seconds. You will not see every danger. But you will stop most simple blunders, and that wins many games.\n\nDo the check even when you feel sure. Players make most blunders when they feel sure.\n\nRule of thumb: before you move, ask what they can take.",
+  "body": "### Ask before you move\n\nMost games at your level end with one big mistake. You leave a piece alone. Or you miss what your opponent attacks. One short habit stops most of these mistakes.\n\nBefore every move, ask two questions:\n\n- What did my opponent's last move attack?\n- After my move, what can my opponent take?\n\nPawns are the most common danger. A pawn that attacks your bishop or knight forces you to move it. A small piece can also attack your queen. Do not forget it.\n\nSometimes one move attacks two pieces at once. This is a **fork**. Look for forks before your opponent finds them.\n\nFollow these steps on every move:\n\n- Look at the piece your opponent just moved.\n- List what it attacks now.\n- Choose your move.\n- Look at the square where your piece will land. Can an enemy piece take it?\n\nThis check takes only a few seconds. You will not see every danger. But you will stop most simple blunders, and that wins many games.\n\nDo the check even when you feel sure. Blunders often come when you feel sure.\n\nRule of thumb: before you move, ask what they can take.",
   "exercises": [
     {
       "id": "pawn-hits-bishop",
@@ -25,7 +25,7 @@
       "solution": [
         "a5d8"
       ],
-      "explanation": "The bishop on d2 attacks your queen on a5. Qd8 is safe. Qxd5 loses the queen, because the bishop on c4 takes it and you get only two small pieces."
+      "explanation": "The bishop on d2 attacks your queen on a5. Qd8 is safe. Qxd5 and Qxd2+ lose the queen: Bxd5 or Nxd2 takes it, and you get only a knight and a bishop, or a bishop, for it."
     },
     {
       "id": "two-pieces-hit",
@@ -37,13 +37,15 @@
       "explanation": "The pawn on c4 attacks your queen on b3 and your bishop on d3. Qxb6 trades queens, so you can move the bishop next. Most other moves lose a piece."
     },
     {
-      "id": "bishop-pawn-b5",
-      "fen": "r1bqk2r/2ppbppp/p1n2n2/1p2p3/B3P3/5N2/PPPP1PPP/RNBQR1K1 w kq - 0 7",
-      "prompt": "White to move. Your bishop is attacked. Keep it safe.",
+      "id": "tempting-pawn",
+      "fen": "r1bqkb1r/ppp2ppp/2n2n2/3Pp1N1/2B5/8/PPPP1PPP/RNBQK2R b KQkq - 0 5",
+      "prompt": "Black to move. Make a safe move. Check what White can take first.",
       "solution": [
-        "a4b3"
+        "c6a5",
+        "b7b5",
+        "c6d4"
       ],
-      "explanation": "The pawn on b5 attacks your bishop on a4. Bb3 is a safe square and the bishop stays active. Other moves, such as d4, lose the bishop."
+      "explanation": "Nxd5 wins a pawn, but then Nxf7 Kxf7 Qf3+ drags your king out and White attacks it. Na5, b5 and Nd4 are safe."
     }
   ],
   "links": []

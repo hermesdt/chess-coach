@@ -7,7 +7,7 @@
   "tags": [
     "missed_capture"
   ],
-  "body": "### Take what is free\n\nFree material is a piece or a pawn that you can win at no cost. At your level, your opponent leaves something free in many games. You win games when you see these gifts.\n\nPlayers miss gifts because they look only at their own plan. They do not look at all the moves.\n\nUse this order on every move: **checks, captures, threats**.\n\n- **Checks.** Can you give check? A check forces your opponent to answer. It often wins a piece, and sometimes the game.\n- **Captures.** Can you take something? Ask if the piece is guarded. A piece that nobody guards is a free gift.\n- **Threats.** Can you attack two things at once? Can you attack a piece that nobody guards?\n\nLook at every check first. Then look at every capture. Then look at every threat. Only then choose your move.\n\nOne warning: a free piece can be a trap. Before you take, ask what your opponent can do after the capture. This is the blunder check from lesson 1. But do not be afraid. Most gifts are real.\n\nSome gifts only look scary. In one exercise below, the capture lets White take your queen. Count the moves to the end and you will see that you win.\n\nRule of thumb: on every move, look at checks, captures and threats.",
+  "body": "### Take what is free\n\nFree material is a piece or a pawn that you can win at no cost. At your level, your opponent leaves something free in many games. You win games when you see these gifts.\n\nPlayers miss gifts because they look only at their own plan. They do not look at all the moves.\n\nUse this order on every move: **checks, captures, threats**.\n\n- **Checks.** Can you give check? A check forces your opponent to answer. It often wins a piece, and sometimes the game.\n- **Captures.** Can you take something? Ask if the piece is guarded. A piece that nobody guards is a free gift.\n- **Threats.** Can you attack two things at once? Can you attack a piece that nobody guards?\n\nLook at every check first. Then look at every capture. Then look at every threat. Only then choose your move.\n\nOne warning: a free piece can be a trap. Before you take, ask what your opponent can do after the capture. This is the blunder check from lesson 1. But do not be afraid. Most gifts are real, but some guarded pawns are bait. A bait pawn can be a trap that works for you, if you count the whole line.\n\nSome gifts only look scary. In the knight exercise below, the capture lets White take your queen. Count the moves to the end and you will see that you win.\n\nRule of thumb: on every move, look at checks, captures and threats.",
   "exercises": [
     {
       "id": "knight-mate",
@@ -34,7 +34,7 @@
       "solution": [
         "c4d3"
       ],
-      "explanation": "The pawn takes the bishop on d3. White can only take back a pawn with the queen. Other moves let White save the bishop."
+      "explanation": "The pawn takes the bishop on d3. White takes the pawn back with Qxd3, but you are up a bishop for a pawn. Other moves let White save the bishop."
     },
     {
       "id": "free-knight",
@@ -43,16 +43,16 @@
       "solution": [
         "f6d5"
       ],
-      "explanation": "The knight on d5 is free. White can try Bxd8, but Bb4+ and then Kxd8 leave Black a piece up. A quiet move like h6 lets White save the knight."
+      "explanation": "The knight on d5 is free. White can try Bxd8, but Bxd8 Bb4+ Qd2 Bxd2+ Kxd2 Kxd8 leaves Black a piece up. A quiet move like h6 lets White save the knight."
     },
     {
       "id": "legal-trap",
       "fen": "rn1qkbnr/ppp2p1p/3p2p1/4p3/2B1P1b1/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 5",
-      "prompt": "White to move. Take with a threat.",
+      "prompt": "White to move. Take the pawn. This trap works if you count the whole line.",
       "solution": [
         "f3e5"
       ],
-      "explanation": "Nxe5 takes a pawn and hits the bishop on g4. If Black takes your queen, Bxf7+ Ke7 Nd5 is checkmate. If Black takes the knight, Qxg4 wins the bishop."
+      "explanation": "Nxe5 takes a pawn and hits the bishop on g4. If Black takes your queen, Bxf7+ Ke7 Nd5 is checkmate. If Black takes the knight, Qxg4 wins the bishop, and you are a pawn up."
     }
   ],
   "links": []

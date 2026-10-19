@@ -3,13 +3,13 @@
   "order": 4,
   "level": 1,
   "title": "Develop fast",
-  "summary": "Bring out knights and bishops first. Keep your queen home. Do not move one piece twice in the opening.",
+  "summary": "Bring out knights and bishops first. Keep your queen home. Do not move one piece twice without a reason.",
   "tags": [
     "early_queen",
     "slow_development",
     "same_piece_twice"
   ],
-  "body": "### Develop fast\n\nTo develop means to move your knights and bishops off the back rank. Pieces that stay at home do nothing. Develop them fast, then castle.\n\nAt your level, the side with more pieces in play usually wins. If you have three pieces in the fight and your opponent has one, you attack and they cannot defend.\n\nThree mistakes slow you down:\n\n- **The early queen.** Your queen is strong, so it looks good to attack with it. But your opponent attacks it with a knight or a bishop. You must move it again, and your opponent gains time.\n- **The same piece twice.** Each extra move with one piece gives your opponent a free move. Move a piece again only if you must.\n- **Side pawns.** A move like a3 or h3 rarely helps in the first ten moves.\n\nUse this plan in the opening:\n\n- Move a pawn into the centre.\n- Bring out your knights, then your bishops.\n- Castle.\n- Only then think about the queen and the rooks.\n\nA good development move also does a second job. It can attack a piece, guard a pawn, or threaten mate. The best moves in the exercises below do two jobs at once: they develop a piece and attack the queen.\n\nIf your opponent brings out the queen early, do not attack it with your own queen. Develop a piece that attacks it.\n\nRule of thumb: knights and bishops first, castle early, and do not move a piece twice.",
+  "body": "### Develop fast\n\nTo develop means to move your knights and bishops off the back rank. Pieces that stay at home do nothing. Develop them fast, then castle.\n\nAt your level, the side with more pieces in play usually wins. If you have three pieces in the fight and your opponent has one, you attack and they cannot defend.\n\nThree mistakes slow you down:\n\n- **The early queen.** Your queen is strong, so it looks good to attack with it. But your opponent attacks it with a knight or a bishop. You must move it again, and your opponent gains time.\n- **The same piece twice.** Each extra move with one piece gives your opponent a free move. Move a piece again only for a reason. A threat or a free capture is a reason.\n- **Side pawns.** A move like a3 or h3 rarely helps in the first ten moves.\n\nUse this plan in the opening:\n\n- Move a pawn into the centre.\n- Bring out your knights, then your bishops.\n- Castle.\n- Only then think about the queen and the rooks.\n\nA good development move also does a second job. It can attack a piece, guard a pawn, or threaten mate. The exercises below ask you to develop pieces. Some moves also attack the queen.\n\nIf your opponent brings out the queen early, do not attack it with your own queen. Develop a piece that attacks it.\n\nRule of thumb: knights and bishops first, castle early, and do not move a piece twice without a reason.",
   "exercises": [
     {
       "id": "knight-hits-queen",
@@ -18,25 +18,38 @@
       "solution": [
         "g1f3"
       ],
-      "explanation": "Nf3 brings out a knight and attacks the queen on h4. Black must move the queen again and loses time. Other moves do not attack the queen."
+      "explanation": "Nf3 develops a knight and attacks the queen. g3 also attacks it, but it develops nothing. Black must move the queen again and loses time."
     },
     {
-      "id": "knight-hits-queen-2",
-      "fen": "rnb1kbnr/pppp1ppp/8/4p1q1/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 2 3",
-      "prompt": "White to move. Develop a piece and attack the queen.",
+      "id": "black-develops",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+      "prompt": "Black to move. Develop a piece.",
       "solution": [
-        "g1f3"
+        "b8c6",
+        "g8f6"
       ],
-      "explanation": "Nf3 attacks the queen on g5 and the pawn on e5. Black must move the queen again. Moving your own queen, as in Qf3, does not develop a piece."
+      "explanation": "Nc6 and Nf6 both bring out a knight and guard or hit the centre. Nc6 also guards e5. Pawn moves such as a6 or h6 develop nothing."
     },
     {
-      "id": "early-queen-hangs",
-      "fen": "r1b1kbnr/pppp1ppp/2n5/4p3/4P2q/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 4 4",
-      "prompt": "White to move. Black brought the queen out too early. Punish it.",
+      "id": "white-develops",
+      "fen": "rnbqkb1r/ppp2ppp/4pn2/3p4/3P1B2/4P3/PPP2PPP/RN1QKBNR w KQkq - 0 4",
+      "prompt": "White to move. Develop a piece.",
       "solution": [
-        "f3h4"
+        "g1f3",
+        "b1d2",
+        "f1e2",
+        "f1d3"
       ],
-      "explanation": "The knight on f3 attacks h4 and nothing guards the black queen. Nxh4 wins it for free. An early queen often runs into a small piece."
+      "explanation": "Each of these moves brings out a knight or a bishop. Nf3 is the most natural. Side pawn moves like a3 do not help."
+    },
+    {
+      "id": "develop-vs-queen",
+      "fen": "r1b1kbnr/pppp1ppp/2n5/8/3NP2q/8/PPP2PPP/RNBQKB1R w KQkq - 1 5",
+      "prompt": "White to move. Develop a piece and guard your pawn.",
+      "solution": [
+        "b1c3"
+      ],
+      "explanation": "The black queen attacks the pawn on e4. Nc3 develops a knight and guards the pawn. Nb5 moves the same knight a second time."
     }
   ],
   "links": []
