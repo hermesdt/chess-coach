@@ -44,7 +44,7 @@ describe('duplicate copies', () => {
     const chess = new Chess();
     for (const s of sans.split(' ')) chess.move(s);
     insertGames(db, [{
-      source: 'lichess', sourceId: 'dup', playedAt: 1, timeClass: 'blitz', rated: true, white: 'Me', black: 'Opp1',
+      source: 'import', sourceId: 'dup', playedAt: 1, timeClass: 'blitz', rated: true, white: 'Me', black: 'Opp1',
       whiteElo: 1000, blackElo: 1000, userColor: 'black', result: 'win', termination: null, eco: null, openingName: null,
       pgn: chess.pgn(), url: null, plyCount: 7,
     }]);
