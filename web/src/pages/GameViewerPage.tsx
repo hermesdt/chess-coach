@@ -1,16 +1,28 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { Chessboard } from 'react-chessboard';
 import type { GameAnalysis, GameDetail, GameReviewNote, ProviderId } from '../../../shared/types';
 import { api, type AnalysisResponse } from '../api';
 import { AnalyseButton } from '../components/AnalyseButton';
 import { CoachPanel } from '../components/CoachPanel';
+import { GameTabs } from '../components/GameTabs';
 import { EvalGraph } from '../components/EvalGraph';
 import { KeyMoments } from '../components/KeyMoments';
 import { MoveList } from '../components/MoveList';
 import { noteIndexFor } from '../lib/coach-notes';
 import { formatDate } from '../lib/format';
-import { fenAt, navigate, type NavAction } from '../lib/navigator';
+import { moveToUci } from '../lib/drill';
+import {
+  addMove,
+  branchPoint,
+  createTree,
+  fenOf,
+  next,
+  pathFromMain,
+  prev,
+  type NodeId,
+  type VarTree,
+} from '../lib/variations';
 
 const BEST_ARROW = '#1a7f37';
 const PLAYED_ARROW = '#cf222e';
@@ -20,6 +32,11 @@ function isTypingTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
   return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName);
 }
+
+type NavAction = 'first' | 'prev' | 'next' | 'last' | { goto: number };
+type Current = NodeId | 'root';
+
+const mainNode = (ply: number): Current => (ply <= 0 ? 'root' : `m${ply}`);
 
 const KEY_ACTIONS: Record<string, NavAction> = {
   ArrowLeft: 'prev',
@@ -45,7 +62,8 @@ export function GameViewerPage() {
   const { id } = useParams();
   const [game, setGame] = useState<GameDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [ply, setPly] = useState(0);
+  const [current, setCurrent] = useState<Current>('root');
+  const [branches, setBranches] = useState<VarTree | null>(null);
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [momentPly, setMomentPly] = useState<number | null>(null);
@@ -53,7 +71,8 @@ export function GameViewerPage() {
   useEffect(() => {
     setGame(null);
     setError(null);
-    setPly(0);
+    setCurrent('root');
+    setBranches(null);
     if (!/^\d+$/.test(id ?? '')) {
       setError('Game not found');
       return;
@@ -149,14 +168,37 @@ export function GameViewerPage() {
     };
   }, [id, isDone, notesReload]);
 
-  const maxPly = game?.moves.length ?? 0;
+  const baseTree = useMemo(() => (game ? createTree(game.startFen, game.moves) : null), [game]);
+  const tree = branches ?? baseTree;
   const go = useCallback(
     (action: NavAction) => {
+      if (!tree) return;
       setMomentPly(null);
-      setPly((p) => navigate({ ply: p, maxPly }, action).ply);
+      setCurrent((c) => {
+        if (action === 'first') return 'root';
+        if (action === 'prev') return prev(tree, c) ?? c;
+        if (action === 'next') return next(tree, c) ?? c;
+        if (action === 'last') {
+          let at = c;
+          for (let n = next(tree, at); n; n = next(tree, at)) at = n;
+          return at;
+        }
+        return mainNode(Math.min(Math.max(action.goto, 0), game?.moves.length ?? 0));
+      });
     },
-    [maxPly],
+    [tree, game],
   );
+
+  const playMove = (from: string, to: string): boolean => {
+    if (!tree) return false;
+    const uci = moveToUci(fenOf(tree, current), from, to);
+    const res = uci ? addMove(tree, current, uci) : null;
+    if (!res) return false;
+    setBranches(res.tree);
+    setMomentPly(null);
+    setCurrent(res.node);
+    return true;
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -170,12 +212,14 @@ export function GameViewerPage() {
   }, [go]);
 
   if (error) return <p className="error">{error}</p>;
-  if (!game) return <p>Loading...</p>;
+  if (!game || !tree) return <p>Loading...</p>;
 
   const done: GameAnalysis | null = analysis?.status === 'done' ? (analysis as GameAnalysis) : null;
   const moment = done && momentPly !== null ? done.moves[momentPly - 1] : undefined;
   // A key moment shows the position before the move, with the best move and the played move.
-  const shownPly = moment ? moment.ply - 1 : ply;
+  const shown: Current = moment ? mainNode(moment.ply - 1) : current;
+  const shownPly = pathFromMain(tree, shown).ply;
+  const inBranch = branchPoint(tree, current) !== null;
   const arrows = moment
     ? [
         { startSquare: moment.bestUci.slice(0, 2), endSquare: moment.bestUci.slice(2, 4), color: BEST_ARROW },
@@ -185,13 +229,15 @@ export function GameViewerPage() {
       ]
     : [];
   const selectMoment = (p: number) => {
-    setPly(p - 1);
+    setCurrent(mainNode(p - 1));
     setMomentPly(p);
   };
-  const last = shownPly > 0 ? game.moves[shownPly - 1] : null;
+  const last = shown === 'root' ? null : tree.nodes[shown];
   const squareStyles = last
     ? { [last.uci.slice(0, 2)]: HIGHLIGHT, [last.uci.slice(2, 4)]: HIGHLIGHT }
     : {};
+  const atStart = shown === 'root';
+  const atEnd = next(tree, shown) === null;
   const opening = [game.eco, game.openingName].filter(Boolean).join(' ');
 
   return (
@@ -248,22 +294,32 @@ export function GameViewerPage() {
         <div className="viewer-board">
           <Chessboard
             options={{
-              position: fenAt(game, shownPly),
+              position: fenOf(tree, shown),
               boardOrientation: game.userColor ?? 'white',
-              allowDragging: false,
+              allowDragging: true,
               allowDrawingArrows: false,
               squareStyles,
               arrows,
+              onPieceDrop: ({ sourceSquare, targetSquare }) => (targetSquare ? playMove(sourceSquare, targetSquare) : false),
             }}
           />
           <div className="actions">
-            <button type="button" aria-label="First move" onClick={() => go('first')} disabled={shownPly === 0}>⏮</button>
-            <button type="button" aria-label="Previous move" onClick={() => go('prev')} disabled={shownPly === 0}>◀</button>
-            <button type="button" aria-label="Next move" onClick={() => go('next')} disabled={shownPly === maxPly}>▶</button>
-            <button type="button" aria-label="Last move" onClick={() => go('last')} disabled={shownPly === maxPly}>⏭</button>
+            <button type="button" aria-label="First move" onClick={() => go('first')} disabled={atStart}>⏮</button>
+            <button type="button" aria-label="Previous move" onClick={() => go('prev')} disabled={atStart}>◀</button>
+            <button type="button" aria-label="Next move" onClick={() => go('next')} disabled={atEnd}>▶</button>
+            <button type="button" aria-label="Last move" onClick={() => go('last')} disabled={atEnd}>⏭</button>
+            {inBranch && (
+              <button type="button" onClick={() => {
+                setMomentPly(null);
+                setCurrent(branchPoint(tree, current) ?? 'root');
+              }}>Back to game</button>
+            )}
           </div>
         </div>
-        <MoveList moves={game.moves} currentPly={shownPly} onSelect={(p) => go({ goto: p })} analysis={done?.moves} />
+        <GameTabs
+          moves={<MoveList tree={tree} current={shown} onSelect={(id) => { setMomentPly(null); setCurrent(id); }} analysis={done?.moves} />}
+          chat={<p className="muted">Coach chat comes next.</p>}
+        />
       </div>
       {done && <CoachPanel key={game.id} gameId={game.id} notes={notes} active={activeNote} onActive={setActiveNote} onChanged={reloadNotes} error={notesError} />}
       {done && (

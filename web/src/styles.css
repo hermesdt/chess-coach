@@ -160,3 +160,10 @@ button.big:hover:not(:disabled) { background: #0757b3; }
 .data-info { display: grid; grid-template-columns: max-content 1fr; gap: 0.25rem 1rem; max-width: 640px; }
 .data-info dt { font-weight: 600; }
 .data-info dd { margin: 0; }
+.game-tabs { flex: 1 1 240px; min-width: 0; }
+.game-tabs .tabs { flex-wrap: nowrap; gap: 0.25rem; margin-bottom: 0.5rem; border-bottom: 1px solid #d0d7de; }
+.game-tabs .move-list { max-height: 520px; }
+.move-branch { margin: 0.15rem 0 0.15rem 1.25rem; padding-left: 0.5rem; border-left: 2px solid #d0d7de; font-size: 0.9rem; }
+.branch-line { display: flex; flex-wrap: wrap; align-items: baseline; }
+.branch-label { font-weight: 600; color: #0550ae; margin-right: 0.4rem; }
+.branch-line .move-number { padding-right: 0.1rem; }
