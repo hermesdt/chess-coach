@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import type { ChatLineDTO, ChatMessageDTO } from '../../../shared/types';
 import { LESSON_TITLES } from '../../../shared/lessons';
@@ -60,13 +60,16 @@ function LineButton({ line, onClick }: { line: ChatLineDTO; onClick: () => void 
         {line.label}: {lineText(line, all ? line.san.length : MAX_PLIES)}
         {cut ? ' …' : ''}
       </button>{' '}
-      <span className="muted">You: {Math.round(line.winPctForUser)} %</span>
+      <span className="muted" title="Stockfish estimate of your winning chances after this line">
+        Your chances: {Math.round(line.winPctForUser)} %
+      </span>
       {cut && (
         <>
           {' '}
           <button type="button" className="link-button" onClick={() => setAll(true)}>show more</button>
         </>
       )}
+      {line.why && <p className="chat-why">{line.why}</p>}
     </div>
   );
 }
@@ -102,6 +105,7 @@ export function CoachChat(props: Props) {
   const [sendError, setSendError] = useState<string | null>(null);
   const [added, setAdded] = useState<Set<number>>(new Set());
   const { job, error: pollError } = useJob(jobId);
+  const end = useRef<HTMLDivElement>(null);
 
   const reload = useCallback(() => {
     api.getChat(gameId).then(setMessages, (e: Error) => setSendError(e.message));
@@ -110,6 +114,11 @@ export function CoachChat(props: Props) {
   useEffect(() => {
     reload();
   }, [reload]);
+
+  // Keep the newest message in view after a question, an answer or an error.
+  useEffect(() => {
+    end.current?.scrollIntoView?.({ block: 'nearest' });
+  }, [messages]);
 
   const finished = job?.status === 'done' || job?.status === 'error' || pollError !== null;
   useEffect(() => {
@@ -192,6 +201,7 @@ export function CoachChat(props: Props) {
             )}
           </div>
         ))}
+        <div ref={end} />
       </div>
       {pending && <p className="muted">The coach is thinking…</p>}
       {sendError && <p className="error">{sendError}</p>}

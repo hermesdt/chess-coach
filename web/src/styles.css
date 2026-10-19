@@ -178,3 +178,4 @@ button.big:hover:not(:disabled) { background: #0757b3; }
 .chat-input input { flex: 1; min-width: 0; }
 .link-button { background: none; border: none; padding: 0; color: #0969da; cursor: pointer; text-align: left; font: inherit; }
 .chat-context { font-size: 0.85em; }
+.chat-why { margin: 0.1rem 0 0.4rem; }

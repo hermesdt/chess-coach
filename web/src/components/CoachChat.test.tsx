@@ -14,12 +14,16 @@ const anchor = { ply: 2, path: [], describe: 'the position after 1...e5 (your mo
 const answered = (extra: Partial<ChatMessageDTO> = {}): ChatMessageDTO => ({
   id: 1, turn: 1, question: 'What now?', anchor: { ply: 1, path: [], describe: 'the position after 1. e4 (their move 1)' },
   status: 'done', error: null, provider: 'claude-cli', model: null, createdAt: 0,
-  answer: { text: 'Develop your knight.', lines: [line('1', ['Nf3', 'Nc6', 'Bb5'])], rule: 'Develop pieces early', lessonId: 'develop' },
+  answer: { text: 'Develop your knight.', lines: [line('1', ['Nf3', 'Nc6', 'Bb5'], { why: 'Knight out first.' })], rule: 'Develop pieces early', lessonId: 'develop' },
   ...extra,
 });
 const job = (status: Job['status']): Job => ({ id: 9, kind: 'chat', status, progress: 0, total: null, message: null, error: null, createdAt: 0, finishedAt: null });
 
+const scrollIntoView = vi.fn();
+Element.prototype.scrollIntoView = scrollIntoView;
+
 afterEach(() => {
+  scrollIntoView.mockClear();
   cleanup();
   vi.restoreAllMocks();
 });
@@ -43,7 +47,9 @@ describe('CoachChat', () => {
     expect(screen.getByText('Develop pieces early')).toBeTruthy();
     expect(screen.getByRole('link', { name: /develop fast/i }).getAttribute('href')).toBe('/course/develop');
     expect(screen.getByText('About the position after 1...e5 (your move 2)')).toBeTruthy();
-    expect(screen.getByText('You: 62 %')).toBeTruthy();
+    const chances = screen.getByText('Your chances: 62 %');
+    expect(chances.getAttribute('title')).toBe('Stockfish estimate of your winning chances after this line');
+    expect(screen.getByText('Knight out first.').className).not.toContain('muted');
   });
 
   it('sends the question with the anchor and shows the thinking state with a disabled input', async () => {
@@ -125,5 +131,11 @@ describe('CoachChat', () => {
     const h = setup([answered()]);
     fireEvent.click(await screen.findByRole('button', { name: 'About the position after 1. e4 (their move 1)' }));
     expect(h.onShowAnchor).toHaveBeenCalledWith({ ply: 1, path: [], describe: 'the position after 1. e4 (their move 1)' });
+  });
+
+  it('scrolls the newest message into view when the list changes', async () => {
+    setup([answered()]);
+    await screen.findByText('Develop your knight.');
+    await waitFor(() => expect(scrollIntoView).toHaveBeenCalled());
   });
 });
