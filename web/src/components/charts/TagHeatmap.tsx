@@ -8,6 +8,9 @@ const RAMP = ['#cde2fb', '#b7d3f6', '#9ec5f4', '#86b6ef', '#6da7ec', '#5598e7', 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 export const monthName = (m: string) => `${MONTHS[Number(m.slice(5, 7)) - 1] ?? m} ${m.slice(2, 4)}`;
 
+/** Text colour with at least 4.5:1 contrast on the cell: ink up to step 5, black on steps 6-7, white from step 8. */
+const textFill = (v: number, step: number) => (v > 0 && step >= 8 ? '#fff' : v > 0 && step >= 6 ? '#000' : '#1f2328');
+
 const LABEL_W = 170;
 const CELL_W = 56;
 const CELL_H = 28;
@@ -25,7 +28,7 @@ export function TagHeatmap({ accuracyByMonth, tagsByMonth }: { accuracyByMonth: 
   return (
     <div className="viz">
       <div className="heat-scroll">
-        <svg viewBox={`0 0 ${width} ${height}`} style={{ minWidth: width }} className="viz-svg" role="img" aria-label="Mistakes per game, by type and month">
+        <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="viz-svg" role="img" aria-label="Mistakes per game, by type and month">
           {grid.months.map((m, c) => (
             <text key={m} x={LABEL_W + c * CELL_W + CELL_W / 2} y={14} textAnchor="middle" className="viz-tick">{monthName(m)}</text>
           ))}
@@ -45,7 +48,7 @@ export function TagHeatmap({ accuracyByMonth, tagsByMonth }: { accuracyByMonth: 
                     </rect>
                     <text
                       x={LABEL_W + c * CELL_W + CELL_W / 2} y={22 + r * CELL_H + CELL_H / 2} dy="0.32em" textAnchor="middle"
-                      className="viz-cell" style={{ fill: v > 0 && i >= 6 ? '#fff' : '#1f2328' }} pointerEvents="none"
+                      className="viz-cell" style={{ fill: textFill(v, i) }} pointerEvents="none"
                     >
                       {fmt(v)}
                     </text>

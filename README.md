@@ -77,9 +77,9 @@ The AI coach is optional. The rest of the app works without it.
 
 | Provider | What you need |
 |----------|---------------|
-| `claude-cli` | The `claude` command on your `PATH`. Sign in with Claude's own sign-in flow. |
-| `codex-cli` | The `codex` command on your `PATH`. Sign in with Codex's own sign-in flow. |
-| `opencode-cli` | The `opencode` command on your `PATH`. Sign in with opencode's own sign-in flow. |
+| `claude-cli` | The `claude` command on your `PATH`. Sign in: run `claude`, then type `/login`. |
+| `codex-cli` | The `codex` command on your `PATH`. Sign in: run `codex login`. |
+| `opencode-cli` | The `opencode` command on your `PATH`. Sign in: run `opencode auth login`. |
 | `openrouter` | An OpenRouter API key in `OPENROUTER_API_KEY`, or on the Settings page. |
 | `anthropic-api` | An Anthropic API key in `ANTHROPIC_API_KEY`, or on the Settings page. |
 
