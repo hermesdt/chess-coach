@@ -9,7 +9,7 @@
  * is confined to a fresh empty temp dir (cwd) that is deleted afterwards.
  * The assistant answer is the concatenation of the `text` events.
  */
-import { binaryOnPath, realCliRunner, runCli, withTempDir } from '../cli-runner.js';
+import { binaryOnPath, cliPrompt, realCliRunner, runCli, withTempDir } from '../cli-runner.js';
 import { AiProviderError, type AiProvider, type CliRunner } from '../types.js';
 
 interface OpencodeEvent {
@@ -28,7 +28,7 @@ export function createOpencodeCli(run: CliRunner = realCliRunner, onPath: (bin: 
     async complete(req, opts) {
       const args = ['run', '--format', 'json', '--agent', 'plan'];
       if (opts.model) args.push('-m', opts.model);
-      const stdout = await withTempDir((cwd) => runCli(run, 'opencode', 'opencode', args, `${req.system}\n\n${req.user}`, cwd, { signal: opts.signal }));
+      const stdout = await withTempDir((cwd) => runCli(run, 'opencode', 'opencode', args, cliPrompt(req), cwd, { signal: opts.signal }));
       const texts: { messageID: string | undefined; text: string }[] = [];
       for (const line of stdout.split('\n')) {
         let event: OpencodeEvent;

@@ -95,7 +95,7 @@ describe('buildFactPack', () => {
       [fenAfter(3)]: [line(1, 300, ['h7h6', 'g5f6'])],
     });
     const pack = await buildFactPack({ db, pool, reps: [], nodes: 1 }, input(2));
-    expect(pack.played).toEqual({ san: 'Bg5', winBefore: 55, winAfter: 40, classification: 'inaccuracy', tags: ['bad_trade'] });
+    expect(pack.played).toEqual({ san: 'Bg5', mover: 'white', winBefore: 55, winAfter: 40, classification: 'inaccuracy', tags: ['bad_trade'] });
     const ref = pack.lines.find((l) => l.kind === 'refutation');
     expect(ref).toMatchObject({ id: 't1.REF', startFen: fenAfter(3), san: ['h6', 'Bxf6'], evalCp: -300 });
   });

@@ -5,7 +5,9 @@ export type { ProviderId };
 /** Order used by `auto`. */
 export const AUTO_ORDER = PROVIDER_IDS;
 
-export interface AiRequest { system: string; user: string; schemaName: string; jsonSchema: object }
+export interface AiHistoryMessage { role: 'user' | 'assistant'; text: string }
+/** `history` holds earlier turns, oldest first. API adapters send them as messages; CLI adapters flatten them into the prompt. */
+export interface AiRequest { system: string; user: string; schemaName: string; jsonSchema: object; history?: AiHistoryMessage[] }
 export interface AiProvider {
   id: ProviderId;
   label: string;

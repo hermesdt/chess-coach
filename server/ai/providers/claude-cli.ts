@@ -11,7 +11,7 @@
  * Not used: --bare. It skips OAuth and keychain, so it would break subscription logins.
  *   --json-schema <schema>       structured output; `result` still holds the JSON text
  */
-import { binaryOnPath, envWithout, realCliRunner, runCli, withTempDir } from '../cli-runner.js';
+import { binaryOnPath, cliPrompt, envWithout, realCliRunner, runCli, withTempDir } from '../cli-runner.js';
 import { schemaJsonText } from '../json-schema.js';
 import { AiParseError, AiProviderError, type AiProvider, type CliRunner } from '../types.js';
 
@@ -47,7 +47,7 @@ export function createClaudeCli(run: CliRunner = realCliRunner, onPath: (bin: st
     async complete(req, opts) {
       const args = ['-p', '--output-format', 'json', '--tools', '', '--disable-slash-commands', '--no-session-persistence', '--strict-mcp-config', '--setting-sources', '', '--json-schema', schemaJsonText(req.jsonSchema)];
       if (opts.model) args.push('--model', opts.model);
-      const stdout = await withTempDir((cwd) => runCli(run, 'claude', 'claude', args, `${req.system}\n\n${req.user}`, cwd, { env: envWithout('ANTHROPIC_API_KEY', 'ANTHROPIC_AUTH_TOKEN'), signal: opts.signal }));
+      const stdout = await withTempDir((cwd) => runCli(run, 'claude', 'claude', args, cliPrompt(req), cwd, { env: envWithout('ANTHROPIC_API_KEY', 'ANTHROPIC_AUTH_TOKEN'), signal: opts.signal }));
       const parsed = parseResultObject(stdout);
       if (!parsed) throw new AiParseError('claude printed output that is not JSON.');
       if (parsed.is_error) throw new AiProviderError(`claude reported an error: ${String(parsed.result).slice(0, 500)}`);

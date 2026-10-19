@@ -43,7 +43,7 @@ export function createOpenRouter(deps: OpenRouterDeps): AiProvider {
           headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', 'HTTP-Referer': 'http://localhost', 'X-Title': 'chess-coach' },
           body: JSON.stringify({
             model,
-            messages: [{ role: 'system', content: req.system }, { role: 'user', content: req.user }],
+            messages: [{ role: 'system', content: req.system }, ...(req.history ?? []).map((h) => ({ role: h.role, content: h.text })), { role: 'user', content: req.user }],
             provider: { require_parameters: true },
             response_format: { type: 'json_schema', json_schema: { name: req.schemaName, strict: true, schema: req.jsonSchema } },
           }),

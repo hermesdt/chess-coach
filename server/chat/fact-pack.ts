@@ -44,7 +44,7 @@ export interface FactPack {
   turnPrefix: string;
   anchor: { fen: string; sideToMove: Color; ply: number; path: string[]; inBranch: boolean; isUserToMove: boolean; describe: string };
   /** Win values are from the mover's view, as stored in the move analysis. */
-  played: { san: string; winBefore: number; winAfter: number; classification: Classification; tags: Tag[] } | null;
+  played: { san: string; mover: Color; winBefore: number; winAfter: number; classification: Classification; tags: Tag[] } | null;
   lines: FactLine[];
   threat: { san: string; uci: string } | null;
   named: { text: string; status: 'legal' | 'illegal' | 'ambiguous'; lineId?: string }[];
@@ -198,7 +198,7 @@ export async function buildFactPack(deps: FactPackDeps, input: FactPackInput): P
 
   const stored = path.length === 0 ? analysis.moves.find((m) => m.ply === ply + 1) : undefined;
   const played = stored
-    ? { san: stored.san, winBefore: stored.winBefore, winAfter: stored.winAfter, classification: stored.classification, tags: stored.tags }
+    ? { san: stored.san, mover: sideToMove, winBefore: stored.winBefore, winAfter: stored.winAfter, classification: stored.classification, tags: stored.tags }
     : null;
 
   const named = isFinal ? [] : parseNamedMoves(input.question, fen);

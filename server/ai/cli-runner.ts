@@ -2,7 +2,18 @@ import { execFile, spawn } from 'node:child_process';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { AiCancelledError, AiProviderError, AiTimeoutError, type CliRunner } from './types.js';
+import { AiCancelledError, AiProviderError, AiTimeoutError, type AiRequest, type CliRunner } from './types.js';
+
+/**
+ * The stdin prompt of a CLI adapter: system, then the history as one block (oldest first), then the user part.
+ * User texts start with "(about <place>): ", so "Owner " in front gives "Owner (about <place>): <question>".
+ */
+export function cliPrompt(req: AiRequest): string {
+  const history = req.history ?? [];
+  if (history.length === 0) return `${req.system}\n\n${req.user}`;
+  const block = history.map((h) => (h.role === 'user' ? `Owner ${h.text}` : `Coach: ${h.text}`)).join('\n');
+  return `${req.system}\n\nConversation so far:\n${block}\n\n${req.user}`;
+}
 
 export type { CliRunner };
 

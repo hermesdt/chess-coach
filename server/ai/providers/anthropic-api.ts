@@ -54,7 +54,7 @@ export function createAnthropicApi(deps: AnthropicApiDeps): AiProvider {
             fallbacks: 'default',
             cache_control: { type: 'ephemeral' },
             system: req.system,
-            messages: [{ role: 'user', content: req.user }],
+            messages: [...(req.history ?? []).map((h) => ({ role: h.role, content: h.text })), { role: 'user', content: req.user }],
             output_config: { effort: 'low', format: { type: 'json_schema', schema: req.jsonSchema } },
           },
           { signal: opts.signal ? AbortSignal.any([opts.signal, timeout]) : timeout },
