@@ -64,7 +64,7 @@ function mockPage(flags: FlagDetail[] = [flag]) {
 }
 
 describe('engine and review settings', () => {
-  it('saves engine nodes and review limits and shows the .env note', async () => {
+  it('saves engine nodes and review limits and sends only changed fields', async () => {
     mockPage();
     const put = vi.spyOn(api, 'putSettings').mockResolvedValue(settings({ engineNodes: 200_000, reviewDailyLimit: 30, reviewNewPerDay: 5 }));
     render(<SettingsPage />);
@@ -73,7 +73,17 @@ describe('engine and review settings', () => {
     fireEvent.change(screen.getByLabelText(/^New cards per day/), { target: { value: '5' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save engine and review' }));
     await waitFor(() => expect(put).toHaveBeenCalledWith({ reviewDailyLimit: 30, reviewNewPerDay: 5, engineNodes: 200_000 }));
-    expect(screen.getAllByText('Empty uses the value from .env').length).toBeGreaterThan(0);
+  });
+
+  it('does not send engineNodes when only review limits change, and shows no .env note there', async () => {
+    mockPage();
+    const put = vi.spyOn(api, 'putSettings').mockResolvedValue(settings({ reviewDailyLimit: 30 }));
+    render(<SettingsPage />);
+    const nodesLabel = (await screen.findByLabelText(/^Engine nodes per move/)).closest('label')!;
+    expect(nodesLabel.textContent).not.toContain('.env');
+    fireEvent.change(screen.getByLabelText(/^Reviews per day/), { target: { value: '30' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save engine and review' }));
+    await waitFor(() => expect(put).toHaveBeenCalledWith({ reviewDailyLimit: 30 }));
   });
 });
 

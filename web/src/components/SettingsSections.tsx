@@ -15,8 +15,10 @@ export function EngineReviewSettings({ settings, onSaved }: { settings: Settings
     e.preventDefault();
     setMessage(null);
     setError(null);
-    const update: SettingsUpdate = { reviewDailyLimit: Number(daily), reviewNewPerDay: Number(newPerDay) };
-    if (nodes.trim() !== '') update.engineNodes = Number(nodes);
+    const update: SettingsUpdate = {};
+    if (nodes !== String(settings.engineNodes) && nodes.trim() !== '') update.engineNodes = Number(nodes);
+    if (daily !== String(settings.reviewDailyLimit)) update.reviewDailyLimit = Number(daily);
+    if (newPerDay !== String(settings.reviewNewPerDay)) update.reviewNewPerDay = Number(newPerDay);
     try {
       onSaved(await api.putSettings(update));
       setMessage('Settings saved.');
@@ -33,7 +35,6 @@ export function EngineReviewSettings({ settings, onSaved }: { settings: Settings
           Engine nodes per move
           <input type="number" min={10000} max={5000000} step={10000} value={nodes} onChange={(e) => setNodes(e.target.value)} />
           <small>More nodes give better analysis and take more time. Use 10000 to 5000000.</small>
-          <small>{ENV_NOTE}</small>
         </label>
         <label>
           Reviews per day
