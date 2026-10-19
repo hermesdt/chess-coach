@@ -1,5 +1,5 @@
 import type { DatabaseSync } from 'node:sqlite';
-import { Chess, type Move, type PieceSymbol } from 'chess.js';
+import { Chess, type Move, type PieceSymbol, type Square } from 'chess.js';
 import type { Classification, Color, EngineScore, Tag } from '../../shared/types.js';
 import { gameFacts, type GameFacts } from '../ai/facts.js';
 import { loadGame } from '../ai/game-review.js';
@@ -41,11 +41,26 @@ export interface FactLine {
   comment?: string;
 }
 
+/** A piece that the other side attacks. Squares in `attackedBy` and `defendedBy` read "pawn g7". */
+export interface AttackFact {
+  square: string;
+  piece: string;
+  color: Color;
+  attackedBy: string[];
+  defendedBy: string[];
+  /** Attacked, and either undefended or attacked by a cheaper piece. */
+  hanging: boolean;
+}
+
 export interface FactPack {
   turnPrefix: string;
   anchor: { fen: string; sideToMove: Color; ply: number; path: string[]; inBranch: boolean; isUserToMove: boolean; describe: string };
   /** Win values are from the mover's view, as stored in the move analysis. */
   played: { san: string; mover: Color; winBefore: number; winAfter: number; classification: Classification; tags: Tag[] } | null;
+  /** Pieces attacked by the other side in the anchor position. Computed by chess.js. */
+  attacks: AttackFact[];
+  /** The same after the played move. Null when there is no played move. */
+  playedAttacks: AttackFact[] | null;
   lines: FactLine[];
   threat: { san: string; uci: string } | null;
   named: { text: string; status: 'legal' | 'illegal' | 'ambiguous'; lineId?: string }[];
@@ -72,6 +87,9 @@ export interface FactPackInput {
 const PIECE_VALUE: Record<PieceSymbol, number> = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
 const PIECE_NAME: Record<PieceSymbol, string> = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
 
+/** Trade value of a piece. The king counts as infinite: it is never the cheaper attacker. */
+const TRADE_VALUE: Record<PieceSymbol, number> = { p: 1, n: 3, b: 3, r: 5, q: 9, k: Infinity };
+
 const colorOf = (turn: 'w' | 'b'): Color => (turn === 'w' ? 'white' : 'black');
 const fenKey = (fen: string): string => fen.split(' ').slice(0, 4).join(' ');
 const toUci = (m: Move): string => m.from + m.to + (m.promotion ?? '');
@@ -90,6 +108,32 @@ function playUci(chess: Chess, uci: string): Move | null {
   } catch {
     return null;
   }
+}
+
+/** Every piece that the other side attacks, with its attackers and defenders. Kings show only when in check. */
+function attackFacts(chess: Chess): AttackFact[] {
+  const out: AttackFact[] = [];
+  const name = (sq: Square): string => `${PIECE_NAME[chess.get(sq)!.type]} ${sq}`;
+  const byValue = (a: Square, b: Square): number => TRADE_VALUE[chess.get(a)!.type] - TRADE_VALUE[chess.get(b)!.type];
+  for (const row of chess.board()) {
+    for (const cell of row) {
+      if (!cell) continue;
+      const enemy = cell.color === 'w' ? 'b' : 'w';
+      const attackers = chess.attackers(cell.square, enemy).sort(byValue);
+      if (attackers.length === 0) continue;
+      const defenders = chess.attackers(cell.square, cell.color).sort(byValue);
+      const cheapest = TRADE_VALUE[chess.get(attackers[0]!)!.type];
+      out.push({
+        square: cell.square,
+        piece: PIECE_NAME[cell.type],
+        color: colorOf(cell.color),
+        attackedBy: attackers.map(name),
+        defendedBy: defenders.map(name),
+        hanging: cell.type !== 'k' && (defenders.length === 0 || cheapest < TRADE_VALUE[cell.type]),
+      });
+    }
+  }
+  return out;
 }
 
 /** Move label such as "9...exf5" or "10. Nge2". */
@@ -311,6 +355,8 @@ export async function buildFactPack(deps: FactPackDeps, input: FactPackInput): P
       describe: describeAnchor(game, ply, path, fen, mainFen, isUserToMove, pathSan),
     },
     played,
+    attacks: attackFacts(chess),
+    playedAttacks: played ? attackFacts(new Chess(game.moves[ply]!.fenAfter)) : null,
     lines,
     threat,
     named: namedOut,

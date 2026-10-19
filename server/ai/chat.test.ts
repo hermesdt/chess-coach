@@ -16,6 +16,8 @@ function pack(prefix: string, sans: string[], over: Partial<FactPack> = {}): Fac
       { id: `${prefix}L1`, kind: 'best', startFen: 'x', san: sans, uci: [], evalCp: 10, evalMate: null, winPctForUser: 52, materialEnd: { white: 39, black: 39 }, captures: [], checks: 0 },
       { id: `${prefix}L2`, kind: 'best', startFen: 'x', san: ['c5'], uci: [], evalCp: 5, evalMate: null, winPctForUser: 51, materialEnd: { white: 39, black: 39 }, captures: [], checks: 0 },
     ],
+    attacks: [],
+    playedAttacks: null,
     threat: null,
     named: [],
     game: { level: 2, rating: 550, userColor: 'white', userRating: 550, opponentRating: 600, result: null, opening: null, movesSan: ['d4', 'Nf6'], keyMoments: [] },
@@ -186,5 +188,14 @@ describe('history in adapters', () => {
       { role: 'assistant', content: 'a1 [lines: t1.L1] Rule: r1' },
       { role: 'user', content: 'USER' },
     ]);
+  });
+});
+
+describe('chat prompt attack rule', () => {
+  it('has a new version, the attack rule and the field description', async () => {
+    const { CHAT_SYSTEM } = await import('./prompts/chat.js');
+    expect(CHAT_PROMPT_VERSION).toBe('coach-chat-2');
+    expect(CHAT_SYSTEM).toContain('Say that a piece attacks, defends, threatens or wins another piece only when the attacks facts or a line show it.');
+    expect(CHAT_SYSTEM).toContain('"playedAttacks"');
   });
 });

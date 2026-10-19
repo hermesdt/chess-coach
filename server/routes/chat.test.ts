@@ -12,6 +12,7 @@ import { openDb } from '../db/db.js';
 import { insertGames } from '../db/games-repo.js';
 import { setSetting } from '../db/settings-repo.js';
 import { waitForJob } from '../jobs.js';
+import { EngineCache } from '../engine/cache.js';
 
 const PGN = '1. d4 Nf6 2. Bg5 h6 3. Bxh6 gxh6 *';
 const newGame = (id: string): NewGame => ({
@@ -264,5 +265,55 @@ describe('chat routes', () => {
       release(ANSWER.replaceAll('t1.', 't3.'));
       await waitForJob(db, first.jobId);
     });
+  });
+});
+
+describe('POST /api/games/:id/chat/prefetch', () => {
+  const FEN_AFTER_2 = parsePgn(PGN).moves[1]!.fenAfter;
+  function appWith(poolImpl: { analyse: (fen: string, o: { nodes: number; multipv?: number }) => Promise<never> | Promise<unknown[]> }, cache: EngineCache) {
+    const provider: AiProvider = { id: 'claude-cli', label: 'Fake', available: async () => ({ ok: true }), complete: async () => ({ text: ANSWER, model: 'm' }) };
+    return createApp({ db, pool: poolImpl as never, repertoires: [], ai: createRegistry({ db, providers: [provider] }), cache });
+  }
+  const prefetch = (a: ReturnType<typeof createApp>, anchor: unknown, id = 1) =>
+    a.request(`/api/games/${id}/chat/prefetch`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ anchor }) });
+
+  it('answers 202 at once and fills the cache in the background', async () => {
+    const cache = new EngineCache();
+    let release!: () => void;
+    const gate = new Promise<void>((r) => (release = r));
+    const lines = [{ multipv: 1, score: { cp: 30, mate: null }, pv: ['c1g5'] }];
+    const a = appWith({ analyse: async () => (await gate, lines) }, cache);
+    const res = await prefetch(a, { ply: 2, path: [] });
+    expect(res.status).toBe(202);
+    expect(cache.get(FEN_AFTER_2, 3, 1)).toBeNull();
+    release();
+    await new Promise((r) => setTimeout(r, 10));
+    expect(cache.get(FEN_AFTER_2, 3, 1)).toEqual(lines);
+  });
+
+  it('runs one search for concurrent prefetches of the same position, and none when cached', async () => {
+    const cache = new EngineCache();
+    let searches = 0;
+    let release!: () => void;
+    const gate = new Promise<void>((r) => (release = r));
+    const a = appWith({ analyse: async () => ((searches += 1), await gate, [{ multipv: 1, score: { cp: 1, mate: null }, pv: ['c1g5'] }]) }, cache);
+    await prefetch(a, { ply: 2, path: [] });
+    await prefetch(a, { ply: 2, path: [] });
+    release();
+    await new Promise((r) => setTimeout(r, 10));
+    expect(searches).toBe(1);
+    await prefetch(a, { ply: 2, path: [] });
+    await new Promise((r) => setTimeout(r, 10));
+    expect(searches).toBe(1);
+  });
+
+  it('ignores engine errors and rejects a bad anchor', async () => {
+    const cache = new EngineCache();
+    const a = appWith({ analyse: async () => { throw new Error('engine down'); } }, cache);
+    expect((await prefetch(a, { ply: 2, path: [] })).status).toBe(202);
+    await new Promise((r) => setTimeout(r, 10));
+    expect(cache.get(FEN_AFTER_2, 3, 1)).toBeNull();
+    expect((await prefetch(a, { ply: 99, path: [] })).status).toBe(400);
+    expect((await prefetch(a, { ply: 2, path: [] }, 999)).status).toBe(404);
   });
 });

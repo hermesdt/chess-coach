@@ -242,3 +242,67 @@ describe('buildFactPack', () => {
     expect(new Set(factPackSan(pack))).toEqual(new Set(['Bg5', 'h6', 'a6']));
   });
 });
+
+describe('attack facts', () => {
+  // The owner's game: after 10. Bh6 the g7 pawn attacks the bishop. The bishop does not attack f8 (g7 blocks the diagonal).
+  const BH6 = '1. d4 e6 2. e4 Bd6 3. f4 Nf6 4. e5 Ne4 5. exd6 Nxd6 6. Nc3 O-O 7. Bd3 Nc6 8. d5 Nd4 9. f5 exf5 10. Bh6 *';
+
+  async function packFor(pgn: string, ply: number, path: string[] = []) {
+    insertGames(db, [newGame(pgn, `att-${pgn.length}-${ply}`)]);
+    const gameId = (db.prepare('SELECT MAX(id) AS id FROM games').get() as { id: number }).id;
+    saveAnalysis(db, analysisFor(gameId, pgn));
+    return buildFactPack({ db, pool: fakePool({}), reps: [], nodes: 1 }, { gameId, anchor: { ply, path }, question: '', turn: 1 });
+  }
+
+  it('shows the bishop on h6 attacked by the g7 pawn and the rook on f8 not attacked', async () => {
+    const pack = await packFor(BH6, 18);
+    expect(pack.played?.san).toBe('Bh6');
+    const after = new Chess(parsePgn(BH6).moves[18]!.fenAfter);
+    // Verified with chess.js, not by hand.
+    expect(after.attackers('h6', 'b')).toEqual(['g7']);
+    expect(after.attackers('f8', 'w')).toEqual([]);
+    const bishop = pack.playedAttacks!.find((a) => a.square === 'h6');
+    expect(bishop).toMatchObject({ piece: 'bishop', color: 'white', attackedBy: ['pawn g7'], defendedBy: [], hanging: true });
+    expect(pack.playedAttacks!.some((a) => a.square === 'f8')).toBe(false);
+  });
+
+  it('keeps the anchor attacks apart from the played-move attacks', async () => {
+    const pack = await packFor(BH6, 18);
+    expect(pack.attacks.some((a) => a.square === 'h6')).toBe(false);
+    const anchorBoard = new Chess(pack.anchor.fen);
+    for (const a of pack.attacks) expect(anchorBoard.attackers(a.square as 'a1', a.color === 'white' ? 'b' : 'w').length).toBe(a.attackedBy.length);
+  });
+
+  it('has no played attacks without a played move', async () => {
+    const pack = await packFor(BH6, 18, ['a2a3']);
+    expect(pack.playedAttacks).toBeNull();
+  });
+
+  it('flags an undefended attacked piece as hanging and a defended one as not', async () => {
+    // 1. e4 d5 2. exd5: the d5 pawn is attacked by the e4 pawn... after 1. e4 d5 the e4 pawn and d5 pawn attack each other, both defended.
+    const pack = await packFor('1. e4 d5 *', 2);
+    const e4 = pack.attacks.find((a) => a.square === 'e4')!;
+    expect(e4).toMatchObject({ attackedBy: ['pawn d5'], defendedBy: [], hanging: true });
+    const d5 = pack.attacks.find((a) => a.square === 'd5')!;
+    expect(d5).toMatchObject({ attackedBy: ['pawn e4'], defendedBy: ['queen d8'], hanging: false });
+  });
+
+  it('flags a defended piece attacked by a cheaper piece as hanging', async () => {
+    // After 1. e4 d5 2. e5 Nf6 3. Qe2 ... use a position where a knight is attacked by a pawn but defended.
+    const pack = await packFor('1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bb4+ 5. c3 Nf6 6. cxb4 *', 11);
+    const c = new Chess(pack.anchor.fen);
+    expect(c.attackers('d4', 'b')).toContain('c6');
+    const n = pack.attacks.find((a) => a.square === 'd4')!;
+    expect(n.piece).toBe('knight');
+    expect(n.attackedBy).toContain('knight c6');
+    expect(n.defendedBy).toEqual(['queen d1']);
+    expect(n.hanging).toBe(false);
+  });
+
+  it('lists the king only when it is in check', async () => {
+    const quiet = await packFor('1. e4 e5 *', 2);
+    expect(quiet.attacks.some((a) => a.piece === 'king')).toBe(false);
+    const check = await packFor('1. e4 f5 2. Qh5+ *', 3);
+    expect(check.attacks.find((a) => a.piece === 'king')).toMatchObject({ square: 'e8', color: 'black', attackedBy: ['queen h5'], hanging: false });
+  });
+});

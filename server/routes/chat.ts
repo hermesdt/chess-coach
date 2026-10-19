@@ -16,6 +16,7 @@ import type { StreamEvent, StreamHub } from '../chat/stream-hub.js';
 import { buildFactPack, describeAnchorOf } from '../chat/fact-pack.js';
 import { getSettings, hasStrongerModel, resolveChatModel, resolveDeepModel, type ResolvedSettings } from '../config.js';
 import type { EnginePool } from '../engine/pool.js';
+import type { EngineLines } from '../engine/uci.js';
 import { runJob } from '../jobs.js';
 import type { EngineCache } from '../engine/cache.js';
 import { currentLevel } from '../level.js';
@@ -46,8 +47,33 @@ function anchorError(db: DatabaseSync, gameId: number, anchor: unknown): string 
   return null;
 }
 
+/** The position of a checked anchor. */
+function anchorFen(db: DatabaseSync, gameId: number, anchor: { ply: number; path: string[] }): string {
+  const game = loadGame(db, gameId)!;
+  const chess = new Chess(anchor.ply === 0 ? game.startFen : game.moves[anchor.ply - 1]!.fenAfter);
+  for (const u of anchor.path) chess.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u.length > 4 ? u.slice(4) : undefined });
+  return chess.fen();
+}
+
 export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<EnginePool, 'analyse'>, getReps: () => Repertoire[], hub: StreamHub, cache?: EngineCache): Hono {
   const HEARTBEAT_MS = 15_000;
+  /** Positions that a prefetch is searching now. */
+  const prefetching = new Set<string>();
+
+  /** Searches the anchor's MultiPV 3 into the cache. Errors are ignored: a prefetch only saves time. */
+  async function prefetch(fen: string, nodes: number): Promise<void> {
+    const key = fen.split(' ').slice(0, 4).join(' ');
+    if (!cache || prefetching.has(key) || cache.get(fen, 3, nodes) || new Chess(fen).isGameOver()) return;
+    prefetching.add(key);
+    try {
+      const found = await pool.analyse(fen, { nodes, multipv: 3 });
+      if (found.length > 0) cache.set(fen, 3, found, (found as EngineLines).nodes ?? nodes);
+    } catch {
+      // Ignored on purpose.
+    } finally {
+      prefetching.delete(key);
+    }
+  }
 
   /** Runs the answer for a pending message as a job. The result goes on the message row. */
   function startAnswer(rec: ChatRecord, requested: ProviderId | undefined): number {
@@ -137,6 +163,20 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
       const describe = describeAnchorOf(loadGame(db, gameId)!, anchor);
       const rec = insertPending(db, { gameId, question, anchor: { ply: anchor.ply, path: anchor.path, describe } });
       return c.json({ messageId: rec.id, jobId: startAnswer(rec, provider) });
+    })
+    .post('/games/:id/chat/prefetch', async (c) => {
+      const id = parseId(c.req.param('id'));
+      const gameId = id === null ? null : canonicalGameId(db, id);
+      if (gameId === null) return c.json({ error: 'not found' }, 404);
+      const body = (await c.req.json().catch(() => null)) as { anchor?: unknown } | null;
+      const bad = anchorError(db, gameId, body?.anchor);
+      if (bad) return c.json({ error: bad }, 400);
+      try {
+        void prefetch(anchorFen(db, gameId, body!.anchor as { ply: number; path: string[] }), getSettings(db).engineNodes);
+      } catch {
+        // Unreadable settings: skip the prefetch.
+      }
+      return c.json({ started: true }, 202);
     })
     .get('/chat/:messageId/stream', (c) => {
       const id = parseId(c.req.param('messageId'));

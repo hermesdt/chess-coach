@@ -2,7 +2,8 @@ import { useState, type ReactNode } from 'react';
 
 interface Props {
   moves: ReactNode;
-  chat: ReactNode;
+  /** The chat panel. A function gets whether the tab is shown. */
+  chat: ReactNode | ((shown: boolean) => ReactNode);
   /** Tab shown first. */
   initial?: 'chat';
 }
@@ -30,7 +31,7 @@ export function GameTabs({ moves, chat, initial }: Props) {
       </div>
       {/* Both panels stay mounted so the chat keeps its draft and pending job while the Moves tab is open. */}
       <div role="tabpanel" hidden={active !== 'Moves'}>{moves}</div>
-      <div role="tabpanel" hidden={active !== 'Coach chat'}>{chat}</div>
+      <div role="tabpanel" hidden={active !== 'Coach chat'}>{typeof chat === 'function' ? chat(active === 'Coach chat') : chat}</div>
     </div>
   );
 }

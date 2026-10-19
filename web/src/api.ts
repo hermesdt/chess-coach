@@ -107,6 +107,9 @@ export const api = {
   getChat: (gameId: number) => request<ChatMessageDTO[]>(`/games/${gameId}/chat`),
   sendChat: (gameId: number, body: { question: string; anchor: { ply: number; path: string[] }; provider?: ProviderId }) =>
     post<{ messageId: number; jobId: number }>(`/games/${gameId}/chat`, body),
+  deeperChat: (messageId: number) => post<{ messageId: number; jobId: number }>(`/chat/${messageId}/deeper`, {}),
+  /** Warms the engine cache for the anchor. Fire and forget. */
+  prefetchChat: (gameId: number, anchor: { ply: number; path: string[] }) => post<{ started: boolean }>(`/games/${gameId}/chat/prefetch`, { anchor }),
   retryChat: (messageId: number) => post<{ jobId: number }>(`/chat/${messageId}/retry`, {}),
   chatReviewCard: (messageId: number, lineId?: string) =>
     post<{ cardId: number }>(`/chat/${messageId}/review-card`, lineId ? { lineId } : {}),

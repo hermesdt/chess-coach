@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ChatLineDTO, ChatMessageDTO, Job } from '../../../shared/types';
 import { api } from '../api';
 import { CoachChat } from './CoachChat';
@@ -22,11 +22,39 @@ const job = (status: Job['status']): Job => ({ id: 9, kind: 'chat', status, prog
 const scrollIntoView = vi.fn();
 Element.prototype.scrollIntoView = scrollIntoView;
 
+beforeEach(() => {
+  MockEventSource.instances = [];
+  vi.stubGlobal('EventSource', MockEventSource);
+  vi.spyOn(api, 'prefetchChat').mockResolvedValue(undefined as never);
+});
+
 afterEach(() => {
+  vi.unstubAllGlobals();
   scrollIntoView.mockClear();
   cleanup();
   vi.restoreAllMocks();
 });
+
+class MockEventSource {
+  static instances: MockEventSource[] = [];
+  closed = false;
+  private listeners = new Map<string, ((e: MessageEvent) => void)[]>();
+  constructor(readonly url: string) {
+    MockEventSource.instances.push(this);
+  }
+  addEventListener(type: string, fn: (e: MessageEvent) => void) {
+    this.listeners.set(type, [...(this.listeners.get(type) ?? []), fn]);
+  }
+  close() {
+    this.closed = true;
+  }
+  emit(type: string, data?: unknown) {
+    const event = new MessageEvent(type, data === undefined ? {} : { data: JSON.stringify(data) });
+    act(() => this.listeners.get(type)?.forEach((fn) => fn(event)));
+  }
+}
+const stream = (id: number) => MockEventSource.instances.filter((s) => s.url === `/api/chat/${id}/stream`).at(-1)!;
+const pendingMsg = (extra: Partial<ChatMessageDTO> = {}): ChatMessageDTO => answered({ id: 7, status: 'pending', answer: null, question: 'Why Nf3?', ...extra });
 
 function setup(messages: ChatMessageDTO[], props: Partial<Parameters<typeof CoachChat>[0]> = {}) {
   vi.spyOn(api, 'getChat').mockResolvedValue(messages);
@@ -152,5 +180,131 @@ describe('CoachChat', () => {
     setup([answered()]);
     await screen.findByText('Develop your knight.');
     await waitFor(() => expect(scrollIntoView).toHaveBeenCalled());
+  });
+
+  describe('streaming', () => {
+    it('opens a stream for a pending message and shows the thinking state until text arrives', async () => {
+      setup([pendingMsg()]);
+      expect(await screen.findByText('The coach is thinking…')).toBeTruthy();
+      expect(stream(7)).toBeTruthy();
+      expect(screen.queryByText('checking…')).toBeNull();
+    });
+
+    it('shows the streamed text with a checking mark, as paragraphs', async () => {
+      setup([pendingMsg()]);
+      await screen.findByText('The coach is thinking…');
+      stream(7).emit('delta', { text: 'Nf3 is good.\n\nIt develops.' });
+      expect(await screen.findByText('Nf3 is good.')).toBeTruthy();
+      expect(screen.getByText('It develops.').tagName).toBe('P');
+      expect(screen.getByText('checking…')).toBeTruthy();
+      expect(screen.queryByText('The coach is thinking…')).toBeNull();
+      stream(7).emit('delta', { text: 'Nf3 is good. More.' });
+      expect(await screen.findByText('Nf3 is good. More.')).toBeTruthy();
+    });
+
+    it('clears the text on retry and shows the correcting note', async () => {
+      setup([pendingMsg()]);
+      await screen.findByText('The coach is thinking…');
+      stream(7).emit('delta', { text: 'Wrong claim.' });
+      await screen.findByText('Wrong claim.');
+      stream(7).emit('retry');
+      expect(await screen.findByText('The coach is correcting its answer…')).toBeTruthy();
+      expect(screen.queryByText('Wrong claim.')).toBeNull();
+      stream(7).emit('delta', { text: 'Better claim.' });
+      expect(await screen.findByText('Better claim.')).toBeTruthy();
+      expect(screen.queryByText('The coach is correcting its answer…')).toBeNull();
+    });
+
+    it('closes the stream and refetches on done, then shows lines, Go deeper and the rule', async () => {
+      const get = vi.spyOn(api, 'getChat').mockResolvedValueOnce([pendingMsg()]).mockResolvedValue([answered({ id: 7, question: 'Why Nf3?', deeperAvailable: true })]);
+      render(<MemoryRouter><CoachChat gameId={5} analysed anchor={anchor} onShowLine={() => {}} onShowAnchor={() => {}} onAnalyse={() => {}} /></MemoryRouter>);
+      await screen.findByText('The coach is thinking…');
+      stream(7).emit('done');
+      expect(await screen.findByText('Develop your knight.')).toBeTruthy();
+      expect(stream(7).closed).toBe(true);
+      expect(get.mock.calls.length).toBeGreaterThanOrEqual(2);
+      expect(screen.getByRole('button', { name: /Line 1/ })).toBeTruthy();
+      expect(screen.getByRole('button', { name: 'Go deeper' })).toBeTruthy();
+      expect(screen.getByText('Develop pieces early')).toBeTruthy();
+    });
+
+    it('closes the stream and refetches on a server error event', async () => {
+      const get = vi.spyOn(api, 'getChat').mockResolvedValueOnce([pendingMsg()]).mockResolvedValue([answered({ id: 7, status: 'error', error: 'The coach did not answer.', answer: null })]);
+      render(<MemoryRouter><CoachChat gameId={5} analysed anchor={anchor} onShowLine={() => {}} onShowAnchor={() => {}} onAnalyse={() => {}} /></MemoryRouter>);
+      await screen.findByText('The coach is thinking…');
+      stream(7).emit('error', { message: 'The coach did not answer.' });
+      expect(await screen.findByText('The coach did not answer.')).toBeTruthy();
+      expect(stream(7).closed).toBe(true);
+      expect(get.mock.calls.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('closes every stream on unmount', async () => {
+      vi.spyOn(api, 'getChat').mockResolvedValue([pendingMsg()]);
+      const view = render(<MemoryRouter><CoachChat gameId={5} analysed anchor={anchor} onShowLine={() => {}} onShowAnchor={() => {}} onAnalyse={() => {}} /></MemoryRouter>);
+      await screen.findByText('The coach is thinking…');
+      view.unmount();
+      expect(MockEventSource.instances.length).toBeGreaterThan(0);
+      expect(MockEventSource.instances.every((s) => s.closed)).toBe(true);
+    });
+  });
+
+  describe('go deeper', () => {
+    it('shows Go deeper only when available and no deep answer exists', async () => {
+      setup([answered({ deeperAvailable: false })]);
+      await screen.findByText('Develop your knight.');
+      expect(screen.queryByRole('button', { name: 'Go deeper' })).toBeNull();
+      cleanup();
+      const deep = answered({ id: 2, deep: true, parentId: 1, provider: 'claude-cli', model: 'opus', answer: { text: 'Deep text.', lines: [], rule: '', lessonId: null } });
+      setup([answered({ deeperAvailable: true }), deep]);
+      await screen.findByText('Deep text.');
+      expect(screen.queryByRole('button', { name: 'Go deeper' })).toBeNull();
+    });
+
+    it('posts to deeper and follows the new pending message', async () => {
+      setup([answered({ deeperAvailable: true })]);
+      const deeper = vi.spyOn(api, 'deeperChat').mockResolvedValue({ messageId: 2, jobId: 9 });
+      vi.spyOn(api, 'getJob').mockResolvedValue(job('running'));
+      fireEvent.click(await screen.findByRole('button', { name: 'Go deeper' }));
+      await waitFor(() => expect(deeper).toHaveBeenCalledWith(1));
+      expect(await screen.findByText('The coach is thinking…')).toBeTruthy();
+    });
+
+    it('shows a deep answer directly under its parent with a label and provider text', async () => {
+      const deep = answered({ id: 3, turn: 2, deep: true, parentId: 1, provider: 'claude-cli', model: 'claude-opus', answer: { text: 'Deep text.', lines: [], rule: '', lessonId: null } });
+      const other = answered({ id: 2, turn: 3, question: 'A later question?', answer: { text: 'Later text.', lines: [], rule: '', lessonId: null } });
+      setup([answered(), other, deep]);
+      const label = await screen.findByText('Deeper answer');
+      expect(screen.getByText('claude-cli · claude-opus')).toBeTruthy();
+      const order = screen.getAllByText(/Develop your knight\.|Deep text\.|Later text\./).map((n) => n.textContent);
+      expect(order).toEqual(['Develop your knight.', 'Deep text.', 'Later text.']);
+      expect(label).toBeTruthy();
+    });
+  });
+
+  describe('prefetch', () => {
+    it('calls prefetch once, debounced, when the tab is visible', async () => {
+      const prefetch = vi.spyOn(api, 'prefetchChat').mockResolvedValue(undefined as never);
+      setup([], { visible: true });
+      await waitFor(() => expect(prefetch).toHaveBeenCalledWith(5, { ply: 2, path: [] }), { timeout: 2000 });
+      expect(prefetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not prefetch while the tab is hidden', async () => {
+      const prefetch = vi.spyOn(api, 'prefetchChat').mockResolvedValue(undefined as never);
+      setup([], { visible: false });
+      await new Promise((r) => setTimeout(r, 700));
+      expect(prefetch).not.toHaveBeenCalled();
+    });
+
+    it('prefetches again when the draft goes from empty to non-empty', async () => {
+      const prefetch = vi.spyOn(api, 'prefetchChat').mockResolvedValue(undefined as never);
+      setup([], { visible: true });
+      await waitFor(() => expect(prefetch).toHaveBeenCalledTimes(1), { timeout: 2000 });
+      fireEvent.change(await screen.findByPlaceholderText('Ask about this position…'), { target: { value: 'W' } });
+      await waitFor(() => expect(prefetch).toHaveBeenCalledTimes(2), { timeout: 2000 });
+      fireEvent.change(screen.getByPlaceholderText('Ask about this position…'), { target: { value: 'Wh' } });
+      await new Promise((r) => setTimeout(r, 700));
+      expect(prefetch).toHaveBeenCalledTimes(2);
+    });
   });
 });

@@ -185,3 +185,7 @@ button.big:hover:not(:disabled) { background: #0757b3; }
 .link-button { background: none; border: none; padding: 0; color: #0969da; cursor: pointer; text-align: left; font: inherit; }
 .chat-context { font-size: 0.85em; }
 .chat-why { margin: 0.1rem 0 0.4rem; }
+.chat-streaming p { margin: 0.25rem 0 0.6rem; white-space: pre-line; }
+.chat-checking { font-style: italic; }
+.chat-deep { margin-top: 0.6rem; padding-top: 0.4rem; border-top: 1px dashed #d0d7de; }
+.chat-deep-label { margin: 0 0 0.25rem; }

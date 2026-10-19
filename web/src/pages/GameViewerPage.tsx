@@ -358,9 +358,10 @@ export function GameViewerPage() {
         <GameTabs
           moves={<MoveList tree={tree} current={shown} onSelect={(id) => { setMomentPly(null); setCurrent(id); }} analysis={done?.moves} />}
           initial={query.get('tab') === 'chat' ? 'chat' : undefined}
-          chat={
+          chat={(shown) => (
             <CoachChat
               key={game.id}
+              visible={shown}
               gameId={game.id}
               analysed={done !== null}
               anchor={chatAnchor}
@@ -368,7 +369,7 @@ export function GameViewerPage() {
               onShowAnchor={showAnchor}
               onAnalyse={() => { void api.analyseGame(game.id).then(loadAnalysis); }}
             />
-          }
+          )}
         />
       </div>
       {done && <CoachPanel key={game.id} gameId={game.id} notes={notes} active={activeNote} onActive={setActiveNote} onChanged={reloadNotes} error={notesError} />}
