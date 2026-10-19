@@ -1,0 +1,50 @@
+{
+  "id": "blunder-check",
+  "order": 1,
+  "level": 1,
+  "title": "Blunder check",
+  "summary": "Before every move, ask what your opponent attacks and what they can take after your move.",
+  "tags": [
+    "hung_piece"
+  ],
+  "body": "### Ask before you move\n\nMost games at your level end with one big mistake. You leave a piece alone. Or you miss what your opponent attacks. One short habit stops most of these mistakes.\n\nBefore every move, ask two questions:\n\n- What did my opponent's last move attack?\n- After my move, what can my opponent take?\n\nPawns are the most common danger. A pawn that attacks your bishop or knight forces you to move it. A small piece can also attack your queen. Do not forget it.\n\nSometimes one move attacks two pieces at once. This is a **fork**. Look for forks before your opponent finds them.\n\nFollow these steps on every move:\n\n- Look at the piece your opponent just moved.\n- List what it attacks now.\n- Choose your move.\n- Look at the square where your piece will land. Can an enemy piece take it?\n\nThis check takes only a few seconds. You will not see every danger. But you will stop most simple blunders, and that wins many games.\n\nDo the check even when you feel sure. Players make most blunders when they feel sure.\n\nRule of thumb: before you move, ask what they can take.",
+  "exercises": [
+    {
+      "id": "pawn-hits-bishop",
+      "fen": "r2qkbnr/pp1nppp1/2p3bp/7P/3P4/5NN1/PPP2PP1/R1BQKB1R b KQkq - 0 8",
+      "prompt": "Black to move. Your bishop is attacked. Keep it safe.",
+      "solution": [
+        "g6h7"
+      ],
+      "explanation": "The pawn on h5 attacks your bishop on g6. Bh7 is a safe square. Bf5 is a mistake, because the knight on g3 takes it."
+    },
+    {
+      "id": "queen-attacked",
+      "fen": "rn2kb1r/pp3ppp/2p1pn2/q2N1b2/2BP4/5N2/PPPB1PPP/R2QK2R b KQkq - 1 8",
+      "prompt": "Black to move. Your queen is attacked. Find the safe square.",
+      "solution": [
+        "a5d8"
+      ],
+      "explanation": "The bishop on d2 attacks your queen on a5. Qd8 is safe. Qxd5 loses the queen, because the bishop on c4 takes it and you get only two small pieces."
+    },
+    {
+      "id": "two-pieces-hit",
+      "fen": "r1b2rk1/pp2bppp/1qn1pn2/3p4/2pP1B2/1QPBPN2/PP1N1PPP/R4RK1 w - - 0 10",
+      "prompt": "White to move. Your queen and your bishop are attacked. Do not lose a piece.",
+      "solution": [
+        "b3b6"
+      ],
+      "explanation": "The pawn on c4 attacks your queen on b3 and your bishop on d3. Qxb6 trades queens, so you can move the bishop next. Most other moves lose a piece."
+    },
+    {
+      "id": "bishop-pawn-b5",
+      "fen": "r1bqk2r/2ppbppp/p1n2n2/1p2p3/B3P3/5N2/PPPP1PPP/RNBQR1K1 w kq - 0 7",
+      "prompt": "White to move. Your bishop is attacked. Keep it safe.",
+      "solution": [
+        "a4b3"
+      ],
+      "explanation": "The pawn on b5 attacks your bishop on a4. Bb3 is a safe square and the bishop stays active. Other moves, such as d4, lose the bishop."
+    }
+  ],
+  "links": []
+}

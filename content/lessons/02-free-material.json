@@ -1,0 +1,59 @@
+{
+  "id": "free-material",
+  "order": 2,
+  "level": 1,
+  "title": "Free stuff",
+  "summary": "Look at every check, capture and threat on each move. Take what your opponent leaves free.",
+  "tags": [
+    "missed_capture"
+  ],
+  "body": "### Take what is free\n\nFree material is a piece or a pawn that you can win at no cost. At your level, your opponent leaves something free in many games. You win games when you see these gifts.\n\nPlayers miss gifts because they look only at their own plan. They do not look at all the moves.\n\nUse this order on every move: **checks, captures, threats**.\n\n- **Checks.** Can you give check? A check forces your opponent to answer. It often wins a piece, and sometimes the game.\n- **Captures.** Can you take something? Ask if the piece is guarded. A piece that nobody guards is a free gift.\n- **Threats.** Can you attack two things at once? Can you attack a piece that nobody guards?\n\nLook at every check first. Then look at every capture. Then look at every threat. Only then choose your move.\n\nOne warning: a free piece can be a trap. Before you take, ask what your opponent can do after the capture. This is the blunder check from lesson 1. But do not be afraid. Most gifts are real.\n\nSome gifts only look scary. In one exercise below, the capture lets White take your queen. Count the moves to the end and you will see that you win.\n\nRule of thumb: on every move, look at checks, captures and threats.",
+  "exercises": [
+    {
+      "id": "knight-mate",
+      "fen": "r1bqkb1r/pp1npppp/2p2n2/8/3PN3/8/PPP1QPPP/R1B1KBNR w KQkq - 3 6",
+      "prompt": "White to move. Find the check that ends the game.",
+      "solution": [
+        "e4d6"
+      ],
+      "explanation": "Nd6 is checkmate. The queen on e2 pins the pawn on e7, so no piece can take the knight. Quiet moves like Nf3 let Black escape."
+    },
+    {
+      "id": "discovered-check",
+      "fen": "rnbqkb1r/pppp1ppp/5n2/4N3/8/8/PPPPQPPP/RNB1KB1R w KQkq - 2 5",
+      "prompt": "White to move. Find the check that wins a lot of material.",
+      "solution": [
+        "e5c6"
+      ],
+      "explanation": "The knight moves away and the queen on e2 gives check along the e-file. The knight also attacks the black queen on d8. Black must answer the check, and then you win the queen for a knight or better."
+    },
+    {
+      "id": "free-bishop",
+      "fen": "r1b2rk1/pp2bppp/1qn1pn2/3p4/2pP1B2/2PBPN2/PPQN1PPP/R4RK1 b - - 1 10",
+      "prompt": "Black to move. Win material.",
+      "solution": [
+        "c4d3"
+      ],
+      "explanation": "The pawn takes the bishop on d3. White can only take back a pawn with the queen. Other moves let White save the bishop."
+    },
+    {
+      "id": "free-knight",
+      "fen": "r1bqkb1r/pppn1ppp/5n2/3N2B1/3P4/8/PP2PPPP/R2QKBNR b KQkq - 0 6",
+      "prompt": "Black to move. Win material.",
+      "solution": [
+        "f6d5"
+      ],
+      "explanation": "The knight on d5 is free. White can try Bxd8, but Bb4+ and then Kxd8 leave Black a piece up. A quiet move like h6 lets White save the knight."
+    },
+    {
+      "id": "legal-trap",
+      "fen": "rn1qkbnr/ppp2p1p/3p2p1/4p3/2B1P1b1/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 5",
+      "prompt": "White to move. Take with a threat.",
+      "solution": [
+        "f3e5"
+      ],
+      "explanation": "Nxe5 takes a pawn and hits the bishop on g4. If Black takes your queen, Bxf7+ Ke7 Nd5 is checkmate. If Black takes the knight, Qxg4 wins the bishop."
+    }
+  ],
+  "links": []
+}
