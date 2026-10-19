@@ -48,9 +48,9 @@ export function hasPending(db: DatabaseSync, gameId: number): boolean {
   return db.prepare("SELECT 1 FROM chat_messages WHERE game_id = ? AND status = 'pending' LIMIT 1").get(gameId) !== undefined;
 }
 
-export function insertPending(db: DatabaseSync, m: { gameId: number; question: string; anchor: { ply: number; path: string[] } }): ChatRecord {
+export function insertPending(db: DatabaseSync, m: { gameId: number; question: string; anchor: ChatAnchor }): ChatRecord {
   const turn = Number(db.prepare('SELECT COALESCE(MAX(turn), 0) + 1 AS t FROM chat_messages WHERE game_id = ?').get(m.gameId)!.t);
-  const anchor: ChatAnchor = { ply: m.anchor.ply, path: m.anchor.path, describe: '' };
+  const anchor: ChatAnchor = { ply: m.anchor.ply, path: m.anchor.path, describe: m.anchor.describe };
   const res = db.prepare(
     "INSERT INTO chat_messages (game_id, turn, question, anchor_json, status, created_at) VALUES (?, ?, ?, ?, 'pending', ?)",
   ).run(m.gameId, turn, m.question, JSON.stringify(anchor), Date.now());

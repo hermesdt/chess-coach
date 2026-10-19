@@ -28,13 +28,13 @@ beforeEach(() => {
 
 describe('chat_messages schema', () => {
   it('deletes a game\'s messages with the game', () => {
-    insertPending(db, { gameId: 1, question: 'q', anchor: { ply: 0, path: [] } });
+    insertPending(db, { gameId: 1, question: 'q', anchor: { ply: 0, path: [], describe: 'x' } });
     db.prepare('DELETE FROM games WHERE id = 1').run();
     expect(db.prepare('SELECT COUNT(*) AS n FROM chat_messages').get()).toEqual({ n: 0 });
   });
 
   it('rejects a message for an unknown game', () => {
-    expect(() => insertPending(db, { gameId: 99, question: 'q', anchor: { ply: 0, path: [] } })).toThrow();
+    expect(() => insertPending(db, { gameId: 99, question: 'q', anchor: { ply: 0, path: [], describe: 'x' } })).toThrow();
   });
 
   it('rejects a second message with the same game and turn', () => {
@@ -51,7 +51,7 @@ describe('chat_messages schema', () => {
 
 describe('chat repo', () => {
   it('round-trips a message and resolves lines in answer order', () => {
-    const m = insertPending(db, { gameId: 1, question: 'why?', anchor: { ply: 2, path: [] } });
+    const m = insertPending(db, { gameId: 1, question: 'why?', anchor: { ply: 2, path: [], describe: 'x' } });
     expect(m).toMatchObject({ turn: 1, status: 'pending' });
     expect(hasPending(db, 1)).toBe(true);
     savePack(db, m.id, pack);
@@ -62,13 +62,13 @@ describe('chat repo', () => {
       { id: 't1.L2', label: 'Line 1', san: ['d4'], uci: ['d2d4'], startFen: 'f', winPctForUser: 52, why: 'Central.' },
       { id: 't1.L1', label: 'Line 2', san: ['Nf3'], uci: ['g1f3'], startFen: 'f', winPctForUser: 55, why: 'Develops.' },
     ]);
-    expect(insertPending(db, { gameId: 1, question: 'again', anchor: { ply: 0, path: [] } }).turn).toBe(2);
+    expect(insertPending(db, { gameId: 1, question: 'again', anchor: { ply: 0, path: [], describe: 'x' } }).turn).toBe(2);
     expect(listRecords(db, 1)).toHaveLength(2);
   });
 
   it('marks pending messages as errors on startup', () => {
-    const m = insertPending(db, { gameId: 1, question: 'q', anchor: { ply: 0, path: [] } });
-    const f = insertPending(db, { gameId: 1, question: 'q2', anchor: { ply: 0, path: [] } });
+    const m = insertPending(db, { gameId: 1, question: 'q', anchor: { ply: 0, path: [], describe: 'x' } });
+    const f = insertPending(db, { gameId: 1, question: 'q2', anchor: { ply: 0, path: [], describe: 'x' } });
     failMessage(db, f.id, 'boom');
     expect(markInterruptedChats(db)).toBe(1);
     expect(getRecord(db, m.id)).toMatchObject({ status: 'error', error: RESTART_ERROR });
@@ -77,7 +77,7 @@ describe('chat repo', () => {
 
   it('keeps the last 10 done turns before a turn, oldest first', () => {
     for (let i = 0; i < 12; i++) {
-      const m = insertPending(db, { gameId: 1, question: `q${i}`, anchor: { ply: 0, path: [] } });
+      const m = insertPending(db, { gameId: 1, question: `q${i}`, anchor: { ply: 0, path: [], describe: 'x' } });
       savePack(db, m.id, pack);
       completeMessage(db, m.id, { answer, provider: 'claude-cli', model: 'x' });
     }

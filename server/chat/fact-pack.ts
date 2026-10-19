@@ -170,6 +170,23 @@ function describeAnchor(
   return `a side line: ${parts.join(' ')} (after ${mainLabel})`;
 }
 
+/** The anchor's context text from the game and anchor alone (no engine). The same text goes into the fact pack. */
+export function describeAnchorOf(
+  game: { startFen: string; moves: { san: string; fenAfter: string }[]; userColor: Color | null },
+  anchor: { ply: number; path: string[] },
+): string {
+  const mainFen = anchor.ply === 0 ? game.startFen : game.moves[anchor.ply - 1]!.fenAfter;
+  const chess = new Chess(mainFen);
+  const pathSan: string[] = [];
+  for (const u of anchor.path) {
+    const m = playUci(chess, u);
+    if (!m) throw new Error(`Illegal move ${u} in the branch`);
+    pathSan.push(m.san);
+  }
+  const userToMove = game.userColor !== null && colorOf(chess.turn()) === game.userColor;
+  return describeAnchor(game, anchor.ply, anchor.path, chess.fen(), mainFen, userToMove, pathSan);
+}
+
 export async function buildFactPack(deps: FactPackDeps, input: FactPackInput): Promise<FactPack> {
   const { db, pool, reps, nodes } = deps;
   const game = loadGame(db, input.gameId);

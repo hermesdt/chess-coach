@@ -124,6 +124,19 @@ describe('chat routes', () => {
     expect(calls).toBe(0);
   });
 
+  it('has the anchor text on a message that fails before the fact pack', async () => {
+    available = false;
+    await askAndWait();
+    expect((await list())[0]!.anchor.describe).toBe('the position after 1...Nf6 (your move 2)');
+  });
+
+  it('ends in error, not pending, when reading the settings throws', async () => {
+    db.exec('DROP TABLE settings');
+    const messageId = await askAndWait();
+    expect((await list())[0]).toMatchObject({ id: messageId, status: 'error' });
+    expect((await list())[0]!.error).toMatch(/settings/);
+  });
+
   it('stores an error when the provider setting is none', async () => {
     setSetting(db, 'ai_provider', 'none');
     await askAndWait();
@@ -157,7 +170,7 @@ describe('chat routes', () => {
   });
 
   it('shows interrupted messages as errors after a restart', async () => {
-    insertPending(db, { gameId: 1, question: 'q', anchor: { ply: 0, path: [] } });
+    insertPending(db, { gameId: 1, question: 'q', anchor: { ply: 0, path: [], describe: 'x' } });
     markInterruptedChats(db);
     expect((await list())[0]).toMatchObject({ status: 'error', error: 'The server restarted. Try again.' });
   });

@@ -11,8 +11,8 @@ import {
   canonicalGameId, completeMessage, doneTurns, failMessage, getRecord, hasPending, insertPending, listRecords, resetToPending, savePack, toDto,
   type ChatRecord,
 } from '../chat/chat-repo.js';
-import { buildFactPack } from '../chat/fact-pack.js';
-import { getSettings } from '../config.js';
+import { buildFactPack, describeAnchorOf } from '../chat/fact-pack.js';
+import { getSettings, type ResolvedSettings } from '../config.js';
 import type { EnginePool } from '../engine/pool.js';
 import { runJob } from '../jobs.js';
 import { currentLevel } from '../level.js';
@@ -47,9 +47,10 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
   /** Runs the answer for a pending message as a job. The result goes on the message row. */
   function startAnswer(rec: ChatRecord, requested: ProviderId | undefined): number {
     return runJob(db, 'chat', async (report) => {
-      const settings = getSettings(db);
+      let settings: ResolvedSettings | null = null;
       let providerId: ProviderId | null = null;
       try {
+        settings = getSettings(db);
         const provider = await registry.pick(requested ?? settings.aiProvider);
         if (!provider) {
           failMessage(db, rec.id, NO_COACH);
@@ -75,7 +76,7 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
         });
         completeMessage(db, rec.id, { answer, provider: provider.id, model });
       } catch (err) {
-        failMessage(db, rec.id, coachErrorMessage(err, [settings.openrouterApiKey, settings.anthropicApiKey]), providerId);
+        failMessage(db, rec.id, coachErrorMessage(err, [settings?.openrouterApiKey ?? null, settings?.anthropicApiKey ?? null]), providerId);
       }
     }).id;
   }
@@ -107,7 +108,8 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
       if (getAnalysis(db, gameId)?.status !== 'done') return c.json({ error: 'Analyse this game first.' }, 409);
       if (hasPending(db, gameId)) return c.json({ error: 'The coach is already answering. Wait for the answer.' }, 409);
       const anchor = body!.anchor as { ply: number; path: string[] };
-      const rec = insertPending(db, { gameId, question, anchor: { ply: anchor.ply, path: anchor.path } });
+      const describe = describeAnchorOf(loadGame(db, gameId)!, anchor);
+      const rec = insertPending(db, { gameId, question, anchor: { ply: anchor.ply, path: anchor.path, describe } });
       return c.json({ messageId: rec.id, jobId: startAnswer(rec, provider) });
     })
     .post('/chat/:messageId/retry', async (c) => {
