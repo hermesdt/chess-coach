@@ -31,6 +31,11 @@ tr.clickable:hover { background: #eef2f7 !important; }
 .dialog { background: #fff; border-radius: 8px; padding: 1.25rem; width: min(720px, 92vw); display: flex; flex-direction: column; gap: 0.75rem; }
 .dialog h2 { margin: 0; }
 .viewer { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-start; }
+.live-eval { margin-top: 0.5rem; font-size: 0.9rem; transition: opacity 0.15s; }
+.live-eval.loading { opacity: 0.5; }
+.live-eval p { margin: 0; }
+.live-eval .live-lines { margin: 0.15rem 0 0; padding: 0; list-style: none; color: #3d444d; }
+.live-eval .live-lines li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .viewer-board { flex: 1 1 320px; max-width: 560px; min-width: 0; }
 .move-list { flex: 1 1 200px; max-height: 560px; overflow-y: auto; background: #fff; border: 1px solid #eaeef2; border-radius: 6px; padding: 0.5rem; }
 .move-row { display: grid; grid-template-columns: 2.5rem 1fr 1fr; align-items: center; }

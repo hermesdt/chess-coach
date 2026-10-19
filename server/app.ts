@@ -11,6 +11,9 @@ import { gamesRoutes } from './routes/games.js';
 import { StreamHub } from './chat/stream-hub.js';
 import type { EnginePool } from './engine/pool.js';
 import { lazyEnginePool } from './engine/pool.js';
+import { EngineCache } from './engine/cache.js';
+import { lazyLiveEngine, type LiveEngine } from './engine/live.js';
+import { liveRoutes } from './routes/live.js';
 import { healthRoutes } from './routes/health.js';
 import { importRoutes } from './routes/import.js';
 import { insightsRoutes } from './routes/insights.js';
@@ -29,6 +32,10 @@ export interface AppDeps {
   now?: () => number;
   /** Engine pool for analysis. Defaults to the shared Stockfish pool, created on first use. */
   pool?: Pick<EnginePool, 'analyse'>;
+  /** Live engine for GET /api/live. Defaults to the dedicated Stockfish process, started on first use. */
+  live?: Pick<LiveEngine, 'analyse'>;
+  /** Engine results shared by the live eval and the chat fact pack. Defaults to one cache per app. */
+  cache?: EngineCache;
   /** Repertoires for the openings API. Defaults to `content/repertoires`, loaded on first use. */
   repertoires?: Repertoire[];
   /** Lessons for the course API. Defaults to `content/lessons`, loaded on first use. */
@@ -58,6 +65,7 @@ const localOnly: MiddlewareHandler = async (c, next) => {
 export function createApp(deps: AppDeps): Hono {
   const app = new Hono();
   const pool = deps.pool ?? lazyEnginePool;
+  const cache = deps.cache ?? new EngineCache();
   let reps = deps.repertoires;
   const getReps = () => (reps ??= loadAllRepertoires());
   let lessons = deps.lessons;
@@ -67,7 +75,8 @@ export function createApp(deps: AppDeps): Hono {
   app.route('/api', healthRoutes);
   app.route('/api', settingsRoutes(deps.db));
   app.route('/api', aiRoutes(deps.db, ai, deps.aiTestTimeoutMs, getReps));
-  app.route('/api', chatRoutes(deps.db, ai, pool, getReps, deps.hub ?? new StreamHub()));
+  app.route('/api', chatRoutes(deps.db, ai, pool, getReps, deps.hub ?? new StreamHub(), cache));
+  app.route('/api', liveRoutes(deps.live ?? lazyLiveEngine, cache));
   app.route('/api', syncRoutes(deps.db, { fetchFn: deps.fetchFn, now: deps.now, pool }, getReps));
   app.route('/api', jobsRoutes(deps.db));
   app.route('/api', gamesRoutes(deps.db));

@@ -7,6 +7,7 @@ import { parsePgn } from '../chess/pgn.js';
 import { openDb } from '../db/db.js';
 import { insertGames } from '../db/games-repo.js';
 import type { EngineLine } from '../engine/uci.js';
+import { EngineCache } from '../engine/cache.js';
 import { loadRepertoire } from '../repertoire/load.js';
 import { buildFactPack, factPackSan, NotAnalysedError } from './fact-pack.js';
 
@@ -77,6 +78,27 @@ describe('buildFactPack', () => {
     expect(pack.lines[0]).toMatchObject({ startFen: fen, san: ['Bg5', 'h6'], uci: ['c1g5', 'h7h6'], evalCp: 50, evalMate: null });
     expect(pack.anchor).toMatchObject({ fen, sideToMove: 'white', ply: 2, path: [], inBranch: false, isUserToMove: true });
     expect(pack.game.userColor).toBe('white');
+  });
+
+  it('reuses a cached MultiPV 3 for the anchor when it searched enough nodes', async () => {
+    const fen = fenAfter(2);
+    const cache = new EngineCache();
+    cache.set(fen, 3, [line(1, 77, ['c1g5', 'h7h6']), line(2, 30, ['e2e3']), line(3, 10, ['g1f3'])], 1000);
+    const pool = fakePool({ [fen]: [line(1, 50, ['c1g5'])] });
+    const pack = await buildFactPack({ db, pool, reps: [], nodes: 1000, cache }, input(2));
+    expect(pool.calls.some((c) => c.fen === fen)).toBe(false);
+    expect(pack.lines[0]).toMatchObject({ evalCp: 77 });
+  });
+
+  it('runs the pool when the cached search is too shallow, then stores the result', async () => {
+    const fen = fenAfter(2);
+    const cache = new EngineCache();
+    cache.set(fen, 3, [line(1, 77, ['c1g5'])], 999);
+    const pool = fakePool({ [fen]: [line(1, 50, ['c1g5'])] });
+    const pack = await buildFactPack({ db, pool, reps: [], nodes: 1000, cache }, input(2));
+    expect(pool.calls.filter((c) => c.fen === fen)).toHaveLength(1);
+    expect(pack.lines[0]).toMatchObject({ evalCp: 50 });
+    expect(cache.get(fen, 3, 1000)).toEqual([line(1, 50, ['c1g5'])]);
   });
 
   it('converts evals to the user view (black to move, user is white)', async () => {

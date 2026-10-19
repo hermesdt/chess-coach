@@ -5,8 +5,9 @@ import { gameFacts, type GameFacts } from '../ai/facts.js';
 import { loadGame } from '../ai/game-review.js';
 import { getAnalysis } from '../analysis/analysis-repo.js';
 import { flip, winPct } from '../analysis/winpct.js';
+import type { EngineCache } from '../engine/cache.js';
 import type { EnginePool } from '../engine/pool.js';
-import type { EngineLine } from '../engine/uci.js';
+import type { EngineLine, EngineLines } from '../engine/uci.js';
 import { currentLevel } from '../level.js';
 import type { Repertoire } from '../repertoire/types.js';
 import { parseNamedMoves } from './named-moves.js';
@@ -57,6 +58,8 @@ export interface FactPackDeps {
   pool: Pick<EnginePool, 'analyse'>;
   reps: Repertoire[];
   nodes: number;
+  /** Reuses and stores the anchor's MultiPV 3 search. */
+  cache?: EngineCache;
 }
 
 export interface FactPackInput {
@@ -188,7 +191,7 @@ export function describeAnchorOf(
 }
 
 export async function buildFactPack(deps: FactPackDeps, input: FactPackInput): Promise<FactPack> {
-  const { db, pool, reps, nodes } = deps;
+  const { db, pool, reps, nodes, cache } = deps;
   const game = loadGame(db, input.gameId);
   if (!game) throw new Error(`Game ${input.gameId} not found`);
   const analysis = getAnalysis(db, input.gameId);
@@ -234,6 +237,14 @@ export async function buildFactPack(deps: FactPackDeps, input: FactPackInput): P
     playUci(c, uci);
     return { fen: c.fen(), stm: colorOf(c.turn()), terminal: c.isGameOver() };
   };
+  /** The anchor's MultiPV 3: from the cache when it searched at least `nodes`, else from the pool (then stored). */
+  const analyseAnchor = async (): Promise<EngineLine[]> => {
+    const hit = cache?.get(fen, MULTIPV, nodes);
+    if (hit) return hit;
+    const found = await analyse(fen, MULTIPV);
+    if (found.length > 0) cache?.set(fen, MULTIPV, found, (found as EngineLines).nodes ?? nodes);
+    return found;
+  };
   const afterLines = (uci: string): Promise<EngineLine[]> => {
     const next = after(uci);
     return next.terminal ? Promise.resolve([]) : analyse(next.fen, 1);
@@ -245,7 +256,7 @@ export async function buildFactPack(deps: FactPackDeps, input: FactPackInput): P
   const repList = [...repMoves.values()];
 
   const [mainLines, refLines, nullLines, namedLines, repLines] = await Promise.all([
-    isFinal ? Promise.resolve([]) : analyse(fen, MULTIPV),
+    isFinal ? Promise.resolve([]) : analyseAnchor(),
     refFen ? analyse(refFen, 1) : Promise.resolve([]),
     nullFen ? analyse(nullFen, 1) : Promise.resolve([]),
     Promise.all(legalNamed.map((n) => afterLines(n.uci!))),

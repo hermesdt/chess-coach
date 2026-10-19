@@ -8,6 +8,7 @@ import { CoachChat, type ChatAnchor } from '../components/CoachChat';
 import { CoachPanel } from '../components/CoachPanel';
 import { GameTabs } from '../components/GameTabs';
 import { EvalGraph } from '../components/EvalGraph';
+import { LiveEval, type LiveArrow } from '../components/LiveEval';
 import { KeyMoments } from '../components/KeyMoments';
 import { MoveList } from '../components/MoveList';
 import { noteIndexFor } from '../lib/coach-notes';
@@ -73,6 +74,7 @@ export function GameViewerPage() {
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [momentPly, setMomentPly] = useState<number | null>(null);
   const [lineError, setLineError] = useState<string | null>(null);
+  const [liveArrow, setLiveArrow] = useState<LiveArrow | null>(null);
 
   useEffect(() => {
     setGame(null);
@@ -233,7 +235,9 @@ export function GameViewerPage() {
           ? []
           : [{ startSquare: moment.uci.slice(0, 2), endSquare: moment.uci.slice(2, 4), color: PLAYED_ARROW }]),
       ]
-    : [];
+    : liveArrow
+      ? [liveArrow]
+      : [];
   const selectMoment = (p: number) => {
     setCurrent(mainNode(p - 1));
     setMomentPly(p);
@@ -348,6 +352,7 @@ export function GameViewerPage() {
               }}>Back to game</button>
             )}
           </div>
+          <LiveEval fen={fenOf(tree, shown)} userColor={game.userColor} onArrow={setLiveArrow} />
           {lineError && <p className="error" role="alert">{lineError}</p>}
         </div>
         <GameTabs

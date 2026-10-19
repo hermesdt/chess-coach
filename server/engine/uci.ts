@@ -3,6 +3,10 @@ import type { EngineScore } from '../../shared/types.js';
 import { parseInfoLine, selectLines, type ParsedInfo } from './uci-parse.js';
 
 export interface EngineLine { multipv: number; score: EngineScore; pv: string[] }
+/** The lines of a search. `nodes` is the node count the search reached (UCI `info nodes`), when known. */
+export type EngineLines = EngineLine[] & { nodes?: number };
+
+const NODES = / nodes (\d+)/;
 
 export class EngineTimeoutError extends Error {
   constructor(message = 'Engine timed out') {
@@ -24,6 +28,7 @@ export class UciEngine {
   private buffer = '';
   private _alive = true;
   private busy = false;
+  private searching: Promise<void> | null = null;
 
   private constructor(private readonly proc: ChildProcessWithoutNullStreams) {
     proc.stdout.setEncoding('utf8');
@@ -57,23 +62,48 @@ export class UciEngine {
     });
   }
 
+  /** Searches with `go nodes` or, when `movetimeMs` is set, `go movetime`. */
   async analyse(
     fen: string,
-    opts: { nodes: number; multipv?: number; timeoutMs?: number },
-  ): Promise<EngineLine[]> {
+    opts: { nodes?: number; movetimeMs?: number; multipv?: number; timeoutMs?: number },
+  ): Promise<EngineLines> {
     return this.exclusive(async () => {
       const multipv = opts.multipv ?? 1;
+      const limit = opts.movetimeMs !== undefined ? `movetime ${opts.movetimeMs}` : `nodes ${opts.nodes}`;
       this.send(`setoption name MultiPV value ${multipv}`);
       await this.isReady();
       this.send(`position fen ${fen}`);
       const infos: ParsedInfo[] = [];
-      await this.request(`go nodes ${opts.nodes}`, (l) => {
+      let nodes = 0;
+      const search = this.request(`go ${limit}`, (l) => {
         const info = parseInfoLine(l);
         if (info) infos.push(info);
+        const n = l.startsWith('info') ? NODES.exec(l)?.[1] : undefined;
+        if (n !== undefined) nodes = Math.max(nodes, Number(n));
         return l.startsWith('bestmove');
-      }, opts.timeoutMs ?? DEFAULT_TIMEOUT_MS);
-      return selectLines(infos, multipv);
+      }, opts.timeoutMs ?? (opts.movetimeMs ?? 0) + DEFAULT_TIMEOUT_MS);
+      this.searching = search;
+      try {
+        await search;
+      } finally {
+        this.searching = null;
+      }
+      const lines: EngineLines = selectLines(infos, multipv);
+      if (nodes > 0) lines.nodes = nodes;
+      return lines;
     });
+  }
+
+  /** Sends `stop` and waits for the search to end with its `bestmove`. Does nothing when no search runs. */
+  async stop(): Promise<void> {
+    const search = this.searching;
+    if (!search) return;
+    try {
+      this.send('stop');
+    } catch {
+      // The engine is gone; the search promise rejects by itself.
+    }
+    await search.catch(() => undefined);
   }
 
   // Reject a concurrent call before anything is written to stdin.

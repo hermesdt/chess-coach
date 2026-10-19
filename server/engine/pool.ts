@@ -1,5 +1,5 @@
 import { availableParallelism } from 'node:os';
-import { UciEngine, type EngineLine } from './uci.js';
+import { UciEngine, type EngineLines } from './uci.js';
 import { resolveStockfishPath } from './stockfish-path.js';
 
 export interface Engine {
@@ -31,7 +31,7 @@ export class EnginePool {
     this.create = opts.create;
   }
 
-  async analyse(fen: string, opts: { nodes: number; multipv?: number }): Promise<EngineLine[]> {
+  async analyse(fen: string, opts: { nodes: number; multipv?: number }): Promise<EngineLines> {
     const engine = await this.acquire();
     try {
       const lines = await engine.analyse(fen, opts);

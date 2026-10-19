@@ -9,6 +9,7 @@ import { backupDb } from './db/backup.js';
 import { backfillMistakeCards } from './srs/backfill.js';
 import { requeuePending } from './analysis/queue.js';
 import { closeEnginePool, lazyEnginePool } from './engine/pool.js';
+import { closeLiveEngine } from './engine/live.js';
 import { markInterruptedChats } from './chat/chat-repo.js';
 import { recoverInterruptedJobs } from './jobs.js';
 import { syncLessonCards } from './course/lesson-cards.js';
@@ -88,6 +89,6 @@ server.on('error', (err: NodeJS.ErrnoException) => {
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.on(signal, () => {
-    void closeEnginePool().finally(() => process.exit(0));
+    void Promise.allSettled([closeEnginePool(), closeLiveEngine()]).finally(() => process.exit(0));
   });
 }

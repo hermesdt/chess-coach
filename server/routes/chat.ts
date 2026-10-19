@@ -17,6 +17,7 @@ import { buildFactPack, describeAnchorOf } from '../chat/fact-pack.js';
 import { getSettings, hasStrongerModel, resolveChatModel, resolveDeepModel, type ResolvedSettings } from '../config.js';
 import type { EnginePool } from '../engine/pool.js';
 import { runJob } from '../jobs.js';
+import type { EngineCache } from '../engine/cache.js';
 import { currentLevel } from '../level.js';
 import type { Repertoire } from '../repertoire/types.js';
 import { upsertCard } from '../srs/cards-repo.js';
@@ -45,7 +46,7 @@ function anchorError(db: DatabaseSync, gameId: number, anchor: unknown): string 
   return null;
 }
 
-export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<EnginePool, 'analyse'>, getReps: () => Repertoire[], hub: StreamHub): Hono {
+export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<EnginePool, 'analyse'>, getReps: () => Repertoire[], hub: StreamHub, cache?: EngineCache): Hono {
   const HEARTBEAT_MS = 15_000;
 
   /** Runs the answer for a pending message as a job. The result goes on the message row. */
@@ -66,7 +67,7 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
         providerId = provider.id;
         report(0, null, `Asking ${provider.label}…`);
         const pack = await buildFactPack(
-          { db, pool, reps: getReps(), nodes: settings.engineNodes },
+          { db, pool, reps: getReps(), nodes: settings.engineNodes, cache },
           { gameId: rec.gameId, anchor: { ply: rec.anchor.ply, path: rec.anchor.path }, question: rec.question, turn: rec.turn },
         );
         savePack(db, rec.id, pack);
