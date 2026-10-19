@@ -1,5 +1,6 @@
 import type {
   CardFlag,
+  ChatMessageDTO,
   CourseLesson,
   CourseLessonDetail,
   Color,
@@ -101,6 +102,12 @@ export const api = {
   listGames: (q: GameListQuery = {}) => request<GameList>(`/games${queryString(q)}`),
   getGame: (id: number) => request<GameDetail>(`/games/${id}`),
   getAnalysis: (id: number) => request<AnalysisResponse>(`/games/${id}/analysis`),
+  getChat: (gameId: number) => request<ChatMessageDTO[]>(`/games/${gameId}/chat`),
+  sendChat: (gameId: number, body: { question: string; anchor: { ply: number; path: string[] }; provider?: ProviderId }) =>
+    post<{ messageId: number; jobId: number }>(`/games/${gameId}/chat`, body),
+  retryChat: (messageId: number) => post<{ jobId: number }>(`/chat/${messageId}/retry`, {}),
+  chatReviewCard: (messageId: number, lineId?: string) =>
+    post<{ cardId: number }>(`/chat/${messageId}/review-card`, lineId ? { lineId } : {}),
   analyseGame: (id: number) => post<{ jobId: number | null }>(`/games/${id}/analyse`),
   queueAnalysis: (limit: number) => post<{ jobId: number | null; queued: number }>('/analysis/queue', { limit }),
   startSync: () => post<{ jobId: number; alreadyRunning?: boolean }>('/sync'),

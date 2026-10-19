@@ -133,3 +133,29 @@ export function prev(tree: VarTree, id: NodeId | 'root'): NodeId | 'root' | null
   if (id === 'root') return null;
   return tree.nodes[id].parent ?? 'root';
 }
+
+const moveLabel = (fullmove: number, white: boolean, san: string): string => (white ? `${fullmove}. ${san}` : `${fullmove}...${san}`);
+
+/** Context line for a node, in the wording the server uses for the same anchor. */
+export function describeNode(tree: VarTree, id: NodeId | 'root', userColor: 'white' | 'black' | null): string {
+  const { ply, path } = pathFromMain(tree, id);
+  if (ply === 0 && path.length === 0) return 'the start position';
+  const mainFen = fenOf(tree, ply === 0 ? 'root' : `m${ply}`);
+  const mainLabel = ply === 0 ? 'the start position' : moveLabel(Math.ceil(ply / 2), ply % 2 === 1, tree.nodes[`m${ply}`].san);
+  if (path.length === 0) {
+    const fields = mainFen.split(' ');
+    const mover = fields[1] === 'w' ? 'white' : 'black';
+    return `the position after ${mainLabel} (${mover === userColor ? 'your' : 'their'} move ${Number(fields[5])})`;
+  }
+  const sans: string[] = [];
+  for (let cur: NodeId | null = id as NodeId; cur && !tree.nodes[cur].mainline; cur = tree.nodes[cur].parent) sans.unshift(tree.nodes[cur].san);
+  let n = Number(mainFen.split(' ')[5]);
+  let white = mainFen.split(' ')[1] === 'w';
+  const parts = sans.map((san, i) => {
+    const text = white ? `${n}. ${san}` : i === 0 ? `${n}...${san}` : san;
+    if (!white) n++;
+    white = !white;
+    return text;
+  });
+  return `a side line: ${parts.join(' ')} (after ${mainLabel})`;
+}

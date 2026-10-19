@@ -1,7 +1,7 @@
 import { Chess } from 'chess.js';
 import { describe, expect, it } from 'vitest';
 import type { MoveInfo } from '../../../shared/types';
-import { addLine, addMove, branchPoint, createTree, fenOf, next, pathFromMain, prev } from './variations';
+import { addLine, addMove, branchPoint, createTree, describeNode, fenOf, next, pathFromMain, prev } from './variations';
 
 function movesFrom(sans: string[]): { start: string; moves: MoveInfo[] } {
   const chess = new Chess();
@@ -100,5 +100,17 @@ describe('variations', () => {
     expect(prev(b.tree, a.node)).toBe('m1');
     expect(prev(b.tree, 'm1')).toBe('root');
     expect(prev(b.tree, 'root')).toBeNull();
+  });
+
+  it('describes nodes with the server wording', () => {
+    const tree = createTree(start, moves);
+    expect(describeNode(tree, 'root', 'white')).toBe('the start position');
+    expect(describeNode(tree, 'm2', 'white')).toBe('the position after 1...e5 (your move 2)');
+    expect(describeNode(tree, 'm3', 'white')).toBe('the position after 2. Nf3 (their move 2)');
+    expect(describeNode(tree, 'm2', 'black')).toBe('the position after 1...e5 (their move 2)');
+    const { tree: t2, last } = addLine(tree, 'm2', ['b1c3', 'g8f6'], 'x');
+    expect(describeNode(t2, last, 'white')).toBe('a side line: 2. Nc3 Nf6 (after 1...e5)');
+    const { tree: t3, last: l3 } = addLine(tree, 'm1', ['c7c5'], 'x');
+    expect(describeNode(t3, l3, 'white')).toBe('a side line: 1...c5 (after 1. e4)');
   });
 });

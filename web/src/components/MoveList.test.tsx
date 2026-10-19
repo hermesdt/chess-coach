@@ -50,12 +50,18 @@ describe('MoveList', () => {
 });
 
 describe('GameTabs', () => {
-  it('shows Moves by default and the chat placeholder on the other tab', () => {
+  it('shows Moves by default and keeps both panels mounted', () => {
     render(<GameTabs moves={<p>moves here</p>} chat={<p>chat here</p>} />);
-    expect(screen.getByText('moves here')).toBeTruthy();
-    expect(screen.queryByText('chat here')).toBeNull();
+    const hidden = (text: string) => screen.getByText(text, { selector: 'p' }).parentElement?.hidden;
+    expect(hidden('moves here')).toBe(false);
+    expect(hidden('chat here')).toBe(true);
     fireEvent.click(screen.getByRole('tab', { name: 'Coach chat' }));
-    expect(screen.getByText('chat here')).toBeTruthy();
-    expect(screen.queryByText('moves here')).toBeNull();
+    expect(hidden('chat here')).toBe(false);
+    expect(hidden('moves here')).toBe(true);
+  });
+
+  it('opens the chat tab first when asked', () => {
+    render(<GameTabs moves={<p>moves here</p>} chat={<p>chat here</p>} initial="chat" />);
+    expect(screen.getByRole('tab', { name: 'Coach chat' }).getAttribute('aria-selected')).toBe('true');
   });
 });

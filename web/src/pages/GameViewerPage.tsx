@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useParams, useSearchParams } from 'react-router';
 import { Chessboard } from 'react-chessboard';
-import type { GameAnalysis, GameDetail, GameReviewNote, ProviderId } from '../../../shared/types';
+import type { ChatLineDTO, GameAnalysis, GameDetail, GameReviewNote, ProviderId } from '../../../shared/types';
 import { api, type AnalysisResponse } from '../api';
 import { AnalyseButton } from '../components/AnalyseButton';
+import { CoachChat, type ChatAnchor } from '../components/CoachChat';
 import { CoachPanel } from '../components/CoachPanel';
 import { GameTabs } from '../components/GameTabs';
 import { EvalGraph } from '../components/EvalGraph';
@@ -13,9 +14,11 @@ import { noteIndexFor } from '../lib/coach-notes';
 import { formatDate } from '../lib/format';
 import { moveToUci } from '../lib/drill';
 import {
+  addLine,
   addMove,
   branchPoint,
   createTree,
+  describeNode,
   fenOf,
   next,
   pathFromMain,
@@ -60,6 +63,7 @@ function playerLine(game: GameDetail) {
 
 export function GameViewerPage() {
   const { id } = useParams();
+  const [query] = useSearchParams();
   const [game, setGame] = useState<GameDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [current, setCurrent] = useState<Current>('root');
@@ -238,6 +242,29 @@ export function GameViewerPage() {
     : {};
   const atStart = shown === 'root';
   const atEnd = next(tree, shown) === null;
+  const chatAnchor: ChatAnchor = { ...pathFromMain(tree, shown), describe: describeNode(tree, shown, game.userColor) };
+
+  // Finds or creates the node for a chat anchor; a side-line anchor becomes a branch labelled "Your line".
+  const nodeForAnchor = (base: VarTree, a: { ply: number; path: string[] }): { tree: VarTree; node: Current } => {
+    const from = mainNode(a.ply);
+    if (a.path.length === 0) return { tree: base, node: from };
+    const res = addLine(base, from, a.path, 'Your line');
+    return { tree: res.tree, node: res.last };
+  };
+  const showAnchor = (a: { ply: number; path: string[] }) => {
+    const res = nodeForAnchor(tree, a);
+    setBranches(res.tree);
+    setMomentPly(null);
+    setCurrent(res.node);
+  };
+  const showLine = (line: ChatLineDTO, a: { ply: number; path: string[] }) => {
+    const at = nodeForAnchor(tree, a);
+    const res = addLine(at.tree, at.node, line.uci, line.label);
+    const first = addMove(res.tree, at.node, line.uci[0]);
+    setBranches(res.tree);
+    setMomentPly(null);
+    setCurrent(first ? first.node : res.last);
+  };
   const opening = [game.eco, game.openingName].filter(Boolean).join(' ');
 
   return (
@@ -318,7 +345,18 @@ export function GameViewerPage() {
         </div>
         <GameTabs
           moves={<MoveList tree={tree} current={shown} onSelect={(id) => { setMomentPly(null); setCurrent(id); }} analysis={done?.moves} />}
-          chat={<p className="muted">Coach chat comes next.</p>}
+          initial={query.get('tab') === 'chat' ? 'chat' : undefined}
+          chat={
+            <CoachChat
+              key={game.id}
+              gameId={game.id}
+              analysed={done !== null}
+              anchor={chatAnchor}
+              onShowLine={showLine}
+              onShowAnchor={showAnchor}
+              onAnalyse={() => { void api.analyseGame(game.id).then(loadAnalysis); }}
+            />
+          }
         />
       </div>
       {done && <CoachPanel key={game.id} gameId={game.id} notes={notes} active={activeNote} onActive={setActiveNote} onChanged={reloadNotes} error={notesError} />}
