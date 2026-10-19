@@ -124,3 +124,32 @@ button.big:hover:not(:disabled) { background: #0757b3; }
 .feedback.wrong { color: #cf222e; font-weight: 600; }
 .exercise-actions { display: flex; gap: 0.5rem; }
 .learn-link { display: block; margin: 0.15rem 0 0.4rem 0.5rem; }
+
+/* Insights */
+.insights { --viz-surface: #fcfcfb; --viz-win: #2a78d6; --viz-draw: #8c8b86; --viz-loss: #eb6834; --viz-empty: #f0f1ef; --viz-grid: #e6e5e1; --viz-text: #52514e; }
+.window-picker { display: flex; gap: 0.25rem; margin-bottom: 0.75rem; }
+.insight-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.insight-card { background: var(--viz-surface); min-width: 0; }
+.insight-card.wide { grid-column: 1 / -1; }
+.viz-legend { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; list-style: none; margin: 0 0 0.5rem; padding: 0; font-size: 0.85rem; color: var(--viz-text); }
+.viz-legend li { display: flex; align-items: center; gap: 0.35rem; }
+.viz-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.viz-line-key { width: 14px; height: 2px; display: inline-block; }
+.viz-svg { width: 100%; height: auto; display: block; }
+.viz-grid { stroke: var(--viz-grid); stroke-width: 1; }
+.viz-tick, .viz-axis-title, .viz-cell, .viz-end-label { font-size: 11px; fill: var(--viz-text); font-family: inherit; }
+.viz-cell { font-size: 10px; }
+.viz-end-label { font-weight: 600; fill: #1f2328; }
+.heat-scroll { overflow-x: auto; }
+.heat-scroll .viz-svg { max-width: 760px; }
+.viz-caption { font-size: 0.8rem; margin: 0.5rem 0 0; }
+.bar-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+.bar-row { display: grid; grid-template-columns: 200px 1fr 170px; gap: 0.75rem; align-items: center; }
+.bar-name { font-size: 0.9rem; }
+.bar-meta { font-size: 0.8rem; }
+.bar-track { display: flex; gap: 2px; height: 20px; }
+.bar-seg { display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.75rem; font-weight: 600; min-width: 4px; }
+.bar-seg:first-child { border-radius: 0; }
+.bar-seg:last-child { border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+.viz-table { margin-top: 0.5rem; font-size: 0.85rem; }
+.viz-table table { margin-top: 0.4rem; }

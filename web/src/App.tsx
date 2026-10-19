@@ -8,6 +8,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { GamesPage } from './pages/GamesPage';
 import { GameViewerPage } from './pages/GameViewerPage';
 import { LessonPage } from './pages/LessonPage';
+import { InsightsPage } from './pages/InsightsPage';
 import { OpeningsPage } from './pages/OpeningsPage';
 import { ReviewPage } from './pages/ReviewPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -49,6 +50,7 @@ export function App() {
         <NavLink to="/" end>Dashboard</NavLink>
         <NavLink to="/games">Games</NavLink>
         <ReviewLink />
+        <NavLink to="/insights">Insights</NavLink>
         <NavLink to="/openings">Openings</NavLink>
         <NavLink to="/course">Course</NavLink>
         <NavLink to="/coach">Coach</NavLink>
@@ -60,6 +62,7 @@ export function App() {
           <Route path="/games" element={<GamesPage />} />
           <Route path="/games/:id" element={<GameViewerPage />} />
           <Route path="/review" element={<ReviewPage />} />
+          <Route path="/insights" element={<InsightsPage />} />
           <Route path="/openings" element={<OpeningsPage />} />
           <Route path="/course" element={<CoursePage />} />
           <Route path="/course/:id" element={<LessonPage />} />
