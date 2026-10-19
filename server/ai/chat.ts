@@ -53,9 +53,12 @@ function historyMessages(history: AskCoachInput['history']): AiHistoryMessage[] 
   });
 }
 
+/** Every SAN the coach may name from one pack, including the moves the owner named (legal or not, as the owner wrote them). */
+const packSan = (p: FactPack): string[] => [...factPackSan(p), ...p.named.map((n) => n.text)];
+
 export async function askCoach(provider: AiProvider, input: AskCoachInput): Promise<{ answer: ChatAnswer; model: string }> {
   const { pack } = input;
-  const allowedSan = groundingSet([...factPackSan(pack), ...pack.game.movesSan, ...input.earlierPacks.flatMap(factPackSan)], packText(pack));
+  const allowedSan = groundingSet([...packSan(pack), ...pack.game.movesSan, ...input.earlierPacks.flatMap(packSan)], packText(pack));
   const { value, model } = await runStructured(
     provider,
     {

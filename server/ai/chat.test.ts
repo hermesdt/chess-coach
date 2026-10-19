@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { FactPack } from '../chat/fact-pack.js';
 import { askCoach, chatAnswerSchema } from './chat.js';
 import { CHAT_PROMPT_VERSION } from './prompts/chat.js';
+import { createOpenRouter } from './providers/openrouter.js';
 import { createClaudeCli } from './providers/claude-cli.js';
 import { createAnthropicApi, type AnthropicLike } from './providers/anthropic-api.js';
 import { AiGroundingError, AiValidationError, type AiProvider, type AiRequest, type CliRunner } from './types.js';
@@ -125,6 +126,19 @@ describe('askCoach', () => {
   });
 });
 
+describe('owner-named moves in grounding', () => {
+  it.each([['Qh5', 'illegal'], ['Nd2', 'ambiguous']] as const)('accepts %s (%s) in one call', async (text, status) => {
+    const { provider, reqs } = fake([answer({ answer: `${text} is ${status} here.` })]);
+    await askCoach(provider, base({ pack: pack('t2.', ['Nf3'], { named: [{ text, status }] }) }));
+    expect(reqs).toHaveLength(1);
+  });
+  it('accepts a named move from an earlier pack', async () => {
+    const { provider, reqs } = fake([answer({ answer: 'Qh5 was illegal then.' })]);
+    await askCoach(provider, base({ earlierPacks: [pack('t1.', ['Nf3'], { named: [{ text: 'Qh5', status: 'illegal' }] })] }));
+    expect(reqs).toHaveLength(1);
+  });
+});
+
 describe('history in adapters', () => {
   const history = [{ role: 'user' as const, text: '(about spot 1): q1' }, { role: 'assistant' as const, text: 'a1 [lines: t1.L1] Rule: r1' }];
   const req: AiRequest = { system: 'SYS', user: 'USER', schemaName: 'x', jsonSchema: { type: 'object' }, history };
@@ -148,5 +162,20 @@ describe('history in adapters', () => {
     };
     await createClaudeCli(run, async () => true).complete(req, { model: null });
     expect(stdin).toBe('SYS\n\nConversation so far:\nOwner (about spot 1): q1\nCoach: a1 [lines: t1.L1] Rule: r1\n\nUSER');
+  });
+
+  it('openrouter puts the history between system and the current user message', async () => {
+    let body: { messages: unknown } | undefined;
+    const fetchFn = (async (_u: string, init: RequestInit) => {
+      body = JSON.parse(init.body as string);
+      return new Response(JSON.stringify({ model: 'm', choices: [{ message: { content: '{}' } }] }), { status: 200 });
+    }) as unknown as typeof fetch;
+    await createOpenRouter({ getKey: () => 'k', fetchFn }).complete(req, { model: null });
+    expect(body!.messages).toEqual([
+      { role: 'system', content: 'SYS' },
+      { role: 'user', content: '(about spot 1): q1' },
+      { role: 'assistant', content: 'a1 [lines: t1.L1] Rule: r1' },
+      { role: 'user', content: 'USER' },
+    ]);
   });
 });
