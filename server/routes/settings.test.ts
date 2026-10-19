@@ -75,3 +75,19 @@ it('validates and stores review limits', async () => {
   const res = await put({ reviewDailyLimit: 50, reviewNewPerDay: 0 });
   expect(await res.json()).toMatchObject({ reviewDailyLimit: 50, reviewNewPerDay: 0 });
 });
+
+it('GET /settings/data reports db path, counts and hidden duplicates', async () => {
+  const db = openDb(':memory:');
+  const a = createApp({ db });
+  const ins = db.prepare(
+    "INSERT INTO games (source, source_id, played_at, time_class, rated, white, black, result, pgn, ply_count, imported_at, duplicate_of) VALUES ('chesscom', ?, 1, 'blitz', 1, 'a', 'b', 'win', '', 0, 1, ?)",
+  );
+  ins.run('1', null);
+  ins.run('2', null);
+  ins.run('3', 1);
+  process.env.CHESS_DB_PATH = '/tmp/x/chess.db';
+  delete process.env.BACKUP_DIR;
+  const body = await (await a.request('/api/settings/data')).json();
+  delete process.env.CHESS_DB_PATH;
+  expect(body).toEqual({ dbPath: '/tmp/x/chess.db', games: 3, duplicateGames: 1, cards: 0, backupsDir: null });
+});

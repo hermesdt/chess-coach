@@ -24,6 +24,8 @@ import type {
   OpeningLeakGroup,
   OpeningSummary,
   SettingsDTO,
+  DataInfo,
+  FlagDetail,
   SettingsUpdate,
   Tag,
 } from '../../shared/types';
@@ -93,6 +95,9 @@ export const api = {
   getSettings: () => request<SettingsDTO>('/settings'),
   putSettings: (update: SettingsUpdate) =>
     request<SettingsDTO>('/settings', { method: 'PUT', body: JSON.stringify(update) }),
+  getDataInfo: () => request<DataInfo>('/settings/data'),
+  getFlags: () => request<FlagDetail[]>('/flags'),
+  restoreFlag: (id: number) => post<{ ok: true }>(`/flags/${id}/restore`, {}),
   listGames: (q: GameListQuery = {}) => request<GameList>(`/games${queryString(q)}`),
   getGame: (id: number) => request<GameDetail>(`/games/${id}`),
   getAnalysis: (id: number) => request<AnalysisResponse>(`/games/${id}/analysis`),

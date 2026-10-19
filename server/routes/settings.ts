@@ -1,8 +1,8 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Hono } from 'hono';
-import type { SettingsDTO, SettingsUpdate } from '../../shared/types.js';
+import type { DataInfo, SettingsDTO, SettingsUpdate } from '../../shared/types.js';
 import { PROVIDER_IDS } from '../ai/types.js';
-import { getSettings, isAiProviderSetting } from '../config.js';
+import { getSettings, isAiProviderSetting, resolveBackupsDir, resolveDbPath } from '../config.js';
 import { setSetting } from '../db/settings-repo.js';
 
 function toDto(db: DatabaseSync): SettingsDTO {
@@ -33,6 +33,17 @@ const STRING_FIELDS = [
 export function settingsRoutes(db: DatabaseSync): Hono {
   return new Hono()
     .get('/settings', (c) => c.json(toDto(db)))
+    .get('/settings/data', (c) => {
+      const count = (sql: string) => Number((db.prepare(sql).get() as { n: number }).n);
+      const info: DataInfo = {
+        dbPath: resolveDbPath(),
+        games: count('SELECT COUNT(*) AS n FROM games'),
+        duplicateGames: count('SELECT COUNT(*) AS n FROM games WHERE duplicate_of IS NOT NULL'),
+        cards: count('SELECT COUNT(*) AS n FROM cards'),
+        backupsDir: resolveBackupsDir(),
+      };
+      return c.json(info);
+    })
     .put('/settings', async (c) => {
       const body = (await c.req.json().catch(() => null)) as SettingsUpdate | null;
       if (body === null || typeof body !== 'object') return c.json({ error: 'Invalid body' }, 400);

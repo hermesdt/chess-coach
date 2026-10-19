@@ -1,9 +1,9 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { beforeEach, describe, expect, it } from 'vitest';
-import type { CardFlag, ReviewResult, ReviewSession } from '../../shared/types.js';
+import type { CardFlag, FlagDetail, ReviewResult, ReviewSession } from '../../shared/types.js';
 import { createApp } from '../app.js';
 import { openDb } from '../db/db.js';
-import { positionKey, recordReview, setSuspended, upsertCard } from '../srs/cards-repo.js';
+import { addFlag, getCard, positionKey, recordReview, setSuspended, upsertCard } from '../srs/cards-repo.js';
 
 const NOW = new Date(2026, 9, 18, 12, 0, 0).getTime();
 const HOUR = 3_600_000;
@@ -122,5 +122,38 @@ describe('GET /api/review/stats', () => {
     expect(stats.sessionSize).toBe(5);
     const session = (await (await app.request('/api/review/session')).json()) as ReviewSession;
     expect(stats.sessionSize).toBe(session.cards.length);
+  });
+});
+
+describe('reported problems', () => {
+  it('lists flags with a card preview', async () => {
+    const id = addCard();
+    addFlag(db, id, 'wrong answer', NOW);
+    const list = (await (await app.request('/api/flags')).json()) as FlagDetail[];
+    expect(list).toEqual([
+      { id: expect.any(Number), cardId: id, kind: 'mistake', fen: expect.stringContaining('K6'), prompt: 'p1', note: 'wrong answer', createdAt: NOW },
+    ]);
+  });
+
+  it('restore un-suspends the card and removes all its flags, so a rebuild keeps it active', async () => {
+    const id = addCard();
+    const other = addCard();
+    const first = addFlag(db, id, 'one', NOW);
+    addFlag(db, id, 'two', NOW);
+    addFlag(db, other, 'other', NOW);
+    const res = await post(`/api/flags/${first.id}/restore`, {});
+    expect(res.status).toBe(200);
+    expect(getCard(db, id)!.suspended).toBe(false);
+    expect(getCard(db, other)!.suspended).toBe(true);
+    const list = (await (await app.request('/api/flags')).json()) as FlagDetail[];
+    expect(list.map((f) => f.cardId)).toEqual([other]);
+    const card = getCard(db, id)!;
+    const again = upsertCard(db, { kind: 'mistake', positionKey: card.positionKey, fen: card.fen, sideToMove: 'white', prompt: 'p1', solution: card.solution, refs: [], lastMove: null });
+    expect(again.suspended).toBe(false);
+  });
+
+  it('returns 404 for an unknown flag', async () => {
+    expect((await post('/api/flags/999/restore', {})).status).toBe(404);
+    expect((await post('/api/flags/abc/restore', {})).status).toBe(404);
   });
 });

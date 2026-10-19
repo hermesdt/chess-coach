@@ -46,8 +46,24 @@ export function mapChesscomGame(g: ChesscomGame, username: string): NewGame | nu
   };
 }
 
-async function getJson<T>(fetchFn: typeof fetch, url: string): Promise<T> {
-  const res = await fetchFn(url, { headers: HEADERS });
+const BACKOFF_MS = [1000, 3000, 9000];
+const MAX_RETRY_AFTER_MS = 60_000;
+const defaultSleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+
+function retryDelay(res: Response, attempt: number): number {
+  const seconds = Number(res.headers.get('Retry-After'));
+  if (res.headers.get('Retry-After') && Number.isFinite(seconds) && seconds >= 0) {
+    return Math.min(seconds * 1000, MAX_RETRY_AFTER_MS);
+  }
+  return BACKOFF_MS[attempt]!;
+}
+
+async function getJson<T>(fetchFn: typeof fetch, url: string, sleep: (ms: number) => Promise<void>): Promise<T> {
+  let res = await fetchFn(url, { headers: HEADERS });
+  for (let attempt = 0; attempt < BACKOFF_MS.length && (res.status === 429 || res.status >= 500); attempt++) {
+    await sleep(retryDelay(res, attempt));
+    res = await fetchFn(url, { headers: HEADERS });
+  }
   if (!res.ok) throw new SyncError(`chess.com request failed with status ${res.status}: ${url}`);
   return (await res.json()) as T;
 }
@@ -59,16 +75,17 @@ const monthKey = (ms: number): string => {
 
 export async function fetchChesscomGames(
   username: string,
-  opts: { sinceMs: number; fetchFn?: typeof fetch; onMonth?: (games: NewGame[], monthUrl: string) => void },
+  opts: { sinceMs: number; fetchFn?: typeof fetch; sleep?: (ms: number) => Promise<void>; onMonth?: (games: NewGame[], monthUrl: string) => void },
 ): Promise<number> {
   const fetchFn = opts.fetchFn ?? fetch;
+  const sleep = opts.sleep ?? defaultSleep;
   const user = username.toLowerCase();
-  const { archives } = await getJson<{ archives: string[] }>(fetchFn, `${API}/${user}/games/archives`);
+  const { archives } = await getJson<{ archives: string[] }>(fetchFn, `${API}/${user}/games/archives`, sleep);
   const first = monthKey(opts.sinceMs);
   const months = archives.filter((u) => u.split('/').slice(-2).join('/') >= first).sort();
   let total = 0;
   for (const monthUrl of months) {
-    const { games } = await getJson<{ games: ChesscomGame[] }>(fetchFn, monthUrl);
+    const { games } = await getJson<{ games: ChesscomGame[] }>(fetchFn, monthUrl, sleep);
     const mapped = games.flatMap((g) => mapChesscomGame(g, username) ?? []);
     total += mapped.length;
     opts.onMonth?.(mapped, monthUrl);

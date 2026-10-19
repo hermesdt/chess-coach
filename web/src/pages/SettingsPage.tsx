@@ -1,5 +1,6 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { PROVIDER_IDS, type AiProviderSetting, type ProviderId, type SettingsDTO, type SettingsUpdate } from '../../../shared/types';
+import { DataSection, ENV_NOTE, EngineReviewSettings, FlagsSection } from '../components/SettingsSections';
 import { api, type ProviderInfo, type ProviderTestResult } from '../api';
 
 function AiSettings({ settings, onSaved }: { settings: SettingsDTO; onSaved: (s: SettingsDTO) => void }) {
@@ -108,6 +109,7 @@ function AiSettings({ settings, onSaved }: { settings: SettingsDTO; onSaved: (s:
             placeholder={settings.openrouterKeySet ? 'saved' : ''}
             onChange={(e) => setOpenrouterKey(e.target.value)}
           />
+          <small>{ENV_NOTE}</small>
         </label>
         {settings.openrouterKeySet && (
           <button type="button" className="link" onClick={() => void removeKey('openrouterApiKey')}>
@@ -123,6 +125,7 @@ function AiSettings({ settings, onSaved }: { settings: SettingsDTO; onSaved: (s:
             placeholder={settings.anthropicKeySet ? 'saved' : ''}
             onChange={(e) => setAnthropicKey(e.target.value)}
           />
+          <small>{ENV_NOTE}</small>
         </label>
         {settings.anthropicKeySet && (
           <button type="button" className="link" onClick={() => void removeKey('anthropicApiKey')}>
@@ -194,10 +197,12 @@ export function SettingsPage() {
         <label>
           chess.com username
           <input value={chesscom} onChange={(e) => setChesscom(e.target.value)} />
+          <small>{ENV_NOTE}</small>
         </label>
         <label>
           lichess username
           <input value={lichess} onChange={(e) => setLichess(e.target.value)} />
+          <small>{ENV_NOTE}</small>
         </label>
         <label>
           lichess token
@@ -215,6 +220,7 @@ export function SettingsPage() {
             </a>
             .
           </small>
+          <small>{ENV_NOTE}</small>
         </label>
         {settings?.lichessTokenSet && (
           <button type="button" className="link" onClick={() => void clearToken()}>
@@ -230,6 +236,9 @@ export function SettingsPage() {
         {error && <p className="error">{error}</p>}
       </form>
       {settings && <AiSettings settings={settings} onSaved={setSettings} />}
+      {settings && <EngineReviewSettings settings={settings} onSaved={setSettings} />}
+      <FlagsSection />
+      <DataSection />
     </section>
   );
 }

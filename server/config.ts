@@ -58,3 +58,15 @@ export function getSettings(db: DatabaseSync): ResolvedSettings {
         : DEFAULT_REVIEW_NEW_PER_DAY,
   };
 }
+
+const DEFAULT_DB_PATH = 'data/chess.db';
+
+export function resolveDbPath(): string {
+  return process.env.CHESS_DB_PATH || DEFAULT_DB_PATH;
+}
+
+/** Same rule as server/main.ts: BACKUP_DIR, else data/backups for the default DB, else none. */
+export function resolveBackupsDir(): string | null {
+  const dbPath = resolveDbPath();
+  return process.env.BACKUP_DIR || (dbPath === DEFAULT_DB_PATH ? 'data/backups' : null);
+}

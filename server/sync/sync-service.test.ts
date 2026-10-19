@@ -70,7 +70,7 @@ describe('sync', () => {
   it('ends in error when every configured source fails', async () => {
     setSetting(db, 'chesscom_username', 'hikaru');
     setSetting(db, 'lichess_username', 'lance5500');
-    routes[ARCHIVES] = () => new Response('boom', { status: 500 });
+    routes[ARCHIVES] = () => new Response('boom', { status: 403 }); // not retried
     routes.lichess = () => new Response('', { status: 404 });
     const job = await runSync();
     expect(job.status).toBe('error');
@@ -99,7 +99,7 @@ describe('sync', () => {
   it('keeps months already inserted when a later month fails', async () => {
     setSetting(db, 'chesscom_username', 'hikaru');
     routes[MONTH_2023] = () => new Response(load('chesscom-2024-01.json'));
-    routes[MONTH_2024] = () => new Response('boom', { status: 500 });
+    routes[MONTH_2024] = () => new Response('boom', { status: 403 }); // not retried
     const job = await runSync();
     expect(job.status).toBe('error');
     expect(listGames(db, { source: 'chesscom' }).total).toBeGreaterThan(0);

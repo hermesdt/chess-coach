@@ -91,7 +91,7 @@ describe('fetchChesscomGames', () => {
       [`${BASE}/2024/01`]: () => json(month),
       [`${BASE}/2024/02`]: () => json('boom', 500),
     });
-    const err = await fetchChesscomGames('hikaru', { sinceMs: since, fetchFn, onMonth: (_g, u) => calls.push(u) }).catch(
+    const err = await fetchChesscomGames('hikaru', { sinceMs: since, fetchFn, sleep: async () => undefined, onMonth: (_g, u) => calls.push(u) }).catch(
       (e: unknown) => e,
     );
     expect(calls).toEqual([`${BASE}/2024/01`]);
@@ -103,5 +103,46 @@ describe('fetchChesscomGames', () => {
   it('throws SyncError when the archives list fails', async () => {
     const fetchFn = fakeFetch({ [`${BASE}/archives`]: () => json('x', 404) });
     await expect(fetchChesscomGames('hikaru', { sinceMs: since, fetchFn })).rejects.toBeInstanceOf(SyncError);
+  });
+});
+
+describe('chess.com retry', () => {
+  const run = (responses: Response[], sleeps: number[]) => {
+    let calls = 0;
+    const fetchFn = (async () => responses[Math.min(calls++, responses.length - 1)]!.clone()) as typeof fetch;
+    const promise = fetchChesscomGames('hikaru', { sinceMs: Date.UTC(2030, 0, 1), fetchFn, sleep: async (ms) => void sleeps.push(ms) });
+    return { promise, calls: () => calls };
+  };
+  const ok = () => json(JSON.stringify({ archives: [] }));
+
+  it('retries 429 and 5xx with 1 s, 3 s, 9 s backoff, then succeeds', async () => {
+    const sleeps: number[] = [];
+    const r = run([json('', 429), json('', 503), json('', 500), ok()], sleeps);
+    expect(await r.promise).toBe(0);
+    expect(sleeps).toEqual([1000, 3000, 9000]);
+    expect(r.calls()).toBe(4);
+  });
+
+  it('fails after the third retry', async () => {
+    const sleeps: number[] = [];
+    const r = run([json('', 503)], sleeps);
+    await expect(r.promise).rejects.toBeInstanceOf(SyncError);
+    expect(r.calls()).toBe(4);
+    expect(sleeps).toEqual([1000, 3000, 9000]);
+  });
+
+  it('waits for Retry-After seconds, capped at 60 s', async () => {
+    const sleeps: number[] = [];
+    const r = run([new Response('', { status: 429, headers: { 'Retry-After': '5' } }), new Response('', { status: 429, headers: { 'Retry-After': '500' } }), ok()], sleeps);
+    await r.promise;
+    expect(sleeps).toEqual([5000, 60_000]);
+  });
+
+  it('does not retry 404', async () => {
+    const sleeps: number[] = [];
+    const r = run([json('', 404)], sleeps);
+    await expect(r.promise).rejects.toBeInstanceOf(SyncError);
+    expect(r.calls()).toBe(1);
+    expect(sleeps).toEqual([]);
   });
 });

@@ -75,6 +75,8 @@ export interface ReviewSubmit { rating: Rating; answerUci: string | null; durati
 export interface ReviewResult { cardId: number; nextDue: number }
 export interface ReviewSession { cards: CardWithState[]; dueCount: number; newAvailable: number }
 export interface CardFlag { id: number; cardId: number; note: string; createdAt: number }
+export interface FlagDetail { id: number; cardId: number; kind: string; fen: string; prompt: string; note: string; createdAt: number }
+export interface DataInfo { dbPath: string; games: number; duplicateGames: number; cards: number; backupsDir: string | null }
 
 export interface RepNodeDTO {
   id: string; san: string; uci: string; comment: string | null; tags: string[];

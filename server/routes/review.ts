@@ -4,7 +4,7 @@ import type { EnginePool } from '../engine/pool.js';
 import { backfillMistakeCards } from '../srs/backfill.js';
 import type { Rating, ReviewSubmit } from '../../shared/types.js';
 import { getSettings } from '../config.js';
-import { addFlag, getCard, listFlags, recordReview } from '../srs/cards-repo.js';
+import { addFlag, getCard, listFlagDetails, listFlags, recordReview, restoreFlaggedCard } from '../srs/cards-repo.js';
 import { buildSession } from '../srs/session.js';
 import { reviewStats } from '../srs/stats.js';
 
@@ -40,6 +40,12 @@ export function reviewRoutes(db: DatabaseSync, now: () => number, pool: Pick<Eng
       return c.json(recordReview(db, id, submit, now()));
     })
     .post('/cards/backfill', (c) => c.json(backfillMistakeCards(db, pool)))
+    .get('/flags', (c) => c.json(listFlagDetails(db)))
+    .post('/flags/:id/restore', (c) => {
+      const id = parseId(c.req.param('id'));
+      if (id === null || !restoreFlaggedCard(db, id)) return c.json({ error: 'flag not found' }, 404);
+      return c.json({ ok: true });
+    })
     .get('/cards/flags', (c) => c.json(listFlags(db)))
     .post('/cards/:id/flag', async (c) => {
       const id = parseId(c.req.param('id'));

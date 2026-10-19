@@ -1,5 +1,5 @@
 import type { DatabaseSync } from 'node:sqlite';
-import type { Card, CardFlag, CardRef, ReviewResult, ReviewSubmit } from '../../shared/types.js';
+import type { Card, CardFlag, FlagDetail, CardRef, ReviewResult, ReviewSubmit } from '../../shared/types.js';
 import { transaction } from '../db/db.js';
 import { schedule } from './scheduler.js';
 
@@ -134,4 +134,29 @@ export function addFlag(db: DatabaseSync, cardId: number, note: string, now: num
 
 export function listFlags(db: DatabaseSync): CardFlag[] {
   return db.prepare('SELECT * FROM card_flags ORDER BY id').all().map(toFlag);
+}
+
+export function listFlagDetails(db: DatabaseSync): FlagDetail[] {
+  return db
+    .prepare(
+      `SELECT f.id, f.card_id, f.note, f.created_at, c.kind, c.fen, c.prompt
+       FROM card_flags f JOIN cards c ON c.id = f.card_id ORDER BY f.id`,
+    )
+    .all()
+    .map((r) => ({
+      id: r.id as number, cardId: r.card_id as number, kind: r.kind as string, fen: r.fen as string,
+      prompt: r.prompt as string, note: r.note as string, createdAt: r.created_at as number,
+    }));
+}
+
+/** Delete every flag of the flag's card and un-suspend it. Returns false for an unknown flag. */
+export function restoreFlaggedCard(db: DatabaseSync, flagId: number): boolean {
+  return transaction(db, () => {
+    const row = db.prepare('SELECT card_id FROM card_flags WHERE id = ?').get(flagId);
+    if (!row) return false;
+    const cardId = row.card_id as number;
+    db.prepare('DELETE FROM card_flags WHERE card_id = ?').run(cardId);
+    setSuspended(db, cardId, false);
+    return true;
+  });
 }
