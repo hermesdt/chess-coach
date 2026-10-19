@@ -63,12 +63,21 @@ export interface AnalysisBadge { accuracyUser: number | null; blunders: number; 
 // M3: spaced-repetition cards
 export type CardKind = 'opening' | 'mistake' | 'lesson';
 export type Rating = 'again' | 'hard' | 'good' | 'easy';
-export interface CardRef { gameId?: number; ply?: number; repertoire?: string; nodeId?: string; lessonId?: string; exerciseId?: string }
+export interface CardRef { gameId?: number; ply?: number; repertoire?: string; nodeId?: string; lessonId?: string; exerciseId?: string; source?: 'chat' }
 export interface Card {
   id: number; kind: CardKind; positionKey: string; fen: string; sideToMove: Color;
   prompt: string; solution: { accepted: string[]; best: string; explanation: string | null };
   refs: CardRef[]; suspended: boolean; createdAt: number;
   lastMove?: { uci: string } | null; // opponent's move leading to fen, for animation (openings)
+}
+// M8a: coach chat
+export interface ChatLineDTO { id: string; label: string; san: string[]; uci: string[]; startFen: string; winPctForUser: number; why: string }
+export interface ChatMessageDTO {
+  id: number; turn: number; question: string;
+  anchor: { ply: number; path: string[]; describe: string };
+  status: 'pending' | 'done' | 'error'; error: string | null;
+  answer: { text: string; lines: ChatLineDTO[]; rule: string; lessonId: LessonId | null } | null;
+  provider: ProviderId | null; model: string | null; createdAt: number;
 }
 export interface CardWithState extends Card { due: number | null; isNew: boolean }
 export interface ReviewSubmit { rating: Rating; answerUci: string | null; durationMs: number }

@@ -2,6 +2,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { Hono, type MiddlewareHandler } from 'hono';
 import { createRegistry, type Registry } from './ai/registry.js';
 import { aiRoutes } from './routes/ai.js';
+import { chatRoutes } from './routes/chat.js';
 import { analysisRoutes } from './routes/analysis.js';
 import { dashboardRoutes } from './routes/dashboard.js';
 import { loadLessons } from './course/load.js';
@@ -63,6 +64,7 @@ export function createApp(deps: AppDeps): Hono {
   app.route('/api', healthRoutes);
   app.route('/api', settingsRoutes(deps.db));
   app.route('/api', aiRoutes(deps.db, ai, deps.aiTestTimeoutMs, getReps));
+  app.route('/api', chatRoutes(deps.db, ai, pool, getReps));
   app.route('/api', syncRoutes(deps.db, { fetchFn: deps.fetchFn, now: deps.now, pool }, getReps));
   app.route('/api', jobsRoutes(deps.db));
   app.route('/api', gamesRoutes(deps.db));

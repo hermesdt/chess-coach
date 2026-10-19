@@ -9,6 +9,7 @@ import { backupDb } from './db/backup.js';
 import { backfillMistakeCards } from './srs/backfill.js';
 import { requeuePending } from './analysis/queue.js';
 import { closeEnginePool, lazyEnginePool } from './engine/pool.js';
+import { markInterruptedChats } from './chat/chat-repo.js';
 import { recoverInterruptedJobs } from './jobs.js';
 import { syncLessonCards } from './course/lesson-cards.js';
 import { loadLessons } from './course/load.js';
@@ -49,6 +50,7 @@ const server = serve(
       console.error('duplicate linking failed:', err);
     }
     recoverInterruptedJobs(db, Date.now());
+    markInterruptedChats(db);
     requeuePending(db, { pool: lazyEnginePool });
     backfillMistakeCards(db, lazyEnginePool);
     let repertoires: Repertoire[] = [];
