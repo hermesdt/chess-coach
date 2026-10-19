@@ -43,7 +43,7 @@
       "solution": [
         "f6d5"
       ],
-      "explanation": "The knight on d5 is free. White can try Bxd8, but Bxd8 Bb4+ Qd2 Bxd2+ Kxd2 Kxd8 leaves Black a piece up. A quiet move like h6 lets White save the knight."
+      "explanation": "The knight on d5 is free. White can try Bxd8, but Bb4+ Qd2 Bxd2+ Kxd2 Kxd8 leaves Black a piece up. A quiet move like h6 lets White save the knight."
     },
     {
       "id": "legal-trap",

@@ -35,10 +35,13 @@
       "fen": "rnbqkb1r/ppp2ppp/4pn2/3p4/3P1B2/4P3/PPP2PPP/RN1QKBNR w KQkq - 0 4",
       "prompt": "White to move. Develop a piece.",
       "solution": [
-        "g1f3",
         "b1d2",
+        "g1f3",
         "f1e2",
-        "f1d3"
+        "f1d3",
+        "b1c3",
+        "g1e2",
+        "f1b5"
       ],
       "explanation": "Each of these moves brings out a knight or a bishop. Nf3 is the most natural. Side pawn moves like a3 do not help."
     },

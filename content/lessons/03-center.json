@@ -20,17 +20,20 @@
     {
       "id": "answer-e4",
       "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
-      "prompt": "Black to move. Put a pawn in the centre.",
+      "prompt": "Black to move. Fight for the centre with a pawn.",
       "solution": [
+        "c7c5",
         "e7e5",
+        "c7c6",
+        "e7e6",
         "d7d5"
       ],
-      "explanation": "A pawn on e5 or d5 fights for the centre at once. Moves like a6 or h6 leave White alone in the centre."
+      "explanation": "e5 and d5 take the centre now. c5 hits d4. c6 and e6 prepare d5 (Caro-Kann, French). All of these fight for the centre. a6 and h6 do not."
     },
     {
       "id": "strike-d4",
       "fen": "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2P2N2/PP1P1PPP/RNBQK2R w KQkq - 1 5",
-      "prompt": "White to move. Put a pawn in the centre.",
+      "prompt": "White to move. Build the centre with a pawn.",
       "solution": [
         "d2d3",
         "d2d4"
