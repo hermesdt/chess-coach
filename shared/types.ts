@@ -98,3 +98,13 @@ export interface Lesson {
 export type LessonStatus = 'new' | 'done' | 'locked';
 export interface CourseLesson { id: string; order: number; level: 1 | 2 | 3; title: string; summary: string; status: LessonStatus; exercises: number }
 export type CourseLessonDetail = Lesson & { status: LessonStatus };
+
+// M7: insights
+export type InsightsWindow = '30d' | '90d' | '365d' | 'all';
+export interface Insights {
+  byOpening: { group: string; color: Color; games: number; win: number; draw: number; loss: number; avgAccuracy: number | null }[];
+  tagsByMonth: { month: string; tag: Tag; perGame: number }[];
+  accuracyByMonth: { month: string; avg: number; games: number }[];
+  rating: { series: string; points: { t: number; elo: number }[] }[];
+  summary: { games: number; analysed: number; winRate: number | null };
+}

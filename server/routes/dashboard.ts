@@ -2,7 +2,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { Hono } from 'hono';
 import { TAG_SEVERITY } from '../../shared/tag-text.js';
 import type { Tag } from '../../shared/types.js';
-import { getAnalysis } from '../analysis/analysis-repo.js';
+import { getAnalysis, userMoveTags } from '../analysis/analysis-repo.js';
 import { listGames } from '../db/games-repo.js';
 import { getSetting, setSetting } from '../db/settings-repo.js';
 import { type CurrentLevel, currentLevel } from '../level.js';
@@ -27,8 +27,7 @@ function topTag(db: DatabaseSync): { tag: Tag; count: number; games: number } | 
     const analysis = getAnalysis(db, Number(row.id));
     if (!analysis) continue;
     games += 1;
-    const seen = new Set<Tag>();
-    for (const m of analysis.moves) if (m.isUserMove) for (const t of m.tags) seen.add(t);
+    const seen = new Set<Tag>(userMoveTags(analysis.moves));
     for (const t of seen) perTag.set(t, (perTag.get(t) ?? 0) + 1);
   }
   let best: { tag: Tag; count: number } | null = null;

@@ -11,6 +11,7 @@ import type { EnginePool } from './engine/pool.js';
 import { lazyEnginePool } from './engine/pool.js';
 import { healthRoutes } from './routes/health.js';
 import { importRoutes } from './routes/import.js';
+import { insightsRoutes } from './routes/insights.js';
 import { jobsRoutes } from './routes/jobs.js';
 import { openingsRoutes } from './routes/openings.js';
 import { loadAllRepertoires } from './repertoire/load.js';
@@ -71,6 +72,7 @@ export function createApp(deps: AppDeps): Hono {
   app.route('/api', openingsRoutes(deps.db, getReps));
   app.route('/api', courseRoutes(deps.db, getLessons, deps.now ?? Date.now));
   app.route('/api', dashboardRoutes(deps.db, deps.now ?? Date.now));
+  app.route('/api', insightsRoutes(deps.db, deps.now ?? Date.now));
   app.all('/api/*', (c) => c.json({ error: 'not found' }, 404));
   return app;
 }
