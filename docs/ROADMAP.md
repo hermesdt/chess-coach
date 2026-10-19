@@ -35,7 +35,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M6 | Principles course (12 level-1 lessons) | done | `docs/superpowers/plans/2026-10-18-m6-course.md` |
 | M7 | Insights + polish + README | done | `docs/superpowers/plans/2026-10-18-m7-insights-polish.md` |
 | M8a | Coach chat: chat, engine lines as branches, own moves on the board, add to review | done | `docs/superpowers/plans/2026-10-19-m8a-coach-chat.md` |
-| M8b | Coach chat: streaming, fast model, live Stockfish eval, "Go deeper", attack facts | planned | `docs/superpowers/plans/2026-10-19-m8b-coach-chat-speed.md` |
+| M8b | Coach chat: streaming, fast model, live Stockfish eval, "Go deeper", attack facts | done | `docs/superpowers/plans/2026-10-19-m8b-coach-chat-speed.md` |
 | M9 | Level 2–3 content (lessons, tags, deeper repertoire) | todo | — (was M8 before 2026-10-19) |
 
 ## Log
@@ -204,12 +204,41 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 - 2026-10-19 — Owner set the claude-cli model to `claude-sonnet-5-5` in
   Settings (used for coach notes and chat until M8b adds a chat model setting).
 
+- 2026-10-19 — **M8b done.** 910 tests; `pnpm validate:content` → content OK.
+  Speed spike (`docs/superpowers/notes/2026-10-19-chat-speed-spike.md`):
+  claude-cli Sonnet 5.5 is the fastest (first words 1.8 s, full 5.8 s);
+  only claude-cli streams text deltas; codex and opencode answer whole.
+  Streamed answers over SSE ("checking…" until validated; "correcting…" on a
+  retry); chat model and deep model settings per provider (defaults: claude
+  and anthropic-api Sonnet → Opus; codex gpt-5.6-luna; opencode
+  z-ai/glm-5.3-flash); "Go deeper" (migration 015); live Stockfish eval under
+  the board (700 ms, MultiPV 3, best-move arrow) with an engine cache shared
+  with the chat; attack facts in the fact pack (attacked / defended /
+  hanging, pins ignored, prompt says so); prefetch of the anchor's engine
+  facts when the chat tab opens. Smoke on a copy of the live DB: Bh6 question
+  first words 3.6 s, full 7.8 s; "Go deeper" (Opus) 23 s; whole-game question
+  8 s; the Bh6 attack fact is now right ("the bishop on h6 is attacked by the
+  g7 pawn"); a real codex coach note still works with the new `--json`
+  parsing; live eval 0.8 s per position.
+- M8b rulings (review these):
+  - "Go deeper" shows only when the provider has a deep model (setting or
+    default) that differs from its chat model: claude-cli and anthropic-api
+    by default; codex, opencode and openrouter only after you set a deep model.
+  - A message can be deepened once (the button hides when a deeper answer exists).
+  - The engine cache serves the chat only results at least as deep as the
+    engine budget setting.
+  - A deep answer's history includes the fast answer before it.
+- Known gaps for later: a rare second structured block (claude) or Anthropic
+  fallback text can show a rejected first attempt with "checking…" but without
+  "correcting…"; the live eval keeps the previous values dimmed for about
+  1 s; prefetch searches cannot be cancelled; codex drops a valid answer if an
+  error event follows it.
+- Owner setting to check: the opencode model in Settings is
+  `openrouter/glm-5.3-flash`, which does not exist; the valid id is
+  `openrouter/z-ai/glm-5.3-flash` (now also the chat default).
+
 ## Next session
 
-- Write the M8b plan (streaming, fast chat model + "Go deeper", live
-  Stockfish eval under the board; spec
-  `docs/superpowers/specs/2026-10-19-coach-chat-design.md` §7–§9, §11). Start
-  with the speed spike. Consider the "attacked / hanging pieces" facts from
-  the M8a known gaps.
-- Then M9 (level 2–3 content) needs a plan.
-- All milestones through M8a are merged into `main`.
+- M9 (level 2–3 content: lessons, tags, deeper repertoire) needs a plan.
+  Spec §18; write it with `superpowers:writing-plans`.
+- All milestones through M8b are merged into `main`.

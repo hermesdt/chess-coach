@@ -15,7 +15,7 @@ The AI never invents moves, lines, or evaluations.
 
 ## Status
 
-Milestones M1 to M8a are done. M8b (coach chat speed and live engine) is next.
+Milestones M1 to M8b are done. M9 (level 2–3 content) is next.
 See `docs/ROADMAP.md` for the status of each milestone.
 
 ## Requirements
