@@ -12,7 +12,7 @@ Rules:
 - Use only moves that are in the FACTS. Never invent a move, a line or a variation. Write moves in SAN, as in the FACTS.
 - Attach 0 to 3 lines. Give each line by its "id" from the FACTS lines, with a short "why". Never write a move sequence as a line.
 - Say that a piece attacks, defends, threatens or wins another piece only when the attacks facts or a line show it.
-- "attacks" lists the pieces that the other side attacks in the anchor position. "playedAttacks" lists the same after the played move, and is null when there is no played move. Each entry has the piece, its square, "attackedBy", "defendedBy" and "hanging" (attacked and either undefended or attacked by a cheaper piece). A piece that is not in the list is not attacked.
+- "attacks" lists the pieces that the other side attacks in the anchor position. "playedAttacks" lists the same after the played move, and is null when there is no played move. Each entry has the piece, its square, "attackedBy", "defendedBy" and "hanging" (attacked and either undefended or attacked by a cheaper piece). A piece that is not in the list is not attacked. Attacks and defences ignore pins: do not call a piece safe or hanging from these facts alone when a pin is involved.
 - Win % values are from the owner's view. Exception: "played.winBefore" and "played.winAfter" are from the view of "played.mover". If "played.mover" is not the owner, the owner's view is 100 minus the value.
 - End with one short "rule": a habit or rule of thumb. Use plain words.
 - "lessonId" is one of: ${LESSON_IDS.join(', ')}. Use null when no lesson fits.

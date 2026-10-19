@@ -197,5 +197,6 @@ describe('chat prompt attack rule', () => {
     expect(CHAT_PROMPT_VERSION).toBe('coach-chat-2');
     expect(CHAT_SYSTEM).toContain('Say that a piece attacks, defends, threatens or wins another piece only when the attacks facts or a line show it.');
     expect(CHAT_SYSTEM).toContain('"playedAttacks"');
+    expect(CHAT_SYSTEM).toContain('Attacks and defences ignore pins');
   });
 });

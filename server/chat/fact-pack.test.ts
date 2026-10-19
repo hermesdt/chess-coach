@@ -278,8 +278,8 @@ describe('attack facts', () => {
     expect(pack.playedAttacks).toBeNull();
   });
 
-  it('flags an undefended attacked piece as hanging and a defended one as not', async () => {
-    // 1. e4 d5 2. exd5: the d5 pawn is attacked by the e4 pawn... after 1. e4 d5 the e4 pawn and d5 pawn attack each other, both defended.
+  it('flags an undefended attacked piece as hanging and a defended equal-value one as not', async () => {
+    // 1. e4 d5: the e4 and d5 pawns attack each other. Only d5 has a defender (the queen).
     const pack = await packFor('1. e4 d5 *', 2);
     const e4 = pack.attacks.find((a) => a.square === 'e4')!;
     expect(e4).toMatchObject({ attackedBy: ['pawn d5'], defendedBy: [], hanging: true });
@@ -287,16 +287,17 @@ describe('attack facts', () => {
     expect(d5).toMatchObject({ attackedBy: ['pawn e4'], defendedBy: ['queen d8'], hanging: false });
   });
 
-  it('flags a defended piece attacked by a cheaper piece as hanging', async () => {
-    // After 1. e4 d5 2. e5 Nf6 3. Qe2 ... use a position where a knight is attacked by a pawn but defended.
-    const pack = await packFor('1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bb4+ 5. c3 Nf6 6. cxb4 *', 11);
-    const c = new Chess(pack.anchor.fen);
-    expect(c.attackers('d4', 'b')).toContain('c6');
-    const n = pack.attacks.find((a) => a.square === 'd4')!;
-    expect(n.piece).toBe('knight');
-    expect(n.attackedBy).toContain('knight c6');
-    expect(n.defendedBy).toEqual(['queen d1']);
-    expect(n.hanging).toBe(false);
+  it('flags a defended knight attacked by a pawn as hanging (the attacker is cheaper)', async () => {
+    // 1. e4 Nf6 2. e5: the e5 pawn attacks the f6 knight, and the knight has defenders.
+    const pack = await packFor('1. e4 Nf6 2. e5 *', 3);
+    const board = new Chess(pack.anchor.fen);
+    expect(board.attackers('f6', 'w')).toEqual(['e5']);
+    expect(board.attackers('f6', 'b').length).toBeGreaterThan(0);
+    const knight = pack.attacks.find((a) => a.square === 'f6')!;
+    expect(knight.piece).toBe('knight');
+    expect(knight.attackedBy).toEqual(['pawn e5']);
+    expect(knight.defendedBy.length).toBeGreaterThan(0);
+    expect(knight.hanging).toBe(true);
   });
 
   it('lists the king only when it is in check', async () => {

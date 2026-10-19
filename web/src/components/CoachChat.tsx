@@ -188,6 +188,7 @@ export function CoachChat(props: Props) {
   }, [jobId, finished, reload]);
 
   // A message left pending by an earlier page load has no job to follow here, so poll the list.
+  // The poll also backs up the SSE stream if it drops.
   const orphan = jobId === null && messages.some((m) => m.status === 'pending');
   useEffect(() => {
     if (!orphan) return;
@@ -203,22 +204,16 @@ export function CoachChat(props: Props) {
   anchorRef.current = anchor;
   const hasDraft = draft.trim() !== '';
   const prefetchOn = visible && analysed;
-  useEffect(() => {
-    if (!prefetchOn) return;
+  /** Debounced prefetch for the current anchor. Returns the cleanup. */
+  const schedulePrefetch = useCallback(() => {
     const timer = setTimeout(() => {
       const { ply, path } = anchorRef.current;
       void api.prefetchChat(gameId, { ply, path }).catch(() => {});
     }, PREFETCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [prefetchOn, gameId, anchorKey]);
-  useEffect(() => {
-    if (!prefetchOn || !hasDraft) return;
-    const timer = setTimeout(() => {
-      const { ply, path } = anchorRef.current;
-      void api.prefetchChat(gameId, { ply, path }).catch(() => {});
-    }, PREFETCH_DEBOUNCE_MS);
-    return () => clearTimeout(timer);
-  }, [prefetchOn, hasDraft, gameId]);
+  }, [gameId]);
+  useEffect(() => (prefetchOn ? schedulePrefetch() : undefined), [prefetchOn, schedulePrefetch, anchorKey]);
+  useEffect(() => (prefetchOn && hasDraft ? schedulePrefetch() : undefined), [prefetchOn, hasDraft, schedulePrefetch]);
 
   const send = async () => {
     const question = draft.trim();
