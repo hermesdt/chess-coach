@@ -25,7 +25,7 @@
       "solution": [
         "d4c6"
       ],
-      "explanation": "Two white pieces, the knight on d4 and the bishop on b5, attack the knight on c6. Only the b7 pawn defends it. Take with the knight first: after Nxc6 bxc6, Bxc6+ forks the king and the rook on a8."
+      "explanation": "The e5 pawn attacks your knight on d4, so act now. Your knight and your bishop on b5 both attack the knight on c6, and only the b7 pawn defends it. Nxc6 keeps the bishop on b5, so it can take on c6 next with check. After Nxc6 bxc6 Bxc6+, the bishop forks the king and the rook on a8."
     },
     {
       "id": "count-f7",
@@ -34,7 +34,7 @@
       "solution": [
         "d5f7"
       ],
-      "explanation": "The f7 pawn has two attackers, the queen and the bishop. It has one defender, the king. Qxf7+ Kd7 Be6 is checkmate. Qxe4 only wins a pawn."
+      "explanation": "The f7 pawn has one defender, the king. Your queen attacks it, and the bishop stands behind the queen and supports her. Qxf7+ Kd7 Be6 is checkmate. Qxe4 only wins a pawn."
     },
     {
       "id": "take-bishop-with-pawn",
@@ -44,6 +44,15 @@
         "d5c4"
       ],
       "explanation": "The pawn on d5 takes the bishop on c4. White can take back with the d3 pawn, but a pawn is worth less than a bishop. Bxf2+ looks strong, but Kxf2 takes the bishop for a pawn."
+    },
+    {
+      "id": "poisoned-pawn",
+      "fen": "r1bqkb1r/ppp1p2p/2n2p2/3p2p1/3P1B2/4PN2/PPPQ1PPP/R3KB1R w KQkq - 0 8",
+      "prompt": "White to move. Your bishop is attacked. Pick the best move.",
+      "solution": [
+        "f4g3"
+      ],
+      "explanation": "The pawn on g5 attacks your bishop, but the f6 pawn guards g5. Bxg5 fxg5 or Nxg5 fxg5 loses a piece for a pawn. Bg3 saves the bishop and takes nothing."
     }
   ],
   "links": []
