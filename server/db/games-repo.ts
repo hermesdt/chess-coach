@@ -44,7 +44,6 @@ export function insertGames(db: DatabaseSync, games: NewGame[]): { inserted: num
      termination, eco, opening_name, pgn, url, ply_count, imported_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
   let inserted = 0;
-  let linked = 0;
   const now = Date.now();
   transaction(db, () => {
     for (const g of games) {
@@ -52,10 +51,7 @@ export function insertGames(db: DatabaseSync, games: NewGame[]): { inserted: num
         g.source, g.sourceId, g.playedAt, g.timeClass, g.rated ? 1 : 0, g.white, g.black, g.whiteElo, g.blackElo,
         g.userColor, g.result, g.termination, g.eco, g.openingName, g.pgn, g.url, g.plyCount, now,
       );
-      if (Number(res.changes) > 0) {
-        if (linkDuplicatesOf(db, Number(res.lastInsertRowid))) linked += 1;
-        else inserted += 1;
-      }
+      if (Number(res.changes) > 0 && !linkDuplicatesOf(db, Number(res.lastInsertRowid))) inserted += 1;
     }
   });
   return { inserted, duplicates: games.length - inserted };
