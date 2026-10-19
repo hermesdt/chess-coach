@@ -17,6 +17,11 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 5. Before marking a milestone `done`: `pnpm typecheck && pnpm lint && pnpm test`
    (plus `pnpm validate:content` once it exists) are green, and a smoke run of
    the app works. Update this file and commit.
+6. When a milestone is done, merge it into `main` and push (owner instruction,
+   2026-10-19). The owner's `pnpm dev` may restart or fail during development;
+   that is fine. Before a merge that adds migrations, back up `data/chess.db`
+   to `data/backups/pre-<milestone>-<date>.db` (the name must not start with
+   `chess-`, because the keep-7 cleanup sorts those by name).
 
 ## Milestones
 
@@ -28,8 +33,9 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M4 | Openings: London, Caro-Kann, Slav/anti-London; validator, explorer, drill, leaks; levels | done | `docs/superpowers/plans/2026-10-18-m4-openings.md` |
 | M5 | AI coach (claude-cli, codex-cli, opencode-cli, openrouter, anthropic-api) | done | `docs/superpowers/plans/2026-10-18-m5-ai-coach.md` |
 | M6 | Principles course (12 level-1 lessons) | done | `docs/superpowers/plans/2026-10-18-m6-course.md` |
-| M7 | Insights + polish + README | planned | `docs/superpowers/plans/2026-10-18-m7-insights-polish.md` |
-| M8 | Level 2–3 content (lessons, tags, deeper repertoire) | todo | — (write when M1–M7 are done) |
+| M7 | Insights + polish + README | done | `docs/superpowers/plans/2026-10-18-m7-insights-polish.md` |
+| M8 | Coach chat on the game page (owner request; engine-verified alternative lines) | todo | — (brainstorm with the owner, then spec addendum + plan) |
+| M9 | Level 2–3 content (lessons, tags, deeper repertoire) | todo | — (was M8 before 2026-10-19) |
 
 ## Log
 
@@ -126,15 +132,49 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 - Known gaps for later: no "Report a problem" button on the lesson page itself
   (only on review cards); lesson 5 has five similar castling exercises.
 
+- 2026-10-19 — **M7 done.** 701 tests; `pnpm validate:content` → content OK.
+  Insights page (results by opening and colour with the repertoires pinned,
+  mistake tags per month, accuracy, rating per platform + time class,
+  recommended focus; 30/90/365 days/all), duplicate games (an imported copy of
+  a synced game is linked via `games.duplicate_of` and left out of every
+  count), Settings completeness (engine, review limits, reported problems with
+  "Restore card", data info, ".env" notes), chess.com retry on 429/5xx
+  (1 s / 3 s / 9 s, Retry-After), README update. Migrations 012 (per-game user
+  tag counts, backfilled) and 013 (duplicate_of). Smoke: a copy of the live DB
+  on port 8788 — real sync, an imported copy counted as a duplicate, all pages
+  screenshotted. Final review (opus) fixes: two platform games never link (a
+  rematch with the same moves stays separate), rating series cut by size with a
+  note, heatmap at natural size, text contrast ≥ 4.5:1.
+- M7 rulings (review these):
+  - Only an imported game can be a duplicate. Same players (case-insensitive),
+    same UTC day, same SAN moves. A synced copy beats an imported one.
+    A game that crosses midnight UTC between the two time stamps is not linked.
+  - The insights rating chart excludes imported games and shows at most 4
+    series (the ones with the most games) with a "N more series" note.
+  - Insights has a "Recommended focus" card (spec §2.8) that reuses the
+    dashboard's top tag.
+  - The Engine nodes setting has no ".env" note: a stored value cannot be cleared.
+- Known gaps for later: chess.com "Undefined" opening names form their own
+  group; the Review page says "Nothing to review" when the daily new-card limit
+  is reached; flags list shows a raw FEN, not a board; the same opening can get
+  different names on chess.com and lichess; `.env.example` still lists unused
+  AI_PROVIDER / AI_MODEL / AI_EFFORT; cards from a game that later becomes a
+  duplicate stay (cards merge by position, so nothing is counted twice).
+- 2026-10-19 — Owner asked for a coach chat on the game page: the owner
+  explains a move or plan, the AI judges it, and better ideas come back as
+  lines the owner can play on the board. Moves in those lines must come from
+  Stockfish / chess.js (project rule), the AI only selects and explains. This
+  is M8; level 2–3 content moves to M9.
+
 ## Next session
 
-- Start with M7 (insights + polish + README update): plan
-  `docs/superpowers/plans/2026-10-18-m7-insights-polish.md`. Then M8 (level 2–3
-  content) needs a plan.
-- Branches are stacked and not merged: `m1-foundation` → `m2-engine-analysis` →
-  `m3-srs` → `m4-openings` → `m5-ai-coach` → `m6-course`. Each fast-forwards
-  onto the previous one; merging `m6-course` into `main` brings everything.
-  Merging is the owner's decision.
-- Owner setup after the lost DB: enter chess.com / lichess usernames and the
-  lichess token in Settings, then Sync (analysis, mistake cards and opening
-  leaks follow automatically).
+- Start M8 (coach chat): run `superpowers:brainstorming` with the owner, add a
+  spec addendum, write the plan into `docs/superpowers/plans/`, link it above.
+  Design notes so far: the owner writes their idea for a move; the server sends
+  the position, the move's eval and Stockfish MultiPV lines to the AI; the AI
+  judges the idea and may name candidate moves; chess.js checks legality and
+  Stockfish plays each line out; only verified lines show, as clickable
+  variations on the board (with "Add to review"); chat history per game + ply
+  in the DB; all five providers (CLI providers get the full history each turn).
+- Then M9 (level 2–3 content) needs a plan.
+- All milestones through M7 are merged into `main`.

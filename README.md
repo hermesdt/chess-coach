@@ -15,7 +15,7 @@ The AI never invents moves, lines, or evaluations.
 
 ## Status
 
-Milestones M1 to M6 are done. M7 adds the insights page and this README.
+Milestones M1 to M7 are done. M8 (coach chat) is next.
 See `docs/ROADMAP.md` for the status of each milestone.
 
 ## Requirements
