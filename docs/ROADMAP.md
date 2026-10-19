@@ -34,7 +34,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M5 | AI coach (claude-cli, codex-cli, opencode-cli, openrouter, anthropic-api) | done | `docs/superpowers/plans/2026-10-18-m5-ai-coach.md` |
 | M6 | Principles course (12 level-1 lessons) | done | `docs/superpowers/plans/2026-10-18-m6-course.md` |
 | M7 | Insights + polish + README | done | `docs/superpowers/plans/2026-10-18-m7-insights-polish.md` |
-| M8a | Coach chat: chat, engine lines as branches, own moves on the board, add to review | planned | `docs/superpowers/plans/2026-10-19-m8a-coach-chat.md` |
+| M8a | Coach chat: chat, engine lines as branches, own moves on the board, add to review | done | `docs/superpowers/plans/2026-10-19-m8a-coach-chat.md` |
 | M8b | Coach chat: streaming, fast model, live Stockfish eval, "Go deeper" | todo | — (write after M8a; spec `docs/superpowers/specs/2026-10-19-coach-chat-design.md`) |
 | M9 | Level 2–3 content (lessons, tags, deeper repertoire) | todo | — (was M8 before 2026-10-19) |
 
@@ -167,16 +167,49 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   Stockfish / chess.js (project rule), the AI only selects and explains. This
   is M8; level 2–3 content moves to M9.
 
+- 2026-10-19 — **M8a done.** 801 tests; `pnpm validate:content` → content OK.
+  Coach chat on the game page ("Moves | Coach chat" tabs): the owner asks about
+  the position on the board (main line or a side branch they made by moving
+  pieces); the server builds a fact pack (Stockfish MultiPV 3, the refutation
+  of the played move, the opponent's threat, moves the owner names, material /
+  captures / checks, repertoire moves, game key moments); the AI answers with
+  a first-sentence verdict, attaches engine lines by id only, a rule and a
+  lesson link; every move in the answer is grounded (one retry, then "Try
+  again"). Line buttons play on the board as branches. "Add to review" makes a
+  card (engine moves within 5 win %). Migration 014 (`chat_messages`).
+  Smoke on a copy of the live DB with claude-cli (Sonnet 5.5): the Bh6
+  question answered in 9 s; follow-ups 17–20 s; whole-game question 17 s.
+  Token use: about 5–6k input tokens for a first question, about 9–10k with a
+  full 10-turn history, about 0.4k output.
+- M8a rulings (review these):
+  - The web computes the context line itself (`describeNode`), with the same
+    wording as the server.
+  - The `chat_messages` status CHECK already allows 'streaming' (M8b), so the
+    table needs no rebuild later.
+  - A chat card for a position where the owner erred is a normal mistake card
+    (move ply, no source); other chat cards carry `source: 'chat'` and the
+    mistake-card cleanup leaves them alone.
+  - The owner's named moves (also illegal ones) are in the grounding set, so
+    the coach can say "Qh5 is illegal"; it could in theory recommend one.
+- Known gaps for later:
+  - **Wrong non-move facts are possible.** Grounding checks moves only. In the
+    smoke run the coach said "Bh6 attacked the rook on f8" (the g7 pawn blocks
+    that diagonal). M8b candidate: add per-position attacked / hanging pieces
+    to the fact pack and allow attack claims only from those facts.
+  - On a duplicate game's page the chat checks the duplicate's own analysis;
+    if the canonical game changes, older chats stay in the DB but drop from view.
+  - "Add to review" is hidden when the coach attached no lines; at a final
+    position the owner's named moves are dropped; "Line 1" labels repeat in
+    the Moves tab; numbers in the coach's text are not checked.
+- 2026-10-19 — Owner set the claude-cli model to `claude-sonnet-5-5` in
+  Settings (used for coach notes and chat until M8b adds a chat model setting).
+
 ## Next session
 
-- M8 design approved by the owner (2026-10-19):
-  `docs/superpowers/specs/2026-10-19-coach-chat-design.md`. Execute M8a
-  (`docs/superpowers/plans/2026-10-19-m8a-coach-chat.md`), then write the M8b plan.
-  Design notes so far: the owner writes their idea for a move; the server sends
-  the position, the move's eval and Stockfish MultiPV lines to the AI; the AI
-  judges the idea and may name candidate moves; chess.js checks legality and
-  Stockfish plays each line out; only verified lines show, as clickable
-  variations on the board (with "Add to review"); chat history per game + ply
-  in the DB; all five providers (CLI providers get the full history each turn).
+- Write the M8b plan (streaming, fast chat model + "Go deeper", live
+  Stockfish eval under the board; spec
+  `docs/superpowers/specs/2026-10-19-coach-chat-design.md` §7–§9, §11). Start
+  with the speed spike. Consider the "attacked / hanging pieces" facts from
+  the M8a known gaps.
 - Then M9 (level 2–3 content) needs a plan.
-- All milestones through M7 are merged into `main`.
+- All milestones through M8a are merged into `main`.
