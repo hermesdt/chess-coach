@@ -12,6 +12,7 @@ import { syncOpeningCards } from './opening-cards.js';
 const REPERTOIRES = [
   { id: 'london', minLevel3: 40, allCommented: true },
   { id: 'caro-kann', minLevel3: 50, allCommented: false },
+  { id: 'slav', minLevel3: 150, allCommented: true },
 ];
 
 let db: DatabaseSync;
