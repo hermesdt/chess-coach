@@ -94,12 +94,12 @@
                                  "children": [
                                   {
                                    "san": "Bb5",
-                                   "comment": "White attacks your c6 knight with the bishop. The knight is guarded by the b7 pawn and the e7 knight.",
+                                   "comment": "White attacks your c6 knight a second time and pins it to your king. The b7 pawn and the e7 knight guard it.",
                                    "level": 3,
                                    "children": [
                                     {
                                      "san": "a6",
-                                     "comment": "Attack the bishop with the pawn. The bishop must take on c6 or retreat.",
+                                     "comment": "Attack the bishop with the pawn. The d4 knight guards it, so White can take on c6 or move the bishop.",
                                      "children": [
                                       {
                                        "san": "Bxc6+",
@@ -123,7 +123,7 @@
                                                "children": [
                                                 {
                                                  "san": "Nxf5",
-                                                 "comment": "Retake with the knight from e7. The trades are done and material is level.",
+                                                 "comment": "Retake with the knight from e7. Material is level, and your f5 knight attacks the e3 bishop.",
                                                  "children": []
                                                 }
                                                ]
@@ -236,7 +236,7 @@
                                "children": [
                                 {
                                  "san": "Ne7",
-                                 "comment": "Develop your last kingside piece. Next the knight goes to c6 and attacks d4 together with the c5 pawn.",
+                                 "comment": "Develop the g8 knight. Next it goes to c6 and attacks d4 together with the c5 pawn.",
                                  "children": [
                                   {
                                    "san": "Na3",
@@ -244,7 +244,7 @@
                                    "children": [
                                     {
                                      "san": "Nc6",
-                                     "comment": "Develop and attack d4 a second time.",
+                                     "comment": "Bring the knight to c6 and attack d4 a second time.",
                                      "children": [
                                       {
                                        "san": "Nc2",
@@ -348,8 +348,33 @@
                                "children": [
                                 {
                                  "san": "Bh7",
-                                 "comment": "Retreat to h7. The bishop is safe there and looks along the diagonal at the c2 pawn.",
-                                 "children": []
+                                 "comment": "Retreat to h7. The bishop is safe there and looks at the c2 pawn. Your h5 pawn has no guard now, so White can take it.",
+                                 "children": [
+                                  {
+                                   "san": "Nxh5",
+                                   "comment": "White takes the h5 pawn with the knight.",
+                                   "level": 3,
+                                   "children": [
+                                    {
+                                     "san": "Nc6",
+                                     "comment": "Give up the pawn for quick play. You attack d4 and develop, and the game is about equal.",
+                                     "children": [
+                                      {
+                                       "san": "dxc5",
+                                       "comment": "White takes the c5 pawn.",
+                                       "children": [
+                                        {
+                                         "san": "Bxc5",
+                                         "comment": "Retake on c5 with the bishop. It develops and looks at the f2 pawn.",
+                                         "children": []
+                                        }
+                                       ]
+                                      }
+                                     ]
+                                    }
+                                   ]
+                                  }
+                                 ]
                                 }
                                ]
                               }
@@ -515,8 +540,21 @@
                                            "children": [
                                             {
                                              "san": "O-O",
-                                             "comment": "Castle. Your king is safe, and your knights and your bishop are all out.",
-                                             "children": []
+                                             "comment": "Castle. Your king is safe, and your knights and your bishop are all out. The b7 pawn has no guard, but Qxb7 allows ...Rfb8.",
+                                             "children": [
+                                              {
+                                               "san": "Qxb7",
+                                               "comment": "White takes the b7 pawn with the queen.",
+                                               "level": 3,
+                                               "children": [
+                                                {
+                                                 "san": "Rfb8",
+                                                 "comment": "Attack the queen with the rook. The game stays about equal.",
+                                                 "children": []
+                                                }
+                                               ]
+                                              }
+                                             ]
                                             }
                                            ]
                                           }
@@ -738,7 +776,7 @@
                                            "children": [
                                             {
                                              "san": "Bxc3",
-                                             "comment": "Take the knight before the pawn takes your bishop. If White retakes with the b-pawn, the a3 pawn is left alone.",
+                                             "comment": "Trade the bishop for the knight. If White retakes with the b-pawn, the a3 pawn has no pawn next to it.",
                                              "children": [
                                               {
                                                "san": "bxc3",
@@ -986,8 +1024,8 @@
                                                                "comment": "The queen steps back to d3.",
                                                                "children": [
                                                                 {
-                                                                 "san": "Qa5",
-                                                                 "comment": "Attack the a2 pawn. The king on b1 guards it, so it is safe for now.",
+                                                                 "san": "Qd5",
+                                                                 "comment": "Bring the queen to d5, where it attacks the d4 pawn. The f6 knight and the c6 and e6 pawns guard the queen.",
                                                                  "children": []
                                                                 }
                                                                ]
@@ -1448,7 +1486,62 @@
                         {
                          "san": "Nd7",
                          "comment": "Develop and guard e5. Next ...Ngf6.",
-                         "children": []
+                         "children": [
+                          {
+                           "san": "c3",
+                           "comment": "White guards the d4 pawn with the c-pawn.",
+                           "level": 3,
+                           "children": [
+                            {
+                             "san": "Ngf6",
+                             "comment": "Develop the knight and attack the e4 pawn.",
+                             "children": [
+                              {
+                               "san": "O-O",
+                               "comment": "White castles.",
+                               "children": [
+                                {
+                                 "san": "Bd6",
+                                 "comment": "Develop the bishop and guard the e5 pawn. Now you can castle.",
+                                 "children": [
+                                  {
+                                   "san": "Bg5",
+                                   "comment": "White pins your f6 knight to the queen.",
+                                   "children": [
+                                    {
+                                     "san": "h6",
+                                     "comment": "Attack the bishop with the pawn.",
+                                     "children": [
+                                      {
+                                       "san": "Bh4",
+                                       "comment": "White keeps the pin.",
+                                       "children": [
+                                        {
+                                         "san": "O-O",
+                                         "comment": "Castle. Your king is safe, and your two knights and two bishops are all out.",
+                                         "children": [
+                                          {
+                                           "san": "Nbd2",
+                                           "comment": "White develops the b1 knight.",
+                                           "children": []
+                                          }
+                                         ]
+                                        }
+                                       ]
+                                      }
+                                     ]
+                                    }
+                                   ]
+                                  }
+                                 ]
+                                }
+                               ]
+                              }
+                             ]
+                            }
+                           ]
+                          }
+                         ]
                         }
                        ]
                       }
@@ -1474,7 +1567,68 @@
                         {
                          "san": "Qxe4+",
                          "comment": "Take the pawn with check. You also attack the h1 rook.",
-                         "children": []
+                         "children": [
+                          {
+                           "san": "Qe2",
+                           "comment": "White blocks the check with the queen.",
+                           "level": 3,
+                           "children": [
+                            {
+                             "san": "Qxh1",
+                             "comment": "Take the rook. Nothing guards it, and you are a rook ahead.",
+                             "children": [
+                              {
+                               "san": "Be3",
+                               "comment": "White develops the bishop.",
+                               "children": [
+                                {
+                                 "san": "Qd5",
+                                 "comment": "Bring the queen back to the centre. It guards your e5 pawn and attacks the a2 pawn.",
+                                 "children": [
+                                  {
+                                   "san": "Nc3",
+                                   "comment": "White attacks the queen with the knight.",
+                                   "children": [
+                                    {
+                                     "san": "Bb4",
+                                     "comment": "Develop the bishop and pin the c3 knight to the king.",
+                                     "children": [
+                                      {
+                                       "san": "Bd2",
+                                       "comment": "White puts the bishop on d2, so the c3 knight is no longer pinned to the king.",
+                                       "children": [
+                                        {
+                                         "san": "Bxc3",
+                                         "comment": "Take the knight with the bishop.",
+                                         "children": [
+                                          {
+                                           "san": "Bxc3",
+                                           "comment": "White retakes with the bishop.",
+                                           "children": [
+                                            {
+                                             "san": "Ne7",
+                                             "comment": "Develop the g8 knight. You are a rook ahead, so keep the game simple.",
+                                             "children": []
+                                            }
+                                           ]
+                                          }
+                                         ]
+                                        }
+                                       ]
+                                      }
+                                     ]
+                                    }
+                                   ]
+                                  }
+                                 ]
+                                }
+                               ]
+                              }
+                             ]
+                            }
+                           ]
+                          }
+                         ]
                         }
                        ]
                       },
@@ -1628,7 +1782,50 @@
                          "san": "Nf6",
                          "comment": "Develop and attack e4. You are comfortable.",
                          "level": 2,
-                         "children": []
+                         "children": [
+                          {
+                           "san": "Be2",
+                           "comment": "White develops the bishop.",
+                           "level": 3,
+                           "children": [
+                            {
+                             "san": "Nbd7",
+                             "comment": "Develop the b8 knight. It guards the e5 square, so you can play ...e5 later.",
+                             "children": [
+                              {
+                               "san": "O-O",
+                               "comment": "White castles.",
+                               "children": [
+                                {
+                                 "san": "Bc5",
+                                 "comment": "Develop the dark bishop. It looks at the f2 pawn.",
+                                 "children": [
+                                  {
+                                   "san": "Bf4",
+                                   "comment": "White develops the c1 bishop.",
+                                   "children": [
+                                    {
+                                     "san": "O-O",
+                                     "comment": "Castle. Your king is safe.",
+                                     "children": [
+                                      {
+                                       "san": "Qg3",
+                                       "comment": "White puts the queen on g3, where it looks at the g7 pawn.",
+                                       "children": []
+                                      }
+                                     ]
+                                    }
+                                   ]
+                                  }
+                                 ]
+                                }
+                               ]
+                              }
+                             ]
+                            }
+                           ]
+                          }
+                         ]
                         }
                        ]
                       }
@@ -1722,7 +1919,7 @@
                                "children": [
                                 {
                                  "san": "Bxd3",
-                                 "comment": "Trade the bishop you brought out. Now ...e6 can no longer shut a bishop in.",
+                                 "comment": "Trade your bishop. Nothing guards f5, and ...e6 first allows Bxf5 exf5 with doubled f-pawns.",
                                  "children": [
                                   {
                                    "san": "Qxd3",
