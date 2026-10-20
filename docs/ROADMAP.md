@@ -236,6 +236,13 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 - 2026-10-20 — Owner asked to fix the opencode model: Settings now use
   `openrouter/z-ai/glm-5.3-flash` (provider test passed, 10 s).
 
+- 2026-10-20 — Owner reported that opening cards said "Not quite — the best
+  move was Nf3" for a sound non-repertoire move (Nc3). Fix: opening cards now
+  say "Your <repertoire> move here is <SAN>."; Stockfish checks the played
+  move (200k nodes): within 5 win % → "…is also a good move (Stockfish), but
+  your <repertoire> plays <SAN> here." and default rating Hard; else the loss
+  in % and default Again. Mistake and lesson cards unchanged.
+
 ## Next session
 
 - Execute M9 (`docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md`).
