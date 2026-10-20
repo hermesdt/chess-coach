@@ -3,6 +3,7 @@ import type { Tag } from './types';
 export const LESSON_IDS = [
   'blunder-check', 'free-material', 'center', 'develop', 'castle', 'trades',
   'bishop-pair', 'castling-sides', 'tactics', 'mates', 'caro-kann-plans', 'london-plans',
+  'pawn-structures', 'outposts', 'good-bad-bishop', 'rook-endgames',
 ] as const;
 export type LessonId = (typeof LESSON_IDS)[number];
 
@@ -31,4 +32,8 @@ export const LESSON_TITLES: Record<LessonId, string> = {
   mates: 'Mating patterns',
   'caro-kann-plans': 'Caro-Kann plans',
   'london-plans': 'London plans',
+  'pawn-structures': 'Pawn structures',
+  outposts: 'Outposts and weak squares',
+  'good-bad-bishop': 'Good and bad bishops',
+  'rook-endgames': 'Rook endgames',
 };

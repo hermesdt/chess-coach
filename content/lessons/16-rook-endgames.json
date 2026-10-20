@@ -1,0 +1,57 @@
+{
+  "id": "rook-endgames",
+  "order": 16,
+  "level": 2,
+  "title": "Rook endgames",
+  "summary": "Learn two key rook endings: Lucena, where you win with a bridge, and Philidor, where you draw on the third rank.",
+  "tags": [],
+  "body": "### Rook endings\n\nRook endings are very common. Many are draws, and good technique saves half points or wins them. Learn these rules and two key positions.\n\n- **Rook behind the passed pawn.** Put your rook behind your passed pawn. It guards the pawn and gets stronger when the pawn moves. Do the same against the pawn of your opponent.\n- **Active rook.** A passive rook is a weak rook. Keep your rook active.\n\n**Lucena: the win.** You have a pawn on the seventh rank. Your king stands in front of it, on the eighth rank. The enemy king is cut off from the pawn. But your king cannot leave: the enemy rook gives checks. The plan is the bridge:\n\n- Put your rook on the fourth rank, counted from your side.\n- Walk your king out, so the pawn can move.\n- When the enemy rook checks, block the check with your rook on the fourth rank.\n- The pawn promotes.\n\n**Philidor: the draw.** You defend. The enemy pawn is on the fifth rank, and your king stands in front of it. Follow this plan:\n\n- Put your rook on the third rank, counted from your side. It stops the enemy king from stepping forward.\n- When the pawn moves to the sixth rank, send your rook to the far side of the board, behind the pawn.\n- Give checks from behind. The enemy king has no shelter, so you draw.\n\nIn our exercises Black defends against a white pawn. So the third rank is the sixth rank. The far side is the first rank.\n\nDo not give a check too early. Do not let your king be cut off.\n\nRule of thumb: win with the bridge when the pawn is on the seventh, and defend on the third rank, then check from behind.",
+  "exercises": [
+    {
+      "id": "lucena-bridge",
+      "fen": "1K6/1P2k3/8/8/8/8/r7/3R4 w - - 0 1",
+      "prompt": "White to move. This is the Lucena position. Build the bridge: put your rook on the fourth rank.",
+      "solution": [
+        "d1d4"
+      ],
+      "explanation": "Rd4 builds the bridge. Next the king walks out, and the rook will block the checks on b4. Then the pawn on b7 promotes."
+    },
+    {
+      "id": "lucena-block",
+      "fen": "8/1P2k3/8/1K6/3R4/8/8/1r6 w - - 0 1",
+      "prompt": "White to move. Your king is in check from the rook on b1. Block the check with your rook.",
+      "solution": [
+        "d4b4"
+      ],
+      "explanation": "Rb4 blocks the check and finishes the bridge. If Black takes on b4, the king takes back and the pawn promotes. If Black checks from the side, the king steps out of the checks and the pawn promotes."
+    },
+    {
+      "id": "philidor-third-rank",
+      "fen": "4k3/r7/8/3KP3/8/8/8/1R6 b - - 0 1",
+      "prompt": "Black to move. Defend the Philidor way. Put your rook on the sixth rank, which is your third rank.",
+      "solution": [
+        "a7a6"
+      ],
+      "explanation": "Ra6 cuts the white king off from the sixth rank, so it cannot step forward. This is the first step of the Philidor defence."
+    },
+    {
+      "id": "philidor-checks",
+      "fen": "4k3/1R6/r3P3/3K4/8/8/8/8 b - - 0 1",
+      "prompt": "Black to move. The pawn has reached the sixth rank. Move your rook to the first rank, behind the pawn, to give checks from behind.",
+      "solution": [
+        "a6a1"
+      ],
+      "explanation": "Ra1 goes behind the pawn and prepares checks from behind. The white king cannot hide from them, so the game is a draw."
+    },
+    {
+      "id": "rook-behind-pawn",
+      "fen": "r4k2/5ppp/8/P7/8/8/5PPP/4R1K1 w - - 0 1",
+      "prompt": "White to move. You have a passed pawn on a5. Put your rook behind it.",
+      "solution": [
+        "e1a1"
+      ],
+      "explanation": "The black rook on a8 attacks your pawn. Ra1 guards it from behind, so the pawn can advance with support. The rook gets stronger with every step of the pawn."
+    }
+  ],
+  "links": []
+}

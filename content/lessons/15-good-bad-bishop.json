@@ -1,0 +1,39 @@
+{
+  "id": "good-bad-bishop",
+  "order": 15,
+  "level": 2,
+  "title": "Good and bad bishops",
+  "summary": "A bishop is bad when your own pawns stand on its colour. Free it, trade it, or keep your pawns on the other colour.",
+  "tags": [],
+  "body": "### Your pawns decide your bishop\n\nA bishop stays on one colour of squares. Your pawns decide if it is good or bad.\n\n- **Bad bishop.** Many of your pawns stand on the same colour as the bishop. The pawns block its diagonals. The bishop does little.\n- **Good bishop.** Your pawns stand on the other colour. The bishop has open diagonals and can attack.\n\nLook at the Slav and Caro-Kann. Black has pawns on c6, d5 and e6. They all stand on light squares. So Black's light-squared bishop is bad if it stays behind them. Now look at the London. White has pawns on c3, d4 and e3. They stand on dark squares. So White's light-squared bishop is good.\n\nHow to fix a bad bishop:\n\n- Bring it outside the pawn chain before you play ...e6. The Caro-Kann bishop goes to f5 (lesson 11).\n- Change the pawns. In the Semi-Slav, ...dxc4 gives up the d5 pawn. Then ...b5 and ...Bb7 bring the bishop to the long diagonal, and ...c5 opens it.\n- Trade it for a piece that matters.\n\nHow to keep a good bishop good:\n\n- Put your pawns on the colour opposite to your bishop.\n- Do not trade it for a knight without a reason (lesson 7).\n- Aim it at weak enemy pawns on its colour.\n\nYou can find the colour of a square quickly. A1 is dark. Squares next to each other have different colours.\n\nRule of thumb: keep your pawns on the colour opposite to your bishop, and free a bad bishop before it gets locked in.",
+  "exercises": [
+    {
+      "id": "bishop-out-classical",
+      "fen": "rnbqkbnr/pp2pppp/2p5/8/3PN3/8/PPP2PPP/R1BQKBNR b KQkq - 0 4",
+      "prompt": "Black to move. Bring your light-squared bishop outside the pawn chain, and attack the knight on e4.",
+      "solution": [
+        "c8f5"
+      ],
+      "explanation": "Bf5 puts the bishop outside the pawn chain before ...e6 locks it in. It also attacks the knight on e4."
+    },
+    {
+      "id": "semi-slav-capture",
+      "fen": "r1bqkb1r/pp1n1ppp/2p1pn2/3p4/2PP4/2NBPN2/PP3PPP/R1BQK2R b KQkq - 2 6",
+      "prompt": "Black to move. Your light-squared bishop is shut in by your pawns on c6, d5 and e6. Start to free it with a pawn capture.",
+      "solution": [
+        "d5c4"
+      ],
+      "explanation": "dxc4 gives up the pawn on d5. If White takes back with Bxc4, ...b5 attacks the bishop and prepares ...Bb7. The bishop gets out of its prison."
+    },
+    {
+      "id": "long-diagonal",
+      "fen": "r1bqkb1r/p2n1ppp/2p1pn2/1p6/3P4/2NBPN2/PP3PPP/R1BQK2R b KQkq - 1 8",
+      "prompt": "Black to move. Your light-squared bishop can leave c8 now. Put it on the long diagonal.",
+      "solution": [
+        "c8b7"
+      ],
+      "explanation": "Bb7 puts the bishop on the long diagonal a8-h1. The c6 pawn still blocks it, so Black plans ...c5 to open the diagonal."
+    }
+  ],
+  "links": []
+}

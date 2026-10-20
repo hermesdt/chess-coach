@@ -1,0 +1,49 @@
+{
+  "id": "pawn-structures",
+  "order": 13,
+  "level": 2,
+  "title": "Pawn structures",
+  "summary": "Pawns decide the plan. Learn the isolated pawn, the Carlsbad, and the Caro-Kann and Slav pawn shapes.",
+  "tags": [],
+  "body": "### Pawns make the plan\n\nPawns only move forward. They cannot go back. So the pawn shape stays for a long time. It tells you where your pieces belong. Learn a few shapes, and you know the plan in many games.\n\n- **Isolated pawn.** It has no friendly pawn on the next files, so no pawn can guard it. If your opponent has it, put a knight on the square in front of it. This is the blockade. If you have it, keep your pieces active and do not trade them. Play the break d4-d5 when it opens lines for your pieces. If you wait too long, the pawn is only a weakness.\n- **Carlsbad.** White has pawns on d4 and e3. Black has pawns on c6 and d5, and no e-pawn. White has two pawns on the queenside against three. White plays the minority attack: push the b-pawn to b4 and b5, with a rook behind it. This often leaves Black with a weak pawn.\n- **Slav and Caro-Kann.** Black has pawns on c6 and d5. They stand on light squares and can lock in the light-squared bishop. So bring that bishop out early (lesson 11). In the Exchange Slav both c-pawns are gone. The c-file is open, so put a rook there.\n- **Pawn chain.** In the Advance Caro-Kann, White pawns on d4 and e5 form a chain. Attack its base, the d4 pawn, with ...c5.\n\nFor each shape, ask two questions. Which square is weak? Which pawn break do I want?\n\nThe exercises show four of these shapes. Find the plan before you move.\n\nRule of thumb: let the pawn shape choose your plan: blockade an isolated pawn, play b4 in the Carlsbad, and use the open c-file.",
+  "exercises": [
+    {
+      "id": "iqp-blockade",
+      "fen": "r1bq1rk1/pp2bppp/2n1pn2/8/3P4/2N1BN2/PP2BPPP/R2Q1RK1 b - - 0 10",
+      "prompt": "Black to move. White has an isolated pawn on d4. Put a knight on the square in front of it.",
+      "solution": [
+        "f6d5"
+      ],
+      "explanation": "Nd5 blocks the isolated pawn. White has no c-pawn and no e-pawn, so no pawn can attack d5 soon. The pawn on d4 cannot advance, and the knight is a strong piece in the centre."
+    },
+    {
+      "id": "iqp-break",
+      "fen": "r1bqr1k1/pp1nbppp/2n1p3/8/3P4/2N1BN2/PP2BPPP/R2QR1K1 w - - 0 10",
+      "prompt": "White to move. Play the pawn break with your isolated pawn.",
+      "solution": [
+        "d4d5"
+      ],
+      "explanation": "The d4 pawn is isolated, but your pieces are active. d5 attacks the knight on c6 and the pawn on e6, and it opens lines for your bishops and rooks. If you wait, Black can put a knight on d5 and block the pawn."
+    },
+    {
+      "id": "carlsbad-minority",
+      "fen": "r2q1rk1/pp2bppp/2p1bn2/3p4/3P4/2NBPN2/PPQ2PPP/1R3RK1 w - - 0 12",
+      "prompt": "White to move. This is a Carlsbad structure. Start the minority attack: push your b-pawn two squares.",
+      "solution": [
+        "b2b4"
+      ],
+      "explanation": "White has two pawns on the queenside against three. b4 starts the minority attack. The next step is b5, to damage Black's pawns. The rook on b1 already stands behind the pawn."
+    },
+    {
+      "id": "open-c-file",
+      "fen": "r4rk1/pp3ppp/2nqpn2/3p4/3P4/3QPN2/PP2NPPP/R4RK1 w - - 2 12",
+      "prompt": "White to move. Both c-pawns are gone. Put a rook on the open c-file.",
+      "solution": [
+        "a1c1",
+        "f1c1"
+      ],
+      "explanation": "Rac1 and Rfc1 both put a rook on the open c-file. The rook attacks the knight on c6 and fights for control of the file. Black will want the file too."
+    }
+  ],
+  "links": []
+}
