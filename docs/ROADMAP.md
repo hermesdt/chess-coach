@@ -37,6 +37,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M8a | Coach chat: chat, engine lines as branches, own moves on the board, add to review | done | `docs/superpowers/plans/2026-10-19-m8a-coach-chat.md` |
 | M8b | Coach chat: streaming, fast model, live Stockfish eval, "Go deeper", attack facts | done | `docs/superpowers/plans/2026-10-19-m8b-coach-chat-speed.md` |
 | M9 | Level 2–3 content (lessons, tags, deeper repertoire) | planned | `docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md` |
+| M10 | Content quality audit: every repertoire comment and lesson claim checked with chess.js + Stockfish, wrong ones fixed | todo | — (owner request 2026-10-20; plan after M9) |
 
 ## Log
 
@@ -246,4 +247,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 ## Next session
 
 - Execute M9 (`docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md`).
+- Then M10: content quality audit (owner found two wrong repertoire comments by
+  hand on 2026-10-20: a London opening card text and "dxe4 opens the c8
+  bishop", fixed in 963d710).
 - All milestones through M8b are merged into `main`.
