@@ -32,7 +32,7 @@
       "solution": [
         "b4b5"
       ],
-      "explanation": "b5 attacks the pawns on a6 and c6. If Black takes with ...axb5, then axb5 opens the a-file, and the pawn on b5 still attacks c6. The engine line is b5 axb5 axb5 Bd6 Ra1 Rc8, and the white rook uses the open a-file. Rfc1 is also good, but it makes no threat on c6."
+      "explanation": "b5 attacks the pawns on a6 and c6. If Black takes with ...axb5, then axb5 opens the a-file, and the pawn on b5 still attacks c6. The engine line is b5 axb5 axb5 Bd6 bxc6 bxc6 Na4 h6. Rfc1 is also good, but it makes no threat on c6."
     },
     {
       "id": "take-c6",

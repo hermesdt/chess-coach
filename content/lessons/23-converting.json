@@ -32,7 +32,7 @@
       "solution": [
         "d1d8"
       ],
-      "explanation": "Rxd8 Kxd8 axb5 wins the pawn on b5. White is then two pawns up in a king-and-pawn ending. The engine line is Rxd8 Kxd8 axb5 Ke7 c4 Kf7. If White takes with axb5 first, Black keeps the rooks on and has counterplay with ...Rh8 and ...Rb8. The engine rates axb5 clearly lower, against about 92 % for Rxd8."
+      "explanation": "Rxd8 Kxd8 axb5 wins the pawn on b5. White is then two pawns up in a king-and-pawn ending. The engine line is Rxd8 Kxd8 axb5 Kc7 Ke2 Kb6. If White takes with axb5 first, Black keeps the rooks on and has counterplay with ...Rh8 and ...Rb8. The engine rates axb5 clearly lower, against about 92 % for Rxd8."
     }
   ],
   "links": []
