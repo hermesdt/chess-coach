@@ -82,7 +82,7 @@ export function createApp(deps: AppDeps): Hono {
   app.route('/api', gamesRoutes(deps.db));
   app.route('/api', importRoutes(deps.db, getReps));
   app.route('/api', analysisRoutes(deps.db, pool));
-  app.route('/api', reviewRoutes(deps.db, deps.now ?? Date.now, pool));
+  app.route('/api', reviewRoutes(deps.db, deps.now ?? Date.now, pool, getReps, cache));
   app.route('/api', openingsRoutes(deps.db, getReps));
   app.route('/api', courseRoutes(deps.db, getLessons, deps.now ?? Date.now));
   app.route('/api', dashboardRoutes(deps.db, deps.now ?? Date.now));

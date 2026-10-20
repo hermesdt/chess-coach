@@ -84,4 +84,60 @@ describe('ReviewPage', () => {
     await vi.waitFor(() => expect(submit).toHaveBeenCalled());
     expect(submit.mock.calls[0]![1].answerUci).toBe('e7e8q');
   });
+
+  describe('wrong move', () => {
+    const openingNf3: CardWithState = {
+      ...card(1), refs: [{ repertoire: 'london', nodeId: 'n' }],
+      solution: { accepted: ['g1f3'], best: 'g1f3', explanation: 'Develop the knight.' },
+    };
+    const playE4 = async (c: CardWithState) => {
+      vi.spyOn(api, 'getReviewSession').mockResolvedValue({ cards: [c], dueCount: 0, newAvailable: 1 });
+      render(<MemoryRouter><ReviewPage /></MemoryRouter>);
+      await screen.findByText('Prompt 1');
+      fireEvent.click(screen.getByText('sq-e2'));
+      fireEvent.click(screen.getByText('sq-e4'));
+    };
+    const defaultButton = () => document.querySelector('.ratings button.default')?.textContent;
+
+    it('opening card: names the repertoire move, then calls a sound alternative good and defaults to Hard', async () => {
+      let resolve!: (v: { playedSan: string; repertoireSan: string; repertoireName: string; loss: number }) => void;
+      const check = vi.spyOn(api, 'checkOpeningMove').mockReturnValue(new Promise((r) => { resolve = r; }));
+      await playE4(openingNf3);
+      await screen.findByText('Your repertoire move here is Nf3.');
+      expect(screen.queryByText(/best move/)).toBeNull();
+      expect(screen.getByText('Develop the knight.')).toBeTruthy();
+      expect(screen.getByText('Checking your move…')).toBeTruthy();
+      expect(defaultButton()).toBe('1 Again');
+      expect(check).toHaveBeenCalledWith(1, 'e2e4');
+      resolve({ playedSan: 'e4', repertoireSan: 'Nf3', repertoireName: 'London', loss: 2.4 });
+      await screen.findByText('e4 is also a good move (Stockfish), but your London plays Nf3 here.');
+      expect(screen.getByText('Your London move here is Nf3.')).toBeTruthy();
+      expect(screen.queryByText('Checking your move…')).toBeNull();
+      expect(defaultButton()).toBe('2 Hard');
+    });
+
+    it('opening card: a weak move shows the loss and keeps Again', async () => {
+      vi.spyOn(api, 'checkOpeningMove').mockResolvedValue({ playedSan: 'e4', repertoireSan: 'Nf3', repertoireName: 'London', loss: 17.6 });
+      await playE4(openingNf3);
+      await screen.findByText('e4 is weaker: it gives up about 18 % (Stockfish).');
+      expect(defaultButton()).toBe('1 Again');
+    });
+
+    it('opening card: a failed check shows nothing extra and keeps Again', async () => {
+      vi.spyOn(api, 'checkOpeningMove').mockRejectedValue(new Error('Engine not available.'));
+      await playE4(openingNf3);
+      await vi.waitFor(() => expect(screen.queryByText('Checking your move…')).toBeNull());
+      expect(screen.getByText('Your repertoire move here is Nf3.')).toBeTruthy();
+      expect(screen.queryByText(/Stockfish/)).toBeNull();
+      expect(defaultButton()).toBe('1 Again');
+    });
+
+    it.each(['mistake', 'lesson'] as const)('%s card: feedback stays "Not quite"', async (kind) => {
+      const check = vi.spyOn(api, 'checkOpeningMove');
+      await playE4({ ...openingNf3, kind, refs: [] });
+      await screen.findByText('Not quite — the best move was Nf3');
+      expect(check).not.toHaveBeenCalled();
+      expect(defaultButton()).toBe('1 Again');
+    });
+  });
 });

@@ -93,6 +93,7 @@ export interface ChatMessageDTO {
 }
 export interface CardWithState extends Card { due: number | null; isNew: boolean }
 export interface ReviewSubmit { rating: Rating; answerUci: string | null; durationMs: number }
+export interface OpeningMoveCheck { playedSan: string; repertoireSan: string; repertoireName: string; loss: number }
 export interface ReviewResult { cardId: number; nextDue: number }
 export interface ReviewSession { cards: CardWithState[]; dueCount: number; newAvailable: number }
 export interface CardFlag { id: number; cardId: number; note: string; createdAt: number }
