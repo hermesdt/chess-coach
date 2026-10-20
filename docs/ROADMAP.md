@@ -247,7 +247,6 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 ## Next session
 
 - Execute M9 (`docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md`).
-- Then M10: content quality audit (owner found two wrong repertoire comments by
-  hand on 2026-10-20: a London opening card text and "dxe4 opens the c8
-  bishop", fixed in 963d710).
+- Then M10: content quality audit (on 2026-10-20 the owner found the wrong
+  Caro-Kann comment "dxe4 opens the c8 bishop" by hand, fixed in 963d710).
 - All milestones through M8b are merged into `main`.
