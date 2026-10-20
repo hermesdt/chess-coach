@@ -47,6 +47,7 @@ Each is a real case; the audit must look for all of them.
 | A sequence that cannot happen | "If Black checks from the side, the king steps out..." — after Rb4 Black's only check is Rxb4+ (M9 lesson 16) | replay the sequence |
 | Unnamed threats | an exercise named the mate threat but not the queen attacked by two pawns (M9 lesson 18) | list every attacked piece |
 | Wrong counts | "the exercises show four shapes" when they show three (M9 lesson 13) | count |
+| "The engine line is …" in a fixed text | "The engine line is Rxd8 Kxd8 axb5 Ke7 c4 Kf7" — at higher depth the engine plays Rxd8 b4 instead (M9 lesson 23) | engine lines drift; write "One (winning / drawing) line is …" and check the line is legal and its result true |
 | Exact engine numbers in text | "the edge falls from 69 %" (engine values move between runs) | write "about" |
 | Wrong attack claim from the AI coach | "Bh6 attacked the rook on f8" with the g7 pawn blocking (M8a chat) | already fixed by attack facts in M8b; out of scope here, listed so the audit does not re-open it |
 
