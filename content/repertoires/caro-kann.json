@@ -573,7 +573,7 @@
            "children": [
             {
              "san": "dxe4",
-             "comment": "Take the pawn. You open the c8 bishop.",
+             "comment": "Take the pawn. After Nxe4 you play ...Bf5: your light bishop comes out before ...e6 shuts it in.",
              "children": [
               {
                "san": "Nxe4",
@@ -801,7 +801,7 @@
            "children": [
             {
              "san": "dxe4",
-             "comment": "Take the pawn. You open the c8 bishop.",
+             "comment": "Take the pawn. After Nxe4 you play ...Bf5: your light bishop comes out before ...e6 shuts it in.",
              "children": [
               {
                "san": "Nxe4",
@@ -1267,7 +1267,7 @@
            "children": [
             {
              "san": "dxe4",
-             "comment": "Take the pawn. You open the road for your bishop.",
+             "comment": "Take the pawn. After Nxe4 you play ...Bf5: your light bishop comes out before ...e6 shuts it in.",
              "children": [
               {
                "san": "Nxe4",
