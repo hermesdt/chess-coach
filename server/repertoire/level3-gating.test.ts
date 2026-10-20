@@ -8,10 +8,10 @@ import { setSetting } from '../db/settings-repo.js';
 import { loadRepertoire } from './load.js';
 import { syncOpeningCards } from './opening-cards.js';
 
-/** One entry per repertoire with level-3 depth; the Slav task adds its own. */
+/** One entry per repertoire with level-3 depth; the Slav task adds its own. `allCommented`: no old level-3 node lacks a comment. */
 const REPERTOIRES = [
-  { id: 'london', minLevel3: 40 },
-  { id: 'caro-kann', minLevel3: 50 },
+  { id: 'london', minLevel3: 40, allCommented: true },
+  { id: 'caro-kann', minLevel3: 50, allCommented: false },
 ];
 
 let db: DatabaseSync;
@@ -23,7 +23,7 @@ const cardNodeIds = (): string[] =>
   (db.prepare("SELECT refs_json FROM cards WHERE kind = 'opening' AND suspended = 0").all() as { refs_json: string }[])
     .flatMap((r) => (JSON.parse(r.refs_json) as { nodeId: string }[]).map((x) => x.nodeId));
 
-describe.each(REPERTOIRES)('$id level-3 depth', ({ id, minLevel3 }) => {
+describe.each(REPERTOIRES)('$id level-3 depth', ({ id, minLevel3, allCommented }) => {
   const rep = loadRepertoire(JSON.parse(readFileSync(`content/repertoires/${id}.json`, 'utf8')));
   const level3Ids = new Set([...rep.byId.values()].filter((n) => n.level === 3).map((n) => n.id));
 
@@ -31,6 +31,7 @@ describe.each(REPERTOIRES)('$id level-3 depth', ({ id, minLevel3 }) => {
     expect(level3Ids.size).toBeGreaterThanOrEqual(minLevel3);
     const commented = [...level3Ids].filter((nid) => /\S/.test(rep.byId.get(nid)!.comment ?? ''));
     expect(commented.length).toBeGreaterThanOrEqual(minLevel3);
+    if (allCommented) expect(commented).toHaveLength(level3Ids.size);
     for (const nid of level3Ids) {
       if (rep.byId.get(nid)!.mover === rep.color) expect(rep.byId.get(nid)!.comment, nid).toMatch(/\S/);
     }

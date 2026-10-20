@@ -1583,7 +1583,7 @@
                                "children": [
                                 {
                                  "san": "Qd5",
-                                 "comment": "Bring the queen back to the centre. It guards your e5 pawn and attacks the a2 pawn.",
+                                 "comment": "Bring the queen back to the centre. It attacks the e5 pawn, which nothing guards, and the a2 pawn.",
                                  "children": [
                                   {
                                    "san": "Nc3",
