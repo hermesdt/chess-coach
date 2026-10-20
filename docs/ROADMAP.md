@@ -36,7 +36,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M7 | Insights + polish + README | done | `docs/superpowers/plans/2026-10-18-m7-insights-polish.md` |
 | M8a | Coach chat: chat, engine lines as branches, own moves on the board, add to review | done | `docs/superpowers/plans/2026-10-19-m8a-coach-chat.md` |
 | M8b | Coach chat: streaming, fast model, live Stockfish eval, "Go deeper", attack facts | done | `docs/superpowers/plans/2026-10-19-m8b-coach-chat-speed.md` |
-| M9 | Level 2–3 content (lessons, tags, deeper repertoire) | todo | — (was M8 before 2026-10-19) |
+| M9 | Level 2–3 content (lessons, tags, deeper repertoire) | planned | `docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md` |
 
 ## Log
 
@@ -233,12 +233,10 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   "correcting…"; the live eval keeps the previous values dimmed for about
   1 s; prefetch searches cannot be cancelled; codex drops a valid answer if an
   error event follows it.
-- Owner setting to check: the opencode model in Settings is
-  `openrouter/glm-5.3-flash`, which does not exist; the valid id is
-  `openrouter/z-ai/glm-5.3-flash` (now also the chat default).
+- 2026-10-20 — Owner asked to fix the opencode model: Settings now use
+  `openrouter/z-ai/glm-5.3-flash` (provider test passed, 10 s).
 
 ## Next session
 
-- M9 (level 2–3 content: lessons, tags, deeper repertoire) needs a plan.
-  Spec §18; write it with `superpowers:writing-plans`.
+- Execute M9 (`docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md`).
 - All milestones through M8b are merged into `main`.
