@@ -1,0 +1,39 @@
+{
+  "id": "trades-by-plan",
+  "order": 22,
+  "level": 3,
+  "title": "Trading with a plan",
+  "summary": "Trade when it helps your plan: when you are cramped, when you are ahead, or when the ending is won. Look at the retake first.",
+  "tags": [],
+  "body": "### Trade with a reason\n\nA trade is a plan, not a habit. Before you trade, ask: who gains from it?\n\nThese trades often help:\n\n- **You have less space.** A cramped side needs room. Each trade gives your pieces more room.\n- **You are ahead in material.** Your extra material counts more when fewer pieces stay on the board. Trade pieces, not pawns.\n- **The trade removes the key piece of your opponent.** It can be his best piece, a defender or an attacker.\n- **The ending is won.** Count the pawn ending before you trade into it.\n\nThese trades often hurt:\n\n- You attack, and the trade removes one of your attackers.\n- You have more space, and the trade gives your opponent room.\n- You are behind in material, and the trade makes the gap more serious.\n\nLook at the retake. Ask what the position looks like after your opponent takes back. A trade can change the pawn shape and open a file for him.\n\nA pawn ending is easy to count, so use it. If you can win the pawn ending, trade rooks into it. If the pawn ending is only a draw, think again before you trade.\n\nRule of thumb: trade when it helps your plan, and look at the position after the retake.",
+  "exercises": [
+    {
+      "id": "cramped-knight",
+      "fen": "r1bqrnk1/pp2bppp/2p2n2/3p2B1/3P4/2NBPN2/PPQ2PPP/1R3RK1 b - - 10 11",
+      "prompt": "Black to move. White has more space. Attack the bishop on g5 with your f6 knight.",
+      "solution": [
+        "f6e4"
+      ],
+      "explanation": "Ne4 attacks the bishop on g5 and the knight on c3. It offers a trade, and a cramped side wants trades. In the engine line White plays Bf4 Nd6, and Black has more room. White still has the better game, about 53 % against 47 %. The other plan moves, such as ...Ng6 and ...a5, are within one win % of ...Ne4."
+    },
+    {
+      "id": "up-a-knight",
+      "fen": "r1bqr1k1/pp2bppp/2p5/3p2B1/3Pn3/2NBPN2/PPQ2PPP/1R3RK1 w - - 0 1",
+      "prompt": "White to move. You are a knight up. Trade your bishop on g5 for the bishop on e7.",
+      "solution": [
+        "g5e7"
+      ],
+      "explanation": "This is the Carlsbad position, but Black has no knight on f8. White is a knight up, so each trade helps. Bxe7 Qxe7 trades a pair and keeps the extra knight. The engine line is Bxe7 Qxe7 Ra1 Bf5. Bf4 and h4 also keep a big edge, but they keep more black pieces on the board. Nxe4 dxe4 Bxe4 Bxg5 gives Black counterplay; the engine rates it about 87 %, against about 94 % for Bxe7."
+    },
+    {
+      "id": "rooks-to-won-pawns",
+      "fen": "3r4/4kp2/4p3/6pp/2P4P/1P2K3/7P/3R4 w - - 0 1",
+      "prompt": "White to move. Trade rooks: take the rook on d8.",
+      "solution": [
+        "d1d8"
+      ],
+      "explanation": "Rxd8 Kxd8 hxg5 wins the pawn on g5, and the pawn ending is won. The engine line is Rxd8 Kxd8 hxg5 Kc7 b4 Kd6 Ke4 h4. Rd3 also offers a trade. After Rxd3+ Kxd3 g4, White has no extra pawn, and the engine rates it about 53 %. The trade on d8 wins a pawn, and the engine rates it about 91 %."
+    }
+  ],
+  "links": []
+}

@@ -1,0 +1,39 @@
+{
+  "id": "converting",
+  "order": 23,
+  "level": 3,
+  "title": "Converting an advantage",
+  "summary": "Turn an edge into a win: stop counterplay, trade active pieces, and push passed pawns with support.",
+  "tags": [],
+  "body": "### Make the advantage count\n\nYou are ahead. Now you must turn it into a win. Many players lose their edge at this point. Do not hurry. Follow these steps:\n\n1. Check the threats of your opponent. Look at his checks, captures and threats on every move.\n2. Take away counterplay. Trade the pieces that give him checks, such as his queen or an active rook. Fewer pieces mean fewer tricks.\n3. Make a second asset. A passed pawn or an open file gives you a plan that he must stop.\n4. Push passed pawns with the support of your pieces and your king.\n5. Do not give back material for a quick attack. A clean plan is better than a hard calculation.\n\nA queen trade is often the safest step. Check two things before you trade. First, make sure that the recapture is safe. Second, make sure that the ending is not a draw.\n\nWhen you have two pawns that stand next to each other and are far from the enemy pawns, push them. They are strong. Do not stop to take a pawn that your opponent offers on the other wing. Compare the speed of both plans.\n\nA calm move is fine. You do not need a check or a capture. Sometimes the best move is the plain one that removes the last danger.\n\nRule of thumb: when you are ahead, trade the active pieces, make a passed pawn, and check his checks before every move.",
+  "exercises": [
+    {
+      "id": "queen-trade",
+      "fen": "2kq4/8/p3pp2/5r2/8/1PB4P/1P6/3Q2KR w - - 0 1",
+      "prompt": "White to move. You are a bishop up. Take the black queen with your queen.",
+      "solution": [
+        "d1d8"
+      ],
+      "explanation": "Black has a queen and a rook, and both can give checks. Qxd8+ Kxd8 trades queens. The engine line is Qxd8+ Kxd8 Kg2 Ke7 Ra1 Rg5+ Kh2 Rb5. White keeps the extra bishop and has fewer worries. Qc2 keeps the queens. The engine line is Qc2 Kb8 Rh2 Qb6+ Rf2 Rg5+, and Black has checks. The engine rates Qc2 about 83 %, against about 92 % for Qxd8+."
+    },
+    {
+      "id": "make-passers",
+      "fen": "8/8/6p1/P1r2p2/6k1/1P4P1/KR4P1/8 w - - 0 1",
+      "prompt": "White to move. Push your b-pawn one square to attack the rook.",
+      "solution": [
+        "b3b4"
+      ],
+      "explanation": "Black attacks the pawn on a5 with the rook. b4 guards a5 and attacks the rook. Then the a- and b-pawns are two connected passed pawns. The engine line is b4 Rc7 a6 Kxg3 b5 Ra7. White lets the pawn on g3 go and pushes the passed pawns. Moves such as Kb1 and a6 lose the pawn on a5 or let the rook take it. They leave only about 52 %. b4 gives about 92 %."
+    },
+    {
+      "id": "rooks-win-pawn",
+      "fen": "3r4/1p2k3/4p3/1p6/P3P3/2P4P/8/3RK3 w - - 0 1",
+      "prompt": "White to move. Trade rooks: take the rook on d8.",
+      "solution": [
+        "d1d8"
+      ],
+      "explanation": "Rxd8 Kxd8 axb5 wins the pawn on b5. White is then two pawns up in a king-and-pawn ending. The engine line is Rxd8 Kxd8 axb5 Ke7 c4 Kf7. If White takes with axb5 first, Black keeps the rooks on and has counterplay with ...Rh8 and ...Rb8. The engine rates axb5 clearly lower, about 60 to 70 %, against about 92 % for Rxd8."
+    }
+  ],
+  "links": []
+}

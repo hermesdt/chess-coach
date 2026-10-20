@@ -1,0 +1,48 @@
+{
+  "id": "pawn-breaks",
+  "order": 21,
+  "level": 3,
+  "title": "Pawn breaks",
+  "summary": "A pawn break opens lines. Hit the base of the chain: ...c5 in the Caro-Kann and Slav, e4 in the London and Semi-Slav.",
+  "tags": [],
+  "body": "### Break the pawn chain\n\nA pawn break is a pawn move that attacks an enemy pawn. It opens lines for your pieces. Most plans in the opening and the middlegame end with a break.\n\nA pawn chain is a row of pawns that guard each other. The base is the pawn at the back. Attack the base of a chain. In the Advance Caro-Kann, White has pawns on d4 and e5. The pawn on d4 is the base. Black plays ...c5 to hit it. In the Slav and Semi-Slav, the same break ...c5 fights the pawn on d4.\n\nWhite has breaks too. In the Semi-Slav and in many London positions, White plays e3-e4 to open the centre.\n\nAsk three questions before a break:\n\n- Are my pieces ready? A break needs pieces behind it.\n- What does it open? A file or diagonal must help me, not my opponent.\n- Is there a better break? A break can fail. Check what your opponent can do after it.\n\nA break that comes too early can lose a pawn. A break that comes too late can be stopped. Look for the right moment.\n\nAfter the break, look at what your opponent does. He can take, push past, or ignore it. Check each answer before you play.\n\nRule of thumb: attack the base of the chain with a pawn break when your pieces are ready.",
+  "exercises": [
+    {
+      "id": "caro-c5",
+      "fen": "rn1qkbnr/pp3ppp/2p1p3/3pPb2/3P4/2P2N2/PP3PPP/RNBQKB1R b KQkq - 0 5",
+      "prompt": "Black to move. White has pawns on d4 and e5. Hit the base of the chain with a pawn.",
+      "solution": [
+        "c6c5"
+      ],
+      "explanation": "The chain is d4-e5. The base is d4. ...c5 attacks it, even though c3 guards it. The other pawn break, ...f6, hits the head of the chain on e5, so it does not fit the prompt. In the engine line White plays Be2, and Black plays ...Nc6 O-O. Other moves, such as ...a6, are only a little worse."
+    },
+    {
+      "id": "london-anti-c5",
+      "fen": "rnbqkb1r/ppp1pppp/5n2/3p4/3P1B2/5N2/PPP1PPPP/RN1QKB1R b KQkq - 3 3",
+      "prompt": "Black to move. White has played Bf4. Hit the pawn on d4 with your c-pawn.",
+      "solution": [
+        "c7c5"
+      ],
+      "explanation": "...c5 attacks d4. Only the knight on f3 and the queen guard it. The engine line is ...c5 e3 Nc6 Nbd2 cxd4 Nxd4 e6. ...e6 is almost as good, about the same win %, because it prepares ...c5 too. The prompt asks for the c-pawn, so only ...c5 fits."
+    },
+    {
+      "id": "london-e4",
+      "fen": "r3kbnr/1p2pppp/1pn5/3p1b2/2pP1B2/2P1P3/PP1N1PPP/R3KBNR w KQkq - 2 8",
+      "prompt": "White to move. Break in the centre with your e-pawn.",
+      "solution": [
+        "e3e4"
+      ],
+      "explanation": "e4 attacks the bishop on f5 and the pawn on d5 at once. Black has not castled and is behind in development. In the engine line Black takes with ...Bxe4 Nxe4 dxe4, and d5 attacks the knight on c6. Every Black reply gives White a large edge. f3 prepares e4, but it is slow: after ...Bg6 the bishop is safe and the break wins nothing. The engine rates f3 about 48 %, and e4 about 61 %."
+    },
+    {
+      "id": "semislav-e4",
+      "fen": "r1bq1rk1/pp1n1ppp/2pbpn2/3p4/2PP4/3BPN2/PP1N1PPP/R1BQ1RK1 w - - 6 8",
+      "prompt": "White to move. Break in the centre with your e-pawn.",
+      "solution": [
+        "e3e4"
+      ],
+      "explanation": "e4 fights for the centre. The engine line is e4 e5 cxd5 cxd5 Re1 Re8. Re1 and c5 are almost as good, about the same win %, because they have the same aim. The prompt asks for the e-pawn, so only e4 fits."
+    }
+  ],
+  "links": []
+}

@@ -1,0 +1,48 @@
+{
+  "id": "minority-attack",
+  "order": 20,
+  "level": 3,
+  "title": "Minority attack",
+  "summary": "Push two pawns against three. The minority attack leaves Black a weak pawn on c6 in the Carlsbad structure.",
+  "tags": [],
+  "body": "### Attack with fewer pawns\n\nIn the Carlsbad structure, White has two pawns on the queenside: a2 and b2. Black has three: a7, b7 and c6. The structure comes from the Queen's Gambit Declined Exchange. It also comes from the Slav and Semi-Slav when Black retakes on d5 with the e-pawn.\n\nWhite attacks with the two pawns anyway. This is the minority attack. The aim is not to win a pawn. The aim is to make a Black pawn weak. A weak pawn is a pawn that no other pawn can guard.\n\nThe plan has four steps:\n\n- Put a rook behind the b-pawn, on b1. The other rook can go to c1.\n- Push the pawn to b4. A pawn on a4 can guard the pawn on b5 later.\n- Push the pawn to b5. It attacks c6.\n- Take on c6 when it helps. If Black retakes with the b-pawn, the pawn on c6 has no pawn to guard it. If Black takes on b5 with the c-pawn, the c-file opens for your rooks.\n\nThe attack takes time. Before you start, check that your king is safe. Black often has a plan on the kingside. Watch it.\n\nLevel-3 terms in one line each:\n\n- **Carlsbad:** White has no c-pawn, Black has no e-pawn, and both sides have pawns on d4 and d5.\n- **Minority attack:** pawns attack a bigger group of enemy pawns to damage it.\n\nRule of thumb: put a rook behind the b-pawn, then push b4 and b5 to leave Black a weak pawn on c6.",
+  "exercises": [
+    {
+      "id": "rook-behind",
+      "fen": "r1bqrnk1/pp2bppp/2p2n2/3p2B1/3P4/2NBPN2/PPQ2PPP/R4RK1 w - - 9 11",
+      "prompt": "White to move. This is a Carlsbad structure. Move your a1 rook behind the b-pawn.",
+      "solution": [
+        "a1b1"
+      ],
+      "explanation": "Rab1 puts the rook behind the b-pawn. The pawn will go to b4 and b5, and the rook pushes it from behind. The engine line is Rab1 g6 b4 Ne6. Other moves, such as h3, are about one win % better, but they do not start the plan."
+    },
+    {
+      "id": "start-b4",
+      "fen": "r1bqr1k1/pp2bppp/2p2nn1/3p2B1/3P4/2NBPN2/PPQ2PPP/1R3RK1 w - - 11 12",
+      "prompt": "White to move. Start the minority attack: push your b-pawn two squares.",
+      "solution": [
+        "b2b4"
+      ],
+      "explanation": "b4 is the first step. White has two pawns on the queenside against three. The next steps are a4 and b5. In the engine line Black plays ...a6, then a4 Ne4, and White trades with Bxe7 Qxe7 Bxe4 dxe4. Quiet moves such as h3 are about one win % lower, and they do not use the rook on b1."
+    },
+    {
+      "id": "b5-lever",
+      "fen": "r2qr1k1/1p1bbppp/p1p2nn1/3p2B1/PP1P4/2NBPN2/2Q2PPP/1R3RK1 w - - 1 14",
+      "prompt": "White to move. Push your b-pawn one square to attack the pawns on a6 and c6.",
+      "solution": [
+        "b4b5"
+      ],
+      "explanation": "b5 attacks the pawns on a6 and c6. If Black takes with ...axb5, then axb5 opens the a-file, and the pawn on b5 still attacks c6. In the engine line Black plays ...Bd6, and White has the rook on a1 next. Rfc1 is also good, but it is about half a win % lower, and it does not make the threat on c6."
+    },
+    {
+      "id": "take-c6",
+      "fen": "r1r3k1/1p1b1ppp/2p2bn1/qP1p4/3P4/2NBPN2/2Q2PPP/1RR3K1 w - - 3 18",
+      "prompt": "White to move. Take the pawn on c6 with your b-pawn.",
+      "solution": [
+        "b5c6"
+      ],
+      "explanation": "bxc6 bxc6 leaves Black with a lone pawn on c6. No pawn can guard it, so pieces must guard it. In the engine line White plays Rb7 and attacks the bishop on d7, and Black guards it with ...Qd8. Other moves, such as g3, are close, but they leave the pawn on b5 where Black can take it with ...cxb5."
+    }
+  ],
+  "links": []
+}
