@@ -23,7 +23,7 @@
       "solution": [
         "b3b1"
       ],
-      "explanation": "Black has one check, Rb1+, and one capture, Rxb8. White must block the check. After Rd1 the line is Rxd1+ Re1 Rxe1#. After Re1 it is Rxe1#. Black trades rooks with check, and the last check is mate. Rxb8 takes a knight, but White still has two rooks against one, and Black loses."
+      "explanation": "Black has one check, Rb1+, and one capture, Rxb8. White must block the check. After Rd1 the line is Rxd1+ Re1 Rxe1#. After Re1 it is Rxe1#. Black trades rooks with check, and the last check is mate. Rxb8 takes a knight, but White still has two rooks against one, and the engine gives White a win."
     },
     {
       "id": "check-then-fork",
@@ -32,7 +32,7 @@
       "solution": [
         "h4h7"
       ],
-      "explanation": "The rook on g4 attacks your queen, so move it with a check. White has three checks. Nf6+ and Qd8+ do not work. Qxh7+ wins a pawn, and the king must go to f7, because the rook on h3 guards h7. Then Ne5+ attacks the king and the rooks on g4 and g6. After Kf6 Nxg4+ Rxg4, White has won a rook for a knight."
+      "explanation": "The rook on g4 attacks your queen, so move it with a check. White has three checks. Nf6+ and Qd8+ do not work. Qxh7+ wins a pawn, and the king must go to f7. Kxh7 is impossible because the rook on h3 guards h7. Kf8 is impossible because the knight on d7 guards f8. Then Ne5+ attacks the king and the rooks on g4 and g6. After Kf6 Nxg4+ Rxg4, White has won a rook for a knight."
     },
     {
       "id": "check-wins-queen",
@@ -41,7 +41,7 @@
       "solution": [
         "e1f3"
       ],
-      "explanation": "Black has two checks. Rxg2+ Qxg2 loses a rook. Nxf3+ takes the queen with check. In the engine line White plays Rxf3, and Bxc4 wins a bishop too. The quiet capture Bxc4 comes too early. After Qe4 the queen is safe."
+      "explanation": "Black has two checks. Rxg2+ Qxg2 Nxg2 wins the queen back, but then Bxb5 takes your bishop, and White is better. Nxf3+ takes the queen first. In the engine line White plays Rxf3, and Bxc4 wins a bishop too. If Black waits, White plays Qxf7+ Kh8 Qf8#. The capture Bxc4 is too slow. Qe4 saves the queen, threatens Qe8#, and attacks the knight and the bishop."
     }
   ],
   "links": []
