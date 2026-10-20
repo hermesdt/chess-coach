@@ -102,7 +102,7 @@
                                                "children": [
                                                 {
                                                  "san": "Bxf6",
-                                                 "comment": "Black wins the pawn back, but you are still a knight ahead for a pawn.",
+                                                 "comment": "Black takes the pawn, but you are still a knight up for a pawn.",
                                                  "children": [
                                                   {
                                                    "san": "Qe2",
@@ -192,7 +192,7 @@
                                          "children": [
                                           {
                                            "san": "g4",
-                                           "comment": "Start your kingside attack. The pawn on g4 prepares g5 against h6, and you have no h-pawn left on the h-file.",
+                                           "comment": "Start your kingside attack. If g5 hxg5, no pawn is left on the h-file and your rooks can use it.",
                                            "children": []
                                           }
                                          ]
@@ -386,7 +386,7 @@
                                    "children": [
                                     {
                                      "san": "Bd6",
-                                     "comment": "A common slip: Black puts the bishop where your bishop on f4 attacks it. Nothing guards it.",
+                                     "comment": "An easy slip: Black puts the bishop where your bishop on f4 attacks it. Nothing guards it.",
                                      "level": 3,
                                      "children": [
                                       {
@@ -1108,7 +1108,7 @@
                                          "children": [
                                           {
                                            "san": "dxe5",
-                                           "comment": "Take the pawn first, so that Black has to retake.",
+                                           "comment": "Take the pawn. Now your e5 pawn attacks the queen on d6 and the knight on f6.",
                                            "children": [
                                             {
                                              "san": "Nxe5",
@@ -1144,7 +1144,7 @@
                                          "children": [
                                           {
                                            "san": "Nxf3",
-                                           "comment": "Retake with the d2 knight. It returns to f3, where it guards d4 and watches e5.",
+                                           "comment": "Retake with the d2 knight. On f3 it guards d4 and watches e5.",
                                            "children": [
                                             {
                                              "san": "e5",

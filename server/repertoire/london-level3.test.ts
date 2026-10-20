@@ -51,5 +51,14 @@ describe('London level-3 depth', () => {
     detail.roots.forEach(walk);
     expect(reachable.length).toBeGreaterThan(0);
     expect(reachable.filter((id) => level3Ids.has(id))).toEqual([]);
+    const all: RepNodeDTO[] = [];
+    const collect = (n: RepNodeDTO): void => {
+      all.push(n);
+      n.children.forEach(collect);
+    };
+    detail.roots.forEach(collect);
+    const level3 = all.filter((n) => level3Ids.has(n.id));
+    expect(level3).toHaveLength(level3Ids.size);
+    expect(level3.every((n) => n.locked === true)).toBe(true);
   });
 });
