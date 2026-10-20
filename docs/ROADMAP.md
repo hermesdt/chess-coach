@@ -37,6 +37,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M8a | Coach chat: chat, engine lines as branches, own moves on the board, add to review | done | `docs/superpowers/plans/2026-10-19-m8a-coach-chat.md` |
 | M8b | Coach chat: streaming, fast model, live Stockfish eval, "Go deeper", attack facts | done | `docs/superpowers/plans/2026-10-19-m8b-coach-chat-speed.md` |
 | M9 | Level 2–3 content (lessons, tags, deeper repertoire) | planned | `docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md` |
+| M10 | Content quality audit: every repertoire comment and lesson claim checked with chess.js + Stockfish, wrong ones fixed | todo | spec `docs/superpowers/specs/2026-10-20-content-audit-design.md`; plan after M9 |
 
 ## Log
 
@@ -236,7 +237,17 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 - 2026-10-20 — Owner asked to fix the opencode model: Settings now use
   `openrouter/z-ai/glm-5.3-flash` (provider test passed, 10 s).
 
+- 2026-10-20 — Owner reported that opening cards said "Not quite — the best
+  move was Nf3" for a sound non-repertoire move (Nc3). Fix: opening cards now
+  say "Your <repertoire> move here is <SAN>."; Stockfish checks the played
+  move (200k nodes): within 5 win % → "…is also a good move (Stockfish), but
+  your <repertoire> plays <SAN> here." and default rating Hard; else the loss
+  in % and default Again. Mistake and lesson cards unchanged.
+
 ## Next session
 
 - Execute M9 (`docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md`).
+- Then M10: content quality audit — spec
+  `docs/superpowers/specs/2026-10-20-content-audit-design.md` (has the owner's
+  example and the error types seen so far); write its plan after M9.
 - All milestones through M8b are merged into `main`.

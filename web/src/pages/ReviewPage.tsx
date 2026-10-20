@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
-import type { CardWithState, Rating } from '../../../shared/types';
+import type { CardWithState, OpeningMoveCheck, Rating } from '../../../shared/types';
 import { api } from '../api';
 import { DrillBoard, type DrillArrow } from '../components/DrillBoard';
 import { bestSan, checkAnswer } from '../lib/drill';
@@ -14,10 +14,19 @@ const RATINGS: { rating: Rating; label: string }[] = [
 ];
 
 interface Answer {
+  cardId: number;
   uci: string;
   correct: boolean;
   rating: Rating;
+  /** Opening cards only: the Stockfish check of a wrong move. */
+  check?: { state: 'pending' } | { state: 'failed' } | { state: 'done'; result: OpeningMoveCheck };
 }
+
+/** Below this win % loss a wrong opening move counts as a sound alternative. */
+const GOOD_ALTERNATIVE_LOSS = 5;
+
+const isGoodAlternative = (a: Answer): boolean =>
+  a.check?.state === 'done' && a.check.result.loss < GOOD_ALTERNATIVE_LOSS;
 
 function isTypingTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -29,9 +38,15 @@ function arrowsFor(card: CardWithState, answer: Answer | null): DrillArrow[] {
   const { best } = card.solution;
   const arrows: DrillArrow[] = [{ from: best.slice(0, 2), to: best.slice(2, 4), color: 'green' }];
   if (answer.uci !== best) {
-    arrows.push({ from: answer.uci.slice(0, 2), to: answer.uci.slice(2, 4), color: answer.correct ? 'blue' : 'red' });
+    arrows.push({ from: answer.uci.slice(0, 2), to: answer.uci.slice(2, 4), color: answer.correct || isGoodAlternative(answer) ? 'blue' : 'red' });
   }
   return arrows;
+}
+
+function checkLine({ playedSan, repertoireName, loss }: OpeningMoveCheck, repertoireSan: string): string {
+  return loss < GOOD_ALTERNATIVE_LOSS
+    ? `${playedSan} is also a good move (Stockfish), but your ${repertoireName} plays ${repertoireSan} here.`
+    : `${playedSan} is weaker: it gives up about ${Math.round(loss)} % (Stockfish).`;
 }
 
 export function ReviewPage() {
@@ -83,7 +98,22 @@ export function ReviewPage() {
     (uci: string) => {
       if (!card) return;
       const { correct, defaultRating } = checkAnswer(card, uci);
-      setAnswer({ uci, correct, rating: defaultRating });
+      const cardId = card.id;
+      if (correct || card.kind !== 'opening') {
+        setAnswer({ cardId, uci, correct, rating: defaultRating });
+        return;
+      }
+      setAnswer({ cardId, uci, correct, rating: defaultRating, check: { state: 'pending' } });
+      const update = (check: NonNullable<Answer['check']>) =>
+        setAnswer((a) => {
+          if (!a || a.cardId !== cardId || a.uci !== uci || a.check?.state !== 'pending') return a;
+          const good = check.state === 'done' && check.result.loss < GOOD_ALTERNATIVE_LOSS;
+          return { ...a, check, rating: good ? 'hard' : a.rating };
+        });
+      api.checkOpeningMove(card.id, uci).then(
+        (result) => update({ state: 'done', result }),
+        () => update({ state: 'failed' }),
+      );
     },
     [card],
   );
@@ -208,9 +238,15 @@ export function ReviewPage() {
       {answer && (
         <>
           <p className={`feedback ${answer.correct ? 'correct' : 'wrong'}`}>
-            {answer.correct ? 'Correct' : `Not quite — the best move was ${bestSan(card)}`}
+            {answer.correct
+              ? 'Correct'
+              : answer.check
+                ? `Your ${card.repertoireName ?? 'repertoire'} move here is ${bestSan(card)}.`
+                : `Not quite — the best move was ${bestSan(card)}`}
           </p>
           {card.solution.explanation && <p>{card.solution.explanation}</p>}
+          {answer.check?.state === 'pending' && <p className="muted">Checking your move…</p>}
+          {answer.check?.state === 'done' && <p>{checkLine(answer.check.result, bestSan(card))}</p>}
           <div className="ratings">
             {RATINGS.map(({ rating, label }, i) => (
               <button

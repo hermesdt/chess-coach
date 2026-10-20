@@ -91,8 +91,9 @@ export interface ChatMessageDTO {
   answer: { text: string; lines: ChatLineDTO[]; rule: string; lessonId: LessonId | null } | null;
   provider: ProviderId | null; model: string | null; createdAt: number;
 }
-export interface CardWithState extends Card { due: number | null; isNew: boolean }
+export interface CardWithState extends Card { due: number | null; isNew: boolean; repertoireName?: string }
 export interface ReviewSubmit { rating: Rating; answerUci: string | null; durationMs: number }
+export interface OpeningMoveCheck { playedSan: string; repertoireSan: string; repertoireName: string; loss: number }
 export interface ReviewResult { cardId: number; nextDue: number }
 export interface ReviewSession { cards: CardWithState[]; dueCount: number; newAvailable: number }
 export interface CardFlag { id: number; cardId: number; note: string; createdAt: number }
