@@ -33,7 +33,14 @@ export function reviewRoutes(db: DatabaseSync, now: () => number, pool: Pick<Eng
   return new Hono()
     .get('/review/session', (c) => {
       const { reviewDailyLimit, reviewNewPerDay } = getSettings(db);
-      return c.json(buildSession(db, now(), { daily: reviewDailyLimit, newPerDay: reviewNewPerDay }));
+      const session = buildSession(db, now(), { daily: reviewDailyLimit, newPerDay: reviewNewPerDay });
+      const names = new Map(getReps().map((r) => [r.id, r.name]));
+      const cards = session.cards.map((card) => {
+        const repId = card.kind === 'opening' ? card.refs.find((r) => r.repertoire !== undefined)?.repertoire : undefined;
+        const repertoireName = repId === undefined ? undefined : names.get(repId);
+        return repertoireName === undefined ? card : { ...card, repertoireName };
+      });
+      return c.json({ ...session, cards });
     })
     .get('/review/stats', (c) => c.json(reviewStats(db, now())))
     .post('/review/:cardId', async (c) => {
@@ -58,7 +65,8 @@ export function reviewRoutes(db: DatabaseSync, now: () => number, pool: Pick<Eng
         if (!result) return c.json({ error: 'illegal move' }, 400);
         const repertoireName = getReps().find((r) => r.id === repId)?.name ?? repId;
         return c.json({ ...result, repertoireName });
-      } catch {
+      } catch (e) {
+        console.error('[review-check] engine check failed:', e);
         return c.json({ error: 'Engine not available.' }, 503);
       }
     })

@@ -46,7 +46,9 @@ export async function checkMove(
   const played = play(fen, playedUci);
   const repertoire = play(fen, repertoireUci);
   if (!played || !repertoire) return null;
-  const winPlayed = await winAfter(played.fenAfter, pool, cache);
-  const winRepertoire = await winAfter(repertoire.fenAfter, pool, cache);
+  const [winPlayed, winRepertoire] = await Promise.all([
+    winAfter(played.fenAfter, pool, cache),
+    winAfter(repertoire.fenAfter, pool, cache),
+  ]);
   return { playedSan: played.san, repertoireSan: repertoire.san, loss: Math.max(0, winRepertoire - winPlayed) };
 }

@@ -79,4 +79,10 @@ describe('POST /api/review/cards/:id/check', () => {
   it('returns 404 for an unknown card', async () => {
     expect((await check(999, 'd2d4')).status).toBe(404);
   });
+
+  it('sends the repertoire name with opening cards in the session', async () => {
+    addCard('opening', [{ repertoire: 'london', nodeId: 'n' }]);
+    const session = (await (await app.request('/api/review/session')).json()) as { cards: { repertoireName?: string }[] };
+    expect(session.cards[0]?.repertoireName).toBe('London System');
+  });
 });

@@ -14,6 +14,7 @@ const RATINGS: { rating: Rating; label: string }[] = [
 ];
 
 interface Answer {
+  cardId: number;
   uci: string;
   correct: boolean;
   rating: Rating;
@@ -97,14 +98,15 @@ export function ReviewPage() {
     (uci: string) => {
       if (!card) return;
       const { correct, defaultRating } = checkAnswer(card, uci);
+      const cardId = card.id;
       if (correct || card.kind !== 'opening') {
-        setAnswer({ uci, correct, rating: defaultRating });
+        setAnswer({ cardId, uci, correct, rating: defaultRating });
         return;
       }
-      setAnswer({ uci, correct, rating: defaultRating, check: { state: 'pending' } });
+      setAnswer({ cardId, uci, correct, rating: defaultRating, check: { state: 'pending' } });
       const update = (check: NonNullable<Answer['check']>) =>
         setAnswer((a) => {
-          if (!a || a.uci !== uci || a.check?.state !== 'pending') return a;
+          if (!a || a.cardId !== cardId || a.uci !== uci || a.check?.state !== 'pending') return a;
           const good = check.state === 'done' && check.result.loss < GOOD_ALTERNATIVE_LOSS;
           return { ...a, check, rating: good ? 'hard' : a.rating };
         });
@@ -239,7 +241,7 @@ export function ReviewPage() {
             {answer.correct
               ? 'Correct'
               : answer.check
-                ? `Your ${answer.check.state === 'done' ? answer.check.result.repertoireName : 'repertoire'} move here is ${bestSan(card)}.`
+                ? `Your ${card.repertoireName ?? 'repertoire'} move here is ${bestSan(card)}.`
                 : `Not quite — the best move was ${bestSan(card)}`}
           </p>
           {card.solution.explanation && <p>{card.solution.explanation}</p>}

@@ -87,7 +87,7 @@ describe('ReviewPage', () => {
 
   describe('wrong move', () => {
     const openingNf3: CardWithState = {
-      ...card(1), refs: [{ repertoire: 'london', nodeId: 'n' }],
+      ...card(1), refs: [{ repertoire: 'london', nodeId: 'n' }], repertoireName: 'London',
       solution: { accepted: ['g1f3'], best: 'g1f3', explanation: 'Develop the knight.' },
     };
     const playE4 = async (c: CardWithState) => {
@@ -103,7 +103,7 @@ describe('ReviewPage', () => {
       let resolve!: (v: { playedSan: string; repertoireSan: string; repertoireName: string; loss: number }) => void;
       const check = vi.spyOn(api, 'checkOpeningMove').mockReturnValue(new Promise((r) => { resolve = r; }));
       await playE4(openingNf3);
-      await screen.findByText('Your repertoire move here is Nf3.');
+      await screen.findByText('Your London move here is Nf3.');
       expect(screen.queryByText(/best move/)).toBeNull();
       expect(screen.getByText('Develop the knight.')).toBeTruthy();
       expect(screen.getByText('Checking your move…')).toBeTruthy();
@@ -127,8 +127,32 @@ describe('ReviewPage', () => {
       vi.spyOn(api, 'checkOpeningMove').mockRejectedValue(new Error('Engine not available.'));
       await playE4(openingNf3);
       await vi.waitFor(() => expect(screen.queryByText('Checking your move…')).toBeNull());
-      expect(screen.getByText('Your repertoire move here is Nf3.')).toBeTruthy();
+      expect(screen.getByText('Your London move here is Nf3.')).toBeTruthy();
       expect(screen.queryByText(/Stockfish/)).toBeNull();
+      expect(defaultButton()).toBe('1 Again');
+    });
+
+    it('opening card: a late check for the previous card never fills the next card', async () => {
+      const second: CardWithState = { ...openingNf3, id: 2, prompt: 'Prompt 2' };
+      let resolveFirst!: (v: { playedSan: string; repertoireSan: string; repertoireName: string; loss: number }) => void;
+      vi.spyOn(api, 'checkOpeningMove')
+        .mockReturnValueOnce(new Promise((r) => { resolveFirst = r; }))
+        .mockReturnValueOnce(new Promise(() => undefined));
+      vi.spyOn(api, 'submitReview').mockResolvedValue({ cardId: 1, nextDue: 0 });
+      vi.spyOn(api, 'getReviewSession').mockResolvedValue({ cards: [openingNf3, second], dueCount: 0, newAvailable: 2 });
+      render(<MemoryRouter><ReviewPage /></MemoryRouter>);
+      await screen.findByText('Prompt 1');
+      fireEvent.click(screen.getByText('sq-e2'));
+      fireEvent.click(screen.getByText('sq-e4'));
+      fireEvent.click(await screen.findByText('1 Again'));
+      await screen.findByText('Prompt 2');
+      fireEvent.click(screen.getByText('sq-e2'));
+      fireEvent.click(screen.getByText('sq-e4'));
+      await screen.findByText('Checking your move…');
+      resolveFirst({ playedSan: 'e4', repertoireSan: 'Nf3', repertoireName: 'London', loss: 1 });
+      await new Promise((r) => setTimeout(r, 20));
+      expect(screen.getByText('Checking your move…')).toBeTruthy();
+      expect(screen.queryByText(/is also a good move/)).toBeNull();
       expect(defaultButton()).toBe('1 Again');
     });
 
