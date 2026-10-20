@@ -1,7 +1,7 @@
 # Content Quality Audit — Design (M10)
 
 Date: 2026-10-20
-Status: written at the owner's request; the owner reviews it before M10 starts.
+Status: approved by the owner (2026-10-20).
 Parent spec: `docs/superpowers/specs/2026-10-18-chess-coach-design.md` (§9 content
 and validation; project rule "the AI never invents moves, lines or evaluations").
 
