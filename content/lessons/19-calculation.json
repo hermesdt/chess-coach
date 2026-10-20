@@ -1,0 +1,48 @@
+{
+  "id": "calculation",
+  "order": 19,
+  "level": 2,
+  "title": "Calculation",
+  "summary": "List candidate moves. Look at checks, captures and threats first. Then calculate each line to the end.",
+  "tags": [],
+  "body": "### Calculate before you move\n\nCalculation means that you see the moves ahead in your head. Do it in three steps.\n\n**Step 1: find candidate moves.** Make a short list of two or three moves. Start with the forcing moves. A forcing move leaves your opponent few answers. Look in this order:\n\n- **Checks.** Your opponent must answer them.\n- **Captures.** Look at every capture, also the ones that look bad.\n- **Threats.** A threat attacks a piece or threatens mate.\n\n**Step 2: calculate each line.** Play your move in your head. Then find the best answer of your opponent. Look at the checks, captures and threats of your opponent too. Go to the end of the line. Stop when the position is calm. A calm position has no check or capture that matters.\n\n**Step 3: compare the end positions.** Pick the line that gives you the most. If you cannot see the end of a line, do not play it and hope.\n\nAvoid these mistakes:\n\n- Do not stop after your first capture. The recapture can change everything.\n- Do not play the first move that looks good. Look at the other candidate moves.\n- Do not forget the checks of your opponent.\n\nForcing lines are the easiest to calculate. A check has few answers. A capture often has only one recapture. So you look at them first.\n\nIn the exercises below, one forcing line wins. Quiet moves do not work. List the checks and the captures. Then calculate each line to the end.\n\nRule of thumb: list checks, captures and threats, then calculate each line to the end.",
+  "exercises": [
+    {
+      "id": "queen-sacrifice-mate",
+      "fen": "2n3k1/p4ppp/8/2Q5/8/8/1P1qNPPP/6K1 w - - 0 1",
+      "prompt": "White to move. Find the forcing line that wins.",
+      "solution": [
+        "c5c8"
+      ],
+      "explanation": "White has two checks. Qf8+ loses the queen to Kxf8. Qxc8+ takes the knight with check. The black king has no flight square, because its pawns block it. Black can only block with Qd8, and then Qxd8 is mate. A quiet move such as g3 gives Black time."
+    },
+    {
+      "id": "rook-trade-mate",
+      "fen": "1N4k1/p1p2ppp/8/4R3/8/1r6/3R1PPP/6K1 b - - 0 1",
+      "prompt": "Black to move. Find the forcing line that wins.",
+      "solution": [
+        "b3b1"
+      ],
+      "explanation": "Black has one check, Rb1+, and one capture, Rxb8. White must block the check. After Rd1 the line is Rxd1+ Re1 Rxe1#. After Re1 it is Rxe1#. Black trades rooks with check, and the last check is mate. Rxb8 takes a knight, but White still has two rooks against one, and Black loses."
+    },
+    {
+      "id": "check-then-fork",
+      "fen": "6k1/2pN2pp/4n1r1/3n4/6rQ/7R/PPP2PPP/6K1 w - - 0 1",
+      "prompt": "White to move. Find the forcing line that wins material.",
+      "solution": [
+        "h4h7"
+      ],
+      "explanation": "The rook on g4 attacks your queen, so move it with a check. White has three checks. Nf6+ and Qd8+ do not work. Qxh7+ wins a pawn, and the king must go to f7, because the rook on h3 guards h7. Then Ne5+ attacks the king and the rooks on g4 and g6. After Kf6 Nxg4+ Rxg4, White has won a rook for a knight."
+    },
+    {
+      "id": "check-wins-queen",
+      "fen": "6k1/ppp2ppp/8/1b6/2B5/5Q1R/PPPr2PP/4n1K1 b - - 0 1",
+      "prompt": "Black to move. Find the forcing line that wins.",
+      "solution": [
+        "e1f3"
+      ],
+      "explanation": "Black has two checks. Rxg2+ Qxg2 loses a rook. Nxf3+ takes the queen with check. In the engine line White plays Rxf3, and Bxc4 wins a bishop too. The quiet capture Bxc4 comes too early. After Qe4 the queen is safe."
+    }
+  ],
+  "links": []
+}

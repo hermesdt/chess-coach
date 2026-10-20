@@ -1,0 +1,48 @@
+{
+  "id": "prophylaxis",
+  "order": 18,
+  "level": 2,
+  "title": "Prophylaxis",
+  "summary": "Before every move, ask what your opponent wants. Then stop it with a move that also helps you.",
+  "tags": [],
+  "body": "### What does your opponent want?\n\nMost players look only at their own plans. Strong players ask a second question first: what does my opponent want? To stop the plan of your opponent before it happens is called prophylaxis.\n\nBefore every move, do this:\n\n- Imagine that your opponent moves twice in a row. What is the best move?\n- Look at the checks, captures and threats of your opponent. Look for mate, for a free piece and for a pawn that falls.\n- If the threat is real, find a move that stops it.\n- Check the new position. Does your move leave something hanging?\n\nYou can stop a threat in four ways:\n\n- **Guard the square.** Move a piece so that it guards the key square.\n- **Move the target.** Take the attacked piece away.\n- **Make luft.** A pawn move gives your king a flight square. This helps against back-rank mate.\n- **Use the king.** In an endgame, the king can guard a pawn or a square.\n\nThe best move often does two jobs. It stops the threat and it improves your position. Look for that move first.\n\nA quiet move can be the best move. It does not need to be a check or a capture. If your opponent has a strong move and you do not stop it, you may lose material.\n\nIn the exercises below, your opponent has one clear threat. The prompt asks: What does your opponent want? Stop it. Find the one move that works.\n\nRule of thumb: before you move, imagine that your opponent moves twice, and stop the best threat.",
+  "exercises": [
+    {
+      "id": "guard-with-queen",
+      "fen": "6k1/ppp2ppp/b5Q1/3r4/8/8/2P2PPP/6K1 w - - 0 1",
+      "prompt": "White to move. What does your opponent want? Stop it.",
+      "solution": [
+        "g6g4"
+      ],
+      "explanation": "Black wants to play ...Rd1#. Your king has no flight square, because your own pawns block it. Qg4 guards d1 along the diagonal, so Rd1+ fails to Qxd1. The moves Qxa6 and Qxh7+ lose the queen for a bishop or a pawn."
+    },
+    {
+      "id": "guard-with-bishop",
+      "fen": "6k1/p1p2ppp/6r1/3P4/8/1b2R3/PPP2PPP/6K1 b - - 0 1",
+      "prompt": "Black to move. What does your opponent want? Stop it.",
+      "solution": [
+        "b3a4"
+      ],
+      "explanation": "White wants to play Re8#. No black piece guards e8, and the black king has no flight square. Ba4 guards e8 along the diagonal. It also saves the bishop, which the rook on e3 attacks. After Kf8 or h6 the bishop stays hanging."
+    },
+    {
+      "id": "queen-does-two-jobs",
+      "fen": "6k1/ppp2ppp/3p4/5Q2/8/1q6/PPP2PP1/6K1 b - - 0 1",
+      "prompt": "Black to move. What does your opponent want? Stop it.",
+      "solution": [
+        "b3e6"
+      ],
+      "explanation": "White wants to play Qc8#. Your queen is also attacked by the pawns on a2 and c2. Qe6 solves both problems. The queen leaves b3 and guards c8 along the diagonal. If White trades with Qxe6, you take back with fxe6. A luft move such as h6 loses the queen."
+    },
+    {
+      "id": "king-guards-pawn",
+      "fen": "8/8/p3p3/k7/P7/8/2K2P2/8 w - - 0 1",
+      "prompt": "White to move. What does your opponent want? Stop it.",
+      "solution": [
+        "c2b3"
+      ],
+      "explanation": "Black wants to play ...Kxa4, because nothing guards the pawn. Kb3 guards it with the king. After Kc3 Black takes the pawn, and White is clearly worse."
+    }
+  ],
+  "links": []
+}

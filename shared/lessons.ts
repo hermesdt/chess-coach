@@ -4,6 +4,7 @@ export const LESSON_IDS = [
   'blunder-check', 'free-material', 'center', 'develop', 'castle', 'trades',
   'bishop-pair', 'castling-sides', 'tactics', 'mates', 'caro-kann-plans', 'london-plans',
   'pawn-structures', 'outposts', 'good-bad-bishop', 'rook-endgames',
+  'king-activity', 'prophylaxis', 'calculation',
 ] as const;
 export type LessonId = (typeof LESSON_IDS)[number];
 
@@ -36,4 +37,7 @@ export const LESSON_TITLES: Record<LessonId, string> = {
   outposts: 'Outposts and weak squares',
   'good-bad-bishop': 'Good and bad bishops',
   'rook-endgames': 'Rook endgames',
+  'king-activity': 'King activity',
+  prophylaxis: 'Prophylaxis',
+  calculation: 'Calculation',
 };

@@ -1,0 +1,57 @@
+{
+  "id": "king-activity",
+  "order": 17,
+  "level": 2,
+  "title": "King activity",
+  "summary": "In the endgame the king is a strong piece. Bring it to the centre, attack pawns and stop passed pawns.",
+  "tags": [],
+  "body": "### Use your king in the endgame\n\nIn the opening and the middlegame, you keep your king safe. In the endgame, most pieces are gone. Now the king is hard to mate. It becomes a strong piece. Use it.\n\nFollow these rules:\n\n- **Go to the centre.** From the centre, your king reaches both sides of the board fast.\n- **Attack pawns.** A pawn that your king can attack is a target. Walk up to it and take it.\n- **Stop passed pawns.** A passed pawn has no enemy pawn in front of it, on its file or on the files next to it. Put your king in its way before it runs.\n- **Walk with your own passed pawn.** Your king helps the pawn to promote.\n\nIn many endgames, one king move decides the game. A slow pawn move gives your opponent time. Then the enemy king gets in first.\n\nCount the moves. How many moves does your king need to reach the key square? How many moves does the enemy king need? The king that arrives first has the edge.\n\nBe careful in the middlegame. Queens and rooks can still attack a king in the open. Bring your king out when the queens are off, or when your opponent has too few pieces to attack it.\n\nThe exercises below are pawn endings. Look for the most active king move. Then check that no enemy pawn runs faster.\n\nRule of thumb: in the endgame, bring your king to the centre, then go after the pawns.",
+  "exercises": [
+    {
+      "id": "king-attacks-pawns",
+      "fen": "1k6/1pp2p2/8/2P1PK2/8/8/8/8 w - - 0 1",
+      "prompt": "White to move. Find the king move that wins.",
+      "solution": [
+        "f5f6"
+      ],
+      "explanation": "Kf6 attacks the pawn on f7. The black king is far away on b8, so it cannot help. In the engine line Black plays ...b5, White takes on f7, and the pawn on e5 runs. The moves Kg5 and c6 give only a draw."
+    },
+    {
+      "id": "king-to-centre",
+      "fen": "3k4/8/1p6/2p5/4K3/4P3/5P2/8 w - - 0 1",
+      "prompt": "White to move. Find the best king move.",
+      "solution": [
+        "e4d5"
+      ],
+      "explanation": "Kd5 puts the king in the centre. White has an e-pawn and an f-pawn, and no black pawn stands in front of them. In the engine line Black plays ...Ke8, then White plays e4 and f4, and the pawns march. The moves f4 and Ke5 are slower. The engine sees only a draw after them."
+    },
+    {
+      "id": "king-stops-passed-pawn",
+      "fen": "8/4k3/7p/p2P3P/2P5/2p5/8/5K2 w - - 0 1",
+      "prompt": "White to move. Black has a passed pawn on c3. Stop it with your king.",
+      "solution": [
+        "f1e2"
+      ],
+      "explanation": "The pawn on c3 wants to run to c1. Ke2 puts the king in its way. In the engine line Black plays ...Kd6, White plays Kd3, and Kxc3 wins the pawn. After Ke1 the line is ...a4 Ke2 a3 Kd3 a2 Kxc3 a1=Q+. Black queens first."
+    },
+    {
+      "id": "king-leads-passed-pawn",
+      "fen": "8/1k6/1p5p/4P3/5K2/8/7P/8 w - - 0 1",
+      "prompt": "White to move. Walk your king up with your passed pawn.",
+      "solution": [
+        "f4f5"
+      ],
+      "explanation": "Kf5 goes in front of the e-pawn and helps it. The black king is far away on b7. In the engine line Black plays ...b5, then White plays e6 and e7, and the pawn is ready to promote. The moves h4 and Ke4 give only a draw."
+    },
+    {
+      "id": "king-wins-pawns",
+      "fen": "8/8/2k3p1/5p2/3K4/8/5PP1/8 w - - 0 1",
+      "prompt": "White to move. Find the best king move.",
+      "solution": [
+        "d4e5"
+      ],
+      "explanation": "Ke5 goes after the black pawns. In the engine line Black plays ...f4, White takes it with Kxf4, and then Kg5 and Kxg6 win the second pawn. The moves Ke3 and f3 are slow. The engine sees only a draw after them."
+    }
+  ],
+  "links": []
+}
