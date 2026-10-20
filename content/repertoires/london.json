@@ -90,7 +90,32 @@
                                            "san": "dxe5",
                                            "comment": "Retake with the pawn. It attacks the bishop on d6 and the knight on f6, and Black cannot save both.",
                                            "level": 2,
-                                           "children": []
+                                           "children": [
+                                            {
+                                             "san": "Be7",
+                                             "comment": "Black saves the bishop. But the pawn on e5 still attacks the knight on f6.",
+                                             "level": 3,
+                                             "children": [
+                                              {
+                                               "san": "exf6",
+                                               "comment": "Take the knight with the pawn. If Black takes back, you are still a knight ahead for a pawn.",
+                                               "children": [
+                                                {
+                                                 "san": "Bxf6",
+                                                 "comment": "Black wins the pawn back, but you are still a knight ahead for a pawn.",
+                                                 "children": [
+                                                  {
+                                                   "san": "Qe2",
+                                                   "comment": "Bring the queen into play and keep it simple. You are a knight up for a pawn, so the position is winning.",
+                                                   "children": []
+                                                  }
+                                                 ]
+                                                }
+                                               ]
+                                              }
+                                             ]
+                                            }
+                                           ]
                                           }
                                          ]
                                         }
@@ -151,7 +176,32 @@
                                    "san": "c3",
                                    "comment": "Guard d4 and keep the centre solid. Then you can play Ne5 or g4.",
                                    "level": 2,
-                                   "children": []
+                                   "children": [
+                                    {
+                                     "san": "c5",
+                                     "comment": "Black attacks your d4 pawn. It is safe: the c3 pawn, the e3 pawn and the f3 knight all guard it.",
+                                     "level": 3,
+                                     "children": [
+                                      {
+                                       "san": "Ne5",
+                                       "comment": "Jump to e5, the favourite London square. From there the knight eyes d7 and f7.",
+                                       "children": [
+                                        {
+                                         "san": "h6",
+                                         "comment": "Black makes room for the king and controls g5.",
+                                         "children": [
+                                          {
+                                           "san": "g4",
+                                           "comment": "Start your kingside attack. The pawn on g4 prepares g5 against h6, and you have no h-pawn left on the h-file.",
+                                           "children": []
+                                          }
+                                         ]
+                                        }
+                                       ]
+                                      }
+                                     ]
+                                    }
+                                   ]
                                   }
                                  ]
                                 }
@@ -214,7 +264,44 @@
                                    "san": "Ne5",
                                    "comment": "Knight to e5. The d4 pawn guards it. If ...Nxe5, dxe5 attacks the knight on f6.",
                                    "level": 2,
-                                   "children": []
+                                   "children": [
+                                    {
+                                     "san": "Bb7",
+                                     "comment": "Black brings out the last minor piece. All four black minor pieces are now developed.",
+                                     "level": 3,
+                                     "children": [
+                                      {
+                                       "san": "Qf3",
+                                       "comment": "The queen eyes the d5 pawn and guards your bishop on f4.",
+                                       "children": [
+                                        {
+                                         "san": "Nxe5",
+                                         "comment": "Black takes the knight on e5 to remove your active piece.",
+                                         "children": [
+                                          {
+                                           "san": "dxe5",
+                                           "comment": "Take back with the d-pawn. The pawn on e5 attacks the knight on f6.",
+                                           "children": [
+                                            {
+                                             "san": "Ne4",
+                                             "comment": "The knight jumps away from the pawn. It now attacks your knight on d2.",
+                                             "children": [
+                                              {
+                                               "san": "Rad1",
+                                               "comment": "Guard the knight on d2. The black knight attacks it and nothing guards it yet.",
+                                               "children": []
+                                              }
+                                             ]
+                                            }
+                                           ]
+                                          }
+                                         ]
+                                        }
+                                       ]
+                                      }
+                                     ]
+                                    }
+                                   ]
                                   }
                                  ]
                                 }
@@ -296,7 +383,20 @@
                                   {
                                    "san": "Be2",
                                    "comment": "Develop calmly. The c4 pawn controls d3, so the bishop goes to e2. O-O and e4 are next.",
-                                   "children": []
+                                   "children": [
+                                    {
+                                     "san": "Bd6",
+                                     "comment": "A common slip: Black puts the bishop where your bishop on f4 attacks it. Nothing guards it.",
+                                     "level": 3,
+                                     "children": [
+                                      {
+                                       "san": "Bxd6",
+                                       "comment": "Take the free bishop. No black piece can take back on d6.",
+                                       "children": []
+                                      }
+                                     ]
+                                    }
+                                   ]
                                   }
                                  ]
                                 }
@@ -313,7 +413,32 @@
                                "san": "Nxb3",
                                "comment": "Retake with the knight. Your pawns stay healthy and your pieces keep developing.",
                                "level": 2,
-                               "children": []
+                               "children": [
+                                {
+                                 "san": "c4",
+                                 "comment": "The black pawn attacks your knight on b3 and gains space on the queenside.",
+                                 "level": 3,
+                                 "children": [
+                                  {
+                                   "san": "Nbd2",
+                                   "comment": "Bring the knight back. From d2 it eyes the c4 pawn and the e4 square.",
+                                   "children": [
+                                    {
+                                     "san": "b5",
+                                     "comment": "Black guards the c4 pawn with the b-pawn.",
+                                     "children": [
+                                      {
+                                       "san": "h3",
+                                       "comment": "A quiet move with a purpose: h3 takes the g4 square away from the black knight.",
+                                       "children": []
+                                      }
+                                     ]
+                                    }
+                                   ]
+                                  }
+                                 ]
+                                }
+                               ]
                               }
                              ]
                             }
@@ -537,7 +662,32 @@
                               {
                                "san": "e4",
                                "comment": "Push e4. It attacks the bishop on f5 and the pawn on d5.",
-                               "children": []
+                               "children": [
+                                {
+                                 "san": "Bxe4",
+                                 "comment": "Black takes the e4 pawn with the bishop. Your knight on d2 guards e4, so you can take back.",
+                                 "level": 3,
+                                 "children": [
+                                  {
+                                   "san": "Nxe4",
+                                   "comment": "Take the bishop with the knight. If Black takes it with the d-pawn, the c4 pawn loses its guard.",
+                                   "children": [
+                                    {
+                                     "san": "dxe4",
+                                     "comment": "Black takes the knight. The d-pawn leaves d5, so it no longer guards c4.",
+                                     "children": [
+                                      {
+                                       "san": "Bxc4",
+                                       "comment": "Take the loose pawn. Material is level: you gave a knight and a pawn, Black gave a bishop and a pawn.",
+                                       "children": []
+                                      }
+                                     ]
+                                    }
+                                   ]
+                                  }
+                                 ]
+                                }
+                               ]
                               }
                              ]
                             }
@@ -644,7 +794,32 @@
                            "san": "c3",
                            "comment": "Guard d4 once more. Then play Bd3 and castle.",
                            "level": 2,
-                           "children": []
+                           "children": [
+                            {
+                             "san": "Bf5",
+                             "comment": "Black brings the bishop out before ...e6 closes its diagonal.",
+                             "level": 3,
+                             "children": [
+                              {
+                               "san": "Be2",
+                               "comment": "Not Bd3: the bishop on f5 would take it and nothing of yours guards d3. The bishop is safe on e2.",
+                               "children": [
+                                {
+                                 "san": "e6",
+                                 "comment": "Black guards d5 and f5 and unblocks the f8 bishop.",
+                                 "children": [
+                                  {
+                                   "san": "Nbd2",
+                                   "comment": "Develop your last minor piece. The knight eyes the c4 and e4 squares.",
+                                   "children": []
+                                  }
+                                 ]
+                                }
+                               ]
+                              }
+                             ]
+                            }
+                           ]
                           }
                          ]
                         }
@@ -925,7 +1100,68 @@
                                        "san": "O-O",
                                        "comment": "Castle. Your king is safe and your pieces are ready.",
                                        "level": 2,
-                                       "children": []
+                                       "children": [
+                                        {
+                                         "san": "e5",
+                                         "comment": "Black strikes in the centre. The pawn attacks your d4 pawn.",
+                                         "level": 3,
+                                         "children": [
+                                          {
+                                           "san": "dxe5",
+                                           "comment": "Take the pawn first, so that Black has to retake.",
+                                           "children": [
+                                            {
+                                             "san": "Nxe5",
+                                             "comment": "Black retakes with the knight. The queen on d6 guards it.",
+                                             "children": [
+                                              {
+                                               "san": "Nxe5",
+                                               "comment": "Trade the knights. Now the black bishop on h5 attacks your bishop on e2.",
+                                               "children": [
+                                                {
+                                                 "san": "Qxe5",
+                                                 "comment": "Black retakes with the queen, which now stands in the centre.",
+                                                 "children": [
+                                                  {
+                                                   "san": "Bxh5",
+                                                   "comment": "Take the bishop on h5. It attacked your bishop on e2, so you trade it off.",
+                                                   "children": []
+                                                  }
+                                                 ]
+                                                }
+                                               ]
+                                              }
+                                             ]
+                                            }
+                                           ]
+                                          }
+                                         ]
+                                        },
+                                        {
+                                         "san": "Bxf3",
+                                         "comment": "Black trades the h5 bishop for your knight on f3.",
+                                         "level": 3,
+                                         "children": [
+                                          {
+                                           "san": "Nxf3",
+                                           "comment": "Retake with the d2 knight. It returns to f3, where it guards d4 and watches e5.",
+                                           "children": [
+                                            {
+                                             "san": "e5",
+                                             "comment": "Black hits your d4 pawn with the e-pawn.",
+                                             "children": [
+                                              {
+                                               "san": "Qb3",
+                                               "comment": "The queen attacks the b7 pawn, which no black piece guards. It also eyes d5.",
+                                               "children": []
+                                              }
+                                             ]
+                                            }
+                                           ]
+                                          }
+                                         ]
+                                        }
+                                       ]
                                       }
                                      ]
                                     }
@@ -1065,7 +1301,32 @@
                                   {
                                    "san": "O-O",
                                    "comment": "Castle. Your king is safe and you can plan e4 next.",
-                                   "children": []
+                                   "children": [
+                                    {
+                                     "san": "Bb7",
+                                     "comment": "The black bishop now looks at your knight on f3. The knight is well guarded.",
+                                     "level": 3,
+                                     "children": [
+                                      {
+                                       "san": "Bh2",
+                                       "comment": "Keep the bishop safe from ...e5 and ...Nh5. On h2 it stays on the same diagonal.",
+                                       "children": [
+                                        {
+                                         "san": "Re8",
+                                         "comment": "Black backs up the ...e5 push with a rook on the e-file.",
+                                         "children": [
+                                          {
+                                           "san": "Re1",
+                                           "comment": "Rook to e1. It backs the e3 pawn and prepares your e4 break.",
+                                           "children": []
+                                          }
+                                         ]
+                                        }
+                                       ]
+                                      }
+                                     ]
+                                    }
+                                   ]
                                   }
                                  ]
                                 }
@@ -1096,7 +1357,56 @@
                                "san": "Nbd2",
                                "comment": "Develop your last knight. It supports e4.",
                                "level": 2,
-                               "children": []
+                               "children": [
+                                {
+                                 "san": "e5",
+                                 "comment": "Black attacks your d4 pawn with the e-pawn.",
+                                 "level": 3,
+                                 "children": [
+                                  {
+                                   "san": "c3",
+                                   "comment": "Guard d4 once more: the c3 pawn, the e3 pawn and the f3 knight now guard it.",
+                                   "children": [
+                                    {
+                                     "san": "Qe7",
+                                     "comment": "Black adds the queen behind the e5 pawn.",
+                                     "children": [
+                                      {
+                                       "san": "O-O",
+                                       "comment": "Castle. Your king is safe and your rook joins the game.",
+                                       "children": []
+                                      }
+                                     ]
+                                    }
+                                   ]
+                                  }
+                                 ]
+                                },
+                                {
+                                 "san": "c5",
+                                 "comment": "Black attacks your d4 pawn with the c-pawn.",
+                                 "level": 3,
+                                 "children": [
+                                  {
+                                   "san": "c3",
+                                   "comment": "Add a guard to d4: the c3 pawn, the e3 pawn and the f3 knight guard it.",
+                                   "children": [
+                                    {
+                                     "san": "cxd4",
+                                     "comment": "Black takes on d4. Now you choose how to retake.",
+                                     "children": [
+                                      {
+                                       "san": "cxd4",
+                                       "comment": "Retake with the c-pawn. Your e3 pawn stays and guards the pawn on d4.",
+                                       "children": []
+                                      }
+                                     ]
+                                    }
+                                   ]
+                                  }
+                                 ]
+                                }
+                               ]
                               }
                              ]
                             }
@@ -1375,7 +1685,32 @@
                            "san": "Bd3",
                            "comment": "Offer a bishop trade. Their bishop on f5 is on the same diagonal.",
                            "level": 2,
-                           "children": []
+                           "children": [
+                            {
+                             "san": "Bxd3",
+                             "comment": "Black takes the bishop on d3. Your queen guards d3, so you can retake.",
+                             "level": 3,
+                             "children": [
+                              {
+                               "san": "Qxd3",
+                               "comment": "Retake with the queen. It is the only piece that can take on d3.",
+                               "children": [
+                                {
+                                 "san": "e6",
+                                 "comment": "Black guards d5 and unblocks the f8 bishop.",
+                                 "children": [
+                                  {
+                                   "san": "Nbd2",
+                                   "comment": "Develop your last knight. It eyes the e4 and c4 squares.",
+                                   "children": []
+                                  }
+                                 ]
+                                }
+                               ]
+                              }
+                             ]
+                            }
+                           ]
                           }
                          ]
                         }
