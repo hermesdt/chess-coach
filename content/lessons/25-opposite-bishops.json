@@ -5,16 +5,16 @@
   "title": "Opposite-colour bishops",
   "summary": "Opposite-colour bishops attack well in the middlegame and draw often in the ending. Know when to attack and when to hold.",
   "tags": [],
-  "body": "### Bishops of opposite colours\n\nEach bishop stays on squares of one colour. With opposite-colour bishops, one side has a light-squared bishop and the other side has a dark-squared bishop. The two bishops can never attack each other or trade.\n\nIn the middlegame this helps the attacker. The defender's bishop cannot guard the squares of the other colour. Keep the queens and rooks on the board. Aim at the squares that the enemy bishop cannot guard. A mate on a dark square is hard to stop for a player who has only a light-squared bishop.\n\nIn the ending this often helps the defender. The attacker's bishop cannot attack the pawns that stand on the colour of the defender's bishop. The defender also cannot attack pawns of the other colour. Draws are common:\n\n- One extra pawn is often not enough to win. The weaker side can often draw.\n- Two connected passed pawns, or passed pawns far from each other, often win.\n- A pawn on a square that the enemy bishop cannot reach is safe from that bishop. Push such a pawn when the path is free.\n\nWhen you are worse, trade into an ending with opposite bishops and fight for a draw. When you are better, keep the queens and rooks on the board and attack.\n\nCheck the squares. For each plan, ask which colour of squares it needs. Then check which bishop can help.\n\nRule of thumb: attack with opposite bishops in the middlegame, and hold the draw in the ending.",
+  "body": "### Bishops of opposite colours\n\nEach bishop stays on squares of one colour. With opposite-colour bishops, one side has a light-squared bishop and the other side has a dark-squared bishop. The two bishops can never attack each other or trade.\n\nIn the middlegame this helps the attacker. The defender's bishop cannot guard the squares of the other colour. Keep the queens and rooks on the board. Aim at the squares that the enemy bishop cannot guard. A mate on a dark square is hard to stop for a player who has only a light-squared bishop.\n\nIn the ending this often helps the defender. The defender puts his king or bishop on a square of his bishop's colour in front of the pawn. The other bishop can never chase it away. Draws are common:\n\n- One extra pawn is usually not enough to win. The weaker side can often draw.\n- Two connected passed pawns, or passed pawns far from each other, often win.\n- A pawn on a square that the enemy bishop cannot reach is safe from that bishop. Push such a pawn when the path is free.\n\nWhen you are worse, trade into an ending with opposite bishops and fight for a draw. When you are better, keep the queens and rooks on the board and attack.\n\nCheck the squares. For each plan, ask which colour of squares it needs. Then check which bishop can help.\n\nRule of thumb: attack with opposite bishops in the middlegame, and hold the draw in the ending.",
   "exercises": [
     {
       "id": "mate-on-dark-squares",
       "fen": "1r4k1/pp3ppp/4b3/1q6/3B4/7Q/PP1R1PPP/6K1 w - - 0 1",
-      "prompt": "White to move. Black has a light-squared bishop. Attack with your queen, and threaten mate on g7. Do not leave the queen on a square where the bishop can take it.",
+      "prompt": "White to move. Black has a light-squared bishop. Attack with your queen, and threaten mate on g7. Do not leave the queen on a square where Black can take it.",
       "solution": [
         "h3g3"
       ],
-      "explanation": "Qg3 attacks g7 with a mate threat, because the bishop on d4 also hits g7. The bishop on e6 is on light squares and cannot guard g7. Qg3 also attacks the rook on b8. Black cannot meet both threats. After Qg3 g6 Qxb8+ Bc8 Qxc8+ Qe8 Qxe8#, it is mate. After Qg3 f6, Bxf6 follows. The other queen moves, such as Qe3, make no mate threat, and the engine rates them about 52 %. Qg3 gives about 95 %."
+      "explanation": "Qg3 attacks g7 with a mate threat, because the bishop on d4 also hits g7. The bishop on e6 is on light squares and cannot guard g7. Qg3 also attacks the rook on b8. Black cannot meet both threats. After Qg3 g6 Qxb8+ Bc8 Qxc8+ Qe8 Qxe8#, it is mate. After Qg3 f6, Bxf6 follows. The safe queen moves, such as Qe3, make no mate threat, and the engine rates them about 51 %. Qg3 gives about 95 %."
     },
     {
       "id": "pawn-on-light-squares",
@@ -23,7 +23,18 @@
       "solution": [
         "e5e6"
       ],
-      "explanation": "Black has a dark-squared bishop. The pawn on e6 stands on a light square, so the bishop cannot take it. e6+ gives check. After e6+ Kg8 e7 Bf8, the pawn takes the bishop on f8 and promotes. All four king moves lose. The engine sees a forced win. Be2 also wins, about 88 %, but it is slower."
+      "explanation": "Black has a dark-squared bishop. The pawn on e6 stands on a light square, so the bishop cannot take it. e6+ gives check. After e6+ Kg8 e7 Bf8 exf8=Q+ Kxf8, White has won the bishop: king, bishop and two pawns against two pawns. All four king moves lose. Be2 is too slow: Black plays ...Ke8 or ...Kf8 and blocks the pawn on the dark square e7, and the engine rates it a draw."
+    },
+    {
+      "id": "hold-the-draw",
+      "fen": "8/5kb1/1p1K2p1/4P3/8/4P3/1P2B3/8 b - - 1 1",
+      "prompt": "Black to move. Stop the e-pawn on a dark square.",
+      "solution": [
+        "f7e8",
+        "g7f8",
+        "f7f8"
+      ],
+      "explanation": "White wants e6 and e7. The square e7 is dark, so the white bishop on e2 cannot attack it. ...Bf8+, ...Ke8 and ...Kf8 all guard e7, and the pawn cannot pass. The engine rates all three as a draw. The engine line is ...Ke8 Ke6 Bh6 Bd3 Kd8. Every other move loses, for example ...Kg8 and ...Bf6."
     },
     {
       "id": "run-on-light-squares",
@@ -32,7 +43,7 @@
       "solution": [
         "g5g6"
       ],
-      "explanation": "The pawn on g6 runs on light squares, and the black bishop is dark-squared. The squares g7 and g8 are a problem too. g7 is dark, but the bishop on c7 is blocked by the pawn on d6. After g6 Ke7 g7 Kf6 g8=Q, the pawn promotes. If White waits with Kc3, Black plays ...Ke7 and ...Kf8 and blocks the pawn. The engine rates Kc3 about 69 %. g6 gives about 97 %."
+      "explanation": "The pawn on g6 runs on light squares, and the black bishop is dark-squared. The squares g6 and g8 are light, so the bishop can never guard them. Only g7 is dark. The bishop on c7 cannot reach a square that guards g7 in time, because the pawn on d6 blocks its way to e5. After g6 Ke7 g7 Kf6 g8=Q, the pawn promotes. If White waits with Kc3, Black plays ...Ke7 and ...Kf8 and blocks the pawn. The engine rates Kc3 clearly lower. g6 gives about 97 %."
     }
   ],
   "links": []
