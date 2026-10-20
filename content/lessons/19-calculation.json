@@ -41,7 +41,7 @@
       "solution": [
         "e1f3"
       ],
-      "explanation": "Black has two checks. Rxg2+ Qxg2 Nxg2 wins the queen back, but then Bxb5 takes your bishop, and White is better. Nxf3+ takes the queen first. In the engine line White plays Rxf3, and Bxc4 wins a bishop too. If Black waits, White plays Qxf7+ Kh8 Qf8#. The capture Bxc4 is too slow. Qe4 saves the queen, threatens Qe8#, and attacks the knight and the bishop."
+      "explanation": "Black has two checks. Rxg2+ Qxg2 Nxg2 trades a rook for the queen, but then Bxb5 takes your bishop, and White is winning. Nxf3+ takes the queen first. In the engine line White plays Rxf3, and Bxc4 wins a bishop too. If Black waits, White plays Qxf7+ Kh8 Qf8#. The capture Bxc4 is too slow. Qe4 saves the queen, threatens Qe8#, and attacks the knight and the bishop."
     }
   ],
   "links": []

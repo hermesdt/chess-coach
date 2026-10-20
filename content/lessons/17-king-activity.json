@@ -23,7 +23,7 @@
       "solution": [
         "e4d5"
       ],
-      "explanation": "Kd5 freezes the black queenside pawns. After ...b5 White plays Kxc5, and after ...c4 White plays Kxc4. So Black cannot move those pawns, and the black king must stop the e-pawn and the f-pawn alone. In the engine line Black plays ...Ke8, then White plays f4, e4 and e5, and the pawns march. Ke5 is central too, but Black then plays ...b5 or ...c4, and the engine sees only a draw."
+      "explanation": "Kd5 freezes the black queenside pawns. After ...b5 White plays Kxc5, and after ...c4 White plays Kxc4. So Black cannot move those pawns, and the black king must stop the e-pawn and the f-pawn alone. In one winning line Black plays ...Ke8, then White plays f4, e4 and e5, and the pawns march. Ke5 is central too, but Black then plays ...b5 or ...c4, and the engine sees only a draw."
     },
     {
       "id": "king-stops-passed-pawn",

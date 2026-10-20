@@ -5,16 +5,16 @@
   "title": "Prophylaxis",
   "summary": "Before every move, ask what your opponent wants. Then stop it with a move that also helps you.",
   "tags": [],
-  "body": "### What does your opponent want?\n\nMost players look only at their own plans. Strong players ask a second question first: what does my opponent want? To stop the plan of your opponent before it happens is called prophylaxis.\n\nSome threats come next move. Some plans need two or three moves. Stop a plan early, while it costs little.\n\nBefore every move, do this:\n\n- Imagine that your opponent moves twice in a row. What is the best move?\n- Look at the checks, captures and threats of your opponent. Look at the plan too: where does the king or a piece want to go?\n- Name every threat. One of your pieces can be attacked at the same time as a mate threat.\n- Find a move that stops the plan. Check that your move does not leave something hanging.\n\nYou can stop a plan in three ways:\n\n- **Guard the square.** Move a piece so that it guards the key square.\n- **Move the target.** Take the attacked piece away.\n- **Use the king.** In an endgame, the king can guard a pawn, block a pawn or keep the enemy king away.\n\nThe best move often does two jobs. It stops the plan and it improves your position. Look for that move first.\n\nA quiet move can be the best move. It does not need to be a check or a capture. If your opponent has a strong plan and you do not stop it, you may lose material.\n\nIn the exercises below, your opponent has a threat or a plan. The prompt asks: What does your opponent want? Stop it. Find the one move that works.\n\nRule of thumb: before you move, imagine that your opponent moves twice, and stop the best plan.",
+  "body": "### What does your opponent want?\n\nMost players look only at their own plans. Strong players ask a second question first: what does my opponent want? To stop the plan of your opponent before it happens is called prophylaxis.\n\nSome threats come next move. Some plans need two or three moves. Stop a plan early, while it costs little.\n\nBefore every move, do this:\n\n- Imagine that your opponent moves twice in a row. What is the best move?\n- Look at the checks, captures and threats of your opponent. Look at the plan too: where does the king or a piece want to go?\n- Name every threat. One of your pieces can be attacked at the same time as a mate threat.\n- Find a move that stops the plan. Check that your move does not leave something hanging.\n\nYou can stop a plan in three ways:\n\n- **Remove the break.** A pawn move can take away the exchange or the square that your opponent needs.\n- **Guard the target.** Guard a pawn or a square with a piece or with the king.\n- **Block the path.** Put a piece or the king in front of a pawn or of the enemy king.\n\nThe best move often does two jobs. It stops the plan and it improves your position. Look for that move first.\n\nA quiet move can be the best move. It does not need to be a check or a capture. If your opponent has a strong plan and you do not stop it, you may lose material.\n\nIn the exercises below, your opponent has a threat or a plan. The prompt asks: What does your opponent want? Stop it. Find the one move that works.\n\nRule of thumb: before you move, imagine that your opponent moves twice, and stop the best plan.",
   "exercises": [
     {
-      "id": "queen-does-two-jobs",
-      "fen": "6k1/ppp2ppp/3p4/5Q2/8/1q6/PPP2PP1/6K1 b - - 0 1",
-      "prompt": "Black to move. What does your opponent want? Stop it.",
+      "id": "stop-the-e4-trade",
+      "fen": "r2qk2r/pp1nbppp/2p1pn2/3p4/3PP3/2NB1Q1P/PPP2PP1/R1B2RK1 w kq - 5 9",
+      "prompt": "White to move. What does your opponent want? Stop it.",
       "solution": [
-        "b3e6"
+        "e4e5"
       ],
-      "explanation": "White has two threats. First, Qc8# is mate, because the black pawns block the king. Second, the pawns on a2 and c2 attack your queen on b3. Qe6 stops both. The queen leaves b3, and it guards c8 along the diagonal. If White trades with Qxe6, you take back with fxe6. A luft move such as h6 loses the queen."
+      "explanation": "Black wants to trade on e4 with ...Nxe4 or ...dxe4. The trade frees the black position. If White waits, the engine edge falls from 69 % to about 52 %. e5 takes the break away. The pawn leaves e4 and attacks the knight on f6. In the engine line Black plays ...Ng8, then White plays Ne2 and c3, and White keeps the space. The knight on f6 is attacked. If Black castles, exf6 wins the knight for a pawn."
     },
     {
       "id": "king-guards-pawn",
@@ -32,7 +32,7 @@
       "solution": [
         "c2b3"
       ],
-      "explanation": "Black wants ...Ka2, then ...b3+, ...b2 and ...b1=Q. The plan needs three moves, so stop it now. If White waits, the line is ...Ka2 h4 b3+ Kd2 b2 h5 b1=Q. Kb3 takes a2 away from the black king, blocks the pawn and attacks it. The pawn on b4 cannot move, and the black king can only go to b1. After Kd3 Black plays ...b3 and queens."
+      "explanation": "Black wants ...Ka2, then ...b3+, ...b2 and ...b1=Q. The plan needs four moves, so stop it now. The check ...b3+ at once fails to Kxb3, so Black first needs ...Ka2. If White waits, the line is ...Ka2 h4 b3+ Kd2 b2 h5 b1=Q. Kb3 takes a2 away from the black king, blocks the pawn and attacks it. The pawn on b4 cannot move, and the black king can only go to b1. After Kd3 Black plays ...b3 and queens."
     },
     {
       "id": "king-stops-king-walk",
@@ -41,7 +41,7 @@
       "solution": [
         "e2f3"
       ],
-      "explanation": "Black wants to walk the king to h3: ...Kh5, ...Kg4 and ...Kh3. Then ...g2 queens. White cannot catch up later. Kf3 guards g4 and attacks the g-pawn. After ...Kf5 d3 White takes the pawn with Kxg3. If White plays d4 or c4, ...Kg5 follows and Black wins."
+      "explanation": "Black wants to walk the king to h3: ...Kh5, ...Kg4 and ...Kh3. Then ...g2 queens. If White waits, the black king gets there and White loses. Kf3 guards g4 and attacks the g-pawn. After ...Kf5 White plays d3 first and takes the pawn with Kxg3 next. The hasty Kxg3 at once loses to ...Ke4. If White plays d4 or c4, ...Kg5 follows and Black wins."
     }
   ],
   "links": []
