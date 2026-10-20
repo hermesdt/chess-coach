@@ -34,7 +34,7 @@
         "g7f8",
         "f7f8"
       ],
-      "explanation": "White wants e6 and e7. The square e7 is dark, so the white bishop on e2 cannot attack it. ...Bf8+, ...Ke8 and ...Kf8 all guard e7, and the pawn cannot pass. The engine rates all three as a draw. The engine line is ...Ke8 Ke6 Bh6 Bd3 Kd8. Every other move loses, for example ...Kg8 and ...Bf6."
+      "explanation": "White wants e6 and e7. The square e7 is dark, so the white bishop on e2 cannot attack it. ...Bf8+, ...Ke8 and ...Kf8 all guard e7, and the pawn cannot pass. The engine rates all three as a draw. One drawing line is ...Ke8 Ke6 Bh6 Bd3 Kd8. Every other move loses, for example ...Kg8 and ...Bf6."
     },
     {
       "id": "run-on-light-squares",

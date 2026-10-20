@@ -14,7 +14,7 @@
       "solution": [
         "f5f6"
       ],
-      "explanation": "Kf6 attacks the pawn on f7. The black king is far away on b8, so it cannot help. In the engine line Black plays ...b5, White takes on f7, and the pawn on e5 runs. The moves Kg5 and c6 give only a draw."
+      "explanation": "Kf6 attacks the pawn on f7. The black king is far away on b8, so it cannot help. In one line Black plays ...b5, White takes on f7, and the pawn on e5 runs. The moves Kg5 and c6 give only a draw."
     },
     {
       "id": "king-blocks-pawns",
@@ -41,7 +41,7 @@
       "solution": [
         "f4f5"
       ],
-      "explanation": "Kf5 walks next to the e-pawn and guards e6. In the engine line Black plays ...b5, White plays e6, and Black plays ...Kc6. Now the king goes to f6 to guard e7. After ...Kc5 White plays e7, and e8=Q follows. A direct e7 fails: Black plays ...Kd7 and takes the pawn. The moves h4 and Ke4 give only a draw."
+      "explanation": "Kf5 walks next to the e-pawn and guards e6. In one line Black plays ...b5, White plays e6, and Black plays ...Kc6. Now the king goes to f6 to guard e7. After ...Kc5 White plays e7, and e8=Q follows. A direct e7 fails: Black plays ...Kd7 and takes the pawn. The moves h4 and Ke4 give only a draw."
     },
     {
       "id": "king-wins-pawns",
@@ -50,7 +50,7 @@
       "solution": [
         "d4e5"
       ],
-      "explanation": "Ke5 goes after the black pawns. In the engine line Black plays ...f4, White takes it with Kxf4, and then Kg5 and Kxg6 win the second pawn. The moves Ke3 and f3 are slow. The engine sees only a draw after them."
+      "explanation": "Ke5 goes after the black pawns. In one line Black plays ...f4, White takes it with Kxf4, and then Kg5 and Kxg6 win the second pawn. The moves Ke3 and f3 are slow. The engine sees only a draw after them."
     }
   ],
   "links": []

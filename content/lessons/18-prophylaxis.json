@@ -14,7 +14,7 @@
       "solution": [
         "e4e5"
       ],
-      "explanation": "Black wants to trade on e4 with ...Nxe4 or ...dxe4. The trade frees the black position. If White waits, the engine edge falls from 69 % to about 52 %. e5 takes the break away. The pawn leaves e4 and attacks the knight on f6. In the engine line Black plays ...Ng8, then White plays Ne2 and c3, and White keeps the space. The knight on f6 is attacked. If Black castles, exf6 wins the knight for a pawn."
+      "explanation": "Black wants to trade on e4 with ...Nxe4 or ...dxe4. The trade frees the black position. If White waits, the engine edge falls from 69 % to about 52 %. e5 takes the break away. The pawn leaves e4 and attacks the knight on f6. In one line Black plays ...Ng8, then White plays Ne2 and c3, and White keeps the space. The knight on f6 is attacked. If Black castles, exf6 wins the knight for a pawn."
     },
     {
       "id": "king-guards-pawn",

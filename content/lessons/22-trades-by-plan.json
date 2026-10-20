@@ -14,7 +14,7 @@
       "solution": [
         "f6e4"
       ],
-      "explanation": "Ne4 attacks the bishop on g5 and the knight on c3. It offers a trade, and a cramped side wants trades. In the engine line White plays Bf4 Nd6, and Black has more room. White still has the better game, about 53 % against 47 %. The other plan moves, such as ...Ng6 and ...a5, are very close to ...Ne4."
+      "explanation": "Ne4 attacks the bishop on g5 and the knight on c3. It offers a trade, and a cramped side wants trades. In one line White plays Bf4 Nd6, and Black has more room. White still has the better game, about 53 % against 47 %. The other plan moves, such as ...Ng6 and ...a5, are very close to ...Ne4."
     },
     {
       "id": "up-a-knight",
@@ -23,7 +23,7 @@
       "solution": [
         "g5e7"
       ],
-      "explanation": "This is the Carlsbad position, but Black has no knight on f8. White is a knight up, so each trade helps. Bxe7 Qxe7 trades a pair and keeps the extra knight. The engine line is Bxe7 Qxe7 Ra1 Bf5. Bf4 and h4 also keep a big edge, but they keep more black pieces on the board. Nxe4 dxe4 Bxe4 Bxg5 gives Black counterplay; the engine rates it about 87 %, against about 94 % for Bxe7."
+      "explanation": "This is the Carlsbad position, but Black has no knight on f8. White is a knight up, so each trade helps. Bxe7 Qxe7 trades a pair and keeps the extra knight. One winning line is Bxe7 Qxe7 Ra1 Bf5. Bf4 and h4 also keep a big edge, but they keep more black pieces on the board. Nxe4 dxe4 Bxe4 Bxg5 gives Black counterplay; the engine rates it about 87 %, against about 94 % for Bxe7."
     },
     {
       "id": "rooks-to-won-pawns",
@@ -32,7 +32,7 @@
       "solution": [
         "d1d8"
       ],
-      "explanation": "Rxd8 Kxd8 hxg5 wins the pawn on g5, and the pawn ending is won. The engine line is Rxd8 Kxd8 hxg5 Kc7 b4 Kd6 Ke4 h4. Rd3 also offers a trade. After Rxd3+ Kxd3 g4, White has no extra pawn, and the engine rates it about 53 %. The trade on d8 wins a pawn, and the engine rates it about 91 %. Do not take hxg5 first: Black then wins the rook with ...Rxd1."
+      "explanation": "Rxd8 Kxd8 hxg5 wins the pawn on g5, and the pawn ending is won. One winning line is Rxd8 Kxd8 hxg5 Kc7 b4 Kd6 Ke4 h4. Rd3 also offers a trade. After Rxd3+ Kxd3 g4, White has no extra pawn, and the engine rates it about 53 %. The trade on d8 wins a pawn, and the engine rates it about 91 %. Do not take hxg5 first: Black then wins the rook with ...Rxd1."
     }
   ],
   "links": []

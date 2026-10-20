@@ -14,7 +14,7 @@
       "solution": [
         "d1d8"
       ],
-      "explanation": "Black has a queen and a rook, and both can give checks. Qxd8+ Kxd8 trades queens. The engine line is Qxd8+ Kxd8 Kg2 Ke7 Ra1 Rg5+ Kh2 Rb5. White keeps the extra bishop and has fewer worries. Qc2 keeps the queens. The engine line is Qc2 Kb8 Rh2 Qb6+ Rf2 Rg5+, and Black has checks. The engine rates Qc2 about 83 %, against about 92 % for Qxd8+."
+      "explanation": "Black has a queen and a rook, and both can give checks. Qxd8+ Kxd8 trades queens. One winning line is Qxd8+ Kxd8 Kg2 Ke7 Ra1 Rg5+ Kh2 Rb5. White keeps the extra bishop and has fewer worries. Qc2 keeps the queens. One line is Qc2 Kb8 Rh2 Qb6+ Rf2 Rg5+, and Black has checks. The engine rates Qc2 about 83 %, against about 92 % for Qxd8+."
     },
     {
       "id": "make-passers",
@@ -23,7 +23,7 @@
       "solution": [
         "b3b4"
       ],
-      "explanation": "Black attacks the pawn on a5 with the rook. b4 guards a5 and attacks the rook. Then the a- and b-pawns are two connected passed pawns. The engine line is b4 Rc7 a6 Kxg3 b5 Ra7. White lets the pawn on g3 go and pushes the passed pawns. Moves such as Kb1 and a6 let Black take the pawn on a5 or a6, and the engine rates them about equal. b4 gives about 92 %."
+      "explanation": "Black attacks the pawn on a5 with the rook. b4 guards a5 and attacks the rook. Then the a- and b-pawns are two connected passed pawns. One winning line is b4 Rc7 a6 Kxg3 b5 Ra7. White lets the pawn on g3 go and pushes the passed pawns. Moves such as Kb1 and a6 let Black take the pawn on a5 or a6, and the engine rates them about equal. b4 gives about 92 %."
     },
     {
       "id": "rooks-win-pawn",
@@ -32,7 +32,7 @@
       "solution": [
         "d1d8"
       ],
-      "explanation": "Rxd8 Kxd8 axb5 wins the pawn on b5. White is then two pawns up in a king-and-pawn ending. The engine line is Rxd8 Kxd8 axb5 Kc7 Ke2 Kb6. If White takes with axb5 first, Black keeps the rooks on and has counterplay with ...Rh8 and ...Rb8. The engine rates axb5 clearly lower, against about 92 % for Rxd8."
+      "explanation": "Rxd8 Kxd8 axb5 wins the pawn on b5. White is then two pawns up in a king-and-pawn ending. One winning line is Rxd8 Kxd8 axb5 Kc7 Ke2 Kb6. If White takes with axb5 first, Black keeps the rooks on and has counterplay with ...Rh8 and ...Rb8. The engine rates axb5 clearly lower, against about 92 % for Rxd8."
     }
   ],
   "links": []

@@ -14,7 +14,7 @@
       "solution": [
         "a1b1"
       ],
-      "explanation": "Rab1 puts the rook behind the b-pawn. The pawn will go to b4 and b5, and the rook pushes it from behind. The engine line is Rab1 g6 b4 Ne6. Other moves, such as h3, are slightly better, but they do not start the plan."
+      "explanation": "Rab1 puts the rook behind the b-pawn. The pawn will go to b4 and b5, and the rook pushes it from behind. One line is Rab1 g6 b4 Ne6. Other moves, such as h3, are slightly better, but they do not start the plan."
     },
     {
       "id": "start-b4",
@@ -23,7 +23,7 @@
       "solution": [
         "b2b4"
       ],
-      "explanation": "b4 is the first step. White has two pawns on the queenside against three. The next steps are a4 and b5. In the engine line Black plays ...a6, then a4 Ne4, and White trades with Bxe7 Qxe7 Bxe4 dxe4. Quiet moves such as h3 are slightly lower, and they do not use the rook on b1."
+      "explanation": "b4 is the first step. White has two pawns on the queenside against three. The next steps are a4 and b5. In one line Black plays ...a6, then a4 Ne4, and White trades with Bxe7 Qxe7 Bxe4 dxe4. Quiet moves such as h3 are slightly lower, and they do not use the rook on b1."
     },
     {
       "id": "b5-lever",
@@ -32,7 +32,7 @@
       "solution": [
         "b4b5"
       ],
-      "explanation": "b5 attacks the pawns on a6 and c6. If Black takes with ...axb5, then axb5 opens the a-file, and the pawn on b5 still attacks c6. The engine line is b5 axb5 axb5 Bd6 bxc6 bxc6 Na4 h6. Rfc1 is also good, but it makes no threat on c6."
+      "explanation": "b5 attacks the pawns on a6 and c6. If Black takes with ...axb5, then axb5 opens the a-file, and the pawn on b5 still attacks c6. One line is b5 axb5 axb5 Bd6 bxc6 bxc6 Na4 h6. Rfc1 is also good, but it makes no threat on c6."
     },
     {
       "id": "take-c6",
@@ -41,7 +41,7 @@
       "solution": [
         "b5c6"
       ],
-      "explanation": "bxc6 bxc6 leaves Black with a lone pawn on c6. No pawn can guard it, so pieces must guard it. In the engine line White plays Rb7 and attacks the bishop on d7, and Black guards it with ...Qd8. Other moves, such as g3, are close, but they do not make the pawn on c6 weak."
+      "explanation": "bxc6 bxc6 leaves Black with a lone pawn on c6. No pawn can guard it, so pieces must guard it. In one line White plays Rb7 and attacks the bishop on d7, and Black guards it with ...Qd8. Other moves, such as g3, are close, but they do not make the pawn on c6 weak."
     }
   ],
   "links": []

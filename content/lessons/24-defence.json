@@ -5,7 +5,7 @@
   "title": "Defensive technique",
   "summary": "When you are worse, name every threat. Trade the attacker, make luft, or find a perpetual check or stalemate.",
   "tags": [],
-  "body": "### Defend with a plan\n\nWhen you are worse, do not panic. Do not hope. Look for the move that holds.\n\nStart with your opponent's threats. Name every check, capture and threat. A mate threat comes first.\n\nThen look at these defensive ideas:\n\n- **Trade the attacker.** An attacking piece that is gone cannot hurt you. Trade the piece that does the most harm.\n- **Make luft.** Move a pawn in front of your king. The king gets a flight square, so a back-rank mate is often no longer a threat. Check that no enemy piece guards the new square.\n- **Block.** Put a piece between the attacker and your king or your queen.\n- **Check back.** A series of checks can force a perpetual check. That is a draw. The same position comes again and again.\n- **Use stalemate.** Stalemate is a draw. It happens when you are not in check and you have no legal move. A sacrifice can force it.\n\nWhen you are much worse, a draw is a good result. Look for the draw first: a perpetual check, a stalemate or a fortress. A fortress is a setup that the enemy cannot break, even with more material.\n\nCheck every move twice. A move that stops one threat can open another. Do not grab material when your king is in danger.\n\nThe engine sometimes shows that the best defence loses a lot of material. That is fine. Material is not the aim. The aim is to save the game.\n\nRule of thumb: name every threat, then trade the attacker, make luft, or look for a perpetual check or a stalemate.",
+  "body": "### Defend with a plan\n\nWhen you are worse, do not panic. Do not hope. Look for the move that holds.\n\nStart with your opponent's threats. Name every check, capture and threat. A mate threat comes first.\n\nThen look at these defensive ideas:\n\n- **Trade the attacker.** An attacking piece that is gone cannot hurt you. Trade the piece that does the most harm.\n- **Make luft.** Move a pawn in front of your king. The king gets a flight square, so a back-rank mate is often no longer a threat. Check that no enemy piece guards the new square.\n- **Block.** Put a piece between the attacker and your king or your queen.\n- **Check back.** A series of checks can force a perpetual check. That is a draw. The same position comes again and again.\n- **Use stalemate.** Stalemate is a draw. It happens when you are not in check and you have no legal move. A sacrifice can force it.\n\nWhen you are much worse, a draw is a good result. Look for the draw first: a perpetual check, a stalemate or a fortress. A fortress is a setup that the enemy cannot break, even with more material.\n\nCheck every move twice. A move that stops one threat can open another. Do not grab material when your king is in danger.\n\nSometimes the best defence loses a lot of material. That is fine. Material is not the aim. The aim is to save the game.\n\nRule of thumb: name every threat, then trade the attacker, make luft, or look for a perpetual check or a stalemate.",
   "exercises": [
     {
       "id": "perpetual-check",
@@ -32,7 +32,7 @@
       "solution": [
         "h2h3"
       ],
-      "explanation": "Black threatens two mates, ...Rb1# and ...Qc1#, because the king has no flight square. The queen on c4 also attacks the rook on h4, but the queen on g3 guards it. h3 gives the king h2. The engine line is h3 Qc1+ Kh2 Qc7 Qxc7 Rxc7. Almost every other move loses by force. For example, Qd3 Qxd3 h3 leaves White a queen down, and the engine sees a forced loss. h3 gives about 48 %."
+      "explanation": "Black threatens two mates, ...Rb1# and ...Qc1#, because the king has no flight square. The queen on c4 also attacks the rook on h4, but the queen on g3 guards it. h3 gives the king h2. One line is h3 Qc1+ Kh2 Qc7 Qxc7 Rxc7. Almost every other move loses by force. For example, Qd3 Qxd3 h3 leaves White a queen down, and the engine sees a forced loss. h3 gives about 48 %."
     },
     {
       "id": "trade-the-rook",
@@ -41,7 +41,7 @@
       "solution": [
         "h3e3"
       ],
-      "explanation": "Re3 blocks the e-file and offers a rook trade. Black attacks the queen on e1 with the rook. After Re3 Rxe3, White can take back with Qxe3 or fxe3, and the engine rates both about 50 %. The engine line is Re3 Rxe3 fxe3 Qe4. Qf1 gives up the e-file, and the engine rates it clearly worse. Qe3 gives the queen for a rook after Rxe3 Rxe3, and the engine rates it clearly worse too."
+      "explanation": "Re3 blocks the e-file and offers a rook trade. Black attacks the queen on e1 with the rook. After Re3 Rxe3, White can take back with Qxe3 or fxe3, and the engine rates both about 50 %. One line is Re3 Rxe3 fxe3 Qe4. Qf1 gives up the e-file, and the engine rates it clearly worse. Qe3 gives the queen for a rook after Rxe3 Rxe3, and the engine rates it clearly worse too."
     }
   ],
   "links": []
