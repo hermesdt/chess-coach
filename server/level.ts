@@ -2,7 +2,8 @@ import type { DatabaseSync } from 'node:sqlite';
 import { getSetting } from './db/settings-repo.js';
 
 export type Level = 1 | 2 | 3;
-export interface CurrentLevel { level: Level; rating: number | null; source: 'override' | 'games' | 'default' }
+/** `level` is the one in use; `computedLevel` ignores the override. */
+export interface CurrentLevel { level: Level; computedLevel: Level; rating: number | null; source: 'override' | 'games' | 'default' }
 
 const RECENT_GAMES = 20;
 const MIN_PREFERRED_GAMES = 5;
@@ -43,10 +44,11 @@ function gamesRating(db: DatabaseSync): number | null {
 
 export function currentLevel(db: DatabaseSync): CurrentLevel {
   const rating = gamesRating(db);
+  const computedLevel = rating === null ? 1 : levelFor(rating);
   const override = getSetting(db, 'level_override');
   if (override === '1' || override === '2' || override === '3') {
-    return { level: Number(override) as Level, rating, source: 'override' };
+    return { level: Number(override) as Level, computedLevel, rating, source: 'override' };
   }
-  if (rating === null) return { level: 1, rating: null, source: 'default' };
-  return { level: levelFor(rating), rating, source: 'games' };
+  if (rating === null) return { level: 1, computedLevel, rating: null, source: 'default' };
+  return { level: computedLevel, computedLevel, rating, source: 'games' };
 }

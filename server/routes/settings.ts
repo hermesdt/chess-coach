@@ -23,6 +23,7 @@ function toDto(db: DatabaseSync): SettingsDTO {
     aiDeepModels: s.aiDeepModels,
     openrouterKeySet: s.openrouterKeySet,
     anthropicKeySet: s.anthropicKeySet,
+    levelOverride: s.levelOverride,
   };
 }
 

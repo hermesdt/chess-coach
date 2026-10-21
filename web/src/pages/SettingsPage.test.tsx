@@ -10,7 +10,7 @@ const settings = (over: Partial<SettingsDTO> = {}): SettingsDTO => ({
   chesscomUsername: null, lichessUsername: null, lichessTokenSet: false, syncInitialMonths: 12,
   engineNodes: 400_000, reviewDailyLimit: 20, reviewNewPerDay: 10,
   aiProvider: 'auto', aiModels: none, aiChatModels: none, aiDeepModels: none,
-  openrouterKeySet: true, anthropicKeySet: false, ...over,
+  openrouterKeySet: true, anthropicKeySet: false, levelOverride: null, ...over,
 });
 const providers: ProviderInfo[] = [
   { id: 'claude-cli', label: 'Claude CLI', ok: true, reason: null, model: null },
@@ -103,6 +103,44 @@ describe('engine and review settings', () => {
     fireEvent.change(screen.getByLabelText(/^Reviews per day/), { target: { value: '30' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save engine and review' }));
     await waitFor(() => expect(put).toHaveBeenCalledWith({ reviewDailyLimit: 30 }));
+  });
+});
+
+describe('level setting', () => {
+  const level = (over: object = {}) => ({ level: 2, computedLevel: 2, rating: 1000, source: 'games' as const, ...over });
+
+  it('shows the computed level in the Automatic option and the help text', async () => {
+    mockPage();
+    vi.spyOn(api, 'getLevel').mockResolvedValue(level({ level: 3, source: 'override', computedLevel: 2 }));
+    vi.spyOn(api, 'getSettings').mockResolvedValue(settings({ levelOverride: 3 }));
+    render(<SettingsPage />);
+    const select = (await screen.findByLabelText(/^Level/)) as HTMLSelectElement;
+    await screen.findByRole('option', { name: 'Automatic (from your rating: level 2)' });
+    expect([...select.options].map((o) => o.textContent)).toEqual(['Automatic (from your rating: level 2)', 'Level 1', 'Level 2', 'Level 3']);
+    expect(select.value).toBe('3');
+    expect(screen.getByText('Higher levels unlock more lessons and opening moves. Automatic follows your rating.')).toBeTruthy();
+  });
+
+  it('sends only levelOverride when the level changes', async () => {
+    mockPage();
+    vi.spyOn(api, 'getLevel').mockResolvedValue(level());
+    const put = vi.spyOn(api, 'putSettings').mockResolvedValue(settings({ levelOverride: 1 }));
+    render(<SettingsPage />);
+    fireEvent.change(await screen.findByLabelText(/^Level/), { target: { value: '1' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save level' }));
+    await waitFor(() => expect(put).toHaveBeenCalledWith({ levelOverride: 1 }));
+    expect(put).toHaveBeenCalledTimes(1);
+  });
+
+  it('sends null for Automatic', async () => {
+    mockPage();
+    vi.spyOn(api, 'getSettings').mockResolvedValue(settings({ levelOverride: 2 }));
+    vi.spyOn(api, 'getLevel').mockResolvedValue(level({ source: 'override' }));
+    const put = vi.spyOn(api, 'putSettings').mockResolvedValue(settings());
+    render(<SettingsPage />);
+    fireEvent.change(await screen.findByLabelText(/^Level/), { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save level' }));
+    await waitFor(() => expect(put).toHaveBeenCalledWith({ levelOverride: null }));
   });
 });
 

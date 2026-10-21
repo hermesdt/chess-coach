@@ -118,4 +118,9 @@ describe('analysis routes', () => {
   it('GET /api/level returns the current level', async () => {
     expect(await (await app.request('/api/level')).json()).toMatchObject({ level: expect.any(Number), source: expect.any(String) });
   });
+
+  it('GET /api/level keeps the level computed from games when an override is set', async () => {
+    setSetting(db, 'level_override', '1');
+    expect(await (await app.request('/api/level')).json()).toMatchObject({ level: 1, source: 'override', computedLevel: 3 });
+  });
 });

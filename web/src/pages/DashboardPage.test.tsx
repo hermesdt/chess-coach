@@ -9,7 +9,7 @@ const data = (over: Partial<DashboardData> = {}): DashboardData => ({
   review: { dueNow: 3, dueToday: 3, totalCards: 5, reviewedToday: 0, sessionSize: 3 },
   sync: { chesscom: null, lichess: null }, recentGames: [],
   topTag: { tag: 'hung_piece', count: 7, games: 30 },
-  level: { level: 2, rating: 1000, source: 'games' }, levelUp: { from: 1, to: 2, message: 'Level 2 unlocked: 7 new lessons and 12 new opening moves.' }, ...over,
+  level: { level: 2, computedLevel: 2, rating: 1000, source: 'games' }, levelUp: { from: 1, to: 2, message: 'Level 2 unlocked: 7 new lessons and 12 new opening moves.' }, ...over,
 });
 
 afterEach(() => {
