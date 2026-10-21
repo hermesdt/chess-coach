@@ -178,12 +178,13 @@ describe('bad_bishop', () => {
   });
 
   it('does not tag before move 10', () => {
-    // Same structure at move 7: five light pawns would need 7...c6 too early.
+    // Same structure at move 8 (ply 16): the move gate rejects it.
     expect(tacticTags(bishop('c7c6', 'e4 e6 d4 Bb4+ Nc3 d6 Bd3 Bxc3+ bxc3 Nf6 Nf3 Nbd7 O-O O-O Re1'))).toEqual([]);
   });
 
   it('does not tag when the user still has two bishops', () => {
-    const seq = 'e4 e6 d4 d6 Nc3 Nf6 Bd3 Nbd7 Nf3 Be7 O-O O-O Re1 Re8 Bf4 Nh5 Bg5';
+    // Move 10 (ply 20), so the move gate passes. Black has Bc8 and Be7, and 10...c6 would be the fifth light pawn.
+    const seq = 'e4 e6 d4 d6 Nc3 Nf6 Bd3 Nbd7 Nf3 Be7 O-O O-O Re1 Re8 Bf4 Nh5 Bg5 Nhf6 h3';
     expect(tacticTags(bishop('c7c6', seq))).toEqual([]);
   });
 });
