@@ -590,7 +590,7 @@
                            "children": [
                             {
                              "san": "hxg6",
-                             "comment": "Retake with the h-pawn. Your h8 rook now sees the h2 pawn along the open h-file.",
+                             "comment": "Retake with the h-pawn. Your h8 rook now sees the h2 pawn along the half-open h-file.",
                              "children": [
                               {
                                "san": "Bd2",
@@ -726,7 +726,7 @@
                                                "children": [
                                                 {
                                                  "san": "gxf6",
-                                                 "comment": "Retake with the g-pawn. The f6 pawn controls e5 and g5, and the g-file opens.",
+                                                 "comment": "Retake with the g-pawn. The f6 pawn controls e5 and g5, and the g-file is half-open for your rooks.",
                                                  "children": [
                                                   {
                                                    "san": "O-O",
@@ -978,7 +978,7 @@
                                            "children": [
                                             {
                                              "san": "Bxc3",
-                                             "comment": "Trade the bishop for the c3 knight. That knight attacks your d5 pawn.",
+                                             "comment": "Trade the bishop for the c3 knight. That knight controls e4, so your f6 knight can jump there next.",
                                              "children": [
                                               {
                                                "san": "Rxc3",
@@ -2346,7 +2346,7 @@
                "children": [
                 {
                  "san": "e6",
-                 "comment": "Guard d5 with the e-pawn and open the f8 bishop. The e6 pawn blocks your c8 bishop for now; ...b5 and ...Bb7 can free it.",
+                 "comment": "Guard d5 with the e-pawn and open the f8 bishop. The e6 pawn blocks your c8 bishop for now; ...b5, ...Bb7 and later ...c5 can free it.",
                  "children": [
                   {
                    "san": "d4",
