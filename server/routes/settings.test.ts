@@ -20,7 +20,7 @@ const none = { 'claude-cli': null, 'codex-cli': null, 'opencode-cli': null, open
 
 it('GET returns defaults', async () => {
   const res = await app.request('/api/settings');
-  expect(await res.json()).toEqual({ chesscomUsername: null, lichessUsername: null, lichessTokenSet: false, syncInitialMonths: 12, engineNodes: 400000, reviewDailyLimit: 20, reviewNewPerDay: 10, aiProvider: 'auto', aiModels: none, aiChatModels: none, aiDeepModels: none, openrouterKeySet: false, anthropicKeySet: false });
+  expect(await res.json()).toEqual({ chesscomUsername: null, lichessUsername: null, lichessTokenSet: false, syncInitialMonths: 12, engineNodes: 400000, reviewDailyLimit: 20, reviewNewPerDay: 10, aiProvider: 'auto', aiModels: none, aiChatModels: none, aiDeepModels: none, openrouterKeySet: false, anthropicKeySet: false, levelOverride: null });
 });
 
 it('PUT stores values and never leaks the token', async () => {
@@ -123,6 +123,12 @@ describe('levelOverride', () => {
     expect(cards()).toEqual([0, 0]);
     await put({ levelOverride: 1 });
     expect(cards()).toEqual([0, 1]);
+  });
+
+  it('GET returns the override, and null when none is set', async () => {
+    expect(((await (await app.request('/api/settings')).json()) as { levelOverride: unknown }).levelOverride).toBeNull();
+    await put({ levelOverride: 2 });
+    expect(((await (await app.request('/api/settings')).json()) as { levelOverride: unknown }).levelOverride).toBe(2);
   });
 
   it('clears the override with null and rejects other values', async () => {

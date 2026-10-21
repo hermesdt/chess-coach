@@ -61,12 +61,14 @@ export interface SyncStatus {
   runningJobId: number | null;
 }
 
+export interface CurrentLevel { level: number; computedLevel: number; rating: number | null; source: 'override' | 'games' | 'default' }
+
 export interface DashboardData {
   review: ReviewStats;
   sync: { chesscom: number | null; lichess: number | null };
   recentGames: GameSummary[];
   topTag: { tag: Tag; count: number; games: number } | null;
-  level: { level: number; rating: number | null; source: 'override' | 'games' | 'default' };
+  level: CurrentLevel;
   levelUp: { from: number; to: number; message: string } | null;
 }
 
@@ -99,6 +101,7 @@ export const api = {
   getSettings: () => request<SettingsDTO>('/settings'),
   putSettings: (update: SettingsUpdate) =>
     request<SettingsDTO>('/settings', { method: 'PUT', body: JSON.stringify(update) }),
+  getLevel: () => request<CurrentLevel>('/level'),
   getDataInfo: () => request<DataInfo>('/settings/data'),
   getFlags: () => request<FlagDetail[]>('/flags'),
   restoreFlag: (id: number) => post<{ ok: true }>(`/flags/${id}/restore`, {}),

@@ -30,12 +30,12 @@ const addMany = (n: number, over: Partial<NewGame> & { elo?: number }): void => 
 
 describe('currentLevel', () => {
   it('defaults to level 1 with no games', () => {
-    expect(currentLevel(db)).toEqual({ level: 1, rating: null, source: 'default' });
+    expect(currentLevel(db)).toEqual({ level: 1, computedLevel: 1, rating: null, source: 'default' });
   });
 
   it('applies the thresholds 900 and 1400', () => {
     addMany(5, { elo: 899 });
-    expect(currentLevel(db)).toEqual({ level: 1, rating: 899, source: 'games' });
+    expect(currentLevel(db)).toEqual({ level: 1, computedLevel: 1, rating: 899, source: 'games' });
   });
 
   it('maps 900 to level 2', () => {
@@ -63,7 +63,7 @@ describe('currentLevel', () => {
   it('ignores unrated games and games without user colour', () => {
     addMany(3, { rated: false, elo: 2000 });
     addMany(3, { userColor: null, elo: 2000 });
-    expect(currentLevel(db)).toEqual({ level: 1, rating: null, source: 'default' });
+    expect(currentLevel(db)).toEqual({ level: 1, computedLevel: 1, rating: null, source: 'default' });
   });
 
   it('prefers rapid and blitz when at least 5 exist', () => {
@@ -88,7 +88,7 @@ describe('currentLevel', () => {
   it('lets the override win', () => {
     addMany(5, { elo: 1800 });
     setSetting(db, 'level_override', '2');
-    expect(currentLevel(db)).toEqual({ level: 2, rating: 1800, source: 'override' });
+    expect(currentLevel(db)).toEqual({ level: 2, computedLevel: 3, rating: 1800, source: 'override' });
   });
 
   it('ignores an invalid override', () => {

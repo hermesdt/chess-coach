@@ -50,6 +50,7 @@ export function getSettings(db: DatabaseSync): ResolvedSettings {
   const daily = Number(getSetting(db, 'review_daily_limit'));
   const newPerDay = getSetting(db, 'review_new_per_day');
   const newCount = Number(newPerDay);
+  const storedLevel = getSetting(db, 'level_override');
   return {
     chesscomUsername: pick(db, 'chesscom_username', 'CHESSCOM_USERNAME'),
     lichessUsername: pick(db, 'lichess_username', 'LICHESS_USERNAME'),
@@ -66,6 +67,7 @@ export function getSettings(db: DatabaseSync): ResolvedSettings {
     syncInitialMonths: Number.isInteger(months) && months >= 1 ? months : DEFAULT_SYNC_MONTHS,
     engineNodes: Number.isInteger(nodes) && nodes >= 10_000 && nodes <= 5_000_000 ? nodes : DEFAULT_ENGINE_NODES,
     reviewDailyLimit: Number.isInteger(daily) && daily >= 1 && daily <= 200 ? daily : DEFAULT_REVIEW_DAILY_LIMIT,
+    levelOverride: storedLevel === '1' ? 1 : storedLevel === '2' ? 2 : storedLevel === '3' ? 3 : null,
     reviewNewPerDay:
       newPerDay !== null && newPerDay !== '' && Number.isInteger(newCount) && newCount >= 0 && newCount <= 100
         ? newCount

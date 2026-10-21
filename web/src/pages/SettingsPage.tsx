@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { CHAT_MODEL_DEFAULTS, DEEP_MODEL_DEFAULTS, PROVIDER_IDS, type AiProviderSetting, type ProviderId, type SettingsDTO, type SettingsUpdate } from '../../../shared/types';
-import { DataSection, ENV_NOTE, EngineReviewSettings, FlagsSection } from '../components/SettingsSections';
+import { DataSection, ENV_NOTE, EngineReviewSettings, FlagsSection, LevelSettings } from '../components/SettingsSections';
 import { api, type ProviderInfo, type ProviderTestResult } from '../api';
 
 function AiSettings({ settings, onSaved }: { settings: SettingsDTO; onSaved: (s: SettingsDTO) => void }) {
@@ -267,6 +267,7 @@ export function SettingsPage() {
       </form>
       {settings && <AiSettings settings={settings} onSaved={setSettings} />}
       {settings && <EngineReviewSettings settings={settings} onSaved={setSettings} />}
+      {settings && <LevelSettings settings={settings} onSaved={setSettings} />}
       <FlagsSection />
       <DataSection />
     </section>

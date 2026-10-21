@@ -54,6 +54,58 @@ export function EngineReviewSettings({ settings, onSaved }: { settings: Settings
   );
 }
 
+const LEVEL_HELP = 'Higher levels unlock more lessons and opening moves. Automatic follows your rating.';
+
+export function LevelSettings({ settings, onSaved }: { settings: SettingsDTO; onSaved: (s: SettingsDTO) => void }) {
+  const toValue = (o: SettingsDTO['levelOverride']) => (o === null ? '' : String(o));
+  const [value, setValue] = useState(toValue(settings.levelOverride));
+  const [computed, setComputed] = useState<number | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    api.getLevel().then((l) => setComputed(l.computedLevel), (e: Error) => setError(e.message));
+  }, []);
+
+  const save = async (e: FormEvent) => {
+    e.preventDefault();
+    setMessage(null);
+    setError(null);
+    if (value === toValue(settings.levelOverride)) {
+      setMessage('Level saved.');
+      return;
+    }
+    const update: SettingsUpdate = { levelOverride: value === '' ? null : (Number(value) as 1 | 2 | 3) };
+    try {
+      onSaved(await api.putSettings(update));
+      setMessage('Level saved.');
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  };
+
+  return (
+    <>
+      <h2>Level</h2>
+      <form className="form" onSubmit={(e) => void save(e)}>
+        <label>
+          Level
+          <select value={value} onChange={(e) => setValue(e.target.value)}>
+            <option value="">{computed === null ? 'Automatic (from your rating)' : `Automatic (from your rating: level ${computed})`}</option>
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+          </select>
+          <small>{LEVEL_HELP}</small>
+        </label>
+        <button type="submit">Save level</button>
+        {message && <p className="ok">{message}</p>}
+        {error && <p className="error">{error}</p>}
+      </form>
+    </>
+  );
+}
+
 export function FlagsSection() {
   const [flags, setFlags] = useState<FlagDetail[] | null>(null);
   const [error, setError] = useState<string | null>(null);
