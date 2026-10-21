@@ -36,7 +36,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M7 | Insights + polish + README | done | `docs/superpowers/plans/2026-10-18-m7-insights-polish.md` |
 | M8a | Coach chat: chat, engine lines as branches, own moves on the board, add to review | done | `docs/superpowers/plans/2026-10-19-m8a-coach-chat.md` |
 | M8b | Coach chat: streaming, fast model, live Stockfish eval, "Go deeper", attack facts | done | `docs/superpowers/plans/2026-10-19-m8b-coach-chat-speed.md` |
-| M9 | Level 2–3 content (lessons, tags, deeper repertoire) | planned | `docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md` |
+| M9 | Level 2–3 content (lessons, tags, deeper repertoire) | done | `docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md` |
 | M10 | Content quality audit: every repertoire comment and lesson claim checked with chess.js + Stockfish, wrong ones fixed | todo | spec `docs/superpowers/specs/2026-10-20-content-audit-design.md`; plan after M9 |
 
 ## Log
@@ -244,10 +244,60 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   your <repertoire> plays <SAN> here." and default rating Hard; else the loss
   in % and default Again. Mistake and lesson cards unchanged.
 
+- 2026-10-21 — **M9 done.** 1010 tests; `pnpm validate:content` → content OK
+  (65 warnings, now identical between runs: the validator starts every search
+  with `ucinewgame`). 13 new lessons (level 2: pawn structures, outposts, good
+  and bad bishops, rook endgames, king activity, prophylaxis, calculation;
+  level 3: minority attack, pawn breaks, trades by plan, converting, defence,
+  opposite-colour bishops). Level-3 repertoire depth: London +54 nodes,
+  Caro-Kann +103 (incl. Fantasy and Two Knights 3.Nf3), Slav +152. New tags
+  `missed_fork`, `missed_pin`, `weak_back_rank`, `bad_bishop` (level 2+),
+  analysis version 2 (old games re-analysed in the background, the v1 analysis
+  stays visible until replaced; cards, reviews and coach notes kept; old coach
+  notes show "Based on an older analysis"). Daily review mix by level, level-up
+  message ("Level 2 unlocked: N new lessons and M new opening moves."), AI
+  lesson links capped at the current level, `levelOverride` in PUT
+  /api/settings (no Settings UI field yet). Every lesson and repertoire batch
+  had a separate content review with chess.js + Stockfish; reviews found and
+  fixed about 45 false or misleading texts before merge.
+  Smoke on a copy of the live DB: 20 games re-analysed to v2 in < 10 min,
+  cards/reviews/notes kept, level 1 shows nothing new, level 2/3 unlock works.
+- M9 rulings (review these):
+  - Content first, then tags and mix (the tag → lesson map needs the lessons).
+  - Opening cards and the drill are level-gated; the course and the openings
+    tree still show higher-level titles as locked.
+  - Pawns are not fork targets or pinned pieces; the back-rank "no flight
+    square" rule accepts any own piece blocking.
+  - `bad_bishop` fires only on the move that brings 5 own pawns onto the
+    bishop's colour.
+  - No fixed text says "The engine line is …"; texts say "One line is …".
+  - A failed analysis gets the current version, so it is not retried
+    automatically (M2 rule).
+  - Review mix quotas use largest-remainder rounding (ties mistake → lesson →
+    opening); unused quota passes on in that order.
+- Known gaps for later: no Settings UI field for the level override; a
+  failed re-analysis replaces the v1 analysis with an error (Try again
+  recovers); review stats `dueNow`/`dueToday` count hidden lesson cards (not
+  shown in the UI); the weakness prompt still lists locked lessons (they become
+  null); opening-move feedback (`check-move.ts`) does not use `newGame` yet.
+  Content notes for the audit are in the M9 ledger summary below.
+- Content notes for the audit milestone (deferred minors from M9 reviews):
+  prophylaxis body still mentions a mate-threat rule no exercise uses;
+  "about 69 %" style numbers left in some lesson texts; london-e4 "threatens
+  Bxc4" holds only while the knight is on c6; Slav "the e6 pawn blocks your c8
+  bishop for now" (Bd7 is possible) and the Bxc3 "so" wording; existing Slav
+  comments "White must move the knight" (5.Ne5 Nbd7 6.Nxc4 b5) and "you win a
+  pawn" (4.Nd2 cxd4) are unverified; level-1/2 "king is safe / solid" phrases
+  were never engine-checked; internal exercise id `queen-sacrifice-mate`
+  misnamed (rename changes card refs).
+- 2026-10-21 — Owner asked for opening guides: per repertoire, why the
+  opening, its strengths, the target set-up ("final form"), plans and pawn
+  breaks, typical mistakes. Proposed order (owner to confirm): M10 = opening
+  guides, M11 = content audit (so the audit also checks the guide texts).
+
 ## Next session
 
-- Execute M9 (`docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md`).
-- Then M10: content quality audit — spec
-  `docs/superpowers/specs/2026-10-20-content-audit-design.md` (has the owner's
-  example and the error types seen so far); write its plan after M9.
-- All milestones through M8b are merged into `main`.
+- Confirm with the owner: M10 = opening guides, M11 = content audit (spec
+  `docs/superpowers/specs/2026-10-20-content-audit-design.md`). Start the
+  opening guides with `superpowers:brainstorming`.
+- All milestones through M9 are merged into `main`.

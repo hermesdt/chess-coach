@@ -15,7 +15,7 @@ The AI never invents moves, lines, or evaluations.
 
 ## Status
 
-Milestones M1 to M8b are done. M9 (level 2–3 content) is next.
+Milestones M1 to M9 are done. Next: opening guides, then a content audit.
 See `docs/ROADMAP.md` for the status of each milestone.
 
 ## Requirements
