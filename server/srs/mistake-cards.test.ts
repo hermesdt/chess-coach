@@ -4,7 +4,8 @@ import type { Classification, GameAnalysis, MoveAnalysis, Tag } from '../../shar
 import { openDb } from '../db/db.js';
 import type { EngineLine } from '../engine/uci.js';
 import { winPct } from '../analysis/winpct.js';
-import { listCardsByRef } from './cards-repo.js';
+import { saveNote } from '../ai/notes-repo.js';
+import { listCardsByRef, recordReview } from './cards-repo.js';
 import { positionKey, upsertCard } from './cards-repo.js';
 import { acceptedMoves, applyCoachExplanations, buildMistakeCards } from './mistake-cards.js';
 
@@ -107,6 +108,31 @@ describe('buildMistakeCards', () => {
     const cards = listCardsByRef(db, 2);
     expect(cards).toHaveLength(1);
     expect(cards[0]?.refs).toEqual([{ gameId: 1, ply: 1 }, { gameId: 2, ply: 5 }]);
+  });
+
+  it('rebuilds a card for a newer analysis version with the same id, FSRS state, reviews and coach text', async () => {
+    saveNote(db, { subject: 'game:1', promptVersion: 'p', analysisVersion: 1, provider: 'claude-cli', model: 'default' }, 'm', {
+      summary: 's', openingNote: 'o', oneThingToPractice: 'x',
+      moments: [{ ply: 1, whatHappened: 'w', whyItMatters: 'The piece was lost.', principle: 'p', lessonId: null }],
+    });
+    const v1 = { ...analysis(1, [move({ tags: ['hung_piece'] })]), version: 1 };
+    await buildMistakeCards(db, v1, pool(three), { nodes: 10 });
+    const [card] = listCardsByRef(db, 1);
+    expect(card!.solution.explanation).toBe('Blunder — You left a piece undefended. The piece was lost.');
+    recordReview(db, card!.id, { rating: 'good', answerUci: 'e2e4', durationMs: 800 }, 5000);
+    const state = db.prepare('SELECT * FROM card_state WHERE card_id = ?').get(card!.id);
+    const reviews = db.prepare('SELECT * FROM reviews WHERE card_id = ?').all(card!.id);
+
+    // Version 2 adds level-2 tags to the move. The card is updated, not duplicated.
+    const v2 = { ...analysis(1, [move({ tags: ['hung_piece', 'missed_fork'] })]), version: 2 };
+    expect(await buildMistakeCards(db, v2, pool(three), { nodes: 10 })).toEqual({ created: 0, updated: 1, suspended: 0 });
+    const cards = listCardsByRef(db, 1);
+    expect(cards).toHaveLength(1);
+    expect(cards[0]).toMatchObject({ id: card!.id, suspended: false, refs: [{ gameId: 1, ply: 1 }] });
+    expect(cards[0]!.solution.explanation).toBe('Blunder — You left a piece undefended. The piece was lost.');
+    expect(db.prepare('SELECT * FROM card_state WHERE card_id = ?').get(card!.id)).toEqual(state);
+    expect(db.prepare('SELECT * FROM reviews WHERE card_id = ?').all(card!.id)).toEqual(reviews);
+    expect(db.prepare("SELECT COUNT(*) AS n FROM cards WHERE kind = 'mistake'").get()).toEqual({ n: 1 });
   });
 
   it('suspends a card when re-analysis no longer finds the mistake', async () => {

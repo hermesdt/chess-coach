@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { GameAnalysis, MoveAnalysis } from '../../shared/types.js';
-import { saveAnalysis } from '../analysis/analysis-repo.js';
+import { ANALYSIS_VERSION, saveAnalysis } from '../analysis/analysis-repo.js';
 import { openDb } from '../db/db.js';
 import type { EngineLine } from '../engine/uci.js';
 import { waitForJob } from '../jobs.js';
@@ -13,7 +13,7 @@ const blunder: MoveAnalysis = {
   winBefore: 80, winAfter: 40, winLoss: 40, classification: 'blunder', tags: [], isUserMove: true,
 };
 const analysis: GameAnalysis = {
-  gameId: 1, version: 1, status: 'done', error: null, accuracyUser: null, accuracyOpp: null,
+  gameId: 1, version: ANALYSIS_VERSION, status: 'done', error: null, accuracyUser: null, accuracyOpp: null,
   counts: { blunder: 1, mistake: 0, inaccuracy: 0 }, moves: [blunder], keyMoments: [], analysedAt: 1,
 };
 const lines: EngineLine[] = [

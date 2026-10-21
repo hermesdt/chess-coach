@@ -1,5 +1,5 @@
 import type { DatabaseSync } from 'node:sqlite';
-import { TAG_TO_LESSON } from '../../shared/lessons.js';
+import { LEVEL_TAGS } from '../../shared/lessons.js';
 import type { GameAnalysis, GameResult, Color, Tag } from '../../shared/types.js';
 import { getAnalysis } from '../analysis/analysis-repo.js';
 import { selectKeyMoments } from '../analysis/key-moments.js';
@@ -18,7 +18,6 @@ export interface WeaknessFacts {
   tagCounts: Record<Tag, number>; byOpening: OpeningFacts[]; examples: KeyMomentFacts[];
 }
 
-const TAGS = Object.keys(TAG_TO_LESSON) as Tag[];
 interface Row { id: number; user_color: Color | null; result: GameResult | null; opening_name: string | null; repertoire_id: string | null }
 
 /** Facts over the user's moves in the last `lastN` analysed games. Repertoire names win over the game's opening name. */
@@ -31,11 +30,12 @@ export function weaknessFacts(db: DatabaseSync, lastN = DEFAULT_LAST_N, reps: Pi
      WHERE g.duplicate_of IS NULL
      ORDER BY g.played_at DESC, g.id DESC LIMIT ?`,
   ).all(lastN) as unknown as Row[];
-  const tagCounts = Object.fromEntries(TAGS.map((t) => [t, 0])) as Record<Tag, number>;
+  // Only the tags of the owner's level: the coach never hears about a tag above it.
+  const tagCounts = Object.fromEntries(LEVEL_TAGS[level].map((t) => [t, 0])) as Record<Tag, number>;
   const openings = new Map<string, OpeningFacts>();
   const examples: KeyMomentFacts[] = [];
   for (const row of rows) {
-    const analysis: GameAnalysis | null = getAnalysis(db, row.id);
+    const analysis: GameAnalysis | null = getAnalysis(db, row.id, level);
     if (!analysis) continue;
     for (const m of analysis.moves) if (m.isUserMove) for (const t of m.tags) tagCounts[t] += 1;
     if (row.user_color !== null) {

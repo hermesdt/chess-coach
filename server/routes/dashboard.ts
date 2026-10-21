@@ -5,7 +5,7 @@ import type { Tag } from '../../shared/types.js';
 import { getAnalysis, userMoveTags } from '../analysis/analysis-repo.js';
 import { listGames } from '../db/games-repo.js';
 import { getSetting, setSetting } from '../db/settings-repo.js';
-import { type CurrentLevel, currentLevel } from '../level.js';
+import { type CurrentLevel, currentLevel, type Level } from '../level.js';
 import { getLastSyncedAt } from '../sync/sync-service.js';
 import { reviewStats } from '../srs/stats.js';
 
@@ -14,7 +14,7 @@ const FOCUS_GAMES = 30;
 const LAST_SEEN_LEVEL = 'last_seen_level';
 
 /** Most common tag on the user's moves, counted as the number of games it occurs in. */
-function topTag(db: DatabaseSync): { tag: Tag; count: number; games: number } | null {
+function topTag(db: DatabaseSync, level: Level): { tag: Tag; count: number; games: number } | null {
   const rows = db
     .prepare(
       `SELECT g.id FROM games g JOIN game_analysis a ON a.game_id = g.id
@@ -24,7 +24,7 @@ function topTag(db: DatabaseSync): { tag: Tag; count: number; games: number } | 
   const perTag = new Map<Tag, number>();
   let games = 0;
   for (const row of rows) {
-    const analysis = getAnalysis(db, Number(row.id));
+    const analysis = getAnalysis(db, Number(row.id), level);
     if (!analysis) continue;
     games += 1;
     const seen = new Set<Tag>(userMoveTags(analysis.moves));
@@ -59,7 +59,7 @@ export function dashboardRoutes(db: DatabaseSync, now: () => number): Hono {
         review: reviewStats(db, now()),
         sync: { chesscom: getLastSyncedAt(db, 'chesscom'), lichess: getLastSyncedAt(db, 'lichess') },
         recentGames: listGames(db, { limit: RECENT_GAMES }).items,
-        topTag: topTag(db),
+        topTag: topTag(db, level.level),
         level: { level: level.level, rating: level.rating, source: level.source },
         levelUp: levelUp(db, level),
       });

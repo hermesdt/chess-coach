@@ -6,7 +6,7 @@ import { askCoach } from '../ai/chat.js';
 import { coachErrorMessage, loadGame } from '../ai/game-review.js';
 import type { Registry } from '../ai/registry.js';
 import { PROVIDER_IDS, type ProviderId } from '../ai/types.js';
-import { getAnalysis } from '../analysis/analysis-repo.js';
+import { analysisStatus } from '../analysis/analysis-repo.js';
 import { chatCard } from '../chat/chat-card.js';
 import {
   canonicalGameId, completeMessage, doneTurns, failMessage, getRecord, hasPending, insertPending, listRecords, markStreaming, resetToPending, savePack, toDto,
@@ -157,7 +157,7 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
       if (provider === 'bad') return c.json({ error: 'unknown provider' }, 400);
       const bad = anchorError(db, gameId, body?.anchor);
       if (bad) return c.json({ error: bad }, 400);
-      if (getAnalysis(db, gameId)?.status !== 'done') return c.json({ error: 'Analyse this game first.' }, 409);
+      if (analysisStatus(db, gameId) !== 'done') return c.json({ error: 'Analyse this game first.' }, 409);
       if (hasPending(db, gameId)) return c.json({ error: 'The coach is already answering. Wait for the answer.' }, 409);
       const anchor = body!.anchor as { ply: number; path: string[] };
       const describe = describeAnchorOf(loadGame(db, gameId)!, anchor);

@@ -16,7 +16,7 @@ export interface MaterialTagInput {
 }
 
 const MATE_CP = 10000;
-const PIECE_VALUE: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
+export const PIECE_VALUE: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
 const HUNG_MIN_PIECE_VALUE = 3;
 const HUNG_MIN_DROP = 200;
 const MISSED_CAPTURE_MIN_DROP = 200;
@@ -27,7 +27,7 @@ function toCp(score: EngineScore): number {
   return score.cp ?? 0;
 }
 
-function playUci(chess: Chess, uci: string): Move {
+export function playUci(chess: Chess, uci: string): Move {
   return chess.move({
     from: uci.slice(0, 2),
     to: uci.slice(2, 4),

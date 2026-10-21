@@ -1,5 +1,6 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { setSetting } from '../db/settings-repo.js';
 import type { GameAnalysis, MoveAnalysis } from '../../shared/types.js';
 import { openDb } from '../db/db.js';
 import { insertGames, listGames } from '../db/games-repo.js';
@@ -64,5 +65,47 @@ describe('analysis repo', () => {
     expect(getAnalysis(db, gameId)).toMatchObject({ status: 'error', error: 'engine crashed', moves: [move(1), move(2)] });
     markAnalysis(db, gameId, 'running');
     expect(getAnalysis(db, gameId)).toMatchObject({ status: 'running', error: null });
+  });
+
+  it('stores every tag of the user moves in user_tags_json, including the level-2 tags', () => {
+    const forkMove = { ...move(3), tags: ['missed_fork' as const, 'bad_bishop' as const] };
+    saveAnalysis(db, analysis({ moves: [move(1), forkMove, { ...move(4), isUserMove: false, tags: ['missed_pin' as const] }] }));
+    const row = db.prepare('SELECT user_tags_json FROM game_analysis WHERE game_id = ?').get(gameId)!;
+    expect(JSON.parse(String(row.user_tags_json))).toEqual({ early_queen: 1, missed_fork: 1, bad_bishop: 1 });
+  });
+
+  describe('level filter on read', () => {
+    const level2Moves = (): MoveAnalysis[] => [
+      { ...move(1), tags: ['hung_piece', 'missed_fork'] },
+      { ...move(3), tags: ['bad_bishop'] },
+    ];
+    const withLevel2Tags = (): GameAnalysis => analysis({
+      moves: level2Moves(),
+      keyMoments: [{ ply: 1, reason: 'missed_fork', winLoss: 14 }, { ply: 3, reason: 'blunder', winLoss: 40 }, { ply: 5, reason: 'missed_capture', winLoss: 12 }],
+    });
+
+    it('hides tags and key-moment reasons above level 1 but keeps the stored rows', () => {
+      setSetting(db, 'level_override', '1');
+      saveAnalysis(db, withLevel2Tags());
+      const got = getAnalysis(db, gameId)!;
+      expect(got.moves.map((m) => m.tags)).toEqual([['hung_piece'], []]);
+      expect(got.keyMoments.map((k) => k.reason)).toEqual(['blunder', 'missed_capture']);
+      const stored = db.prepare('SELECT data_json FROM move_analysis WHERE game_id = ? AND ply = 1').get(gameId)!;
+      expect(JSON.parse(String(stored.data_json)).tags).toEqual(['hung_piece', 'missed_fork']);
+    });
+
+    it('shows them again at level 2 and 3', () => {
+      saveAnalysis(db, withLevel2Tags());
+      for (const level of ['2', '3']) {
+        setSetting(db, 'level_override', level);
+        expect(getAnalysis(db, gameId)).toEqual(withLevel2Tags());
+      }
+    });
+
+    it('uses an explicit level when given', () => {
+      saveAnalysis(db, withLevel2Tags());
+      expect(getAnalysis(db, gameId, 2)).toEqual(withLevel2Tags());
+      expect(getAnalysis(db, gameId, 1)!.moves[0]!.tags).toEqual(['hung_piece']);
+    });
   });
 });

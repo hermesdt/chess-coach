@@ -7,6 +7,8 @@ import type { EngineLine } from '../engine/uci.js';
 import { waitForJob } from '../jobs.js';
 import { ANALYSIS_VERSION, getAnalysis, markAnalysis } from './analysis-repo.js';
 import { eligibleUnanalysed, enqueueAnalysis, requeuePending } from './queue.js';
+import { getCard } from '../srs/cards-repo.js';
+import { recordReview } from '../srs/cards-repo.js';
 
 const SANS = 'e4 e5 Nf3 Nc6 Bc4 Bc5 c3 Nf6 d3 d6 O-O O-O';
 const pgn = `[Event "x"]\n\n${SANS.split(' ').map((s, i) => (i % 2 === 0 ? `${i / 2 + 1}. ${s}` : s)).join(' ')} *`;
@@ -254,5 +256,89 @@ describe('requeuePending', () => {
     };
     await waitForJob(db, requeuePending(db, { pool, nodes: 1000 })!.jobId!);
     expect(order).toEqual([b, a]);
+  });
+});
+
+describe('analysis version bump', () => {
+  /** Marks a game as analysed by the previous analysis version. */
+  const makeOutdated = (id: number): void => {
+    markAnalysis(db, id, 'done');
+    db.prepare('UPDATE game_analysis SET version = ? WHERE game_id = ?').run(ANALYSIS_VERSION - 1, id);
+  };
+  const orderOf = (pool: ReturnType<typeof fakePool>): number[] => {
+    const order: number[] = [];
+    const inner = pool.analyse.bind(pool);
+    pool.analyse = async (fen: string) => {
+      const row = db.prepare("SELECT game_id FROM game_analysis WHERE status = 'running'").get()!;
+      if (!order.includes(row.game_id as number)) order.push(row.game_id as number);
+      return inner(fen);
+    };
+    return order;
+  };
+
+  it('lists never-analysed games before games with an older analysis, newest first inside each group', () => {
+    insertGames(db, [game('g1'), game('g2'), game('g3'), game('g4')]);
+    const [d, c, b, a] = ids() as [number, number, number, number];
+    makeOutdated(d);
+    makeOutdated(b);
+    // a and c were never analysed. d and b have a version 1 analysis and are newer than a.
+    expect(eligibleUnanalysed(db, 10)).toEqual([c, a, d, b]);
+    expect(eligibleUnanalysed(db, 2)).toEqual([c, a]);
+  });
+
+  it('runs never-analysed games first, also when the outdated games are newer or queued first', async () => {
+    insertGames(db, [game('g1'), game('g2'), game('g3'), game('g4')]);
+    const [d, c, b, a] = ids() as [number, number, number, number];
+    makeOutdated(d);
+    makeOutdated(c);
+    const pool = fakePool();
+    const order = orderOf(pool);
+    pool.gate.wait = new Promise<void>((resolve) => { pool.gate.release = resolve; });
+    const first = enqueueAnalysis(db, [d, c, a], { pool, nodes: 1000 });
+    // While the job runs, a second never-analysed game joins. It still goes before the outdated games.
+    enqueueAnalysis(db, [b], { pool, nodes: 1000 });
+    pool.gate.release();
+    expect((await waitForJob(db, first.jobId!)).message).toBe('Analysed 4 of 4');
+    expect(order).toEqual([a, b, d, c]);
+    expect(eligibleUnanalysed(db, 10)).toEqual([]);
+  });
+
+  it('re-analysis keeps the card id, the FSRS state and the review history', async () => {
+    insertGames(db, [game('g1')]);
+    const [a] = ids() as [number];
+    const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+    // The start position is a +300 position where 1.e4 loses a lot, so ply 1 is a blunder and gets a mistake card.
+    const pool = {
+      async analyse(fen: string, opts: { multipv?: number }): Promise<EngineLine[]> {
+        if (fen === START) {
+          const lines = [{ multipv: 1, score: score(300), pv: ['d2d4'] }, { multipv: 2, score: score(296), pv: ['g1f3'] }, { multipv: 3, score: score(-200), pv: ['a2a3'] }];
+          return lines.slice(0, opts.multipv ?? 1);
+        }
+        return [{ multipv: 1, score: score(fen.startsWith('rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b ') ? 300 : 0), pv: [] }];
+      },
+    };
+    await waitForJob(db, enqueueAnalysis(db, [a], { pool, nodes: 1000 }).jobId!);
+    const cards = db.prepare("SELECT id FROM cards WHERE kind = 'mistake'").all();
+    expect(cards).toHaveLength(1);
+    const cardId = cards[0]!.id as number;
+    recordReview(db, cardId, { rating: 'good', answerUci: 'd2d4', durationMs: 900 }, 5000);
+    const fsrs = db.prepare('SELECT fsrs_json, due FROM card_state WHERE card_id = ?').get(cardId);
+    const reviews = db.prepare('SELECT * FROM reviews WHERE card_id = ?').all(cardId);
+    expect(reviews).toHaveLength(1);
+
+    // Version 1 analysis: re-queued, rebuilt through the upsert.
+    db.prepare('UPDATE game_analysis SET version = ?, cards_built_at = NULL WHERE game_id = ?').run(ANALYSIS_VERSION - 1, a);
+    expect(eligibleUnanalysed(db, 10)).toEqual([a]);
+    const res = enqueueAnalysis(db, eligibleUnanalysed(db, 10), { pool, nodes: 1000 });
+    expect(res.queued).toBe(1);
+    await waitForJob(db, res.jobId!);
+
+    expect(getAnalysis(db, a)).toMatchObject({ status: 'done', version: ANALYSIS_VERSION });
+    expect(db.prepare("SELECT id FROM cards WHERE kind = 'mistake'").all()).toEqual([{ id: cardId }]);
+    expect(getCard(db, cardId)?.suspended).toBe(false);
+    expect(db.prepare('SELECT fsrs_json, due FROM card_state WHERE card_id = ?').get(cardId)).toEqual(fsrs);
+    expect(db.prepare('SELECT * FROM reviews WHERE card_id = ?').all(cardId)).toEqual(reviews);
+    expect(db.prepare('SELECT COUNT(*) AS n FROM game_analysis').get()).toEqual({ n: 1 });
+    expect(eligibleUnanalysed(db, 10)).toEqual([]);
   });
 });

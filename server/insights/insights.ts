@@ -1,5 +1,7 @@
 import type { DatabaseSync } from 'node:sqlite';
+import { LEVEL_TAGS } from '../../shared/lessons.js';
 import type { Color, Insights, InsightsWindow, Tag } from '../../shared/types.js';
+import { currentLevel } from '../level.js';
 
 const DAY_MS = 86_400_000;
 const WINDOW_DAYS: Record<Exclude<InsightsWindow, 'all'>, number> = { '30d': 30, '90d': 90, '365d': 365 };
@@ -112,11 +114,15 @@ export function getInsights(db: DatabaseSync, window: InsightsWindow, now: numbe
     WHERE ${where} AND a.user_tags_json IS NOT NULL AND a.user_tags_json != '{}'
   `).all(...params) as unknown as { played_at: number; tags: string }[];
   const tagCounts = new Map<string, Map<Tag, number>>();
+  // Tags above the owner's level stay stored, but are not counted (Review Focus 1).
+  const shown = LEVEL_TAGS[currentLevel(db).level];
   for (const row of tagRows) {
     const m = month(row.played_at);
     const counts = tagCounts.get(m) ?? new Map<Tag, number>();
-    for (const [tag, n] of Object.entries(JSON.parse(row.tags) as Record<string, number>)) counts.set(tag as Tag, (counts.get(tag as Tag) ?? 0) + n);
-    tagCounts.set(m, counts);
+    for (const [tag, n] of Object.entries(JSON.parse(row.tags) as Record<string, number>)) {
+      if (shown.includes(tag as Tag)) counts.set(tag as Tag, (counts.get(tag as Tag) ?? 0) + n);
+    }
+    if (counts.size > 0) tagCounts.set(m, counts);
   }
 
   return {

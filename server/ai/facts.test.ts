@@ -50,6 +50,15 @@ describe('gameFacts', () => {
   });
 });
 
+describe('gameFacts level tags', () => {
+  const forked: GameAnalysis = { ...analysis, moves: [mv(3, { tags: ['hung_piece', 'missed_fork'] })] };
+
+  it('does not tell the coach about a tag above the level, even from an unfiltered analysis', () => {
+    expect(gameFacts(game, forked, { level: 1, rating: 800 }).keyMoments[0]!.tags).toEqual(['hung_piece']);
+    expect(gameFacts(game, forked, { level: 2, rating: 1000 }).keyMoments[0]!.tags).toEqual(['hung_piece', 'missed_fork']);
+  });
+});
+
 describe('allowedSan', () => {
   it('has moves, best lines and facts squares, but not invented moves', () => {
     const set = allowedSan(gameFacts(game, analysis, { level: 1, rating: 800 }));

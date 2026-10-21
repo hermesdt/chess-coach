@@ -196,4 +196,18 @@ describe('analyseGame', () => {
     expect(a.moves[0]).toMatchObject({ uci: 'e1g1', bestSan: 'O-O', classification: 'best' });
     expect(a.moves[0]!.pvSan).toEqual(['O-O', 'O-O-O']);
   });
+
+  it('tags a missed knight fork on the user move and leaves the opponent move untagged', async () => {
+    // Engine data: Stockfish 19, 200000 nodes. Nc7+ forks Ke8 and Ra8; 1.d4 loses 25 win %.
+    const sans = ['Nc3', 'd5', 'h4', 'c6', 'f3', 'Qd6', 'a3', 'Qh6', 'Nxd5', 'b6', 'd4', 'Qd6'];
+    const game = detail(sans, 'white');
+    const pool = fakePool({
+      [fenAfter(sans.slice(0, 10))]: [line(cp(796), 'd5c7', 'e8d8', 'c7a8', 'h6d6', 'g1h3', 'c6c5')],
+      [fenAfter(sans.slice(0, 11))]: [line(cp(-229), 'h6d6', 'd5f4', 'b8d7', 'e2e4')],
+    });
+    const a = await analyseGame(game, pool, { nodes: 1000 });
+    expect(a.moves[10]).toMatchObject({ san: 'd4', isUserMove: true, tags: ['missed_fork'] });
+    expect(a.moves[11]!.tags).toEqual([]);
+    expect(a.moves[8]!.tags).not.toContain('missed_fork');
+  });
 });

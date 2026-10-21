@@ -18,6 +18,8 @@ interface ActiveRun {
   priority: number[];
   /** Newest first. */
   pending: number[];
+  /** Games with an analysis of an older version. They run after `pending`, newest first. */
+  later: number[];
   seen: Set<number>;
   current: number | null;
   total: number;
@@ -32,6 +34,7 @@ const active = new WeakMap<DatabaseSync, ActiveRun>();
 const MIN_USER_MOVES = 6;
 export const minPlyCount = (color: 'white' | 'black'): number => MIN_USER_MOVES * 2 - (color === 'white' ? 1 : 0);
 
+/** Never-analysed games come first, then games whose analysis is of an older version. Newest first inside each group. */
 export function eligibleUnanalysed(db: DatabaseSync, limit: number): number[] {
   const rows = db.prepare(
     `SELECT g.id FROM games g
@@ -39,9 +42,15 @@ export function eligibleUnanalysed(db: DatabaseSync, limit: number): number[] {
      WHERE g.user_color IS NOT NULL AND g.duplicate_of IS NULL
        AND g.ply_count >= CASE g.user_color WHEN 'white' THEN ? ELSE ? END
        AND NOT (COALESCE(a.status, '') IN ('done', 'error') AND COALESCE(a.version, -1) = ?)
-     ORDER BY g.played_at DESC, g.id DESC LIMIT ?`,
-  ).all(minPlyCount('white'), minPlyCount('black'), ANALYSIS_VERSION, limit);
+     ORDER BY COALESCE(a.version, ?) < ?, g.played_at DESC, g.id DESC LIMIT ?`,
+  ).all(minPlyCount('white'), minPlyCount('black'), ANALYSIS_VERSION, ANALYSIS_VERSION, ANALYSIS_VERSION, limit);
   return rows.map((r) => r.id as number);
+}
+
+/** True when the game has an analysis of an older version (a re-analysis, not a first analysis). */
+function isOutdated(db: DatabaseSync, id: number): boolean {
+  const row = db.prepare('SELECT version FROM game_analysis WHERE game_id = ?').get(id);
+  return row !== undefined && (row.version as number) < ANALYSIS_VERSION;
 }
 
 function isCurrent(db: DatabaseSync, id: number): boolean {
@@ -110,13 +119,17 @@ export function enqueueAnalysis(
   const priority = opts.priority === true;
   const run = active.get(db);
   const fresh: number[] = [];
+  // Read before markAnalysis: the version stays, but the check is clearer on the untouched row.
+  const outdated = new Set(gameIds.filter((id) => isOutdated(db, id)));
   for (const id of gameIds) {
     if (fresh.includes(id) || isCurrent(db, id)) continue;
     if (run && priority) {
       if (run.current === id) continue;
       const waiting = run.pending.indexOf(id);
-      if (waiting !== -1) {
-        run.pending.splice(waiting, 1);
+      const waitingLater = run.later.indexOf(id);
+      if (waiting !== -1 || waitingLater !== -1) {
+        if (waiting !== -1) run.pending.splice(waiting, 1);
+        else run.later.splice(waitingLater, 1);
         run.priority.push(id);
         continue;
       }
@@ -130,7 +143,7 @@ export function enqueueAnalysis(
     for (const id of fresh) {
       run.seen.add(id);
       if (priority) run.priority.push(id);
-      else insertNewestFirst(db, run.pending, id);
+      else insertNewestFirst(db, outdated.has(id) ? run.later : run.pending, id);
     }
     run.total += fresh.length;
     return { jobId: run.jobId, queued: fresh.length };
@@ -138,7 +151,8 @@ export function enqueueAnalysis(
   if (fresh.length === 0) return { jobId: null, queued: 0 };
 
   const state: ActiveRun = {
-    jobId: 0, priority: priority ? [...fresh] : [], pending: priority ? [] : [...fresh],
+    jobId: 0, priority: priority ? [...fresh] : [], pending: priority ? [] : fresh.filter((id) => !outdated.has(id)),
+    later: priority ? [] : fresh.filter((id) => outdated.has(id)),
     seen: new Set(fresh), current: null, total: fresh.length,
   };
   active.set(db, state);
@@ -148,7 +162,8 @@ export function enqueueAnalysis(
       let cardNote = '';
       try {
         report(0, state.total, `Analysed 0 of ${state.total}`);
-        for (let id = state.priority.shift() ?? state.pending.shift(); id !== undefined; id = state.priority.shift() ?? state.pending.shift()) {
+        const next = (): number | undefined => state.priority.shift() ?? state.pending.shift() ?? state.later.shift();
+        for (let id = next(); id !== undefined; id = next()) {
           state.current = id;
           cardNote = (await analyseOne(db, id, deps)) || cardNote;
           state.current = null;

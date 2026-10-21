@@ -6,6 +6,7 @@ import { ANALYSIS_VERSION } from './analysis-repo.js';
 import { selectKeyMoments } from './key-moments.js';
 import { materialTags } from './tags-material.js';
 import { openingTags } from './tags-opening.js';
+import { tacticTags } from './tags-tactics.js';
 import { classify, flip, meanAccuracy, moveAccuracy, moverWinAfter, winPct } from './winpct.js';
 
 const MAX_PV_PLIES = 8;
@@ -56,6 +57,15 @@ function safeMaterialTags(args: Parameters<typeof materialTags>[0]): Tag[] {
   }
 }
 
+/** Tactic and structure tags. A move the tag rules cannot replay yields no tags. */
+function safeTacticTags(args: Parameters<typeof tacticTags>[0]): Tag[] {
+  try {
+    return tacticTags(args);
+  } catch {
+    return [];
+  }
+}
+
 export async function analyseGame(
   game: GameDetail,
   pool: Pick<EnginePool, 'analyse'>,
@@ -88,6 +98,11 @@ export async function analyseGame(
           fenBefore: m.fenBefore, playedUci: m.uci, bestBefore: before.line, bestAfter: after.line,
           evalBeforeMover: before.score, evalAfterMover: flip(after.score),
         });
+        // The tactic tags use the same win loss that the move record stores.
+        tags = [...tags, ...safeTacticTags({
+          fenBefore: m.fenBefore, played: m.uci, best: bestUci, bestPv: before.line.pv, replyPv: after.line?.pv ?? [],
+          winLoss: Math.max(0, winBefore - winAfter), userColor: color, ply: m.ply,
+        })];
       }
       tags = [...tags, ...(opening.get(m.ply) ?? [])];
     }

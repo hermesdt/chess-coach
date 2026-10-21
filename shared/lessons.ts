@@ -19,6 +19,21 @@ export const TAG_TO_LESSON: Record<Tag, LessonId> = {
   slow_development: 'develop',
   same_piece_twice: 'develop',
   no_castle: 'castle',
+  missed_fork: 'tactics',
+  missed_pin: 'tactics',
+  weak_back_rank: 'mates',
+  bad_bishop: 'good-bad-bishop',
+};
+
+/** Tags the owner sees at each level. Level 1 keeps the nine M2 tags; levels 2 and 3 add the four M9 tags. */
+const LEVEL_1_TAGS: Tag[] = [
+  'hung_piece', 'missed_capture', 'bad_trade', 'missed_mate', 'allowed_mate',
+  'early_queen', 'slow_development', 'same_piece_twice', 'no_castle',
+];
+export const LEVEL_TAGS: Record<1 | 2 | 3, Tag[]> = {
+  1: LEVEL_1_TAGS,
+  2: [...LEVEL_1_TAGS, 'missed_fork', 'missed_pin', 'weak_back_rank', 'bad_bishop'],
+  3: [...LEVEL_1_TAGS, 'missed_fork', 'missed_pin', 'weak_back_rank', 'bad_bishop'],
 };
 
 export const LESSON_TITLES: Record<LessonId, string> = {

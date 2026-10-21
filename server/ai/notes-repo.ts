@@ -48,6 +48,14 @@ export function latestReview(db: DatabaseSync, subject: string, analysisVersion:
   return row ? toNote(row).review : null;
 }
 
+/** The newest review of a subject for an analysis version or an older one. A re-analysis keeps the coach's earlier notes usable. */
+export function latestReviewUpTo(db: DatabaseSync, subject: string, maxAnalysisVersion: number): GameReview | null {
+  const row = db.prepare(
+    'SELECT * FROM ai_notes WHERE subject = ? AND analysis_version <= ? ORDER BY analysis_version DESC, created_at DESC, id DESC LIMIT 1',
+  ).get(subject, maxAnalysisVersion);
+  return row ? toNote(row).review : null;
+}
+
 const WEAKNESS_SUBJECT = 'weakness';
 
 /** Weakness reports are keyed by the facts hash, which goes into the prompt version (analysis version is 0). */

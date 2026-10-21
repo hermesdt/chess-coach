@@ -47,7 +47,9 @@ export interface ImportResult { inserted: number; duplicates: number; skipped: n
 
 export type Classification = 'best' | 'good' | 'inaccuracy' | 'mistake' | 'blunder';
 export type Tag = 'hung_piece' | 'missed_capture' | 'missed_mate' | 'allowed_mate' | 'bad_trade'
-  | 'early_queen' | 'slow_development' | 'no_castle' | 'same_piece_twice';
+  | 'early_queen' | 'slow_development' | 'no_castle' | 'same_piece_twice'
+  // Level 2 and 3 tags (M9):
+  | 'missed_fork' | 'missed_pin' | 'weak_back_rank' | 'bad_bishop';
 export interface LiveLineDTO { san: string[]; uci: string[]; evalCp: number | null; evalMate: number | null } // from the side to move's view
 /** A newer search replaced this one: the client keeps its previous values. */
 export interface LiveSupersededDTO { superseded: true }

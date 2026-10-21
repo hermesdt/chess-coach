@@ -60,6 +60,17 @@ describe('weaknessFacts', () => {
     expect(Object.keys(facts.tagCounts)).toHaveLength(9);
   });
 
+  it('names only the tags of the owner level', () => {
+    game(1, 1, { moves: [mv(1, { tags: ['hung_piece', 'missed_fork'] })] });
+    db.prepare("INSERT INTO settings (key, value) VALUES ('level_override', '1') ON CONFLICT(key) DO UPDATE SET value = excluded.value").run();
+    expect(weaknessFacts(db).tagCounts).not.toHaveProperty('missed_fork');
+    expect(weaknessFacts(db).tagCounts.hung_piece).toBe(1);
+    db.prepare("UPDATE settings SET value = '2' WHERE key = 'level_override'").run();
+    const facts = weaknessFacts(db);
+    expect(facts.tagCounts.missed_fork).toBe(1);
+    expect(Object.keys(facts.tagCounts)).toHaveLength(13);
+  });
+
   it('groups openings by name and result, and returns up to 6 recent examples', () => {
     for (let i = 1; i <= 4; i++) game(i, i, { opening: i < 4 ? 'Scotch Game' : 'Italian', result: i === 1 ? 'win' : 'loss', moves: [mv(1), mv(3)] });
     const facts = weaknessFacts(db);

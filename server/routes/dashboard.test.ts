@@ -76,6 +76,15 @@ describe('GET /api/dashboard', () => {
     expect(topTag).toEqual({ tag: 'hung_piece', count: 30, games: 30 });
   });
 
+  it('does not offer a tag above the owner level as the focus', async () => {
+    addGame([[['missed_fork', 'hung_piece'], true]]);
+    addGame([[['missed_fork'], true]]);
+    setSetting(db, 'level_override', '1');
+    expect((await get()).topTag).toEqual({ tag: 'hung_piece', count: 1, games: 2 });
+    setSetting(db, 'level_override', '2');
+    expect((await get()).topTag).toEqual({ tag: 'missed_fork', count: 2, games: 2 });
+  });
+
   it('breaks ties by tag severity', async () => {
     addGame([[['early_queen'], true], [['bad_trade'], true]]);
     expect((await get()).topTag).toEqual({ tag: 'bad_trade', count: 1, games: 1 });

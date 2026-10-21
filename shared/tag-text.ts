@@ -7,10 +7,14 @@ export const TAG_SEVERITY: Tag[] = [
   'hung_piece',
   'bad_trade',
   'missed_capture',
+  'missed_fork',
+  'missed_pin',
+  'weak_back_rank',
   'no_castle',
   'early_queen',
   'slow_development',
   'same_piece_twice',
+  'bad_bishop',
 ];
 
 /** Sorts tags by severity. Does not change the input. */
@@ -29,6 +33,10 @@ export const TAG_TEXT: Record<Tag, string> = {
   slow_development: 'Pieces still at home',
   no_castle: 'King still in the centre',
   same_piece_twice: 'Same piece moved twice',
+  missed_fork: 'You missed a fork',
+  missed_pin: 'You missed a pin',
+  weak_back_rank: 'Your back rank was weak',
+  bad_bishop: 'Your pawns block your bishop',
 };
 
 /** Plain label for the classifications that can be a key-moment reason. */

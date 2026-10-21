@@ -59,4 +59,26 @@ describe('selectKeyMoments', () => {
     expect(out).toHaveLength(6);
     expect(out.map((m) => m.winLoss)).toEqual([38, 37, 36, 35, 34, 33]);
   });
+
+  it('shows missed_fork, missed_pin and weak_back_rank only from level 2', () => {
+    const moves = [bad(1, 14, 'good', ['missed_fork']), bad(3, 12, 'good', ['missed_pin']), bad(5, 20, 'good', ['weak_back_rank'])];
+    expect(selectKeyMoments(moves, 1)).toEqual([]);
+    expect(selectKeyMoments(moves)).toEqual([]);
+    const expected = [
+      { ply: 5, reason: 'weak_back_rank', winLoss: 20 },
+      { ply: 1, reason: 'missed_fork', winLoss: 14 },
+      { ply: 3, reason: 'missed_pin', winLoss: 12 },
+    ];
+    expect(selectKeyMoments(moves, 2)).toEqual(expected);
+    expect(selectKeyMoments(moves, 3)).toEqual(expected);
+  });
+
+  it('keeps the classification reason of a blunder with a level-2 tag at level 1', () => {
+    const moves = [bad(1, 40, 'blunder', ['missed_fork'])];
+    expect(selectKeyMoments(moves, 1)).toEqual([{ ply: 1, reason: 'blunder', winLoss: 40 }]);
+  });
+
+  it('ignores missed_fork when less than 10% was lost, and never uses bad_bishop as a reason', () => {
+    expect(selectKeyMoments([bad(1, 9.9, 'good', ['missed_fork']), bad(3, 30, 'good', ['bad_bishop'])], 3)).toEqual([]);
+  });
 });

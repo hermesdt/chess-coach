@@ -4,7 +4,7 @@ import { bySeverity, CLASSIFICATION_TEXT, TAG_TEXT } from '../../shared/tag-text
 import { winPct } from '../analysis/winpct.js';
 import type { EnginePool } from '../engine/pool.js';
 import type { EngineLine } from '../engine/uci.js';
-import { latestReview } from '../ai/notes-repo.js';
+import { latestReviewUpTo } from '../ai/notes-repo.js';
 import { listCardsByRef, positionKey, setRefs, setSolution, setSuspended, upsertCard } from './cards-repo.js';
 
 const MULTIPV = 3;
@@ -79,7 +79,7 @@ export async function buildMistakeCards(
 ): Promise<{ created: number; updated: number; suspended: number }> {
   const result = { created: 0, updated: 0, suspended: 0 };
   const mistakes = analysis.moves.filter(isMistake);
-  const why = whyByPly(latestReview(db, `game:${analysis.gameId}`, analysis.version));
+  const why = whyByPly(latestReviewUpTo(db, `game:${analysis.gameId}`, analysis.version));
 
   for (const m of mistakes) {
     const lines = await pool.analyse(m.fenBefore, { nodes: opts.nodes, multipv: MULTIPV });

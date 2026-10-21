@@ -1,3 +1,4 @@
+import { LEVEL_TAGS } from '../../shared/lessons.js';
 import type { Classification, KeyMoment, MoveAnalysis, Tag } from '../../shared/types.js';
 
 const MAX_KEY_MOMENTS = 6;
@@ -7,13 +8,18 @@ const TAG_MIN_LOSS = 10;
 
 type Reason = Classification | Tag;
 /** Most severe first. */
-const SEVERITY: Reason[] = ['blunder', 'mistake', 'missed_mate', 'missed_capture', 'inaccuracy'];
+const SEVERITY: Reason[] = ['blunder', 'mistake', 'missed_mate', 'missed_capture', 'missed_fork', 'missed_pin', 'weak_back_rank', 'inaccuracy'];
+/** Tags that can be a key-moment reason on their own. `bad_bishop` never is: it is a structure note, not a loss. */
+const TAG_REASONS: Tag[] = ['missed_mate', 'missed_capture', 'missed_fork', 'missed_pin', 'weak_back_rank'];
 
 function reasonsFor(m: MoveAnalysis, level: 1 | 2 | 3): Reason[] {
   const reasons: Reason[] = [];
   if (m.classification === 'blunder' || m.classification === 'mistake') reasons.push(m.classification);
-  if (m.winLoss >= TAG_MIN_LOSS && m.tags.includes('missed_mate')) reasons.push('missed_mate');
-  if (m.winLoss >= TAG_MIN_LOSS && m.tags.includes('missed_capture')) reasons.push('missed_capture');
+  // Tags above the owner's level are not shown (Review Focus 1).
+  const shown = LEVEL_TAGS[level];
+  if (m.winLoss >= TAG_MIN_LOSS) {
+    for (const tag of TAG_REASONS) if (shown.includes(tag) && m.tags.includes(tag)) reasons.push(tag);
+  }
   if (level >= 2 && m.classification === 'inaccuracy' && m.winLoss >= LEVEL2_INACCURACY_MIN_LOSS) reasons.push('inaccuracy');
   return reasons;
 }

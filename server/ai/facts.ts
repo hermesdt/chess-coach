@@ -1,4 +1,5 @@
 import type { Classification, Color, GameAnalysis, GameDetail, GameResult, Tag } from '../../shared/types.js';
+import { LEVEL_TAGS } from '../../shared/lessons.js';
 import { selectKeyMoments } from '../analysis/key-moments.js';
 import type { CurrentLevel } from '../level.js';
 import { groundingSet } from './grounding.js';
@@ -25,7 +26,7 @@ export function gameFacts(game: GameDetail, analysis: GameAnalysis, lvl: Pick<Cu
     keyMoments.push({
       ply: m.ply, moveNumber: Math.ceil(m.ply / 2), side: m.color, fen: m.fenBefore, played: m.san, best: m.bestSan,
       bestLine: m.pvSan.slice(0, MAX_BEST_LINE), winBefore: Math.round(m.winBefore), winAfter: Math.round(m.winAfter),
-      tags: m.tags, classification: m.classification,
+      tags: m.tags.filter((t) => LEVEL_TAGS[lvl.level].includes(t)), classification: m.classification,
     });
   }
   const white = game.userColor === 'white';

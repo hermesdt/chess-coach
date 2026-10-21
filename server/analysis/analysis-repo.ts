@@ -1,8 +1,11 @@
 import type { DatabaseSync } from 'node:sqlite';
 import type { GameAnalysis, KeyMoment, MoveAnalysis, Tag } from '../../shared/types.js';
+import { LEVEL_TAGS, TAG_TO_LESSON } from '../../shared/lessons.js';
 import { transaction } from '../db/db.js';
+import { currentLevel, type Level } from '../level.js';
 
-export const ANALYSIS_VERSION = 1;
+/** 2: M9 added the tags missed_fork, missed_pin, weak_back_rank and bad_bishop. */
+export const ANALYSIS_VERSION = 2;
 
 export function saveAnalysis(db: DatabaseSync, a: GameAnalysis): void {
   transaction(db, () => {
@@ -36,11 +39,24 @@ function tagCounts(moves: MoveAnalysis[]): Partial<Record<Tag, number>> {
   return counts;
 }
 
-export function getAnalysis(db: DatabaseSync, gameId: number): GameAnalysis | null {
+/** Status of the stored analysis, or null when the game has none. Does not read the owner's level. */
+export function analysisStatus(db: DatabaseSync, gameId: number): GameAnalysis['status'] | null {
+  const row = db.prepare('SELECT status FROM game_analysis WHERE game_id = ?').get(gameId);
+  return row ? (row.status as GameAnalysis['status']) : null;
+}
+
+/**
+ * Reads an analysis for the owner's level. Tags above the level, and key moments that exist only because
+ * of such a tag, are left out, so no caller can show them. The stored rows keep every tag.
+ */
+export function getAnalysis(db: DatabaseSync, gameId: number, level: Level = currentLevel(db).level): GameAnalysis | null {
   const row = db.prepare('SELECT * FROM game_analysis WHERE game_id = ?').get(gameId);
   if (!row) return null;
+  const shown = LEVEL_TAGS[level];
   const moves = db.prepare('SELECT data_json FROM move_analysis WHERE game_id = ? ORDER BY ply').all(gameId)
-    .map((r) => JSON.parse(String(r.data_json)) as MoveAnalysis);
+    .map((r) => JSON.parse(String(r.data_json)) as MoveAnalysis)
+    .map((m) => (m.tags.every((t) => shown.includes(t)) ? m : { ...m, tags: m.tags.filter((t) => shown.includes(t)) }));
+  const isHidden = (reason: KeyMoment['reason']): boolean => reason in TAG_TO_LESSON && !shown.includes(reason as Tag);
   return {
     gameId,
     version: row.version as number,
@@ -50,7 +66,7 @@ export function getAnalysis(db: DatabaseSync, gameId: number): GameAnalysis | nu
     accuracyOpp: (row.accuracy_opp as number | null) ?? null,
     counts: JSON.parse(String(row.counts_json)) as GameAnalysis['counts'],
     moves,
-    keyMoments: JSON.parse(String(row.key_moments_json)) as KeyMoment[],
+    keyMoments: (JSON.parse(String(row.key_moments_json)) as KeyMoment[]).filter((k) => !isHidden(k.reason)),
     analysedAt: (row.analysed_at as number | null) ?? null,
   };
 }

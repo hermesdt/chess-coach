@@ -5,6 +5,7 @@ import type { GameAnalysis, MoveAnalysis, NewGame, Tag } from '../../shared/type
 import { saveAnalysis } from '../analysis/analysis-repo.js';
 import { openDb } from '../db/db.js';
 import { insertGames } from '../db/games-repo.js';
+import { setSetting } from '../db/settings-repo.js';
 import { getInsights, openingGroup } from './insights.js';
 
 const DAY = 86_400_000;
@@ -188,5 +189,16 @@ describe('openingGroup', () => {
     expect(openingGroup('Ruy Lopez', 'C60')).toBe('Ruy Lopez');
     expect(openingGroup(null, 'C60')).toBe('C6');
     expect(openingGroup(null, null)).toBe('Unknown');
+  });
+
+  it('drops tags above the owner level from the tag aggregates', () => {
+    insertGames(db, [game({ sourceId: 'a' })]);
+    analyse(db, idOf(db, 'a'), 80, [move(1, ['hung_piece', 'missed_fork']), move(3, ['bad_bishop', 'hung_piece'])]);
+    const tags = (): string[] => getInsights(db, '90d', NOW).tagsByMonth.map((t) => `${t.tag}:${t.perGame}`);
+    expect(tags()).toEqual(['hung_piece:2']);
+    setSetting(db, 'level_override', '2');
+    expect(tags()).toEqual(['bad_bishop:1', 'hung_piece:2', 'missed_fork:1']);
+    setSetting(db, 'level_override', '1');
+    expect(tags()).toEqual(['hung_piece:2']);
   });
 });

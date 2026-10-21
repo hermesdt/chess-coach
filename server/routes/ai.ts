@@ -5,7 +5,7 @@ import { toStrictJsonSchema } from '../ai/json-schema.js';
 import { runStructured } from '../ai/runner.js';
 import type { Registry } from '../ai/registry.js';
 import { getSettings } from '../config.js';
-import { getAnalysis } from '../analysis/analysis-repo.js';
+import { analysisStatus } from '../analysis/analysis-repo.js';
 import { coachErrorMessage, gameNotes, reviewGame } from '../ai/game-review.js';
 import { weaknessFacts, latestWeakness, weaknessReport, NO_GAMES } from '../ai/weakness.js';
 import type { Repertoire } from '../repertoire/types.js';
@@ -49,7 +49,7 @@ export function aiRoutes(db: DatabaseSync, registry: Registry, timeoutMs = TEST_
       const body = (await c.req.json().catch(() => null)) as { provider?: unknown } | null;
       const requested = body?.provider;
       if (requested !== undefined && !(PROVIDER_IDS as readonly unknown[]).includes(requested)) return c.json({ error: 'unknown provider' }, 400);
-      if (getAnalysis(db, game.id)?.status !== 'done') return c.json({ error: 'Analyse this game first.' }, 400);
+      if (analysisStatus(db, game.id) !== 'done') return c.json({ error: 'Analyse this game first.' }, 400);
       const provider = requested as ProviderId | undefined;
       const job = runJob(db, 'coach', async (report) => {
         try {
