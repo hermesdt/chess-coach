@@ -37,7 +37,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M8a | Coach chat: chat, engine lines as branches, own moves on the board, add to review | done | `docs/superpowers/plans/2026-10-19-m8a-coach-chat.md` |
 | M8b | Coach chat: streaming, fast model, live Stockfish eval, "Go deeper", attack facts | done | `docs/superpowers/plans/2026-10-19-m8b-coach-chat-speed.md` |
 | M9 | Level 2–3 content (lessons, tags, deeper repertoire) | done | `docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md` |
-| M10 | Opening guides: per repertoire why, strengths, target set-up, plans, typical mistakes | todo | — (owner request 2026-10-21; brainstorm, spec, plan) |
+| M10 | Opening guides: per repertoire why, strengths, target set-up, plans, typical mistakes | planned | spec `docs/superpowers/specs/2026-10-21-opening-guides-design.md`, plan `docs/superpowers/plans/2026-10-21-m10-opening-guides.md` |
 | M11 | Content quality audit: every repertoire comment, lesson and guide claim checked with chess.js + Stockfish | todo | spec `docs/superpowers/specs/2026-10-20-content-audit-design.md` |
 
 ## Log
