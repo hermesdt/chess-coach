@@ -1,7 +1,8 @@
-# Content Quality Audit — Design (M10)
+# Content Quality Audit — Design (M11)
 
 Date: 2026-10-20
 Status: approved by the owner (2026-10-20).
+Milestone renumbered on 2026-10-21: M10 is now the opening guides; this audit is M11 and also covers the guide texts.
 Parent spec: `docs/superpowers/specs/2026-10-18-chess-coach-design.md` (§9 content
 and validation; project rule "the AI never invents moves, lines or evaluations").
 
@@ -12,7 +13,7 @@ lesson solutions are not much worse than the engine's best. It does **not** chec
 the words. Comments and explanations are written by agents, and some are false.
 The owner learns from these texts, so a false sentence teaches a false idea.
 
-### The example that started M10 (found by the owner, 2026-10-20)
+### The example that started this audit (found by the owner, 2026-10-20)
 
 In the daily review, an opening card from the Caro-Kann showed:
 
