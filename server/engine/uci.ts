@@ -62,14 +62,19 @@ export class UciEngine {
     });
   }
 
-  /** Searches with `go nodes` or, when `movetimeMs` is set, `go movetime`. */
+  /** Searches with `go nodes` or, when `movetimeMs` is set, `go movetime`. `newGame` sends `ucinewgame` first. */
   async analyse(
     fen: string,
-    opts: { nodes?: number; movetimeMs?: number; multipv?: number; timeoutMs?: number },
+    opts: { nodes?: number; movetimeMs?: number; multipv?: number; timeoutMs?: number; newGame?: boolean },
   ): Promise<EngineLines> {
     return this.exclusive(async () => {
       const multipv = opts.multipv ?? 1;
       const limit = opts.movetimeMs !== undefined ? `movetime ${opts.movetimeMs}` : `nodes ${opts.nodes}`;
+      // A fresh game clears the hash, so a node-limited search gives the same result every time.
+      if (opts.newGame) {
+        this.send('ucinewgame');
+        await this.isReady();
+      }
       this.send(`setoption name MultiPV value ${multipv}`);
       await this.isReady();
       this.send(`position fen ${fen}`);

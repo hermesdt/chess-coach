@@ -68,7 +68,7 @@ export async function validateRepertoire(
   const search = async (fen: string): Promise<EngineLine[]> => {
     const hit = cache.get(fen);
     if (hit) return hit;
-    const lines = await engine.analyse(fen, { nodes: opts.nodes, multipv: 1 });
+    const lines = await engine.analyse(fen, { nodes: opts.nodes, multipv: 1, newGame: true });
     cache.set(fen, lines);
     return lines;
   };

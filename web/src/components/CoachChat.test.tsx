@@ -54,6 +54,10 @@ class MockEventSource {
   }
 }
 const stream = (id: number) => MockEventSource.instances.filter((s) => s.url === `/api/chat/${id}/stream`).at(-1)!;
+const openStream = async (id: number) => {
+  await waitFor(() => expect(MockEventSource.instances.some((s) => s.url === `/api/chat/${id}/stream`)).toBe(true));
+  return stream(id);
+};
 const pendingMsg = (extra: Partial<ChatMessageDTO> = {}): ChatMessageDTO => answered({ id: 7, status: 'pending', answer: null, question: 'Why Nf3?', ...extra });
 
 function setup(messages: ChatMessageDTO[], props: Partial<Parameters<typeof CoachChat>[0]> = {}) {
@@ -198,13 +202,14 @@ describe('CoachChat', () => {
     it('opens a stream for a pending message and shows the thinking state until text arrives', async () => {
       setup([pendingMsg()]);
       expect(await screen.findByText('The coach is thinking…')).toBeTruthy();
-      expect(stream(7)).toBeTruthy();
+      await openStream(7);
       expect(screen.queryByText('checking…')).toBeNull();
     });
 
     it('shows the streamed text with a checking mark, as paragraphs', async () => {
       setup([pendingMsg()]);
       await screen.findByText('The coach is thinking…');
+      await openStream(7);
       stream(7).emit('delta', { text: 'Nf3 is good.\n\nIt develops.' });
       expect(await screen.findByText('Nf3 is good.')).toBeTruthy();
       expect(screen.getByText('It develops.').tagName).toBe('P');
@@ -217,6 +222,7 @@ describe('CoachChat', () => {
     it('clears the text on retry and shows the correcting note', async () => {
       setup([pendingMsg()]);
       await screen.findByText('The coach is thinking…');
+      await openStream(7);
       stream(7).emit('delta', { text: 'Wrong claim.' });
       await screen.findByText('Wrong claim.');
       stream(7).emit('retry');
@@ -231,6 +237,7 @@ describe('CoachChat', () => {
       const get = vi.spyOn(api, 'getChat').mockResolvedValueOnce([pendingMsg()]).mockResolvedValue([answered({ id: 7, question: 'Why Nf3?', deeperAvailable: true })]);
       render(<MemoryRouter><CoachChat gameId={5} analysed anchor={anchor} onShowLine={() => {}} onShowAnchor={() => {}} onAnalyse={() => {}} /></MemoryRouter>);
       await screen.findByText('The coach is thinking…');
+      await openStream(7);
       stream(7).emit('done');
       expect(await screen.findByText('Develop your knight.')).toBeTruthy();
       expect(stream(7).closed).toBe(true);
@@ -244,6 +251,7 @@ describe('CoachChat', () => {
       const get = vi.spyOn(api, 'getChat').mockResolvedValueOnce([pendingMsg()]).mockResolvedValue([answered({ id: 7, status: 'error', error: 'The coach did not answer.', answer: null })]);
       render(<MemoryRouter><CoachChat gameId={5} analysed anchor={anchor} onShowLine={() => {}} onShowAnchor={() => {}} onAnalyse={() => {}} /></MemoryRouter>);
       await screen.findByText('The coach is thinking…');
+      await openStream(7);
       stream(7).emit('error', { message: 'The coach did not answer.' });
       expect(await screen.findByText('The coach did not answer.')).toBeTruthy();
       expect(stream(7).closed).toBe(true);
@@ -254,6 +262,7 @@ describe('CoachChat', () => {
       vi.spyOn(api, 'getChat').mockResolvedValue([pendingMsg()]);
       const view = render(<MemoryRouter><CoachChat gameId={5} analysed anchor={anchor} onShowLine={() => {}} onShowAnchor={() => {}} onAnalyse={() => {}} /></MemoryRouter>);
       await screen.findByText('The coach is thinking…');
+      await openStream(7);
       view.unmount();
       expect(MockEventSource.instances.length).toBeGreaterThan(0);
       expect(MockEventSource.instances.every((s) => s.closed)).toBe(true);

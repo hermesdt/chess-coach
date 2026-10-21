@@ -53,6 +53,12 @@ function isOutdated(db: DatabaseSync, id: number): boolean {
   return row !== undefined && (row.version as number) < ANALYSIS_VERSION;
 }
 
+/** A game with a finished analysis of an older version. Its rows stay visible until the new analysis replaces them. */
+function isReanalysis(db: DatabaseSync, id: number): boolean {
+  const row = db.prepare('SELECT status, version FROM game_analysis WHERE game_id = ?').get(id);
+  return row !== undefined && row.status === 'done' && (row.version as number) < ANALYSIS_VERSION;
+}
+
 function isCurrent(db: DatabaseSync, id: number): boolean {
   const row = db.prepare('SELECT status, version FROM game_analysis WHERE game_id = ?').get(id);
   return row !== undefined && row.status === 'done' && row.version === ANALYSIS_VERSION;
@@ -70,7 +76,8 @@ async function analyseOne(db: DatabaseSync, id: number, deps: QueueDeps): Promis
   let nodes: number;
   let result: Awaited<ReturnType<typeof analyseGame>>;
   try {
-    markAnalysis(db, id, 'running');
+    // saveAnalysis replaces an older done analysis in one transaction, so the old one is not hidden meanwhile.
+    if (!isReanalysis(db, id)) markAnalysis(db, id, 'running');
     const game = loadGame(db, id);
     nodes = deps.nodes ?? getSettings(db).engineNodes;
     result = await analyseGame(game, deps.pool, { nodes, level: currentLevel(db).level });
@@ -137,7 +144,7 @@ export function enqueueAnalysis(
     } else if (run?.seen.has(id)) continue;
     fresh.push(id);
   }
-  for (const id of fresh) markAnalysis(db, id, 'pending');
+  for (const id of fresh) if (!isReanalysis(db, id)) markAnalysis(db, id, 'pending');
 
   if (run) {
     for (const id of fresh) {

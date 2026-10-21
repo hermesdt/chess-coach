@@ -1,4 +1,5 @@
 import type { DatabaseSync } from 'node:sqlite';
+import { Chess } from 'chess.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { EngineScore, NewGame } from '../../shared/types.js';
 import { openDb } from '../db/db.js';
@@ -265,12 +266,25 @@ describe('analysis version bump', () => {
     markAnalysis(db, id, 'done');
     db.prepare('UPDATE game_analysis SET version = ? WHERE game_id = ?').run(ANALYSIS_VERSION - 1, id);
   };
+  /** Games with different openings, so that the fen after ply 2 tells the games apart. */
+  const variedGames = (): NewGame[] =>
+    ['e4 e5', 'e3 e6', 'e3 e5', 'e4 e6'].map((start, i) => {
+      const sans = `${start} ${SANS.split(' ').slice(2).join(' ')}`.split(' ');
+      return game(`g${i + 1}`, { pgn: `[Event "x"]\n\n${sans.map((m, n) => (n % 2 === 0 ? `${n / 2 + 1}. ${m}` : m)).join(' ')} *` });
+    });
+  /** Records the order in which games get their first engine call. */
   const orderOf = (pool: ReturnType<typeof fakePool>): number[] => {
     const order: number[] = [];
+    const byFen = new Map<string, number>();
+    for (const row of db.prepare('SELECT id, pgn FROM games').all()) {
+      const chess = new Chess();
+      chess.loadPgn(row.pgn as string);
+      byFen.set(chess.history({ verbose: true })[1]!.after, row.id as number);
+    }
     const inner = pool.analyse.bind(pool);
     pool.analyse = async (fen: string) => {
-      const row = db.prepare("SELECT game_id FROM game_analysis WHERE status = 'running'").get()!;
-      if (!order.includes(row.game_id as number)) order.push(row.game_id as number);
+      const id = byFen.get(fen);
+      if (id !== undefined && !order.includes(id)) order.push(id);
       return inner(fen);
     };
     return order;
@@ -287,7 +301,7 @@ describe('analysis version bump', () => {
   });
 
   it('runs never-analysed games first, also when the outdated games are newer or queued first', async () => {
-    insertGames(db, [game('g1'), game('g2'), game('g3'), game('g4')]);
+    insertGames(db, variedGames());
     const [d, c, b, a] = ids() as [number, number, number, number];
     makeOutdated(d);
     makeOutdated(c);
@@ -301,6 +315,34 @@ describe('analysis version bump', () => {
     expect((await waitForJob(db, first.jobId!)).message).toBe('Analysed 4 of 4');
     expect(order).toEqual([a, b, d, c]);
     expect(eligibleUnanalysed(db, 10)).toEqual([]);
+  });
+
+  it('keeps the older done analysis visible while the game waits and runs, then replaces it', async () => {
+    insertGames(db, variedGames().slice(0, 2));
+    const [b, a] = ids() as [number, number];
+    // Seed a real older analysis for both games.
+    await waitForJob(db, enqueueAnalysis(db, [a, b], { pool: fakePool(), nodes: 1000 }).jobId!);
+    const before = getAnalysis(db, a)!;
+    expect(before.moves.length).toBeGreaterThan(0);
+    for (const id of [a, b]) db.prepare('UPDATE game_analysis SET version = ? WHERE game_id = ?').run(ANALYSIS_VERSION - 1, id);
+
+    const pool = fakePool();
+    const seen: unknown[] = [];
+    const inner = pool.analyse.bind(pool);
+    pool.analyse = async (fen: string) => {
+      seen.push([getAnalysis(db, a)?.status, getAnalysis(db, a)?.version, getAnalysis(db, b)?.status, getAnalysis(db, b)?.version]);
+      return inner(fen);
+    };
+    const res = enqueueAnalysis(db, eligibleUnanalysed(db, 10), { pool, nodes: 1000 });
+    expect(res.queued).toBe(2);
+    // Queued, not yet run: both stay done at the older version.
+    expect(getAnalysis(db, a)).toMatchObject({ status: 'done', version: ANALYSIS_VERSION - 1 });
+    expect(getAnalysis(db, b)).toMatchObject({ status: 'done', version: ANALYSIS_VERSION - 1 });
+    await waitForJob(db, res.jobId!);
+    // While the first game runs, the second one is still the older done analysis.
+    expect(seen[0]).toEqual(['done', ANALYSIS_VERSION - 1, 'done', ANALYSIS_VERSION - 1]);
+    expect(getAnalysis(db, a)).toMatchObject({ status: 'done', version: ANALYSIS_VERSION });
+    expect(getAnalysis(db, b)).toMatchObject({ status: 'done', version: ANALYSIS_VERSION });
   });
 
   it('does not retry a failed re-analysis on the next sync', async () => {

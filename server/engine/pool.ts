@@ -31,7 +31,7 @@ export class EnginePool {
     this.create = opts.create;
   }
 
-  async analyse(fen: string, opts: { nodes: number; multipv?: number }): Promise<EngineLines> {
+  async analyse(fen: string, opts: { nodes: number; multipv?: number; newGame?: boolean }): Promise<EngineLines> {
     const engine = await this.acquire();
     try {
       const lines = await engine.analyse(fen, opts);
