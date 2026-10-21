@@ -53,8 +53,11 @@ const back = (over: Partial<TacticTagInput> = {}): TacticTagInput => input(BACK_
   played: 'g8f8', best: 'e7e8', bestPv: ['e7e8', 'b4e7'], replyPv: ['d2d8', 'f6e8', 'b4e7', 'f8g8', 'd8e8'], winLoss: 62.8, ...over,
 });
 
-// French structure, Black has only the light-squared bishop. 10...b5 puts a fifth pawn on a light square.
-const BISHOP_SEQ = 'e4 e6 d4 d5 Nc3 Bb4 e5 c5 a3 Bxc3+ bxc3 Ne7 Nf3 Nbc6 Bd3 Qc7 O-O Bd7 Re1';
+// Black has only the light-squared bishop (c8). Light-square pawns before 10...c6: b7, e6, f7, h7 (four).
+// 10...c6 puts the fifth pawn on a light square.
+const BISHOP_SEQ = 'e4 e6 d4 Bb4+ Nc3 d6 Bd3 Bxc3+ bxc3 Nf6 Nf3 Nbd7 O-O O-O Re1 Re8 Bf4 Nh5 Bg5';
+// French structure: Black already has five light-square pawns (b7, d5, e6, f7, h7) before 10...b5.
+const FRENCH_SEQ = 'e4 e6 d4 d5 Nc3 Bb4 e5 c5 a3 Bxc3+ bxc3 Ne7 Nf3 Nbc6 Bd3 Qc7 O-O Bd7 Re1';
 const bishop = (played: string, seq = BISHOP_SEQ): TacticTagInput =>
   input(seq, 'black', { played, best: played, bestPv: [], replyPv: [], winLoss: 0 });
 
@@ -99,6 +102,14 @@ describe('missed_fork', () => {
   });
 });
 
+describe('geometry rejects real winning positions', () => {
+  // Both positions pass the win-loss gate (25.0 and 48.7) and the best line wins material; only the shape differs.
+  it('a winning knight fork is not a pin, and a winning pin of one piece is not a fork', () => {
+    expect(tacticTags(fork())).toEqual(['missed_fork']);
+    expect(tacticTags(pin())).toEqual(['missed_pin']);
+  });
+});
+
 describe('missed_pin', () => {
   it('tags a missed pin of the queen against the king', () => {
     expect(tacticTags(pin())).toEqual(['missed_pin']);
@@ -135,14 +146,27 @@ describe('weak_back_rank', () => {
     expect(tacticTags(quiet({ played: 'd2d4', replyPv: ['e5d4', 'f3d4'], best: 'f1b5' }))).toEqual([]);
   });
 
+  it('does not tag when the king has a free square in front (h6 leaves h7), even with a real check on the rank', () => {
+    // Stockfish 19, 200000 nodes, searchmoves d2d8: Qxd8+ is a real check on the back rank, but the king can step to h7.
+    expect(tacticTags(back({ played: 'h7h6', winLoss: 52.5, replyPv: ['d2d8', 'e7d8', 'e1g1', 'a7a5'] }))).toEqual([]);
+  });
+
+  it('does not tag when the loss is below 10 win %', () => {
+    expect(tacticTags(back({ winLoss: 9.9 }))).toEqual([]);
+  });
+
   it('does not tag without an opponent line', () => {
     expect(tacticTags(back({ replyPv: [] }))).toEqual([]);
   });
 });
 
 describe('bad_bishop', () => {
-  it('tags a pawn move that gives a lone light-squared bishop a fifth pawn on its colour (move 10)', () => {
-    expect(tacticTags(bishop('b7b5'))).toEqual(['bad_bishop']);
+  it('tags the pawn move that gives a lone light-squared bishop its fifth pawn on its colour (move 10)', () => {
+    expect(tacticTags(bishop('c7c6'))).toEqual(['bad_bishop']);
+  });
+
+  it('does not tag a later pawn move when the count was already five', () => {
+    expect(tacticTags(bishop('b7b5', FRENCH_SEQ))).toEqual([]);
   });
 
   it('does not tag a pawn move onto the other colour', () => {
@@ -150,15 +174,16 @@ describe('bad_bishop', () => {
   });
 
   it('does not tag a piece move', () => {
-    expect(tacticTags(bishop('e7f5'))).toEqual([]);
+    expect(tacticTags(bishop('d7f8'))).toEqual([]);
   });
 
   it('does not tag before move 10', () => {
-    expect(tacticTags(bishop('b7b5', 'e4 e6 d4 d5 Nc3 Bb4 e5 c5 a3 Bxc3+ bxc3 Ne7 Nf3'))).toEqual([]);
+    // Same structure at move 7: five light pawns would need 7...c6 too early.
+    expect(tacticTags(bishop('c7c6', 'e4 e6 d4 Bb4+ Nc3 d6 Bd3 Bxc3+ bxc3 Nf6 Nf3 Nbd7 O-O O-O Re1'))).toEqual([]);
   });
 
   it('does not tag when the user still has two bishops', () => {
-    const seq = 'e4 e6 d4 d5 Nc3 Nf6 e5 Nfd7 f4 c5 Nf3 Nc6 Be3 a6 Qd2 Be7 O-O-O O-O Kb1';
-    expect(tacticTags(bishop('b7b5', seq))).toEqual([]);
+    const seq = 'e4 e6 d4 d6 Nc3 Nf6 Bd3 Nbd7 Nf3 Be7 O-O O-O Re1 Re8 Bf4 Nh5 Bg5';
+    expect(tacticTags(bishop('c7c6', seq))).toEqual([]);
   });
 });

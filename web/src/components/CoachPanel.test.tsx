@@ -49,4 +49,15 @@ describe('CoachPanel', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Explain with this provider' }));
     await waitFor(() => expect(onChanged).toHaveBeenCalledWith({ provider: 'claude-cli', model: 'opus' }));
   });
+
+  it('labels a note that was written for an older analysis', async () => {
+    mockApi();
+    const old = { ...note('claude-cli'), olderAnalysis: true as const };
+    render(<MemoryRouter><CoachPanel gameId={1} notes={[old]} active={0} onActive={() => {}} onChanged={() => {}} /></MemoryRouter>);
+    expect(await screen.findByText('Based on an older analysis')).toBeTruthy();
+    cleanup();
+    render(<MemoryRouter><CoachPanel gameId={1} notes={[note('claude-cli')]} active={0} onActive={() => {}} onChanged={() => {}} /></MemoryRouter>);
+    await screen.findByText('by claude-cli');
+    expect(screen.queryByText('Based on an older analysis')).toBeNull();
+  });
 });

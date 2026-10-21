@@ -75,7 +75,9 @@ export function getAnalysis(db: DatabaseSync, gameId: number, level: Level = cur
 export function markAnalysis(db: DatabaseSync, gameId: number, status: GameAnalysis['status'], error: string | null = null): void {
   db.prepare(
     `INSERT INTO game_analysis (game_id, version, status, error) VALUES (?, ?, ?, ?)
-     ON CONFLICT(game_id) DO UPDATE SET status = excluded.status, error = excluded.error`,
+     ON CONFLICT(game_id) DO UPDATE SET status = excluded.status, error = excluded.error,
+       -- A failed re-analysis is final at the current version: failed analyses are not retried automatically.
+       version = CASE WHEN excluded.status = 'error' THEN excluded.version ELSE game_analysis.version END`,
   ).run(gameId, ANALYSIS_VERSION, status, error);
 }
 

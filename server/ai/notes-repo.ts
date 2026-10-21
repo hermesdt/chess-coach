@@ -40,6 +40,15 @@ export function listNotes(db: DatabaseSync, subject: string, promptVersion: stri
   ).all(subject, promptVersion, analysisVersion).map(toNote);
 }
 
+/** Notes of the newest analysis version below `analysisVersion` that has any, newest first. */
+export function listOlderNotes(db: DatabaseSync, subject: string, promptVersion: string, analysisVersion: number): GameReviewNote[] {
+  const row = db.prepare(
+    'SELECT MAX(analysis_version) AS v FROM ai_notes WHERE subject = ? AND prompt_version = ? AND analysis_version < ?',
+  ).get(subject, promptVersion, analysisVersion);
+  if (row?.v === null || row?.v === undefined) return [];
+  return listNotes(db, subject, promptVersion, row.v as number);
+}
+
 /** The newest review of a subject for an analysis version, from any provider. */
 export function latestReview(db: DatabaseSync, subject: string, analysisVersion: number): GameReview | null {
   const row = db.prepare(

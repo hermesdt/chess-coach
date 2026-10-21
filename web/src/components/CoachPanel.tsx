@@ -72,6 +72,7 @@ export function CoachPanel({ gameId, notes, active, onActive, onChanged, error =
       )}
       {note && (
         <div className="coach-note">
+          {note.olderAnalysis && <p className="muted">Based on an older analysis</p>}
           {notes.length === 1 && <p className="muted">{tabLabel(note)}</p>}
           <p>{note.review.summary}</p>
           {note.review.openingNote && <p><strong>Opening:</strong> {note.review.openingNote}</p>}

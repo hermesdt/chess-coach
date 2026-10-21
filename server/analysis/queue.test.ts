@@ -303,6 +303,17 @@ describe('analysis version bump', () => {
     expect(eligibleUnanalysed(db, 10)).toEqual([]);
   });
 
+  it('does not retry a failed re-analysis on the next sync', async () => {
+    insertGames(db, [game('g1')]);
+    const [a] = ids() as [number];
+    makeOutdated(a);
+    expect(eligibleUnanalysed(db, 10)).toEqual([a]);
+    const res = enqueueAnalysis(db, [a], { pool: fakePool(() => true), nodes: 1000 });
+    await waitForJob(db, res.jobId!);
+    expect(getAnalysis(db, a)).toMatchObject({ status: 'error', version: ANALYSIS_VERSION });
+    expect(eligibleUnanalysed(db, 10)).toEqual([]);
+  });
+
   it('re-analysis keeps the card id, the FSRS state and the review history', async () => {
     insertGames(db, [game('g1')]);
     const [a] = ids() as [number];

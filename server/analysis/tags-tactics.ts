@@ -1,5 +1,5 @@
 import { Chess, type Color as ChessColor, type PieceSymbol, type Square } from 'chess.js';
-import type { Color, Tag } from '../../shared/types';
+import type { Color, Tag } from '../../shared/types.js';
 import { PIECE_VALUE, playUci } from './tags-material.js';
 
 export interface TacticTagInput {
@@ -175,8 +175,10 @@ function badBishop(input: TacticTagInput, color: ChessColor): boolean {
   if (bishops.length !== 1) return false;
   const colour = squareColour(bishops[0]!.square);
   if (squareColour(move.to) !== colour) return false;
-  const pawns = pieces.filter((cell) => cell!.type === 'p' && squareColour(cell!.square) === colour);
-  return pawns.length >= BAD_BISHOP_MIN_PAWNS;
+  const pawnsOnColour = (c: Chess): number => c.board().flat()
+    .filter((cell) => cell && cell.color === color && cell.type === 'p' && squareColour(cell.square) === colour).length;
+  // Only the move that reaches the threshold is tagged, not every later pawn move.
+  return pawnsOnColour(chess) >= BAD_BISHOP_MIN_PAWNS && pawnsOnColour(new Chess(input.fenBefore)) < BAD_BISHOP_MIN_PAWNS;
 }
 
 /**
@@ -189,7 +191,7 @@ export function tacticTags(input: TacticTagInput): Tag[] {
   const lostEnough = input.played !== input.best && input.winLoss >= MIN_WIN_LOSS && input.bestPv.length > 0;
   if (lostEnough && missedFork(input, color)) tags.push('missed_fork');
   if (lostEnough && missedPin(input, color)) tags.push('missed_pin');
-  if (weakBackRank(input, color)) tags.push('weak_back_rank');
+  if (input.winLoss >= MIN_WIN_LOSS && weakBackRank(input, color)) tags.push('weak_back_rank');
   if (badBishop(input, color)) tags.push('bad_bishop');
   return tags;
 }

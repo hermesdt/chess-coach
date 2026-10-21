@@ -34,7 +34,8 @@ export interface SettingsUpdate { chesscomUsername?: string; lichessUsername?: s
 // M5: AI game review
 export interface GameReviewMoment { ply: number; whatHappened: string; whyItMatters: string; principle: string; lessonId: LessonId | null }
 export interface GameReview { summary: string; openingNote: string; moments: GameReviewMoment[]; oneThingToPractice: string }
-export interface GameReviewNote { provider: ProviderId; model: string; createdAt: number; review: GameReview }
+/** `olderAnalysis` is set when the note was written for an older analysis version of the game. */
+export interface GameReviewNote { provider: ProviderId; model: string; createdAt: number; review: GameReview; olderAnalysis?: true }
 // M5: AI weakness report
 export interface WeaknessItem { title: string; rule: string; lessonId: LessonId; focus: string }
 export interface WeaknessReport { headline: string; weaknesses: WeaknessItem[]; encouragement: string }

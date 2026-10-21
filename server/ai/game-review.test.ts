@@ -188,6 +188,24 @@ describe('schema and errors', () => {
   });
 });
 
+describe('notes after a re-analysis', () => {
+  it('shows the notes of an older analysis version, marked, until a new review exists', async () => {
+    const app = createApp({ db, ai: registry() });
+    const post = () => app.request('/api/games/1/coach', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+    await waitForJob(db, ((await (await post()).json()) as { jobId: number }).jobId);
+    const read = async () => (await (await app.request('/api/games/1/coach')).json()) as { provider: string; olderAnalysis?: boolean }[];
+    expect(await read()).toEqual([expect.not.objectContaining({ olderAnalysis: true })]);
+    // Re-analysis: the stored analysis gets a newer version.
+    db.prepare('UPDATE game_analysis SET version = version + 1 WHERE game_id = 1').run();
+    expect(await read()).toEqual([expect.objectContaining({ provider: 'claude-cli', olderAnalysis: true })]);
+    // A new review for the new version replaces the fallback.
+    await waitForJob(db, ((await (await post()).json()) as { jobId: number }).jobId);
+    const fresh = await read();
+    expect(fresh).toHaveLength(1);
+    expect(fresh[0]).not.toHaveProperty('olderAnalysis');
+  });
+});
+
 describe('routes', () => {
   it('POST starts a coach job and GET lists notes newest first', async () => {
     const app = createApp({ db, ai: registry() });

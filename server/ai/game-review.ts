@@ -10,7 +10,7 @@ import { currentLevel, type Level } from '../level.js';
 import { applyCoachExplanations } from '../srs/mistake-cards.js';
 import { allowedSan, gameFacts, momentAllowedSan } from './facts.js';
 import { toStrictJsonSchema } from './json-schema.js';
-import { findNote, listNotes, saveNote } from './notes-repo.js';
+import { findNote, listNotes, listOlderNotes, saveNote } from './notes-repo.js';
 import { buildUserPrompt, PROMPT_VERSION, SYSTEM } from './prompts/game-review.js';
 import { redact } from './redact.js';
 import type { Registry } from './registry.js';
@@ -47,11 +47,15 @@ export function loadGame(db: DatabaseSync, gameId: number): GameDetail | null {
   return { ...row, startFen, moves };
 }
 
-/** Cached notes of the game at the current level, newest first. */
+/** Cached notes of the game at the current level, newest first. Falls back to notes of an older analysis version. */
 export function gameNotes(db: DatabaseSync, gameId: number): GameReviewNote[] {
   const analysis = getAnalysis(db, gameId);
   if (!analysis) return [];
-  return listNotes(db, subjectOf(gameId), promptVersionFor(currentLevel(db).level), analysis.version);
+  const promptVersion = promptVersionFor(currentLevel(db).level);
+  const current = listNotes(db, subjectOf(gameId), promptVersion, analysis.version);
+  if (current.length > 0) return current;
+  // After a re-analysis the owner's earlier notes stay visible, marked as based on the older analysis.
+  return listOlderNotes(db, subjectOf(gameId), promptVersion, analysis.version).map((n) => ({ ...n, olderAnalysis: true as const }));
 }
 
 export async function reviewGame(
