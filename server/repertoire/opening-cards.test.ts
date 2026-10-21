@@ -124,7 +124,8 @@ describe('session ordering', () => {
     const mistakes = Array.from({ length: 5 }, (_, i) => card('mistake', i + 1, null));
     // Created in reverse of the depth-first order, so id order differs from sort order.
     const openings = [4, 3, 2, 1, 0].map((s, i) => ({ id: card('opening', i + 10, s), s }));
-    const s = buildSession(db, NOW, { daily: 20, newPerDay: 4 });
+    // Level 3 with a cap of 4: mistake 1, lesson 1 (no lesson cards, so it goes to mistake), opening 2.
+    const s = buildSession(db, NOW, { daily: 20, newPerDay: 4, level: 3 });
     const byOrder = [...openings].sort((a, b) => a.s - b.s).map((o) => o.id);
     expect(s.cards.map((c) => c.id)).toEqual([mistakes[0], byOrder[0], mistakes[1], byOrder[1]]);
     expect(s.newAvailable).toBe(10);

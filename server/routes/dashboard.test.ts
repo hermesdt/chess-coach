@@ -7,6 +7,8 @@ import { openDb } from '../db/db.js';
 import { insertGames, listGames } from '../db/games-repo.js';
 import { setSetting } from '../db/settings-repo.js';
 import { positionKey, upsertCard } from '../srs/cards-repo.js';
+import type { Lesson } from '../../shared/types.js';
+import type { RepNode, Repertoire } from '../repertoire/types.js';
 
 const NOW = new Date(2026, 9, 18, 12, 0, 0).getTime();
 const JSON_HEADERS = { 'content-type': 'application/json' };
@@ -135,8 +137,8 @@ describe('level-up banner', () => {
     seed(500);
     await get();
     setSetting(db, 'level_override', '2');
-    expect((await get()).levelUp).toEqual({ from: 1, to: 2 });
-    expect((await get()).levelUp).toEqual({ from: 1, to: 2 });
+    expect((await get()).levelUp).toMatchObject({ from: 1, to: 2 });
+    expect((await get()).levelUp).toMatchObject({ from: 1, to: 2 });
     const res = await app.request('/api/dashboard/level-seen', { method: 'POST', headers: JSON_HEADERS, body: '{}' });
     expect(res.status).toBe(200);
     expect((await get()).levelUp).toBeNull();
@@ -153,5 +155,39 @@ describe('level-up banner', () => {
     await get();
     setSetting(db, 'level_override', '1');
     expect((await get()).levelUp).toBeNull();
+  });
+
+  describe('banner text', () => {
+    const node = (id: string, mover: 'white' | 'black', level: 1 | 2 | 3, children: RepNode[] = []): RepNode => ({
+      id, san: id, uci: 'a1a1', comment: null, tags: [], level, fenBefore: 'f', fenAfter: 'f', ply: 1, mover, parentId: null, children,
+    });
+    const rep = (id: string, color: 'white' | 'black', roots: RepNode[]): Repertoire => ({ id, name: id, color, roots, byId: new Map() });
+    const lesson = (id: string, level: 1 | 2 | 3) => ({ id, level, order: 1, exercises: [] }) as unknown as Lesson;
+
+    const lessons = [lesson('tactics', 1), lesson('outposts', 2), lesson('prophylaxis', 2), lesson('defence', 3)];
+    // Own moves only. Level 2: London Nf3 and Bf4, Caro d5 (3). Level 3: Caro dxe4 (1). Opponent moves do not count.
+    const repertoires = [
+      rep('london', 'white', [node('d4', 'white', 1, [
+        node('d5', 'black', 1, [node('Nf3', 'white', 2, [node('Nf6', 'black', 2, [node('Bf4', 'white', 2)])])]),
+      ])]),
+      rep('caro', 'black', [node('e4', 'white', 1, [node('c6', 'black', 1, [
+        node('d4', 'white', 2, [node('d5', 'black', 2, [node('Nc3', 'white', 3, [node('dxe4', 'black', 3)])])]),
+      ])])]),
+    ];
+    const banner = async (to: 2 | 3, hasLessons = lessons) => {
+      const a = createApp({ db, now: () => NOW, lessons: hasLessons, repertoires });
+      setSetting(db, 'level_override', '1');
+      await a.request('/api/dashboard');
+      setSetting(db, 'level_override', String(to));
+      return ((await (await a.request('/api/dashboard')).json()) as { levelUp: { message: string } | null }).levelUp?.message;
+    };
+
+    it('counts the lessons and the owner moves at the new level', async () => {
+      expect(await banner(2)).toBe('Level 2 unlocked: 2 new lessons and 3 new opening lines.');
+    });
+
+    it('counts level 3 content for a level-3 unlock, and uses singular words', async () => {
+      expect(await banner(3)).toBe('Level 3 unlocked: 1 new lesson and 1 new opening line.');
+    });
   });
 });

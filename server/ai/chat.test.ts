@@ -66,6 +66,13 @@ describe('askCoach', () => {
     expect(r.user + r.system).toMatch(/no flattery|Do not flatter/i);
   });
 
+  it('replaces a lessonId above the level by null', async () => {
+    const level1 = await askCoach(fake([answer({ lessonId: 'pawn-structures' })]).provider, base({ level: 1 }));
+    expect(level1.answer.lessonId).toBeNull();
+    const level2 = await askCoach(fake([answer({ lessonId: 'pawn-structures' })]).provider, base({ level: 2 }));
+    expect(level2.answer.lessonId).toBe('pawn-structures');
+  });
+
   it('retries once when the answer names a move outside the grounding set', async () => {
     const { provider, reqs } = fake([answer({ answer: 'Try Qh5 instead.' }), answer()]);
     const out = await askCoach(provider, base());

@@ -80,7 +80,7 @@ export function CoachPage() {
               <h3>{w.title}</h3>
               <p>{w.rule}</p>
               <p className="muted">Focus: {w.focus}</p>
-              <Link to={`/course/${w.lessonId}`}>Lesson: {LESSON_TITLES[w.lessonId]}</Link>
+              {w.lessonId && <Link to={`/course/${w.lessonId}`}>Lesson: {LESSON_TITLES[w.lessonId]}</Link>}
             </div>
           ))}
           <p>{note.report.encouragement}</p>

@@ -85,6 +85,14 @@ describe('reviewGame', () => {
     expect(note.review.moments[0]!.whatHappened).toBe('You played Qh5 too early.');
   });
 
+  it('replaces a lessonId above the level by null, and keeps one at or below it', async () => {
+    const moment = (lessonId: string) => ({ ...review().moments[0]!, lessonId });
+    reply = () => JSON.stringify(review({ moments: [moment('pawn-structures')] }));
+    expect((await reviewGame(db, registry(), 1, {})).review.moments[0]!.lessonId).toBeNull();
+    db.prepare("INSERT INTO settings (key, value) VALUES ('level_override', '2')").run();
+    expect((await reviewGame(db, registry(), 1, {})).review.moments[0]!.lessonId).toBe('pawn-structures');
+  });
+
   it('accepts a review without moments', async () => {
     reply = () => JSON.stringify(review({ moments: [] }));
     expect((await reviewGame(db, registry(), 1, {})).review.moments).toEqual([]);

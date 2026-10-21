@@ -67,7 +67,7 @@ export interface DashboardData {
   recentGames: GameSummary[];
   topTag: { tag: Tag; count: number; games: number } | null;
   level: { level: number; rating: number | null; source: 'override' | 'games' | 'default' };
-  levelUp: { from: number; to: number } | null;
+  levelUp: { from: number; to: number; message: string } | null;
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {

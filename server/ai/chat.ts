@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { LESSON_IDS } from '../../shared/lessons.js';
 import { factPackSan, type FactPack } from '../chat/fact-pack.js';
+import { capLessonId } from './lesson-level.js';
 import { groundingSet } from './grounding.js';
 import { toStrictJsonSchema } from './json-schema.js';
 import { buildChatPrompt, CHAT_SYSTEM, packText } from './prompts/chat.js';
@@ -77,5 +78,5 @@ export async function askCoach(provider: AiProvider, input: AskCoachInput): Prom
     schemaFor(new Set(pack.lines.map((l) => l.id))),
     { model: input.model, allowedSan, textOf: (a) => [a.answer, a.rule, ...a.lines.map((l) => l.why)], signal: input.signal, onText: input.onText, onRetry: input.onRetry },
   );
-  return { answer: value, model };
+  return { answer: { ...value, lessonId: capLessonId(value.lessonId, input.level) }, model };
 }

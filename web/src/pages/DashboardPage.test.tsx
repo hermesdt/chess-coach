@@ -9,7 +9,7 @@ const data = (over: Partial<DashboardData> = {}): DashboardData => ({
   review: { dueNow: 3, dueToday: 3, totalCards: 5, reviewedToday: 0, sessionSize: 3 },
   sync: { chesscom: null, lichess: null }, recentGames: [],
   topTag: { tag: 'hung_piece', count: 7, games: 30 },
-  level: { level: 2, rating: 1000, source: 'games' }, levelUp: { from: 1, to: 2 }, ...over,
+  level: { level: 2, rating: 1000, source: 'games' }, levelUp: { from: 1, to: 2, message: 'Level 2 unlocked: 7 new lessons and 12 new opening lines.' }, ...over,
 });
 
 afterEach(() => {
@@ -24,11 +24,12 @@ describe('DashboardPage', () => {
     const seen = vi.spyOn(api, 'markLevelSeen').mockResolvedValue({ ok: true });
     render(<MemoryRouter><DashboardPage /></MemoryRouter>);
     await screen.findByText('You left a piece undefended — in 7 of your last 30 games');
-    expect(screen.getByText(/Level 2/).textContent).toContain('rating ~1000');
+    expect(screen.getByText(/^Level 2 · rating/).textContent).toContain('rating ~1000');
     expect(screen.getByText('3 cards to review today')).toBeTruthy();
+    expect(screen.getByText('Level 2 unlocked: 7 new lessons and 12 new opening lines.')).toBeTruthy();
     fireEvent.click(screen.getByText('Dismiss'));
     expect(seen).toHaveBeenCalledOnce();
-    expect(screen.queryByText(/You reached level 2/)).toBeNull();
+    expect(screen.queryByText(/Level 2 unlocked/)).toBeNull();
   });
 
   it('disables Start review at zero cards', async () => {

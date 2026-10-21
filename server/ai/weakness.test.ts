@@ -122,6 +122,26 @@ describe('weaknessReport', () => {
     expect(calls.map((c) => c.provider)).toEqual(['claude-cli', 'codex-cli', 'claude-cli']);
   });
 
+  it('replaces a lessonId above the level by null, and shows it again at that level', async () => {
+    game(1, 1, { moves: [mv(1)] });
+    const item = (lessonId: string | null) => ({ ...report().weaknesses[0], lessonId });
+    reply = () => JSON.stringify(report({ weaknesses: [item('pawn-structures'), item('blunder-check'), item(null)] }));
+    const note = await weaknessReport(db, registry(), {});
+    expect(note.report.weaknesses.map((w) => w.lessonId)).toEqual([null, 'blunder-check', null]);
+    db.prepare("INSERT INTO settings (key, value) VALUES ('level_override', '2')").run();
+    expect(latestWeakness(db)?.report.weaknesses.map((w) => w.lessonId)).toEqual(['pawn-structures', 'blunder-check', null]);
+  });
+
+  it('hides a stored lessonId when the level drops', async () => {
+    game(1, 1, { moves: [mv(1)] });
+    db.prepare("INSERT INTO settings (key, value) VALUES ('level_override', '2')").run();
+    reply = () => JSON.stringify(report({ weaknesses: [{ ...report().weaknesses[0], lessonId: 'pawn-structures' }] }));
+    expect((await weaknessReport(db, registry(), {})).report.weaknesses[0]!.lessonId).toBe('pawn-structures');
+    db.prepare("UPDATE settings SET value = '1' WHERE key = 'level_override'").run();
+    expect(latestWeakness(db)?.report.weaknesses[0]!.lessonId).toBeNull();
+    expect((await weaknessReport(db, registry(), {})).report.weaknesses[0]!.lessonId).toBeNull();
+  });
+
   it('rejects an unknown lessonId', async () => {
     game(1, 1, { moves: [mv(1)] });
     reply = () => JSON.stringify(report({ weaknesses: [{ ...report().weaknesses[0], lessonId: 'nope' }] }));

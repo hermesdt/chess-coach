@@ -8,6 +8,7 @@ import { getSettings } from '../config.js';
 import { getGameRow } from '../db/games-repo.js';
 import { currentLevel, type Level } from '../level.js';
 import { applyCoachExplanations } from '../srs/mistake-cards.js';
+import { capLessonId } from './lesson-level.js';
 import { allowedSan, gameFacts, momentAllowedSan } from './facts.js';
 import { toStrictJsonSchema } from './json-schema.js';
 import { findNote, listNotes, listOlderNotes, saveNote } from './notes-repo.js';
@@ -104,7 +105,7 @@ export async function reviewGame(
   );
   const seen = new Set<number>();
   const moments = value.moments.filter((m) => plies.has(m.ply) && !seen.has(m.ply) && seen.add(m.ply));
-  const review: GameReview = { ...value, moments };
+  const review: GameReview = { ...value, moments: moments.map((m) => ({ ...m, lessonId: capLessonId(m.lessonId, level) })) };
   saveNote(db, { subject, promptVersion, analysisVersion: analysis.version, provider: provider.id, model: requested }, model, review);
   applyCoachExplanations(db, analysis, review);
   return { provider: provider.id, model, createdAt: Date.now(), review };

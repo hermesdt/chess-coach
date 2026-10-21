@@ -37,7 +37,7 @@ export interface GameReview { summary: string; openingNote: string; moments: Gam
 /** `olderAnalysis` is set when the note was written for an older analysis version of the game. */
 export interface GameReviewNote { provider: ProviderId; model: string; createdAt: number; review: GameReview; olderAnalysis?: true }
 // M5: AI weakness report
-export interface WeaknessItem { title: string; rule: string; lessonId: LessonId; focus: string }
+export interface WeaknessItem { title: string; rule: string; lessonId: LessonId | null; focus: string }
 export interface WeaknessReport { headline: string; weaknesses: WeaknessItem[]; encouragement: string }
 export interface WeaknessReportNote { provider: ProviderId; model: string; createdAt: number; report: WeaknessReport }
 export type JobStatus = 'queued' | 'running' | 'done' | 'error';

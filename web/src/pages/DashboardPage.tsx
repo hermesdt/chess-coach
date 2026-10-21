@@ -43,7 +43,7 @@ export function DashboardPage() {
       {error && <p className="error">{error}</p>}
       {levelUp && !bannerHidden && (
         <div className="banner" role="status">
-          <span>You reached level {levelUp.to}. New: deeper opening lines and new lessons unlock as they arrive.</span>
+          <span>{levelUp.message}</span>
           <button type="button" onClick={dismiss}>Dismiss</button>
         </div>
       )}

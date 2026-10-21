@@ -2,13 +2,12 @@ import type { DatabaseSync } from 'node:sqlite';
 import { Hono } from 'hono';
 import type { EnginePool } from '../engine/pool.js';
 import { backfillMistakeCards } from '../srs/backfill.js';
-import type { Rating, ReviewSubmit } from '../../shared/types.js';
-import { getSettings } from '../config.js';
+import type { Lesson, Rating, ReviewSubmit } from '../../shared/types.js';
 import { addFlag, getCard, listFlagDetails, listFlags, recordReview, restoreFlaggedCard } from '../srs/cards-repo.js';
 import type { Repertoire } from '../repertoire/types.js';
 import { checkMove } from '../srs/check-move.js';
 import type { EngineCache } from '../engine/cache.js';
-import { buildSession } from '../srs/session.js';
+import { buildSession, sessionLimits } from '../srs/session.js';
 import { reviewStats } from '../srs/stats.js';
 
 const RATINGS: readonly string[] = ['again', 'hard', 'good', 'easy'];
@@ -28,12 +27,12 @@ function parseSubmit(body: unknown): ReviewSubmit | null {
 
 export function reviewRoutes(db: DatabaseSync, now: () => number, pool: Pick<EnginePool, 'analyse'>,
   getReps: () => Repertoire[],
+  getLessons: () => Lesson[],
   cache?: EngineCache,
 ): Hono {
   return new Hono()
     .get('/review/session', (c) => {
-      const { reviewDailyLimit, reviewNewPerDay } = getSettings(db);
-      const session = buildSession(db, now(), { daily: reviewDailyLimit, newPerDay: reviewNewPerDay });
+      const session = buildSession(db, now(), sessionLimits(db, getLessons()));
       const names = new Map(getReps().map((r) => [r.id, r.name]));
       const cards = session.cards.map((card) => {
         const repId = card.kind === 'opening' ? card.refs.find((r) => r.repertoire !== undefined)?.repertoire : undefined;
@@ -42,7 +41,7 @@ export function reviewRoutes(db: DatabaseSync, now: () => number, pool: Pick<Eng
       });
       return c.json({ ...session, cards });
     })
-    .get('/review/stats', (c) => c.json(reviewStats(db, now())))
+    .get('/review/stats', (c) => c.json(reviewStats(db, now(), getLessons())))
     .post('/review/:cardId', async (c) => {
       const id = parseId(c.req.param('cardId'));
       const submit = parseSubmit(await c.req.json().catch(() => null));

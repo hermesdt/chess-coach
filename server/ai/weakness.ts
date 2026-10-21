@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { LESSON_IDS } from '../../shared/lessons.js';
 import type { ProviderId, WeaknessReport, WeaknessReportNote } from '../../shared/types.js';
 import { getSettings } from '../config.js';
+import { currentLevel, type Level } from '../level.js';
 import type { Repertoire } from '../repertoire/types.js';
 import { toStrictJsonSchema } from './json-schema.js';
 import { findWeaknessNote, latestWeaknessNote, saveNote, weaknessKey } from './notes-repo.js';
@@ -11,6 +12,7 @@ import { buildUserPrompt, PROMPT_VERSION, SYSTEM } from './prompts/weakness.js';
 import type { Registry } from './registry.js';
 import { runStructured } from './runner.js';
 import type { AiProvider } from './types.js';
+import { capLessonId } from './lesson-level.js';
 import { NOT_CONFIGURED } from './game-review.js';
 import { DEFAULT_LAST_N, weaknessAllowedSan, weaknessFacts, weaknessFactsText } from './weakness-facts.js';
 
@@ -20,7 +22,7 @@ export type { WeaknessFacts } from './weakness-facts.js';
 export const MAX_WEAKNESSES = 3;
 export const NO_GAMES = 'Analyse a few games first.';
 
-const item = z.object({ title: z.string(), rule: z.string(), lessonId: z.enum(LESSON_IDS), focus: z.string() });
+const item = z.object({ title: z.string(), rule: z.string(), lessonId: z.enum(LESSON_IDS).nullable(), focus: z.string() });
 const schemaFor = (minWeaknesses: number) => z.object({
   headline: z.string(),
   weaknesses: z.array(item).min(minWeaknesses).max(MAX_WEAKNESSES),
@@ -30,7 +32,16 @@ const schemaFor = (minWeaknesses: number) => z.object({
 /** Strict: additionalProperties false, every key required, no numeric bounds. */
 export const WEAKNESS_JSON_SCHEMA: object = toStrictJsonSchema(schemaFor(0));
 
-export const latestWeakness = (db: DatabaseSync): WeaknessReportNote | null => latestWeaknessNote(db);
+/** A stored report may come from a higher level. Lessons above the current level are hidden on every read. */
+const capReport = (note: WeaknessReportNote, level: Level): WeaknessReportNote => ({
+  ...note,
+  report: { ...note.report, weaknesses: note.report.weaknesses.map((w) => ({ ...w, lessonId: capLessonId(w.lessonId, level) })) },
+});
+
+export function latestWeakness(db: DatabaseSync): WeaknessReportNote | null {
+  const note = latestWeaknessNote(db);
+  return note && capReport(note, currentLevel(db).level);
+}
 
 export async function weaknessReport(
   db: DatabaseSync,
@@ -48,7 +59,7 @@ export async function weaknessReport(
   const configured = settings.aiModels[provider.id] ?? null;
   const requested = configured ?? 'default';
   const cached = findWeaknessNote(db, { promptVersion, provider: provider.id, model: requested });
-  if (cached) return cached;
+  if (cached) return capReport(cached, currentLevel(db).level);
 
   opts.onProvider?.(provider);
   const hasTags = Object.values(facts.tagCounts).some((n) => n > 0);
@@ -65,5 +76,5 @@ export async function weaknessReport(
   );
   const report: WeaknessReport = value;
   saveNote(db, weaknessKey(promptVersion, provider.id, requested), model, report);
-  return { provider: provider.id, model, createdAt: Date.now(), report };
+  return capReport({ provider: provider.id, model, createdAt: Date.now(), report }, currentLevel(db).level);
 }
