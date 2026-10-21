@@ -1,6 +1,7 @@
-import { beforeEach, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../app.js';
 import { openDb } from '../db/db.js';
+import { loadRepertoire } from '../repertoire/load.js';
 
 let app: ReturnType<typeof createApp>;
 beforeEach(() => {
@@ -101,4 +102,35 @@ it('stores chat and deep models, and clears one with an empty string', async () 
   expect(body).toMatchObject({ aiChatModels: { 'codex-cli': null }, aiDeepModels: { 'claude-cli': 'big' } });
   expect((await put({ aiDeepModels: { nope: 'x' } })).status).toBe(400);
   expect((await put({ aiChatModels: { 'codex-cli': 5 } })).status).toBe(400);
+});
+
+describe('levelOverride', () => {
+  const rep = loadRepertoire({
+    id: 'l', name: 'L', color: 'black',
+    moves: [{ san: 'e4', children: [{ san: 'e5', children: [{ san: 'Nf3', children: [{ san: 'Nc6', level: 3 }] }] }] }],
+  });
+  let db: ReturnType<typeof openDb>;
+  const cards = () => db.prepare("SELECT suspended FROM cards WHERE kind = 'opening' ORDER BY sort_order, id").all().map((r) => r.suspended);
+  beforeEach(() => {
+    db = openDb(':memory:');
+    app = createApp({ db, repertoires: [rep] });
+  });
+
+  it('creates and suspends level-3 opening cards at once, without a restart', async () => {
+    expect((await put({ levelOverride: 1 })).status).toBe(200);
+    expect(cards()).toEqual([0]);
+    await put({ levelOverride: 3 });
+    expect(cards()).toEqual([0, 0]);
+    await put({ levelOverride: 1 });
+    expect(cards()).toEqual([0, 1]);
+  });
+
+  it('clears the override with null and rejects other values', async () => {
+    await put({ levelOverride: 2 });
+    expect(db.prepare("SELECT value FROM settings WHERE key = 'level_override'").get()).toEqual({ value: '2' });
+    await put({ levelOverride: null });
+    expect(db.prepare("SELECT value FROM settings WHERE key = 'level_override'").get()).toBeUndefined();
+    expect((await put({ levelOverride: 4 })).status).toBe(400);
+    expect((await put({ levelOverride: '2' })).status).toBe(400);
+  });
 });

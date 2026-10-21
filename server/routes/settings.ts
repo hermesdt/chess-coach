@@ -4,6 +4,8 @@ import type { DataInfo, SettingsDTO, SettingsUpdate } from '../../shared/types.j
 import { PROVIDER_IDS } from '../ai/types.js';
 import { getSettings, isAiProviderSetting, resolveBackupsDir, resolveDbPath } from '../config.js';
 import { setSetting } from '../db/settings-repo.js';
+import { refreshOpenings } from '../repertoire/refresh.js';
+import type { Repertoire } from '../repertoire/types.js';
 
 function toDto(db: DatabaseSync): SettingsDTO {
   const s = getSettings(db);
@@ -34,7 +36,7 @@ const STRING_FIELDS = [
 
 const MODEL_MAPS = [['aiChatModels', 'ai_chat_model_'], ['aiDeepModels', 'ai_deep_model_']] as const;
 
-export function settingsRoutes(db: DatabaseSync): Hono {
+export function settingsRoutes(db: DatabaseSync, getReps: () => Repertoire[]): Hono {
   return new Hono()
     .get('/settings', (c) => c.json(toDto(db)))
     .get('/settings/data', (c) => {
@@ -66,6 +68,10 @@ export function settingsRoutes(db: DatabaseSync): Hono {
       const newPerDay = body.reviewNewPerDay;
       if (newPerDay !== undefined && !(Number.isInteger(newPerDay) && newPerDay >= 0 && newPerDay <= 100)) {
         return c.json({ error: 'reviewNewPerDay must be an integer from 0 to 100' }, 400);
+      }
+      const levelOverride = body.levelOverride;
+      if (levelOverride !== undefined && levelOverride !== null && ![1, 2, 3].includes(levelOverride)) {
+        return c.json({ error: 'levelOverride must be 1, 2, 3 or null' }, 400);
       }
       if (body.aiProvider !== undefined && !isAiProviderSetting(body.aiProvider)) {
         return c.json({ error: 'aiProvider must be auto, none or a provider id' }, 400);
@@ -105,6 +111,15 @@ export function settingsRoutes(db: DatabaseSync): Hono {
       if (nodes !== undefined) setSetting(db, 'engine_nodes', String(nodes));
       if (daily !== undefined) setSetting(db, 'review_daily_limit', String(daily));
       if (newPerDay !== undefined) setSetting(db, 'review_new_per_day', String(newPerDay));
+      if (levelOverride !== undefined) {
+        setSetting(db, 'level_override', levelOverride === null ? null : String(levelOverride));
+        try {
+          // The level decides which opening cards exist, so the cards follow without a restart.
+          refreshOpenings(db, getReps());
+        } catch (e) {
+          console.error('could not refresh openings after a level change', e);
+        }
+      }
       return c.json(toDto(db));
     });
 }

@@ -73,7 +73,7 @@ export function createApp(deps: AppDeps): Hono {
   const ai = deps.ai ?? createRegistry({ db: deps.db, fetchFn: deps.fetchFn });
   app.use('/api/*', localOnly);
   app.route('/api', healthRoutes);
-  app.route('/api', settingsRoutes(deps.db));
+  app.route('/api', settingsRoutes(deps.db, getReps));
   app.route('/api', aiRoutes(deps.db, ai, deps.aiTestTimeoutMs, getReps));
   app.route('/api', chatRoutes(deps.db, ai, pool, getReps, deps.hub ?? new StreamHub(), cache));
   app.route('/api', liveRoutes(deps.live ?? lazyLiveEngine, cache));
