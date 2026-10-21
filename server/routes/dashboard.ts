@@ -42,18 +42,18 @@ function topTag(db: DatabaseSync, level: Level): { tag: Tag; count: number; game
 
 export interface LevelUp { from: number; to: number; message: string }
 
-/** Own-move nodes (the mover is the owner's colour) that first appear at `level`, over all repertoires. */
-function countOwnLines(reps: readonly Repertoire[], level: number): number {
+/** Own-move nodes (the mover is the owner's colour) with a level above `from` and up to `to`, over all repertoires. */
+function countOwnMoves(reps: readonly Repertoire[], from: number, to: number): number {
   const walk = (nodes: RepNode[], color: string): number =>
-    nodes.reduce((sum, n) => sum + (n.level === level && n.mover === color ? 1 : 0) + walk(n.children, color), 0);
+    nodes.reduce((sum, n) => sum + (n.level > from && n.level <= to && n.mover === color ? 1 : 0) + walk(n.children, color), 0);
   return reps.reduce((sum, r) => sum + walk(r.roots, r.color), 0);
 }
 
 const unit = (n: number, word: string): string => `${n} new ${word}${n === 1 ? '' : 's'}`;
 
-function levelUpMessage(to: number, lessons: readonly Lesson[], reps: readonly Repertoire[]): string {
-  const newLessons = lessons.filter((l) => l.level === to).length;
-  return `Level ${to} unlocked: ${unit(newLessons, 'lesson')} and ${unit(countOwnLines(reps, to), 'opening line')}.`;
+function levelUpMessage(from: number, to: number, lessons: readonly Lesson[], reps: readonly Repertoire[]): string {
+  const newLessons = lessons.filter((l) => l.level > from && l.level <= to).length;
+  return `Level ${to} unlocked: ${unit(newLessons, 'lesson')} and ${unit(countOwnMoves(reps, from, to), 'opening move')}.`;
 }
 
 function levelUp(db: DatabaseSync, current: CurrentLevel, getLessons: () => Lesson[], getReps: () => Repertoire[]): LevelUp | null {
@@ -66,7 +66,7 @@ function levelUp(db: DatabaseSync, current: CurrentLevel, getLessons: () => Less
     return null;
   }
   const from = Number(stored);
-  return level > from ? { from, to: level, message: levelUpMessage(level, getLessons(), getReps()) } : null;
+  return level > from ? { from, to: level, message: levelUpMessage(from, level, getLessons(), getReps()) } : null;
 }
 
 export function dashboardRoutes(db: DatabaseSync, now: () => number, getLessons: () => Lesson[], getReps: () => Repertoire[]): Hono {

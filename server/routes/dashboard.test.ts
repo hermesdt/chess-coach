@@ -174,20 +174,24 @@ describe('level-up banner', () => {
         node('d4', 'white', 2, [node('d5', 'black', 2, [node('Nc3', 'white', 3, [node('dxe4', 'black', 3)])])]),
       ])])]),
     ];
-    const banner = async (to: 2 | 3, hasLessons = lessons) => {
+    const banner = async (to: 2 | 3, from: 1 | 2 = 1, hasLessons = lessons) => {
       const a = createApp({ db, now: () => NOW, lessons: hasLessons, repertoires });
-      setSetting(db, 'level_override', '1');
+      setSetting(db, 'level_override', String(from));
       await a.request('/api/dashboard');
       setSetting(db, 'level_override', String(to));
       return ((await (await a.request('/api/dashboard')).json()) as { levelUp: { message: string } | null }).levelUp?.message;
     };
 
     it('counts the lessons and the owner moves at the new level', async () => {
-      expect(await banner(2)).toBe('Level 2 unlocked: 2 new lessons and 3 new opening lines.');
+      expect(await banner(2)).toBe('Level 2 unlocked: 2 new lessons and 3 new opening moves.');
     });
 
-    it('counts level 3 content for a level-3 unlock, and uses singular words', async () => {
-      expect(await banner(3)).toBe('Level 3 unlocked: 1 new lesson and 1 new opening line.');
+    it('counts only level 3 content for a jump from level 2 to 3, and uses singular words', async () => {
+      expect(await banner(3, 2)).toBe('Level 3 unlocked: 1 new lesson and 1 new opening move.');
+    });
+
+    it('counts everything that is newly unlocked for a jump from level 1 to 3', async () => {
+      expect(await banner(3, 1)).toBe('Level 3 unlocked: 3 new lessons and 4 new opening moves.');
     });
   });
 });
