@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { basename } from 'node:path';
 import { closeEnginePool, lazyEnginePool } from '../server/engine/pool.js';
+import { loadContentSources, sequenceIssues } from '../server/content/sequences.js';
 import { LessonError, listLessonFiles, loadLesson, validateLesson } from '../server/course/load.js';
 import type { LessonEngineCache } from '../server/course/validate.js';
 import { GuideError, listGuideFiles, loadGuide, validateGuide } from '../server/guides/load.js';
@@ -11,6 +12,19 @@ import { parseValidateArgs } from './validate-args.js';
 
 const NODES = 1_000_000;
 const PROGRESS_EVERY = 20;
+/** Until the M11 audit batches fix the real errors, an illegal sequence is a warning. Task 22 sets this to true. */
+const SEQUENCES_STRICT = false;
+
+/** The sequence-replay check of the comments, explanations and guide texts (no engine). */
+function sequenceCheck(args: { lessons: boolean; repertoires: boolean }): ValidationIssue[] {
+  const sources = loadContentSources();
+  if (!args.repertoires) {
+    sources.repertoires = [];
+    sources.guides = [];
+  }
+  if (!args.lessons) sources.lessons = [];
+  return sequenceIssues(sources).map((i) => (SEQUENCES_STRICT ? i : { ...i, severity: 'warning' as const }));
+}
 
 async function lessonIssues(paths: string[]): Promise<ValidationIssue[]> {
   const issues: ValidationIssue[] = [];
@@ -129,6 +143,7 @@ async function main(): Promise<number> {
     if (args.repertoires) issues.push(...(await repertoireIssues(listRepertoireFiles())));
     if (args.lessons) issues.push(...(await lessonIssues(listLessonFiles())));
     if (args.repertoires) issues.push(...(await guideIssues(listGuideFiles())));
+    issues.push(...sequenceCheck(args));
   }
   const errors = issues.filter((i) => i.severity !== 'warning');
   const warnings = issues.filter((i) => i.severity === 'warning');
