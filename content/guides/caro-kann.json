@@ -125,7 +125,7 @@
             "dxe4",
             "Nxe4"
           ],
-          "text": "Playing ...e6 before ...Bf5 shuts the bishop in. On c8 it has only the d7 square. Play ...Bf5 first.",
+          "text": "Playing ...e6 before ...Bf5 shuts the bishop in. After ...e6 the c8 bishop has only the d7 square. Play ...Bf5 first.",
           "bad": "e6",
           "good": [
             "Bf5"
@@ -231,7 +231,7 @@
             "d5",
             "e5"
           ],
-          "text": "Playing ...e6 before ...Bf5 shuts the bishop in. On c8 it has only the d7 square. The position is not lost, but you give up the main idea of the Caro-Kann. Play ...Bf5 first.",
+          "text": "Playing ...e6 before ...Bf5 shuts the bishop in. After ...e6 the c8 bishop has only the d7 square. The position is not lost, but you give up the main idea of the Caro-Kann. Play ...Bf5 first.",
           "bad": "e6",
           "good": [
             "Bf5"
