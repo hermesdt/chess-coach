@@ -9,10 +9,22 @@ import { GuidePage } from './GuidePage';
 
 vi.mock('react-chessboard', () => ({
   Chessboard: ({ options }: {
-    options: { position: string; onSquareClick?: (a: { piece: null; square: string }) => void };
+    options: {
+      position: string;
+      onSquareClick?: (a: { piece: null; square: string }) => void;
+      onMouseOverSquare?: (a: { piece: null; square: string }) => void;
+      onMouseOutSquare?: (a: { piece: null; square: string }) => void;
+    };
   }) => (
     <div data-testid="board" data-fen={options.position}>
       <button type="button" onClick={() => options.onSquareClick?.({ piece: null, square: 'c3' })}>square c3</button>
+      <button
+        type="button"
+        onMouseEnter={() => options.onMouseOverSquare?.({ piece: null, square: 'c3' })}
+        onMouseLeave={() => options.onMouseOutSquare?.({ piece: null, square: 'c3' })}
+      >
+        hover c3
+      </button>
     </div>
   ),
 }));
@@ -108,6 +120,10 @@ describe('GuidePage', () => {
     expect(screen.getByText('The knight guards e4 and d5.')).toBeTruthy();
     fireEvent.click(section.getByRole('button', { name: 'square c3' }));
     expect(screen.queryByText('The knight guards e4 and d5.')).toBeNull();
+    fireEvent.mouseEnter(section.getByRole('button', { name: 'hover c3' }));
+    expect(screen.getByText('The knight guards e4 and d5.')).toBeTruthy();
+    fireEvent.mouseLeave(section.getByRole('button', { name: 'hover c3' }));
+    expect(screen.queryByText('The knight guards e4 and d5.')).toBeNull();
     fireEvent.mouseEnter(section.getByRole('button', { name: 'c3' }));
     expect(screen.getByText('The knight guards e4 and d5.')).toBeTruthy();
     fireEvent.mouseLeave(section.getByRole('button', { name: 'c3' }));
@@ -165,5 +181,36 @@ describe('GuidePage', () => {
     expect(screen.queryByText('Your games')).toBeNull();
     expect(screen.queryByText(/\d+ games/)).toBeNull();
     expect(screen.queryByRole('link', { name: /Insights/ })).toBeNull();
+  });
+
+  it('resets the route, deviation and job state when the tab changes', async () => {
+    const short = variation('classical', 'Classical', { finalForm: { ...variation('x', 'x').finalForm, moves: ['e4', 'c6'] } });
+    const { container } = renderPage(guide([variation('advance', 'Advance'), short]));
+    await screen.findByRole('heading', { name: 'The route' });
+    fireEvent.click(screen.getByRole('button', { name: 'Play on the board' }));
+    for (let i = 0; i < 6; i++) fireEvent.click(screen.getByRole('button', { name: 'Next move' }));
+    expect(screen.getByText('Move 6 of 6')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+    fireEvent.click(within(container.querySelector<HTMLElement>('#final-advance')!).getByRole('button', { name: 'square c3' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Classical' }));
+    expect(screen.queryByText(/Move \d+ of/)).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Hide board' })).toBeNull();
+    expect(screen.queryByText('The knight guards e4 and d5.')).toBeNull();
+  });
+
+  it('scrolls to the hash target and opens the tab from ?v= after load', async () => {
+    const scroll = vi.fn();
+    Element.prototype.scrollIntoView = scroll;
+    renderPage(guide([variation('advance', 'Advance'), variation('classical', 'Classical')]), '/openings/caro-kann/guide?v=classical#route-classical');
+    await screen.findByRole('heading', { name: 'The route' });
+    await vi.waitFor(() => expect(scroll).toHaveBeenCalled());
+    expect((scroll.mock.contexts[0] as HTMLElement).id).toBe('route-classical');
+  });
+
+  it('shows a level badge on a deviation only above the owner level', async () => {
+    const dev = (level: 1 | 2 | 3, nodeId: string) => ({ nodeId, san: 'Nf3', plan: 'Plan.', level });
+    renderPage(guide([variation('advance', 'Advance', { deviations: [dev(1, 'e4 c6 a'), dev(3, 'e4 c6 b')] })], 1));
+    await screen.findByRole('heading', { name: 'If they do X…' });
+    expect(screen.getAllByText('Unlocks at level 3')).toHaveLength(1);
   });
 });

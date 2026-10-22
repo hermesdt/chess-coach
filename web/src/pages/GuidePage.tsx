@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router';
+import { Link, useLocation, useParams, useSearchParams } from 'react-router';
 import type { GuideDTO, GuideVariationDTO } from '../../../shared/types';
 import { api } from '../api';
 import { DrillBoard } from '../components/DrillBoard';
@@ -33,7 +33,7 @@ function resultsLine(v: GuideVariationDTO): string {
   return `${v.name}: ${parts.join(', ')}`;
 }
 
-function Deviations({ v, color }: { v: GuideVariationDTO; color: GuideDTO['color'] }) {
+function Deviations({ v, color, level }: { v: GuideVariationDTO; color: GuideDTO['color']; level: number }) {
   const [shown, setShown] = useState<string[] | null>(null);
   const opponent = v.personal?.opponentMoves ?? [];
   return (
@@ -61,7 +61,7 @@ function Deviations({ v, color }: { v: GuideVariationDTO; color: GuideDTO['color
               {d.showMoves && (
                 <button type="button" onClick={() => setShown(d.showMoves!)}>Show</button>
               )}
-              {d.level > 1 && <span className="level-badge">Level {d.level}</span>}
+              {d.level > level && <span className="level-badge">Unlocks at level {d.level}</span>}
             </li>
           ))}
         </ul>
@@ -107,7 +107,7 @@ function VariationParts({ guide, v }: { guide: GuideDTO; v: GuideVariationDTO })
       </section>
       <section id={`deviations-${v.key}`} className="guide-part">
         <h2>If they do X…</h2>
-        <Deviations v={v} color={guide.color} />
+        <Deviations v={v} color={guide.color} level={guide.level} />
       </section>
       <section id={`middlegame-${v.key}`} className="guide-part">
         <h2>Middlegame plan</h2>
@@ -152,10 +152,12 @@ export function GuidePage() {
   const [params, setParams] = useSearchParams();
   const [guide, setGuide] = useState<GuideDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { hash } = useLocation();
 
   useEffect(() => {
     let stale = false;
     setGuide(null);
+    setError(null);
     api.getGuide(id).then(
       (g) => !stale && setGuide(g),
       (e: Error) => !stale && setError(e.message),
@@ -165,17 +167,34 @@ export function GuidePage() {
     };
   }, [id]);
 
+  // The page loads its content late, so the browser cannot scroll to the hash by itself.
+  useEffect(() => {
+    if (guide && hash) document.getElementById(hash.slice(1))?.scrollIntoView?.();
+  }, [guide, hash]);
+
   if (error) return <p className="error">{error}</p>;
   if (!guide) return <p className="muted">Loading…</p>;
   const v = guide.variations.find((x) => x.key === params.get('v')) ?? guide.variations[0];
+  if (!v) {
+    return (
+      <div className="guide">
+        <p><Link to="/openings">Back to Openings</Link></p>
+        <h1>{guide.name} guide</h1>
+        <section id="why" className="guide-part">
+          <h2>Why this opening</h2>
+          <Paragraphs text={guide.why} />
+        </section>
+      </div>
+    );
+  }
 
   const toc: [string, string][] = [
     ['Why this opening', '#why'],
-    ['Final form', `#final-${v?.key}`],
-    ['The route', `#route-${v?.key}`],
-    ['If they do X…', `#deviations-${v?.key}`],
-    ['Middlegame plan', `#middlegame-${v?.key}`],
-    ['Typical mistakes', `#mistakes-${v?.key}`],
+    ['Final form', `#final-${v.key}`],
+    ['The route', `#route-${v.key}`],
+    ['If they do X…', `#deviations-${v.key}`],
+    ['Middlegame plan', `#middlegame-${v.key}`],
+    ['Typical mistakes', `#mistakes-${v.key}`],
   ];
 
   return (
@@ -184,7 +203,7 @@ export function GuidePage() {
       <h1>{guide.name} guide</h1>
       <div className="guide-layout">
         <nav className="guide-toc" aria-label="Contents">
-          {toc.slice(0, v ? 6 : 1).map(([label, href]) => (
+          {toc.map(([label, href]) => (
             <a key={href} href={href}>{label}</a>
           ))}
         </nav>
@@ -193,30 +212,26 @@ export function GuidePage() {
             <h2>Why this opening</h2>
             <Paragraphs text={guide.why} />
           </section>
-          {v && (
-            <>
-              <div className="tabs guide-tabs" role="tablist">
-                {guide.variations.map((x) => (
-                  <button
-                    key={x.key}
-                    type="button"
-                    role="tab"
-                    aria-selected={x.key === v.key}
-                    className={x.key === v.key ? 'tab active' : 'tab'}
-                    onClick={() => setParams({ v: x.key }, { replace: true })}
-                  >
-                    {x.name}
-                  </button>
-                ))}
-              </div>
-              {v.personal && (
-                <p className="guide-results">
-                  <span>{resultsLine(v)}</span>. <Link to="/insights">See your results in Insights</Link>
-                </p>
-              )}
-              <VariationParts guide={guide} v={v} />
-            </>
+          <div className="tabs guide-tabs" role="tablist">
+            {guide.variations.map((x) => (
+              <button
+                key={x.key}
+                type="button"
+                role="tab"
+                aria-selected={x.key === v.key}
+                className={x.key === v.key ? 'tab active' : 'tab'}
+                onClick={() => setParams({ v: x.key }, { replace: true })}
+              >
+                {x.name}
+              </button>
+            ))}
+          </div>
+          {v.personal && (
+            <p className="guide-results">
+              <span>{resultsLine(v)}</span>. <Link to="/insights">See your results in Insights</Link>
+            </p>
           )}
+          <VariationParts key={v.key} guide={guide} v={v} />
         </div>
       </div>
     </div>
