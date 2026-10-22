@@ -356,9 +356,9 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   `docs/superpowers/specs/2026-10-20-content-audit-design.md`; it also audits
   the guide texts and starts from the M10 notes above).
 - All milestones through M10 are merged into `main`.
-- Temporary task (owner, 2026-10-22): read the problems the owner reported
-  with "Report a problem" in the running app (table `card_flags`, shown in
-  Settings → "Reported problems"). Open `data/chess.db` read-only; never write
-  to it. Sort each report: a content error goes to the M11 audit list, an app
-  bug gets a fix. Do not restore cards for the owner. **Delete this item when
-  done.**
+- Follow-up (from the owner's reported problems, 2026-10-22; note
+  `docs/superpowers/notes/2026-10-22-m11-reported-problems.md`): the coach's
+  "why it matters" line on a mistake card is not checked against attack facts
+  (a card said "b3 would have protected your bishop on c4" while nothing
+  attacked it). Grounding checks moves only. Not part of M11; plan it as a
+  small fix (check non-move claims, or drop the line when no attack fact backs it).
