@@ -37,7 +37,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M8a | Coach chat: chat, engine lines as branches, own moves on the board, add to review | done | `docs/superpowers/plans/2026-10-19-m8a-coach-chat.md` |
 | M8b | Coach chat: streaming, fast model, live Stockfish eval, "Go deeper", attack facts | done | `docs/superpowers/plans/2026-10-19-m8b-coach-chat-speed.md` |
 | M9 | Level 2–3 content (lessons, tags, deeper repertoire) | done | `docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md` |
-| M10 | Opening guides: per repertoire why, strengths, target set-up, plans, typical mistakes | planned | spec `docs/superpowers/specs/2026-10-21-opening-guides-design.md`, plan `docs/superpowers/plans/2026-10-21-m10-opening-guides.md` |
+| M10 | Opening guides: per repertoire why, strengths, target set-up, plans, typical mistakes | done | spec `docs/superpowers/specs/2026-10-21-opening-guides-design.md`, plan `docs/superpowers/plans/2026-10-21-m10-opening-guides.md` |
 | M11 | Content quality audit: every repertoire comment, lesson and guide claim checked with chess.js + Stockfish | todo | spec `docs/superpowers/specs/2026-10-20-content-audit-design.md` |
 
 ## Log
@@ -296,12 +296,66 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   breaks, typical mistakes. Order confirmed by the owner: M10 = opening
   guides, M11 = content audit (so the audit also checks the guide texts).
 
+- 2026-10-22 — **M10 done.** 1139 tests; full `pnpm validate:content` → content
+  OK (65 warnings, same as M9). Guides for Caro-Kann (6 variations), Slav (5)
+  and London (5) in `content/guides/`; each has six parts (why, final form with
+  jobs, route, "if they do X…", middlegame plan, typical mistakes). Page
+  `/openings/:id/guide` (`?v=<key>` and anchors), "Read the guide" on the
+  Openings page, "Plan" links on review cards, tree nodes and game pages,
+  personal boxes from the owner's games (from 3 games or events). Owner
+  request during M10: every typical mistake draws the move to avoid in red and
+  the moves to play in green (`bad` / `good` fields, validated; engine rule
+  < 15 win % for `good`). Guide validator: hard errors for unknown nodes, route
+  or job faults, illegal SAN, duplicate keys, roots and jobs. A vitest checks
+  the real guides against the real trees (no engine) and a single repertoire
+  validation re-checks its guides. Every guide had a separate opus content
+  review with chess.js + Stockfish: 3 false facts and about 19 misleading or
+  unverified claims were found and fixed before merge (for example "the queen
+  check only works when White takes on e5", a bishop that "guarded" d4, an
+  e4 push that needs more than two supporters). Four level-1 London nodes were
+  added (`d4 d5 Bf4 Bf5 e3` Nf6 / Nf3 / e6 / Bd3). Smoke on a read-only
+  `.backup` copy of the live DB (port 8788): all guides load, personal boxes
+  match the leaks list, level override 3 works, red/green arrows readable.
+  Final whole-branch review (opus) fixes: guide route 145 → 16 ms warm at 300
+  games (path from the event node, replay cache), mistakes list capped at 5,
+  gameIds capped at 5 with "and N more".
+- M10 rulings (review these):
+  - Personal "If they do X" counts replay every game through the full tree, so
+    in-book deviations are counted at any level (events alone missed them).
+  - One sticky variation bar above parts 2–6, not a tab row per part; the bar
+    uses pressed buttons, not the full tab pattern.
+  - All final forms are on level-1 lines, so no guide variation is locked for a
+    level-1 owner today (the locked state is covered by component tests only).
+  - Qc1 stays the London move at `d4 Nf6 Bf4 c5 e3 Qb6`, although Stockfish
+    prefers Nc3 or Na3 (gap about 0.6 pawn; about 0.85 in the `d4 d5` line).
+    The guide text never calls Qc1 best and says what happens to d4.
+  - Vs-c4 (Slav) keeps a short final form (c6, d5, Nf6) and points to the main
+    Slav; the two "…e6 before …Bf5" entries stay as mistakes with "not a
+    blunder, but it breaks your plan".
+  - Mistake boards that ended after the bad move were shortened by one move so
+    the board shows the decision point.
+  - Arrow colours reuse the drill palette (red #cf222e, green #1a7f37).
+- Known gaps for later: games with an `end_of_book` event open the guide at the
+  top, unscanned games show no "Plan" link; the guide index is cached for the
+  browser session; a repertoire file outside `content/repertoires/` is not used
+  by the single-file guide re-check; the mistakes list can show five lines from
+  one game; `lichess.test.ts` "calls onBatch every 100 games" failed once in a
+  full run (flaky; passes on rerun).
+- Content notes for the M11 audit (from the M10 reviews): Qc1 versus Nc3/Na3
+  (above); Caro-Kann one 23-word sentence in the Two Knights route, an inexact
+  lead-in on a Panov mistake ("…e6 and …Bb4"), optional `…Bxd1` hint on the
+  Fantasy e5 job; Slav `why` paragraph 2 should add "Against 1.c4, e3 and Nc3
+  before d4 also gives …e6 early", and the 3.Nc3 plan should start "After 4.e3
+  this is the …e6 set-up"; three `good` moves lose 7–15 win % (Slav vs-nf3 0
+  …e6, London vs-qb6 1 Qc1, London vs-qb6 0 Be2): check they are the best
+  teaching moves.
+
 ## Next session
 
-- M10 opening guides: owner confirmed the order (2026-10-21). Start with
-  `superpowers:brainstorming`. Then M11 content audit (spec
-  `docs/superpowers/specs/2026-10-20-content-audit-design.md`; it also audits the guide texts).
-- All milestones through M9 are merged into `main`.
+- M11 content audit (spec
+  `docs/superpowers/specs/2026-10-20-content-audit-design.md`; it also audits
+  the guide texts and starts from the M10 notes above).
+- All milestones through M10 are merged into `main`.
 - Temporary task (owner, 2026-10-22): read the problems the owner reported
   with "Report a problem" in the running app (table `card_flags`, shown in
   Settings → "Reported problems"). Open `data/chess.db` read-only; never write
