@@ -54,7 +54,7 @@
         },
         {
           "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 Bd6 Bg3",
-          "why": "The bishop on d6 attacks your bishop on f4. Step back to g3 and keep your bishop. If Black takes on g3, retake with hxg3."
+          "why": "The bishop on d6 attacks your bishop on f4. Step back to g3. The bishop stays on the b8-h2 diagonal. If Black takes on g3, retake with hxg3."
         },
         {
           "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 Bd6 Bg3 O-O Nbd2",
@@ -156,7 +156,7 @@
     },
     {
       "key": "vs-kid",
-      "name": "Against ...Nf6 with ...g6 (and rare first moves ...e5, ...f5)",
+      "name": "Against ...Nf6 with ...g6 (also 1...e5 and 1...f5)",
       "roots": [
         "d4 Nf6",
         "d4 e5",
@@ -238,7 +238,7 @@
         },
         {
           "nodeId": "d4 f5",
-          "plan": "Black plays the Dutch. Bring the bishop out first. Play e3 and Nf3. After ...Be7 play h3. It stops ...Ng4, which would attack e3. Then play Bd3 and Nbd2. The bishop aims at the f5 pawn.",
+          "plan": "Black plays the Dutch. Bring the bishop out first. Play e3 and Nf3. After ...Be7 play h3. It gives your bishop the h2 square against ...Nh5. It also stops ...Ng4. Then play Bd3 and Nbd2. The bishop aims at the f5 pawn.",
           "showNodeId": "d4 f5 Bf4 Nf6 e3 e6 Nf3 Be7 h3 O-O Bd3 b6 Nbd2"
         }
       ],
@@ -259,7 +259,7 @@
             "h3",
             "Nh5"
           ],
-          "text": "Do not play Bg3 here. After ...Nxg3 only the f-pawn can retake, because your h-pawn stands on h3. You get doubled pawns on g2 and g3. Play Bh2 and keep your bishop."
+          "text": "If Black plays ...Nh5, do not play Bg3. After ...Nxg3 only the f-pawn can retake, because your h-pawn stands on h3. You get doubled pawns on g2 and g3. Play Bh2 and keep your bishop."
         },
         {
           "moves": [
@@ -323,7 +323,7 @@
         },
         {
           "nodeId": "d4 d5 Bf4 Nf6 e3",
-          "why": "Guard d4 and f4. The pawn also opens your f1 bishop. Black can now play ...c5."
+          "why": "Guard d4 and f4. The pawn also opens your f1 bishop."
         },
         {
           "nodeId": "d4 d5 Bf4 Nf6 e3 c5 c3",
@@ -346,7 +346,7 @@
         },
         {
           "nodeId": "d4 Nf6 Bf4 c5",
-          "plan": "Play e3. Black can now play ...Qb6. Then play Qc1, as in the ...Qb6 part. After ...cxd4 retake with the e-pawn.",
+          "plan": "Play e3. Black can now play ...Qb6. Then play Qc1, as in the ...Qb6 part. After ...cxd4 retake with the e-pawn. Then nothing guards d4. If ...Qxd4, play Nf3 and attack the queen.",
           "showNodeId": "d4 Nf6 Bf4 c5 e3 Qb6 Qc1 cxd4 exd4"
         },
         {
@@ -375,7 +375,7 @@
             "Nf3",
             "e6"
           ],
-          "text": "Do not push e4 yet. Nothing guards the e4 pawn. After ...dxe4 the black pawn attacks your f3 knight and Black has won a pawn. Play Nbd2 first."
+          "text": "Do not push e4 yet. Nothing guards the e4 pawn. After ...dxe4 the black pawn attacks your f3 knight and Black has won a pawn. Play Nbd2 and Bd3 first. Then two pieces support e4."
         },
         {
           "moves": [
@@ -413,7 +413,7 @@
           },
           {
             "square": "f4",
-            "text": "The bishop stands outside the e3 pawn. If ...Bd6 attacks it, it can go to g3."
+            "text": "The bishop stands outside the e3 pawn. If ...Bd6 comes, take it with Bxd6. No black piece can take back."
           },
           {
             "square": "f3",
@@ -476,7 +476,7 @@
         },
         {
           "nodeId": "d4 Nf6 Bf4 c5 e3 Qb6",
-          "plan": "Black attacks b2 at once. The c2 pawn blocks your queen, so Qb3 is not possible. Play Qc1. The queen guards b2. After ...cxd4 retake with the e-pawn.",
+          "plan": "Black attacks b2 at once. The c2 pawn blocks your queen, so Qb3 is not possible. Play Qc1. The queen guards b2. After ...cxd4 retake with the e-pawn. Then nothing guards d4. If ...Qxd4, play Nf3 and attack the queen.",
           "showNodeId": "d4 Nf6 Bf4 c5 e3 Qb6 Qc1 cxd4 exd4"
         },
         {
@@ -495,7 +495,7 @@
           "showNodeId": "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6 Qb3 Qxb3 axb3"
         }
       ],
-      "middlegame": "The queens are off, so castle short and play for the c4 pawn. The e2 bishop and the d2 knight attack it. The d5 pawn guards it. Black can add ...b5.\n\nBlack has doubled pawns on b6 and b7, and a half-open a-file. A black rook on a8 attacks your a2 pawn. Your rook on a1 guards it.\n\nYour e4 break is another idea. The d2 knight supports it, and the pawn attacks d5.",
+      "middlegame": "The queens are off, so castle short and play for the c4 pawn. The e2 bishop and the d2 knight attack it. The d5 pawn guards it. Black can add ...b5.\n\nBlack has doubled pawns on b6 and b7, and a half-open a-file. A black rook on a8 attacks your a2 pawn. Your rook on a1 guards it.\n\nYour e4 break needs more support first. The d5 pawn and the f6 knight attack e4, and only the d2 knight guards it.",
       "mistakes": [
         {
           "moves": [
@@ -600,7 +600,7 @@
           "showNodeId": "d4 d5 Bf4 Bf5 e3 Nf6 Nf3 e6 Bd3"
         }
       ],
-      "middlegame": "Black has no light-squared bishop now, and you have no light-squared bishop either. Castle short soon. Until then, ...Bb4+ is a check.\n\nWatch for ...Nc6 and ...Nb4. The knight on b4 attacks your queen on d3. The c3 pawn takes b4 away, so play Nbd2 and c3 early.\n\nYour knight can go to e5. The d4 pawn and the f4 bishop guard e5. Your break is e4, supported by the d2 knight.",
+      "middlegame": "Black has no light-squared bishop now, and you have no light-squared bishop either. Castle short soon. Until then, ...Bb4+ is a check.\n\nWatch for ...Nc6 and ...Nb4. The knight on b4 attacks your queen on d3. The c3 pawn takes b4 away, so play Nbd2 and c3 early.\n\nYour knight can go to e5. The d4 pawn and the f4 bishop guard e5. Your break is e4, supported by the d2 knight and the d3 queen.",
       "mistakes": [
         {
           "moves": [
@@ -613,23 +613,7 @@
             "Nf3",
             "Nb4"
           ],
-          "text": "The f5 bishop and the b4 knight both attack c2. Only your queen guards it. Do not play the usual c3. After c3 the knight goes to c2 with check and forks your king and your rook on a1. After Qxc2 Bxc2 you have lost your queen for a knight. Play Na3 instead. It guards c2."
-        },
-        {
-          "moves": [
-            "d4",
-            "d5",
-            "Bf4",
-            "Bf5",
-            "e3",
-            "e6",
-            "Nf3",
-            "Nf6",
-            "Bd3",
-            "Bxd3",
-            "cxd3"
-          ],
-          "text": "Retake with the queen, not the c-pawn. After cxd3 you have doubled pawns on d3 and d4. This is not a blunder, but it breaks your plan."
+          "text": "If Black plays ...Nc6 and ...Nb4, the f5 bishop and the b4 knight both attack c2. Only your queen guards it. Do not play the usual c3. After c3 the knight goes to c2 with check and forks your king and your rook on a1. After Qxc2 Bxc2 you lose your queen for a knight. After Kd2 Nxa1 you lose the rook. Play Na3 instead. It guards c2."
         }
       ]
     }
