@@ -2,7 +2,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { Chess } from 'chess.js';
 import { Hono } from 'hono';
 import type { GuideDTO, GuideMove, GuideVariationDTO } from '../../shared/types.js';
-import { personalBoxes } from '../guides/personal.js';
+import { personalBoxes, type ReplayCache } from '../guides/personal.js';
 import type { GuideFile, GuideVariation } from '../guides/types.js';
 import { currentLevel } from '../level.js';
 import { scanLeaks } from '../repertoire/leaks.js';
@@ -69,6 +69,7 @@ function toDto(rep: Repertoire, v: GuideVariation, level: number, personal: Guid
 }
 
 export function guidesRoutes(db: DatabaseSync, getReps: () => Repertoire[], getGuides: () => GuideFile[]): Hono {
+  const replays: ReplayCache = new Map();
   return new Hono().get('/openings/:id/guide', (c) => {
     const rep = getReps().find((r) => r.id === c.req.param('id'));
     const guide = rep && getGuides().find((g) => g.repertoireId === rep.id);
@@ -79,7 +80,7 @@ export function guidesRoutes(db: DatabaseSync, getReps: () => Repertoire[], getG
       console.error('could not scan opening leaks', e);
     }
     const { level } = currentLevel(db);
-    const boxes = personalBoxes(db, rep, guide, level);
+    const boxes = personalBoxes(db, rep, guide, level, replays);
     const body: GuideDTO = {
       repertoireId: rep.id, name: rep.name, color: rep.color, level, why: guide.why,
       variations: guide.variations.map((v) => toDto(rep, v, level, boxes.get(v.key) ?? null)),

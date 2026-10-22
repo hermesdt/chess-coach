@@ -1,16 +1,21 @@
 import { readFileSync } from 'node:fs';
 import type { DatabaseSync } from 'node:sqlite';
 import { Chess } from 'chess.js';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { GameAnalysis, KeyMoment, MoveAnalysis } from '../../shared/types.js';
 import { saveAnalysis } from '../analysis/analysis-repo.js';
 import { openDb } from '../db/db.js';
 import { insertGames } from '../db/games-repo.js';
 import { setSetting } from '../db/settings-repo.js';
-import { scanLeaks } from '../repertoire/leaks.js';
+import { openingMoves, scanLeaks } from '../repertoire/leaks.js';
 import { loadRepertoire } from '../repertoire/load.js';
 import { personalBoxes } from './personal.js';
 import type { GuideFile, GuideVariation } from './types.js';
+
+vi.mock('../repertoire/leaks.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../repertoire/leaks.js')>();
+  return { ...actual, openingMoves: vi.fn(actual.openingMoves) };
+});
 
 const rep = loadRepertoire(JSON.parse(readFileSync('content/repertoires/caro-kann.json', 'utf8')));
 const variation = (key: string, root: string): GuideVariation => ({
@@ -35,6 +40,7 @@ beforeEach(() => {
   // Level 1 keeps the level-2 deviations g4 and h4 out of the book, so the opponent leaves it there.
   setSetting(db, 'level_override', '1');
   seq = 0;
+  vi.mocked(openingMoves).mockClear();
 });
 
 function addGame(sans: string, result: 'win' | 'loss' | 'draw' | null = 'loss', userColor: 'white' | 'black' = 'black'): number {
@@ -104,7 +110,7 @@ describe('personalBoxes', () => {
     const p = boxes().get('advance')!;
     expect(p.games).toBe(5);
     expect(p.leaks).toEqual([
-      { nodeId: 'e4 c6 d4 d5 e5 Bf5', expectedSan: 'Bf5', playedSan: 'e6', count: 3, gameIds: ids },
+      { nodeId: 'e4 c6 d4 d5 e5 Bf5', expectedSan: 'Bf5', playedSan: 'e6', count: 3, gameIds: ids, moreGames: 0 },
     ]);
   });
 
@@ -118,6 +124,7 @@ describe('personalBoxes', () => {
       ['e4 c6 d4 d5 e5 Bf5', 'h4', 3],
     ]);
     expect(p.opponentMoves[0]!.gameIds).toEqual(big);
+    expect(p.opponentMoves.map((o) => o.moreGames)).toEqual([0, 0]);
   });
 
   it('counts not_this_opening games nowhere (Review Focus 3)', () => {
@@ -205,5 +212,89 @@ describe('personalBoxes', () => {
     const m = boxes();
     expect(m.get('advance')).toBeNull();
     expect(m.get('exchange')).toBeNull();
+  });
+});
+
+describe('personalBoxes replay cost', () => {
+  const OOB = 'e4 c6 d4 d5 e5 Bf5 a3 e6';
+
+  it('does not replay the PGN of a plain leak or out_of_book game', () => {
+    expect(rep.byId.has('e4 c6 d4 d5 e5 Bf5 a3')).toBe(false);
+    many(3, ADVANCE_LEAK);
+    many(3, OOB);
+    scanLeaks(db, [rep]);
+    vi.mocked(openingMoves).mockClear();
+    const p = personalBoxes(db, rep, guide, 1).get('advance')!;
+    expect(p.games).toBe(6);
+    expect(openingMoves).not.toHaveBeenCalled();
+  });
+
+  it('replays an end_of_book game once', () => {
+    many(3, ADVANCE_END);
+    scanLeaks(db, [rep]);
+    vi.mocked(openingMoves).mockClear();
+    expect(personalBoxes(db, rep, guide, 1).get('advance')?.games).toBe(3);
+    expect(openingMoves).toHaveBeenCalledTimes(3);
+  });
+
+  it('gives the same opponent moves as a full replay of every game', () => {
+    const games = [
+      ...many(3, ADVANCE_LEAK), ...many(3, OOB), ...many(4, ADVANCE_OPP), ...many(3, 'e4 c6 d4 d5 e5 Bf5 h4 h5'), ...many(3, ADVANCE_END),
+    ];
+    const p = boxes().get('advance')!;
+    const expected = new Map<string, number>();
+    const deviations = new Set(guide.variations[0]!.deviations.map((d) => d.nodeId));
+    for (const id of games) {
+      const pgn = (db.prepare('SELECT pgn FROM games WHERE id = ?').get(id) as { pgn: string }).pgn;
+      const found = new Set<string>();
+      let options = rep.roots;
+      for (const m of openingMoves(pgn, 40) ?? []) {
+        const n = options.find((x) => x.san === m.san);
+        if (!n) break;
+        if (n.mover !== rep.color && deviations.has(n.id)) found.add(`${n.parentId}|${n.san}`);
+        options = n.children;
+      }
+      const ev = db.prepare("SELECT node_id, played_san FROM opening_events WHERE game_id = ? AND kind = 'out_of_book'").get(id) as { node_id: string; played_san: string } | undefined;
+      if (ev) found.add(`${ev.node_id}|${ev.played_san}`);
+      for (const k of found) expected.set(k, (expected.get(k) ?? 0) + 1);
+    }
+    const actual = new Map(p.opponentMoves.map((o) => [`${o.nodeId}|${o.playedSan}`, o.count]));
+    for (const [k, n] of expected) if (n >= 3) expect(actual.get(k)).toBe(n);
+    expect(actual.size).toBe([...expected.values()].filter((n) => n >= 3).length);
+    expect(actual.size).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe('personalBoxes caps', () => {
+  it('keeps the latest 5 game ids of a group and counts the rest', () => {
+    const ids = many(8, ADVANCE_LEAK);
+    const g = boxes().get('advance')!.leaks[0]!;
+    expect(g.count).toBe(8);
+    expect(g.gameIds).toEqual(ids.slice(3));
+    expect(g.moreGames).toBe(3);
+  });
+
+  it('caps the opponent groups the same way', () => {
+    const ids = many(7, 'e4 c6 d4 d5 e5 Bf5 a3 e6');
+    const g = boxes().get('advance')!.opponentMoves[0]!;
+    expect(g.gameIds).toEqual(ids.slice(2));
+    expect(g.moreGames).toBe(2);
+  });
+
+  it('picks the latest game by date, then by id', () => {
+    const ids = many(7, ADVANCE_LEAK);
+    db.prepare('UPDATE games SET played_at = 1 WHERE id = ?').run(ids[6]);
+    const g = boxes().get('advance')!.leaks[0]!;
+    expect(g.gameIds).toEqual(ids.slice(0, 6).slice(1));
+    expect(g.moreGames).toBe(2);
+  });
+
+  it('keeps only the 5 newest key moments', () => {
+    const sans = 'e4 c6 d4 d5 e5 Bf5 Bd3 Bxd3 Qxd3'.split(' ');
+    const ids = many(4, ADVANCE_END);
+    for (const id of ids) seedAnalysis(id, [{ ply: 2, reason: 'blunder', winLoss: 30 }, { ply: 6, reason: 'blunder', winLoss: 30 }], sans);
+    const m = boxes().get('advance')!.mistakes;
+    expect(m).toHaveLength(5);
+    expect(m.map((x) => [x.gameId, x.ply])).toEqual([[ids[1], 2], [ids[2], 2], [ids[2], 6], [ids[3], 2], [ids[3], 6]]);
   });
 });

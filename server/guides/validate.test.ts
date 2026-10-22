@@ -126,6 +126,24 @@ describe('validateGuide', () => {
     });
   });
 
+  it('reports a show node that is not below its deviation node', async () => {
+    expect(await rules((g) => { g.variations[0]!.deviations[0]!.showNodeId = 'e4 c6 d4 d5 e5 Bf5 h4 h5'; })).toEqual(['show-not-descendant']);
+    expect(await rules((g) => { g.variations[0]!.deviations[0]!.showNodeId = 'e4 c6 d4 d5 e5 Bf5 g4'; })).toEqual([]);
+  });
+
+  it('reports two jobs on one square', async () => {
+    expect(await rules((g) => { g.variations[0]!.finalForm.jobs.push({ square: 'f5', text: 'Again.' }); })).toEqual(['duplicate-job']);
+  });
+
+  it('reports a root used twice in one variation or in two variations', async () => {
+    expect(await rules((g) => { g.variations[0]!.roots.push('e4 c6 d4 d5 e5'); })).toEqual(['duplicate-root']);
+    expect(await rules((g) => {
+      const other = structuredClone(g.variations[0]!);
+      other.key = 'other';
+      g.variations.push(other);
+    })).toEqual(['duplicate-root']);
+  });
+
   it('reports duplicate variation keys', async () => {
     expect(await rules((g) => { g.variations.push(structuredClone(g.variations[0]!)); })).toContain('duplicate-variation');
   });

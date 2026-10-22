@@ -1,4 +1,5 @@
 import { Chess } from 'chess.js';
+import { inRoot } from '../../shared/guide-roots.js';
 import { moverWinAfter, winPct } from '../analysis/winpct.js';
 import type { EnginePool } from '../engine/pool.js';
 import type { EngineLine } from '../engine/uci.js';
@@ -14,8 +15,6 @@ const DEFAULT_NODES = 1_000_000;
 export interface GuideValidateOptions {
   nodes?: number;
 }
-
-const inRoot = (id: string, root: string) => id === root || id.startsWith(`${root} `);
 
 function textFields(guide: GuideFile): { nodeId: string; text: string }[] {
   const out = [{ nodeId: '(why)', text: guide.why }];
@@ -49,6 +48,7 @@ export async function validateGuide(
   const goodMoves: Checked[] = [];
 
   const seenKeys = new Set<string>();
+  const seenRoots = new Set<string>();
   for (const v of guide.variations) {
     if (seenKeys.has(v.key)) add(v.key, 'duplicate-variation', `Variation key "${v.key}" is used twice`);
     seenKeys.add(v.key);
@@ -70,6 +70,8 @@ export async function validateGuide(
 
   function checkVariation(v: GuideVariation): void {
     for (const r of v.roots) {
+      if (seenRoots.has(r)) add(r, 'duplicate-root', `Root "${r}" is used twice (variation "${v.key}")`);
+      seenRoots.add(r);
       if (!rep.byId.has(r)) add(r, 'unknown-root', `Root "${r}" is not a node of ${rep.id} (variation "${v.key}")`);
     }
 
@@ -77,7 +79,10 @@ export async function validateGuide(
     if (ff) {
       const board = new Chess(ff.fenAfter);
       const ownColor = rep.color === 'white' ? 'w' : 'b';
+      const squares = new Set<string>();
       for (const j of v.finalForm.jobs) {
+        if (squares.has(j.square)) add(v.finalForm.nodeId, 'duplicate-job', `Two jobs on square "${j.square}" (variation "${v.key}")`);
+        squares.add(j.square);
         const piece = /^[a-h][1-8]$/.test(j.square) ? board.get(j.square as Parameters<Chess['get']>[0]) : undefined;
         if (!piece || piece.color !== ownColor) {
           add(v.finalForm.nodeId, 'job-square', `Job square "${j.square}" has no ${rep.color} piece on the final-form board (variation "${v.key}")`);
@@ -103,7 +108,12 @@ export async function validateGuide(
     for (const d of v.deviations) {
       const n = node(v, d.nodeId, 'Deviation node');
       if (n && n.mover === rep.color) add(d.nodeId, 'deviation-not-opponent', `Deviation node "${d.nodeId}" is not an opponent move (variation "${v.key}")`);
-      if (d.showNodeId !== undefined) node(v, d.showNodeId, 'Deviation show node');
+      if (d.showNodeId !== undefined) {
+        node(v, d.showNodeId, 'Deviation show node');
+        if (!inRoot(d.showNodeId, d.nodeId)) {
+          add(d.showNodeId, 'show-not-descendant', `Show node "${d.showNodeId}" is not below deviation node "${d.nodeId}" (variation "${v.key}")`);
+        }
+      }
     }
 
     for (const m of v.mistakes) checkMistake(v, m);

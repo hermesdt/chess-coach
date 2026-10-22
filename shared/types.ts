@@ -15,7 +15,7 @@ export interface NewGame {
 export interface GameSummary extends Omit<NewGame, 'pgn'> { id: number; analysis?: AnalysisBadge }
 export interface MoveInfo { ply: number; san: string; uci: string; fenBefore: string; fenAfter: string }
 /** M10: the opening event of a game, when it has a node a guide can link to. */
-export interface GameRepertoireRef { id: string; nodeId: string; kind: 'leak' | 'out_of_book' }
+export interface GameRepertoireRef { id: string; nodeId: string; kind: 'leak' | 'out_of_book' | 'end_of_book' }
 export interface GameDetail extends GameSummary { pgn: string; startFen: string; moves: MoveInfo[]; /** Set by GET /api/games/:id. */ repertoire?: GameRepertoireRef | null }
 export interface GameListQuery { source?: Source; color?: Color; result?: GameResult; q?: string; limit?: number; offset?: number; includeDuplicates?: boolean }
 export interface GameList { items: GameSummary[]; total: number }
@@ -163,9 +163,11 @@ export interface GuideFile { repertoireId: string; why: string; variations: Guid
 // M10: guide API (GET /api/openings/:id/guide). Node ids are resolved to moves, positions and levels.
 export interface VariationPersonal {
   games: number; win: number; draw: number; loss: number;
-  leaks: { nodeId: string; expectedSan: string; playedSan: string; count: number; gameIds: number[] }[];
+  /** gameIds holds the latest games only (at most 5); moreGames counts the others. */
+  leaks: { nodeId: string; expectedSan: string; playedSan: string; count: number; gameIds: number[]; moreGames: number }[];
   /** nodeId is the last book node before the opponent left the book. */
-  opponentMoves: { nodeId: string; playedSan: string; count: number; gameIds: number[] }[];
+  opponentMoves: { nodeId: string; playedSan: string; count: number; gameIds: number[]; moreGames: number }[];
+  /** Key moments of the 5 latest games at most, oldest game first. */
   mistakes: { gameId: number; ply: number; san: string; reason: string }[];
 }
 /** Light view of a guide variation for "Plan" links: node ids map to a variation by longest root prefix. */

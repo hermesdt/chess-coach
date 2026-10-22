@@ -72,8 +72,13 @@ describe('GET /api/games/:id repertoire', () => {
     expect((await detail(idOf('g2'))).repertoire).toEqual({ id: 'caro-kann', nodeId: 'e4 c6', kind: 'out_of_book' });
   });
 
-  it('is null without an event, or when the event has no node to link', async () => {
+  it('gives the repertoire with an empty node for an end_of_book event', async () => {
     addEvent(idOf('g2'), 'end_of_book', null);
+    expect((await detail(idOf('g2'))).repertoire).toEqual({ id: 'caro-kann', nodeId: '', kind: 'end_of_book' });
+  });
+
+  it('is null for an unscanned game and for a game of another opening', async () => {
+    addEvent(idOf('g2'), 'not_this_opening', null);
     expect((await detail(idOf('g1'))).repertoire).toBeNull();
     expect((await detail(idOf('g2'))).repertoire).toBeNull();
   });

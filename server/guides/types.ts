@@ -1,1 +1,1 @@
-export type { GuideFile, GuideJob, GuideVariation } from '../../shared/types';
+export type { GuideFile, GuideJob, GuideVariation } from '../../shared/types.js';

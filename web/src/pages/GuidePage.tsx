@@ -14,18 +14,22 @@ const mistakeArrows = (m: GuideVariationDTO['mistakes'][number]): DrillArrow[] =
   ...(m.good ?? []).map((g) => ({ from: g.from, to: g.to, color: 'green' as const })),
 ];
 
+/** The message the server sends for a repertoire without a guide. */
+const NO_GUIDE = 'not found';
+
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
 function Paragraphs({ text }: { text: string }) {
   return <>{paragraphs(text).map((p, i) => <p key={i}>{p}</p>)}</>;
 }
 
-function GameLinks({ ids }: { ids: number[] }) {
+function GameLinks({ ids, more }: { ids: number[]; more: number }) {
   return (
     <>
       {ids.map((id) => (
         <span key={id}> <Link to={`/games/${id}`}>Game {id}</Link></span>
       ))}
+      {more > 0 && <span className="muted"> and {more} more</span>}
     </>
   );
 }
@@ -76,7 +80,7 @@ function Deviations({ v, color, level }: { v: GuideVariationDTO; color: GuideDTO
               {opponent.map((o) => (
                 <li key={`${o.nodeId}|${o.playedSan}`}>
                   Opponents played {moveLabel(`${o.nodeId} ${o.playedSan}`, o.playedSan)} in {o.count} of your games.
-                  <GameLinks ids={o.gameIds} />
+                  <GameLinks ids={o.gameIds} more={o.moreGames} />
                 </li>
               ))}
             </ul>
@@ -103,7 +107,7 @@ function VariationParts({ guide, v }: { guide: GuideDTO; v: GuideVariationDTO })
             <ul>
               {p.leaks.map((l) => (
                 <li key={`${l.nodeId}|${l.playedSan}`}>
-                  {formatLeak(l)}.<GameLinks ids={l.gameIds} />
+                  {formatLeak(l)}.<GameLinks ids={l.gameIds} more={l.moreGames} />
                 </li>
               ))}
             </ul>
@@ -179,6 +183,14 @@ export function GuidePage() {
     if (guide && hash) document.getElementById(hash.slice(1))?.scrollIntoView?.();
   }, [guide, hash]);
 
+  if (error === NO_GUIDE) {
+    return (
+      <div className="guide">
+        <p><Link to="/openings">Back to Openings</Link></p>
+        <p>There is no guide for this opening yet.</p>
+      </div>
+    );
+  }
   if (error) return <p className="error">{error}</p>;
   if (!guide) return <p className="muted">Loading…</p>;
   const v = guide.variations.find((x) => x.key === params.get('v')) ?? guide.variations[0];
@@ -219,13 +231,12 @@ export function GuidePage() {
             <h2>Why this opening</h2>
             <Paragraphs text={guide.why} />
           </section>
-          <div className="tabs guide-tabs" role="tablist">
+          <div className="tabs guide-tabs" role="group" aria-label="Variations">
             {guide.variations.map((x) => (
               <button
                 key={x.key}
                 type="button"
-                role="tab"
-                aria-selected={x.key === v.key}
+                aria-pressed={x.key === v.key}
                 className={x.key === v.key ? 'tab active' : 'tab'}
                 onClick={() => setParams({ v: x.key }, { replace: true })}
               >

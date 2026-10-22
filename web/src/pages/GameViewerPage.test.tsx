@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { GameDetail, GameRepertoireRef, OpeningSummary } from '../../../shared/types';
 import { api } from '../api';
+import { resetGuideIndexCache } from '../lib/use-guide-index';
 import { GameViewerPage } from './GameViewerPage';
 
 vi.mock('react-chessboard', () => ({ Chessboard: () => <div data-testid="board" /> }));
@@ -19,6 +20,7 @@ const opening = (variationIndex: OpeningSummary['variationIndex']): OpeningSumma
 const index = [{ key: 'advance', roots: ['e4 c6 d4 d5 e5'] }];
 
 afterEach(() => {
+  resetGuideIndexCache();
   cleanup();
   vi.restoreAllMocks();
 });
@@ -48,6 +50,11 @@ describe('GameViewerPage Plan link', () => {
 
   it('opens the guide at #why when the event node is in no variation', async () => {
     setup({ id: 'caro-kann', nodeId: '', kind: 'out_of_book' }, index);
+    expect((await screen.findByRole('link', { name: 'Plan' })).getAttribute('href')).toBe('/openings/caro-kann/guide#why');
+  });
+
+  it('opens the guide at #why for an end-of-book game', async () => {
+    setup({ id: 'caro-kann', nodeId: '', kind: 'end_of_book' }, index);
     expect((await screen.findByRole('link', { name: 'Plan' })).getAttribute('href')).toBe('/openings/caro-kann/guide#why');
   });
 

@@ -1,3 +1,4 @@
+import { variationKeyOf as sharedVariationOf } from '../../../shared/guide-roots';
 import type { Color, GuideIndexEntry } from '../../../shared/types';
 
 export type GuidePart = 'route' | 'deviations' | 'mistakes';
@@ -9,21 +10,9 @@ export function guideLink(repertoireId: string, variationKey: string | null, par
   return `${base}?v=${encodeURIComponent(variationKey)}${part ? `#${part}-${variationKey}` : ''}`;
 }
 
-const inRoot = (nodeId: string, root: string) => nodeId === root || nodeId.startsWith(`${root} `);
-
 /** Same rule as the server: the variation whose root is the longest prefix of the node id, or null. */
 export function variationKeyOf(index: GuideIndexEntry[], nodeId: string): string | null {
-  let best: string | null = null;
-  let bestLength = -1;
-  for (const v of index) {
-    for (const root of v.roots) {
-      if (inRoot(nodeId, root) && root.length > bestLength) {
-        best = v.key;
-        bestLength = root.length;
-      }
-    }
-  }
-  return best;
+  return sharedVariationOf(index, nodeId)?.key ?? null;
 }
 
 /** "route" when the node is a move of the repertoire side, "deviations" when it is an opponent move. */
