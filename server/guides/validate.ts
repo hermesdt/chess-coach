@@ -1,0 +1,151 @@
+import { Chess } from 'chess.js';
+import { moverWinAfter, winPct } from '../analysis/winpct.js';
+import type { EnginePool } from '../engine/pool.js';
+import type { EngineLine } from '../engine/uci.js';
+import type { RepNode, Repertoire, ValidationIssue } from '../repertoire/types.js';
+import { MAX_WIN_LOSS } from '../repertoire/validate.js';
+import type { GuideFile, GuideVariation } from './types.js';
+
+export const MIN_JOBS = 3;
+export const MAX_JOBS = 6;
+const DEFAULT_NODES = 1_000_000;
+
+export interface GuideValidateOptions {
+  nodes?: number;
+}
+
+const inRoot = (id: string, root: string) => id === root || id.startsWith(`${root} `);
+
+function textFields(guide: GuideFile): { nodeId: string; text: string }[] {
+  const out = [{ nodeId: '(why)', text: guide.why }];
+  for (const v of guide.variations) {
+    for (const j of v.finalForm.jobs) out.push({ nodeId: `${v.key}/${j.square}`, text: j.text });
+    for (const r of v.route) out.push({ nodeId: r.nodeId, text: r.why });
+    for (const d of v.deviations) out.push({ nodeId: d.nodeId, text: d.plan });
+    out.push({ nodeId: `${v.key}/middlegame`, text: v.middlegame });
+    for (const m of v.mistakes) out.push({ nodeId: m.moves.join(' '), text: m.text });
+  }
+  return out;
+}
+
+export async function validateGuide(
+  guide: GuideFile,
+  rep: Repertoire,
+  engine?: Pick<EnginePool, 'analyse'>,
+  opts: GuideValidateOptions = {},
+): Promise<ValidationIssue[]> {
+  const file = `${guide.repertoireId}.json`;
+  const issues: ValidationIssue[] = [];
+  const add = (nodeId: string, rule: string, detail: string) => issues.push({ file, nodeId, rule, detail });
+
+  for (const { nodeId, text } of textFields(guide)) {
+    if (/engine line/i.test(text)) add(nodeId, 'engine-line-text', 'Text must not say "engine line"');
+    if (text.includes('%')) add(nodeId, 'percent-text', 'Text must not contain a "%" sign');
+  }
+
+  const offTreeOwn: { key: string; fenBefore: string; san: string; uci: string; fenAfter: string }[] = [];
+
+  const seenKeys = new Set<string>();
+  for (const v of guide.variations) {
+    if (seenKeys.has(v.key)) add(v.key, 'duplicate-variation', `Variation key "${v.key}" is used twice`);
+    seenKeys.add(v.key);
+    checkVariation(v);
+  }
+
+  /** Looks up a node and reports an unknown id; also checks it lies in a root of the variation (route nodes may sit above the roots). */
+  function node(v: GuideVariation, id: string, what: string, needRoot = true): RepNode | null {
+    const n = rep.byId.get(id);
+    if (!n) {
+      add(id, 'unknown-node', `${what} "${id}" is not a node of ${rep.id} (variation "${v.key}")`);
+      return null;
+    }
+    if (needRoot && !v.roots.some((r) => inRoot(id, r))) {
+      add(id, 'node-outside-roots', `${what} "${id}" is outside every root of variation "${v.key}"`);
+    }
+    return n;
+  }
+
+  function checkVariation(v: GuideVariation): void {
+    for (const r of v.roots) {
+      if (!rep.byId.has(r)) add(r, 'unknown-root', `Root "${r}" is not a node of ${rep.id} (variation "${v.key}")`);
+    }
+
+    const ff = node(v, v.finalForm.nodeId, 'Final form');
+    if (ff) {
+      const board = new Chess(ff.fenAfter);
+      const ownColor = rep.color === 'white' ? 'w' : 'b';
+      for (const j of v.finalForm.jobs) {
+        const piece = /^[a-h][1-8]$/.test(j.square) ? board.get(j.square as Parameters<Chess['get']>[0]) : undefined;
+        if (!piece || piece.color !== ownColor) {
+          add(v.finalForm.nodeId, 'job-square', `Job square "${j.square}" has no ${rep.color} piece on the final-form board (variation "${v.key}")`);
+        }
+      }
+    }
+    if (v.finalForm.jobs.length < MIN_JOBS || v.finalForm.jobs.length > MAX_JOBS) {
+      add(v.finalForm.nodeId, 'job-count', `Final form has ${v.finalForm.jobs.length} jobs, needs ${MIN_JOBS} to ${MAX_JOBS} (variation "${v.key}")`);
+    }
+
+    let lastPly = 0;
+    for (const step of v.route) {
+      const n = node(v, step.nodeId, 'Route node', false);
+      if (!n) continue;
+      if (!inRoot(v.finalForm.nodeId, step.nodeId)) {
+        add(step.nodeId, 'route-off-line', `Route node "${step.nodeId}" is not on the final-form line (variation "${v.key}")`);
+      }
+      if (n.ply <= lastPly) add(step.nodeId, 'route-order', `Route node "${step.nodeId}" is out of order (variation "${v.key}")`);
+      lastPly = n.ply;
+      if (n.mover !== rep.color) add(step.nodeId, 'route-not-own', `Route node "${step.nodeId}" is not a ${rep.color} move (variation "${v.key}")`);
+    }
+
+    for (const d of v.deviations) {
+      const n = node(v, d.nodeId, 'Deviation node');
+      if (n && n.mover === rep.color) add(d.nodeId, 'deviation-not-opponent', `Deviation node "${d.nodeId}" is not an opponent move (variation "${v.key}")`);
+      if (d.showNodeId !== undefined) node(v, d.showNodeId, 'Deviation show node');
+    }
+
+    for (const m of v.mistakes) checkMistake(v, m.moves);
+  }
+
+  function checkMistake(v: GuideVariation, moves: string[]): void {
+    const game = new Chess();
+    let id = '';
+    let onTree = true;
+    for (const san of moves) {
+      const fenBefore = game.fen();
+      const mover = game.turn() === 'w' ? 'white' : 'black';
+      let move;
+      try {
+        move = game.move(san);
+      } catch {
+        add(moves.join(' '), 'illegal-san', `Illegal move "${san}" in mistake line "${moves.join(' ')}" (variation "${v.key}")`);
+        return;
+      }
+      id = id === '' ? move.san : `${id} ${move.san}`;
+      if (onTree && !rep.byId.has(id)) onTree = false;
+      if (!onTree && mover === rep.color) {
+        offTreeOwn.push({ key: `${v.key}: ${moves.join(' ')}`, fenBefore, san: move.san, uci: move.from + move.to + (move.promotion ?? ''), fenAfter: game.fen() });
+      }
+    }
+  }
+
+  if (engine) {
+    const nodes = opts.nodes ?? DEFAULT_NODES;
+    const cache = new Map<string, EngineLine[]>();
+    const search = async (fen: string): Promise<EngineLine[]> => {
+      const hit = cache.get(fen);
+      if (hit) return hit;
+      const lines = await engine.analyse(fen, { nodes, multipv: 1, newGame: true });
+      cache.set(fen, lines);
+      return lines;
+    };
+    for (const m of offTreeOwn) {
+      const best = (await search(m.fenBefore))[0];
+      if (!best || best.pv[0] === m.uci) continue;
+      const after = await search(m.fenAfter);
+      const winAfter = after.length === 0 ? (new Chess(m.fenAfter).isCheckmate() ? 100 : 50) : moverWinAfter(after[0]!.score);
+      const loss = winPct(best.score) - winAfter;
+      if (loss >= MAX_WIN_LOSS) add(m.key, 'engine-loss', `${m.san} loses ${loss.toFixed(1)} win % (mistake line ${m.key})`);
+    }
+  }
+  return issues;
+}

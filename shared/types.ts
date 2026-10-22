@@ -135,3 +135,20 @@ export interface Insights {
   rating: { series: string; points: { t: number; elo: number }[] }[];
   summary: { games: number; analysed: number; winRate: number | null };
 }
+
+// M10: opening guides (content files in content/guides/). Paragraphs in text fields are separated by "\n\n".
+export interface GuideJob { square: string; text: string }
+export interface GuideVariation {
+  key: string; name: string;
+  /** Repertoire node ids; a node belongs to the variation whose root is its longest prefix. */
+  roots: string[];
+  finalForm: { nodeId: string; jobs: GuideJob[] };
+  /** Own-side moves on the final-form line, in order. */
+  route: { nodeId: string; why: string }[];
+  /** nodeId is an opponent move; showNodeId is a deeper node that shows the plan. */
+  deviations: { nodeId: string; plan: string; showNodeId?: string }[];
+  middlegame: string;
+  /** moves: SAN list from the start; it may leave the repertoire tree. */
+  mistakes: { moves: string[]; text: string }[];
+}
+export interface GuideFile { repertoireId: string; why: string; variations: GuideVariation[] }

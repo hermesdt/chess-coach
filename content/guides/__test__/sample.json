@@ -1,0 +1,37 @@
+{
+  "repertoireId": "caro-kann",
+  "why": "The Caro-Kann gives Black a solid pawn structure.\n\nThe light-squared bishop gets out before ...e6.",
+  "variations": [
+    {
+      "key": "advance",
+      "name": "Advance Variation",
+      "roots": ["e4 c6 d4 d5 e5"],
+      "finalForm": {
+        "nodeId": "e4 c6 d4 d5 e5 Bf5 Nf3 e6 Be2",
+        "jobs": [
+          { "square": "f5", "text": "The bishop is outside the pawn chain." },
+          { "square": "e6", "text": "The pawn guards d5 and blocks nothing important." },
+          { "square": "c6", "text": "The pawn supports d5 and the ...c5 break." },
+          { "square": "d5", "text": "The pawn holds the centre." }
+        ]
+      },
+      "route": [
+        { "nodeId": "e4 c6", "why": "Prepare ...d5." },
+        { "nodeId": "e4 c6 d4 d5", "why": "Challenge the centre." },
+        { "nodeId": "e4 c6 d4 d5 e5 Bf5", "why": "Bring the bishop out first." },
+        { "nodeId": "e4 c6 d4 d5 e5 Bf5 Nf3 e6", "why": "Close the pawn chain safely." }
+      ],
+      "deviations": [
+        {
+          "nodeId": "e4 c6 d4 d5 e5 Bf5 g4",
+          "plan": "Attack the bishop and keep it.",
+          "showNodeId": "e4 c6 d4 d5 e5 Bf5 g4 Bg6"
+        }
+      ],
+      "middlegame": "Play ...c5 to hit the white centre.\n\nTrade the bad pieces.",
+      "mistakes": [
+        { "moves": ["e4", "c6", "d4", "d5", "e5", "e6"], "text": "The bishop stays inside the pawn chain." }
+      ]
+    }
+  ]
+}
