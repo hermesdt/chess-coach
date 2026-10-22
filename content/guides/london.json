@@ -115,10 +115,13 @@
         {
           "moves": [
             "d4",
-            "d5",
-            "e3"
+            "d5"
           ],
-          "text": "Move 2 is Bf4, not e3. The e3 pawn shuts in the c1 bishop. The bishop can then go only to d2. This is not a blunder, but it breaks your plan."
+          "text": "Move 2 is Bf4, not e3. The e3 pawn shuts in the c1 bishop. The bishop can then go only to d2. This is not a blunder, but it breaks your plan.",
+          "bad": "e3",
+          "good": [
+            "Bf4"
+          ]
         },
         {
           "moves": [
@@ -131,10 +134,13 @@
             "Nf3",
             "Bd6",
             "Bg3",
-            "Bxg3",
-            "fxg3"
+            "Bxg3"
           ],
-          "text": "Retake with the h-pawn, not the f-pawn. After fxg3 you have doubled pawns on g2 and g3. After hxg3 the h-file is half open for your rook. This is not a blunder, but it breaks your plan."
+          "text": "Retake with the h-pawn, not the f-pawn. After fxg3 you have doubled pawns on g2 and g3. After hxg3 the h-file is half open for your rook. This is not a blunder, but it breaks your plan.",
+          "bad": "fxg3",
+          "good": [
+            "hxg3"
+          ]
         },
         {
           "moves": [
@@ -147,10 +153,13 @@
             "Nf3",
             "Bd6",
             "Bg3",
-            "O-O",
-            "Nc3"
+            "O-O"
           ],
-          "text": "Play Nbd2, not Nc3. The knight on c3 blocks your own c-pawn. Then c3 is not free for your pawn when ...c5 comes. This is not a blunder, but it breaks your plan."
+          "text": "Play Nbd2, not Nc3. The knight on c3 blocks your own c-pawn. Then c3 is not free for your pawn when ...c5 comes. This is not a blunder, but it breaks your plan.",
+          "bad": "Nc3",
+          "good": [
+            "Nbd2"
+          ]
         }
       ]
     },
@@ -278,7 +287,11 @@
             "Bd3",
             "d6"
           ],
-          "text": "Do not take on g6. The bishop aims at g6, but the f7 pawn and the h7 pawn guard it. After Bxg6 hxg6 you have lost a bishop for a pawn."
+          "text": "Do not take on g6. The bishop aims at g6, but the f7 pawn and the h7 pawn guard it. After Bxg6 hxg6 you have lost a bishop for a pawn. Castle short with O-O instead. It keeps your king safe.",
+          "bad": "Bxg6",
+          "good": [
+            "O-O"
+          ]
         }
       ]
     },
@@ -393,10 +406,13 @@
             "Bf4",
             "Nf6",
             "e3",
-            "c5",
-            "Nc3"
+            "c5"
           ],
-          "text": "Play c3, not Nc3. The knight on c3 blocks your own c-pawn. Then you cannot guard d4 with c3. This is not a blunder, but it breaks your plan."
+          "text": "Play c3, not Nc3. The knight on c3 blocks your own c-pawn. Then you cannot guard d4 with c3. This is not a blunder, but it breaks your plan.",
+          "bad": "Nc3",
+          "good": [
+            "c3"
+          ]
         }
       ]
     },

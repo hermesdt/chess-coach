@@ -277,7 +277,11 @@
             "Nc6",
             "e3"
           ],
-          "text": "Do not take the d4 pawn with ...Nxd4. The e3 pawn and the queen guard d4. After exd4 you lose a knight for a pawn."
+          "text": "Do not take the d4 pawn with ...Nxd4. The e3 pawn and the queen guard d4. After exd4 you lose a knight for a pawn. Play ...Bf5 instead and develop your bishop.",
+          "bad": "Nxd4",
+          "good": [
+            "Bf5"
+          ]
         },
         {
           "moves": [
