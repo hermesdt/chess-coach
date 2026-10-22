@@ -152,3 +152,26 @@ export interface GuideVariation {
   mistakes: { moves: string[]; text: string }[];
 }
 export interface GuideFile { repertoireId: string; why: string; variations: GuideVariation[] }
+
+// M10: guide API (GET /api/openings/:id/guide). Node ids are resolved to moves, positions and levels.
+export interface VariationPersonal {
+  games: number; win: number; draw: number; loss: number;
+  leaks: { nodeId: string; expectedSan: string; playedSan: string; count: number; gameIds: number[] }[];
+  /** nodeId is the last book node before the opponent left the book. */
+  opponentMoves: { nodeId: string; playedSan: string; count: number; gameIds: number[] }[];
+  mistakes: { gameId: number; ply: number; san: string; reason: string }[];
+}
+export interface GuideVariationDTO {
+  key: string; name: string; roots: string[];
+  finalForm: { nodeId: string; moves: string[]; fen: string; jobs: GuideJob[]; level: 1 | 2 | 3 };
+  route: { nodeId: string; san: string; why: string; level: 1 | 2 | 3 }[];
+  /** showMoves: SAN list from the start to the deeper node that shows the plan. */
+  deviations: { nodeId: string; san: string; plan: string; showMoves?: string[]; level: 1 | 2 | 3 }[];
+  middlegame: string;
+  mistakes: { moves: string[]; fen: string; text: string }[];
+  locked: boolean; requiredLevel: 1 | 2 | 3;
+  personal: VariationPersonal | null;
+}
+export interface GuideDTO {
+  repertoireId: string; name: string; color: Color; level: 1 | 2 | 3; why: string; variations: GuideVariationDTO[];
+}

@@ -20,6 +20,9 @@ import { insightsRoutes } from './routes/insights.js';
 import { jobsRoutes } from './routes/jobs.js';
 import { openingsRoutes } from './routes/openings.js';
 import { loadAllRepertoires } from './repertoire/load.js';
+import { loadGuides } from './guides/load.js';
+import type { GuideFile } from './guides/types.js';
+import { guidesRoutes } from './routes/guides.js';
 import type { Repertoire } from './repertoire/types.js';
 import type { Lesson } from '../shared/types.js';
 import { reviewRoutes } from './routes/review.js';
@@ -38,6 +41,8 @@ export interface AppDeps {
   cache?: EngineCache;
   /** Repertoires for the openings API. Defaults to `content/repertoires`, loaded on first use. */
   repertoires?: Repertoire[];
+  /** Guides for the guide API. Defaults to `content/guides`, loaded on first use. */
+  guides?: GuideFile[];
   /** Lessons for the course API. Defaults to `content/lessons`, loaded on first use. */
   lessons?: Lesson[];
   /** AI provider registry. Defaults to the built-in adapters. */
@@ -68,6 +73,8 @@ export function createApp(deps: AppDeps): Hono {
   const cache = deps.cache ?? new EngineCache();
   let reps = deps.repertoires;
   const getReps = () => (reps ??= loadAllRepertoires());
+  let guides = deps.guides;
+  const getGuides = () => (guides ??= loadGuides(undefined, getReps()));
   let lessons = deps.lessons;
   const getLessons = () => (lessons ??= loadLessons());
   const ai = deps.ai ?? createRegistry({ db: deps.db, fetchFn: deps.fetchFn });
@@ -84,6 +91,7 @@ export function createApp(deps: AppDeps): Hono {
   app.route('/api', analysisRoutes(deps.db, pool));
   app.route('/api', reviewRoutes(deps.db, deps.now ?? Date.now, pool, getReps, getLessons, cache));
   app.route('/api', openingsRoutes(deps.db, getReps));
+  app.route('/api', guidesRoutes(deps.db, getReps, getGuides));
   app.route('/api', courseRoutes(deps.db, getLessons, deps.now ?? Date.now));
   app.route('/api', dashboardRoutes(deps.db, deps.now ?? Date.now, getLessons, getReps));
   app.route('/api', insightsRoutes(deps.db, deps.now ?? Date.now));
