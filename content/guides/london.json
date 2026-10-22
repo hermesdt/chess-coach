@@ -259,7 +259,11 @@
             "h3",
             "Nh5"
           ],
-          "text": "If Black plays ...Nh5, do not play Bg3. After ...Nxg3 only the f-pawn can retake, because your h-pawn stands on h3. You get doubled pawns on g2 and g3. Play Bh2 and keep your bishop."
+          "text": "If Black plays ...Nh5, do not play Bg3. After ...Nxg3 only the f-pawn can retake, because your h-pawn stands on h3. You get doubled pawns on g2 and g3. Play Bh2 and keep your bishop.",
+          "bad": "Bg3",
+          "good": [
+            "Bh2"
+          ]
         },
         {
           "moves": [
@@ -375,7 +379,12 @@
             "Nf3",
             "e6"
           ],
-          "text": "Do not push e4 yet. Nothing guards the e4 pawn. After ...dxe4 the black pawn attacks your f3 knight and Black has won a pawn. Play Nbd2 and Bd3 first. The e4 push takes a guard from d4 and from your f4 bishop."
+          "text": "Do not push e4 yet. Nothing guards the e4 pawn. After ...dxe4 the black pawn attacks your f3 knight and Black has won a pawn. Play Nbd2 and Bd3 first. The e4 push takes a guard from d4 and from your f4 bishop.",
+          "bad": "e4",
+          "good": [
+            "Nbd2",
+            "Bd3"
+          ]
         },
         {
           "moves": [
@@ -516,7 +525,11 @@
             "Qxb6",
             "axb6"
           ],
-          "text": "Do not play Bd3 here. The c4 pawn controls d3. After ...cxd3 you lose the bishop and you cannot retake. Play Be2."
+          "text": "Do not play Bd3 here. The c4 pawn controls d3. After ...cxd3 you lose the bishop and you cannot retake. Play Be2.",
+          "bad": "Bd3",
+          "good": [
+            "Be2"
+          ]
         },
         {
           "moves": [
@@ -527,7 +540,11 @@
             "e3",
             "Qb6"
           ],
-          "text": "Do not play Bc7. It attacks the queen, but the queen takes it with ...Qxc7. Nothing of yours guards c7, so you lose a bishop for nothing. Play Qc1."
+          "text": "Do not play Bc7. It attacks the queen, but the queen takes it with ...Qxc7. Nothing of yours guards c7, so you lose a bishop for nothing. Play Qc1.",
+          "bad": "Bc7",
+          "good": [
+            "Qc1"
+          ]
         }
       ]
     },
@@ -613,7 +630,11 @@
             "Nf3",
             "Nb4"
           ],
-          "text": "If Black plays ...Nc6 and ...Nb4, the f5 bishop and the b4 knight both attack c2. Only your queen guards it. Do not play the usual c3. After c3 the knight goes to c2 with check and forks your king and your rook on a1. After Qxc2 Bxc2 you lose your queen for a knight. After Kd2 Nxa1 you lose the rook. Play Na3 instead. It guards c2."
+          "text": "If Black plays ...Nc6 and ...Nb4, the f5 bishop and the b4 knight both attack c2. Only your queen guards it. Do not play the usual c3. After c3 the knight goes to c2 with check and forks your king and your rook on a1. After Qxc2 Bxc2 you lose your queen for a knight. After Kd2 Nxa1 you lose the rook. Play Na3 instead. It guards c2.",
+          "bad": "c3",
+          "good": [
+            "Na3"
+          ]
         }
       ]
     }

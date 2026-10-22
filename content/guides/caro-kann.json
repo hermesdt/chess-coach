@@ -109,7 +109,11 @@
             "Nd7",
             "h5"
           ],
-          "text": "White plays h5 and attacks your bishop. Move the bishop at once with ...Bh7. If you play another move, such as ...e6, White takes it with hxg6."
+          "text": "White plays h5 and attacks your bishop. Move the bishop at once with ...Bh7. If you play another move, such as ...e6, White takes it with hxg6.",
+          "bad": "e6",
+          "good": [
+            "Bh7"
+          ]
         },
         {
           "moves": [
@@ -237,7 +241,11 @@
             "Bf5",
             "Nf3"
           ],
-          "text": "Do not play ...Nf6 here. The e5 pawn takes it with exf6, and you lose a knight for a pawn. Play ...e6."
+          "text": "Do not play ...Nf6 here. The e5 pawn takes it with exf6, and you lose a knight for a pawn. Play ...e6.",
+          "bad": "Nf6",
+          "good": [
+            "e6"
+          ]
         },
         {
           "moves": [
@@ -249,7 +257,11 @@
             "Bf5",
             "g4"
           ],
-          "text": "Do not take the pawn with ...Bxg4. White plays Qxg4, because the queen on d1 sees g4. You lose a bishop for a pawn. Play ...Bg6."
+          "text": "Do not take the pawn with ...Bxg4. White plays Qxg4, because the queen on d1 sees g4. You lose a bishop for a pawn. Play ...Bg6.",
+          "bad": "Bxg4",
+          "good": [
+            "Bg6"
+          ]
         }
       ]
     },
@@ -360,7 +372,11 @@
             "Bg4",
             "Qb3"
           ],
-          "text": "The queen on b3 attacks the b7 pawn and the d5 pawn. Do not play ...e6. It guards d5 but not b7, so Qxb7 wins a pawn and attacks your c6 knight and your a8 rook. Play ...Qd7."
+          "text": "The queen on b3 attacks the b7 pawn and the d5 pawn. Do not play ...e6. It guards d5 but not b7, so Qxb7 wins a pawn and attacks your c6 knight and your a8 rook. Play ...Qd7.",
+          "bad": "e6",
+          "good": [
+            "Qd7"
+          ]
         }
       ]
     },
@@ -454,7 +470,11 @@
             "Nxd5",
             "Qb3"
           ],
-          "text": "This is off the route: you played ...Nc6 and ...Bg4 instead of ...e6. The queen on b3 attacks the b7 pawn and your d5 knight. The c3 knight also attacks d5. Do not play ...e6. Then Qxb7 attacks your c6 knight and your a8 rook. Play ...Bxf3 first. It removes the guard of d4. After gxf3 e6 Qxb7, take the pawn with ...Nxd4."
+          "text": "This is off the route: you played ...Nc6 and ...Bg4 instead of ...e6. The queen on b3 attacks the b7 pawn and your d5 knight. The c3 knight also attacks d5. Do not play ...e6. Then Qxb7 attacks your c6 knight and your a8 rook. Play ...Bxf3 first. It removes the guard of d4. After gxf3 e6 Qxb7, take the pawn with ...Nxd4.",
+          "bad": "e6",
+          "good": [
+            "Bxf3"
+          ]
         }
       ]
     },
@@ -550,7 +570,12 @@
             "Bxf3",
             "Qxf3"
           ],
-          "text": "The e4 pawn and the c3 knight attack d5. The queen on f3 stands behind the e4 pawn. Do not play a slow move such as ...h6. White plays exd5 cxd5 Nxd5. Now the queen guards the knight, so ...Qxd5 loses your queen. White wins a pawn. Guard d5 with ...e6 or ...Nf6."
+          "text": "The e4 pawn and the c3 knight attack d5. The queen on f3 stands behind the e4 pawn. Do not play a slow move such as ...h6. White plays exd5 cxd5 Nxd5. Now the queen guards the knight, so ...Qxd5 loses your queen. White wins a pawn. Guard d5 with ...e6 or ...Nf6.",
+          "bad": "h6",
+          "good": [
+            "e6",
+            "Nf6"
+          ]
         }
       ]
     },
@@ -634,7 +659,11 @@
             "e5",
             "Nf3"
           ],
-          "text": "Do not play ...Qh4+ here. The knight on f3 guards h4, so Nxh4 wins your queen. Play ...Bg4."
+          "text": "Do not play ...Qh4+ here. The knight on f3 guards h4, so Nxh4 wins your queen. Play ...Bg4.",
+          "bad": "Qh4+",
+          "good": [
+            "Bg4"
+          ]
         },
         {
           "moves": [
@@ -652,7 +681,11 @@
             "Qxe4+",
             "Qe2"
           ],
-          "text": "Do not trade queens with ...Qxe2+. Take the rook with ...Qxh1. The trade throws away your big advantage."
+          "text": "Do not trade queens with ...Qxe2+. Take the rook with ...Qxh1. The trade throws away your big advantage.",
+          "bad": "Qxe2+",
+          "good": [
+            "Qxh1"
+          ]
         }
       ]
     }

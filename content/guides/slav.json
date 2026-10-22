@@ -127,7 +127,11 @@
             "dxc4",
             "a4"
           ],
-          "text": "Do not play ...b5 here to keep the pawn. After axb5 cxb5 Nxb5, White has the pawn back, the half-open a-file and the better game. Play ...Bf5 and give the pawn back later."
+          "text": "Do not play ...b5 here to keep the pawn. After axb5 cxb5 Nxb5, White has the pawn back, the half-open a-file and the better game. Play ...Bf5 and give the pawn back later.",
+          "bad": "b5",
+          "good": [
+            "Bf5"
+          ]
         },
         {
           "moves": [
@@ -141,7 +145,11 @@
             "dxc4",
             "a4"
           ],
-          "text": "Do not play ...e6 before ...Bf5. Your c8 bishop would have only the d7 square. It is not a blunder, but it breaks your plan. Play ...Bf5 first."
+          "text": "Do not play ...e6 before ...Bf5. Your c8 bishop would have only the d7 square. It is not a blunder, but it breaks your plan. Play ...Bf5 first.",
+          "bad": "e6",
+          "good": [
+            "Bf5"
+          ]
         },
         {
           "moves": [
@@ -167,7 +175,11 @@
             "O-O",
             "Bd3"
           ],
-          "text": "Do not play ...e5 yet. The d4 pawn and the f3 knight attack e5, and only the d7 knight guards it. White wins material, for example with Nxe5. Play ...Re8 first. Then the rook guards e5 too."
+          "text": "Do not play ...e5 yet. The d4 pawn and the f3 knight attack e5, and only the d7 knight guards it. White wins material, for example with Nxe5. Play ...Re8 first. Then the rook guards e5 too.",
+          "bad": "e5",
+          "good": [
+            "Re8"
+          ]
         }
       ]
     },
@@ -283,7 +295,11 @@
             "Bf5",
             "Qb3"
           ],
-          "text": "Do not play ...e6. It guards d5 but not b7. Qxb7 wins a pawn and attacks your c6 knight and your a8 rook. Play ...Na5."
+          "text": "Do not play ...e6. It guards d5 but not b7. Qxb7 wins a pawn and attacks your c6 knight and your a8 rook. Play ...Na5.",
+          "bad": "e6",
+          "good": [
+            "Na5"
+          ]
         }
       ]
     },
@@ -424,7 +440,11 @@
             "Qb6",
             "Qc1"
           ],
-          "text": "Do not take on b2 with ...Qxb2. The queen on c1 guards b2. White plays Qxb2, and you lose your queen for a pawn. Play ...Bf5."
+          "text": "Do not take on b2 with ...Qxb2. The queen on c1 guards b2. White plays Qxb2, and you lose your queen for a pawn. Play ...Bf5.",
+          "bad": "Qxb2",
+          "good": [
+            "Bf5"
+          ]
         },
         {
           "moves": [
@@ -434,7 +454,11 @@
             "c5",
             "dxc5"
           ],
-          "text": "Do not play ...e5 here. Nothing guards e5, so Bxe5 wins a second pawn. After Bxe5 White has two of your pawns. You win one back, but you stay a pawn down. Play ...e6. Then ...Bxc5 takes the pawn back."
+          "text": "Do not play ...e5 here. Nothing guards e5, so Bxe5 wins a second pawn. After Bxe5 White has two of your pawns. You win one back, but you stay a pawn down. Play ...e6. Then ...Bxc5 takes the pawn back.",
+          "bad": "e5",
+          "good": [
+            "e6"
+          ]
         }
       ]
     },
@@ -514,7 +538,11 @@
             "Nf6",
             "Nc3"
           ],
-          "text": "Do not retake with ...Qxd5. The knight takes your queen with Nxd5, and your f6 knight retakes. You lose a queen for a knight. Play ...Nxd5."
+          "text": "Do not retake with ...Qxd5. The knight takes your queen with Nxd5, and your f6 knight retakes. You lose a queen for a knight. Play ...Nxd5.",
+          "bad": "Qxd5",
+          "good": [
+            "Nxd5"
+          ]
         }
       ]
     },
@@ -629,7 +657,11 @@
             "exf3",
             "Qxf3"
           ],
-          "text": "This is off the tree: White retakes with the queen, not the knight. Do not play ...Bf5. The queen takes it with Qxf5, and nothing guards the bishop. Play ...e6."
+          "text": "This is off the tree: White retakes with the queen, not the knight. Do not play ...Bf5. The queen takes it with Qxf5, and nothing guards the bishop. Play ...e6.",
+          "bad": "Bf5",
+          "good": [
+            "e6"
+          ]
         },
         {
           "moves": [
@@ -639,7 +671,11 @@
             "Nf6",
             "e3"
           ],
-          "text": "Do not play ...e6 here. Your c8 bishop would have only the d7 square. It is not a blunder, but it breaks your plan. Play ...Bf5 first."
+          "text": "Do not play ...e6 here. Your c8 bishop would have only the d7 square. It is not a blunder, but it breaks your plan. Play ...Bf5 first.",
+          "bad": "e6",
+          "good": [
+            "Bf5"
+          ]
         }
       ]
     }
