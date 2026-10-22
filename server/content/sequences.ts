@@ -125,8 +125,11 @@ function replayAll(tokens: string[], numbered: boolean, starts: string[]): { end
   return { ends, best };
 }
 
-/** `replayed` counts only the tokens of the replayed run (list members and planned moves are left out), so it can differ from `extractSan(...).length`. */
-/** ok when the SAN tokens of the sentence replay legally from at least one start FEN. One token is not a sequence. */
+/**
+ * ok when the SAN tokens of the sentence replay legally from at least one start FEN. One token is not a sequence.
+ * `replayed` counts only the tokens of the replayed run (list members and planned moves are left out),
+ * so it can differ from `extractSan(...).length`.
+ */
 export function checkSequence(sentence: string, starts: string[]): { ok: boolean; replayed: number } {
   const { tokens, numbered } = lineTokens(sentence);
   if (tokens.length < 2) return { ok: true, replayed: tokens.length };
@@ -138,7 +141,7 @@ export function checkSequence(sentence: string, starts: string[]): { ok: boolean
 export function splitSentences(text: string): string[] {
   return text
     .split(/\n+/u)
-    .flatMap((p) => p.split(/(?<!(?:^|\s)\d+)(?<![.][.])(?<=[.!?:])\s+(?=[A-Z"'(\u2018\u201C]|\.\.\.|\u2026)/u))
+    .flatMap((p) => p.split(/(?<!(?:^|\s)\d+)(?<![.][.])(?<!(?:[a-h][1-8]|O|[+#])[!?]{1,2})(?<=[.!?:])\s+(?=[A-Z"'(\u2018\u201C]|\.\.\.|\u2026)/u))
     .flatMap((s) => s.split(/\s*;\s*|,\s+(?:so|and|but|while|because|which)\s+|\s+(?:against|because)\s+/u))
     .map((s) => s.trim())
     .filter((s) => s.length > 0);
@@ -201,15 +204,17 @@ function replayWithOneUnnamedMove(tokens: string[], starts: string[]): string[] 
 function scan(text: string, starts: string[], file: string, nodeId: string, out: ValidationIssue[]): void {
   const seen = new Set(starts); // the starts and every end position of a line that replayed in full
   let frontier = [...starts]; // where the text stands now: the end of the last line
+  let threaded = false; // some line has replayed, so the text has a thread
   const cap = (fens: string[]) => fens.slice(0, MAX_LENIENT);
   for (const sentence of splitSentences(text)) {
     const { tokens, numbered } = lineTokens(sentence);
     if (tokens.length === 0) continue;
     const run = (from: string[]) => replayAll(tokens, numbered, from);
-    const midText = seen.size > starts.length; // some line has replayed, so the text has a thread
     const rejected = REJECT.test(sentence);
     const take = (ends: string[]): void => {
-      if (!rejected) frontier = cap(ends);
+      if (rejected) return; // a line called bad or impossible is not where the text goes on
+      frontier = cap(ends);
+      threaded = true;
       for (const fen of ends) if (seen.size < MAX_POOL) seen.add(fen);
     };
     // 1. The line goes on from where the text stands.
@@ -220,7 +225,7 @@ function scan(text: string, starts: string[], file: string, nodeId: string, out:
     }
     if (tokens.length < 2) {
       // One move that does not follow: it may follow after an unnamed move ("... must go to f7. Then Ne5+"), or start a new line.
-      const gap = midText ? replayWithOneUnnamedMove(tokens, frontier) : [];
+      const gap = threaded ? replayWithOneUnnamedMove(tokens, frontier) : [];
       if (gap.length > 0) {
         take(gap);
         continue;
@@ -384,15 +389,25 @@ export function sequenceExitCode(issues: ValidationIssue[]): number {
 
 export type SequenceScope = { file: string } | { lessons: boolean; repertoires: boolean };
 
-/** The sequence issues of one file, or of the lessons and/or repertoires (with their guides). No engine. */
-export function sequenceCheck(scope: SequenceScope, strict: boolean): ValidationIssue[] {
-  const sources = loadContentSources('file' in scope ? scope.file : null);
-  if (!('file' in scope)) {
-    if (!scope.repertoires) {
-      sources.repertoires = [];
-      sources.guides = [];
-    }
-    if (!scope.lessons) sources.lessons = [];
+/** Keeps the sources of the scope: one file (by file name), or the lessons and/or the repertoires with their guides. */
+export function filterSources(sources: ContentSources, scope: SequenceScope): ContentSources {
+  if ('file' in scope) {
+    const name = basename(scope.file);
+    return {
+      repertoires: sources.repertoires.filter((r) => r.file === name),
+      lessons: sources.lessons.filter((l) => l.file === name),
+      guides: sources.guides.filter((g) => g.file === name),
+    };
   }
-  return applySeverity(sequenceIssues(sources), strict);
+  return {
+    repertoires: scope.repertoires ? sources.repertoires : [],
+    guides: scope.repertoires ? sources.guides : [],
+    lessons: scope.lessons ? sources.lessons : [],
+  };
+}
+
+/** The sequence issues of one file, or of the lessons and/or repertoires (with their guides). No engine. `sources` is for tests. */
+export function sequenceCheck(scope: SequenceScope, strict: boolean, sources?: ContentSources): ValidationIssue[] {
+  const all = sources ?? loadContentSources('file' in scope ? scope.file : null);
+  return applySeverity(sequenceIssues(filterSources(all, scope)), strict);
 }

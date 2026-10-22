@@ -128,6 +128,7 @@ async function main(): Promise<number> {
     issues.push(...(await run([args.file])));
     // A repertoire change can break its guides: re-check them, without the engine (a guide file alone gets the full check).
     if (run === repertoireIssues) issues.push(...(await guideIssues(guidesOfRepertoire(args.file), false)));
+    // A repertoire file gets the sequence check for its own comments only; its guides are re-validated without the engine but not sequence-checked.
     issues.push(...sequenceCheck({ file: args.file }, SEQUENCES_STRICT));
   } else {
     if (args.repertoires) issues.push(...(await repertoireIssues(listRepertoireFiles())));

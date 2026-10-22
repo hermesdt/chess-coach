@@ -104,6 +104,11 @@ describe('splitSentences', () => {
       'Play e4.', 'Then d4.', 'Next one', 'and more', 'go', 'stop', 'it.',
     ]);
   });
+  it('does not split after a move annotation', () => {
+    expect(splitSentences('Play Nf3! Nc6 follows.')).toEqual(['Play Nf3! Nc6 follows.']);
+    expect(splitSentences('Not Qh5? Nc6 wins.')).toEqual(['Not Qh5? Nc6 wins.']);
+    expect(splitSentences('Really? Yes.')).toEqual(['Really?', 'Yes.']);
+  });
   it('keeps a move number with its move and splits before an ellipsis', () => {
     expect(splitSentences('Play 1. e4 e5. ...Nc6 follows.')).toEqual(['Play 1. e4 e5.', '...Nc6 follows.']);
   });
@@ -113,6 +118,14 @@ describe('skip rules', () => {
   it('REJECT: words that reject a move are matched', () => {
     for (const t of ['Nf3 is bad.', 'It is not possible.', 'Nf3 fails to Ng5.', 'A blunder.', 'It loses to Ng5.']) expect(REJECT.test(t)).toBe(true);
     for (const t of ['Play Nf3.', 'The knight guards e5.']) expect(REJECT.test(t)).toBe(false);
+  });
+  it('REJECT: a rejected line does not become a start for the next line', () => {
+    // Nf3 Nc6 is legal, but it is called bad. Nxe5 Nxe5 would only be legal after it, so it is an error.
+    const issues = sequenceIssues(sources('It is bad to play Nf3 Nc6. Then Nxe5 Nxe5.'));
+    expect(issues).toHaveLength(1);
+    expect(issues[0]).toMatchObject({ rule: 'illegal-sequence', severity: 'error' });
+    // Without the rejection the thread goes on and the line is legal.
+    expect(sequenceIssues(sources('Black plays e5. Then White plays Nf3 Nc6. Then Nxe5 Nxe5.'))).toEqual([]);
   });
   it('PLAN_WORD: moves after threatens/prepares/plans are not part of the line', () => {
     expect(extractSan('Nf3 threatens Ng5 and then plans Bc4.')).toEqual(['Nf3']);
@@ -160,15 +173,39 @@ describe('severity helpers', () => {
     expect(sequenceExitCode([skip])).toBe(0);
     expect(sequenceExitCode([err])).toBe(1);
   });
-  it('sequenceCheck filters by scope and by file without the engine', { timeout: 60000 }, () => {
-    const lessonsOnly = sequenceCheck({ lessons: true, repertoires: false }, false);
-    expect(lessonsOnly.every((i) => /^\d\d-/.test(i.file))).toBe(true);
-    const repsOnly = sequenceCheck({ lessons: false, repertoires: true }, false);
-    expect(repsOnly.some((i) => /^\d\d-/.test(i.file))).toBe(false);
-    const one = sequenceCheck({ file: 'content/lessons/07-bishop-pair.json' }, true);
-    expect(one.map((i) => i.file)).toEqual(['07-bishop-pair.json']);
-    expect(one[0]).toMatchObject({ rule: 'illegal-sequence' });
-    expect(one[0]!.severity).toBe('error');
-    expect(applySeverity(one, false)[0]!.severity).toBe('warning');
+  const fixture = (): ContentSources => {
+    const bad = 'Next comes Nf3 Nf3 here.';
+    const rep = loadRepertoire({ id: 'fx', name: 'Fixture', color: 'white', moves: [{ san: 'e4', comment: bad, children: [{ san: 'e5' }] }] });
+    const lesson = {
+      id: 'blunder-check', order: 1, level: 1, title: 'L', summary: 'S', tags: [], body: 'B', links: [],
+      exercises: [{ id: 'x', fen: new Chess().fen(), prompt: 'P', solution: ['e2e4'], explanation: bad }],
+    } as unknown as ContentSources['lessons'][number]['lesson'];
+    const guide = {
+      repertoireId: 'fx', why: bad,
+      variations: [{ key: 'v', name: 'V', roots: ['e4'], finalForm: { nodeId: 'e4', jobs: [] }, route: [], deviations: [], middlegame: 'M', mistakes: [] }],
+    } as unknown as ContentSources['guides'][number]['guide'];
+    return { repertoires: [{ file: 'rep.json', rep }], lessons: [{ file: 'les.json', lesson }], guides: [{ file: 'gui.json', guide, rep }] };
+  };
+  const files = (issues: { file: string }[]) => [...new Set(issues.map((i) => i.file))].sort();
+  it('sequenceCheck filters by scope', () => {
+    expect(files(sequenceCheck({ lessons: true, repertoires: true }, true, fixture()))).toEqual(['gui.json', 'les.json', 'rep.json']);
+    expect(files(sequenceCheck({ lessons: true, repertoires: false }, true, fixture()))).toEqual(['les.json']);
+    expect(files(sequenceCheck({ lessons: false, repertoires: true }, true, fixture()))).toEqual(['gui.json', 'rep.json']);
+  });
+  it('sequenceCheck filters by file', () => {
+    expect(files(sequenceCheck({ file: 'content/lessons/les.json' }, true, fixture()))).toEqual(['les.json']);
+    expect(files(sequenceCheck({ file: 'rep.json' }, true, fixture()))).toEqual(['rep.json']);
+  });
+  it('sequenceCheck applies --strict', () => {
+    const strict = sequenceCheck({ lessons: true, repertoires: true }, true, fixture());
+    expect(strict.every((i) => i.rule === 'illegal-sequence' && i.severity === 'error')).toBe(true);
+    expect(sequenceExitCode(strict)).toBe(1);
+    const soft = sequenceCheck({ lessons: true, repertoires: true }, false, fixture());
+    expect(soft.length).toBe(strict.length);
+    expect(soft.every((i) => i.severity === 'warning')).toBe(true);
+    expect(sequenceExitCode(soft)).toBe(0);
+  });
+  it('sequenceCheck runs on the real content without throwing', { timeout: 60000 }, () => {
+    expect(() => sequenceCheck({ lessons: true, repertoires: true }, false)).not.toThrow();
   });
 });
