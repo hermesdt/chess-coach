@@ -5,6 +5,7 @@ import { REVIEW_FINISHED } from './lib/events';
 import { CoachPage } from './pages/CoachPage';
 import { CoursePage } from './pages/CoursePage';
 import { DashboardPage } from './pages/DashboardPage';
+import { GuidePage } from './pages/GuidePage';
 import { GamesPage } from './pages/GamesPage';
 import { GameViewerPage } from './pages/GameViewerPage';
 import { LessonPage } from './pages/LessonPage';
@@ -64,6 +65,7 @@ export function App() {
           <Route path="/review" element={<ReviewPage />} />
           <Route path="/insights" element={<InsightsPage />} />
           <Route path="/openings" element={<OpeningsPage />} />
+          <Route path="/openings/:id/guide" element={<GuidePage />} />
           <Route path="/course" element={<CoursePage />} />
           <Route path="/course/:id" element={<LessonPage />} />
           <Route path="/coach" element={<CoachPage />} />

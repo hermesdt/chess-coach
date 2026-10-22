@@ -14,7 +14,9 @@ export interface NewGame {
 }
 export interface GameSummary extends Omit<NewGame, 'pgn'> { id: number; analysis?: AnalysisBadge }
 export interface MoveInfo { ply: number; san: string; uci: string; fenBefore: string; fenAfter: string }
-export interface GameDetail extends GameSummary { pgn: string; startFen: string; moves: MoveInfo[] }
+/** M10: the opening event of a game, when it has a node a guide can link to. */
+export interface GameRepertoireRef { id: string; nodeId: string; kind: 'leak' | 'out_of_book' }
+export interface GameDetail extends GameSummary { pgn: string; startFen: string; moves: MoveInfo[]; /** Set by GET /api/games/:id. */ repertoire?: GameRepertoireRef | null }
 export interface GameListQuery { source?: Source; color?: Color; result?: GameResult; q?: string; limit?: number; offset?: number; includeDuplicates?: boolean }
 export interface GameList { items: GameSummary[]; total: number }
 // M5: AI coach providers
@@ -112,6 +114,8 @@ export interface RepNodeDTO {
 export interface OpeningSummary {
   id: string; name: string; color: Color; nodeCount: number; cardCount: number;
   stats: { games: number; win: number; draw: number; loss: number };
+  /** The variations of the guide of this repertoire, or null when it has no guide. */
+  variationIndex: GuideIndexEntry[] | null;
 }
 export interface OpeningDetail { id: string; name: string; color: Color; level: 1 | 2 | 3; roots: RepNodeDTO[] }
 export interface OpeningLeakGroup { nodeId: string; expectedSan: string; playedSan: string; count: number; gameIds: number[] }
@@ -134,4 +138,46 @@ export interface Insights {
   accuracyByMonth: { month: string; avg: number; games: number }[];
   rating: { series: string; points: { t: number; elo: number }[] }[];
   summary: { games: number; analysed: number; winRate: number | null };
+}
+
+// M10: opening guides (content files in content/guides/). Paragraphs in text fields are separated by "\n\n".
+export interface GuideJob { square: string; text: string }
+export interface GuideVariation {
+  key: string; name: string;
+  /** Repertoire node ids; a node belongs to the variation whose root is its longest prefix. */
+  roots: string[];
+  finalForm: { nodeId: string; jobs: GuideJob[] };
+  /** Own-side moves on the final-form line, in order. */
+  route: { nodeId: string; why: string }[];
+  /** nodeId is an opponent move; showNodeId is a deeper node that shows the plan. */
+  deviations: { nodeId: string; plan: string; showNodeId?: string }[];
+  middlegame: string;
+  /** moves: SAN list from the start; it may leave the repertoire tree. */
+  mistakes: { moves: string[]; text: string }[];
+}
+export interface GuideFile { repertoireId: string; why: string; variations: GuideVariation[] }
+
+// M10: guide API (GET /api/openings/:id/guide). Node ids are resolved to moves, positions and levels.
+export interface VariationPersonal {
+  games: number; win: number; draw: number; loss: number;
+  leaks: { nodeId: string; expectedSan: string; playedSan: string; count: number; gameIds: number[] }[];
+  /** nodeId is the last book node before the opponent left the book. */
+  opponentMoves: { nodeId: string; playedSan: string; count: number; gameIds: number[] }[];
+  mistakes: { gameId: number; ply: number; san: string; reason: string }[];
+}
+/** Light view of a guide variation for "Plan" links: node ids map to a variation by longest root prefix. */
+export interface GuideIndexEntry { key: string; roots: string[] }
+export interface GuideVariationDTO {
+  key: string; name: string; roots: string[];
+  finalForm: { nodeId: string; moves: string[]; fen: string; jobs: GuideJob[]; level: 1 | 2 | 3 };
+  route: { nodeId: string; san: string; why: string; level: 1 | 2 | 3 }[];
+  /** showMoves: SAN list from the start to the deeper node that shows the plan. */
+  deviations: { nodeId: string; san: string; plan: string; showMoves?: string[]; level: 1 | 2 | 3 }[];
+  middlegame: string;
+  mistakes: { moves: string[]; fen: string; text: string }[];
+  locked: boolean; requiredLevel: 1 | 2 | 3;
+  personal: VariationPersonal | null;
+}
+export interface GuideDTO {
+  repertoireId: string; name: string; color: Color; level: 1 | 2 | 3; why: string; variations: GuideVariationDTO[];
 }

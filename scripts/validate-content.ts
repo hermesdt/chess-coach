@@ -3,7 +3,8 @@ import { basename } from 'node:path';
 import { closeEnginePool, lazyEnginePool } from '../server/engine/pool.js';
 import { LessonError, listLessonFiles, loadLesson, validateLesson } from '../server/course/load.js';
 import type { LessonEngineCache } from '../server/course/validate.js';
-import { listRepertoireFiles, loadRepertoire, RepertoireError } from '../server/repertoire/load.js';
+import { GuideError, listGuideFiles, loadGuide, validateGuide } from '../server/guides/load.js';
+import { listRepertoireFiles, loadAllRepertoires, loadRepertoire, RepertoireError } from '../server/repertoire/load.js';
 import { validateRepertoire, type EngineCache } from '../server/repertoire/validate.js';
 import type { ValidationIssue } from '../server/repertoire/types.js';
 import { parseValidateArgs } from './validate-args.js';
@@ -59,6 +60,33 @@ async function repertoireIssues(paths: string[]): Promise<ValidationIssue[]> {
   return issues;
 }
 
+async function guideIssues(paths: string[]): Promise<ValidationIssue[]> {
+  const issues: ValidationIssue[] = [];
+  const reps = loadAllRepertoires();
+  for (const path of paths) {
+    const file = basename(path);
+    try {
+      const guide = loadGuide(JSON.parse(readFileSync(path, 'utf8')), reps);
+      const rep = reps.find((r) => r.id === guide.repertoireId)!;
+      console.log(`${file}: checking ${guide.variations.length} variations`);
+      issues.push(...(await validateGuide(guide, rep, lazyEnginePool, { nodes: NODES })).map((i) => ({ ...i, file })));
+    } catch (e) {
+      if (!(e instanceof GuideError || e instanceof SyntaxError)) throw e;
+      issues.push({ file, nodeId: '(file)', rule: 'invalid-guide', detail: e.message });
+    }
+  }
+  return issues;
+}
+
+/** A guide file has a `repertoireId` key. */
+function isGuideFile(path: string): boolean {
+  try {
+    return 'repertoireId' in (JSON.parse(readFileSync(path, 'utf8')) as object);
+  } catch {
+    return path.includes('guides');
+  }
+}
+
 /** A file with an `exercises` key is a lesson, any other file is a repertoire. */
 function isLessonFile(path: string): boolean {
   try {
@@ -76,10 +104,12 @@ async function main(): Promise<number> {
       console.log(`File not found: ${args.file}`);
       return 1;
     }
-    issues.push(...(await (isLessonFile(args.file) ? lessonIssues([args.file]) : repertoireIssues([args.file]))));
+    const run = isGuideFile(args.file) ? guideIssues : isLessonFile(args.file) ? lessonIssues : repertoireIssues;
+    issues.push(...(await run([args.file])));
   } else {
     if (args.repertoires) issues.push(...(await repertoireIssues(listRepertoireFiles())));
     if (args.lessons) issues.push(...(await lessonIssues(listLessonFiles())));
+    if (args.repertoires) issues.push(...(await guideIssues(listGuideFiles())));
   }
   const errors = issues.filter((i) => i.severity !== 'warning');
   const warnings = issues.filter((i) => i.severity === 'warning');

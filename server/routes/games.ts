@@ -1,6 +1,6 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Hono } from 'hono';
-import type { Color, GameDetail, GameListQuery, GameResult, Source } from '../../shared/types.js';
+import type { Color, GameDetail, GameRepertoireRef, GameListQuery, GameResult, Source } from '../../shared/types.js';
 import { parsePgn } from '../chess/pgn.js';
 import { getGameRow, listGames } from '../db/games-repo.js';
 
@@ -14,6 +14,14 @@ const oneOf = <T extends string>(allowed: readonly string[], v: string | undefin
 function intOr(v: string | undefined, fallback: number, min: number, max: number): number {
   if (v === undefined || !/^\d+$/.test(v)) return fallback;
   return Math.min(max, Math.max(min, Number(v)));
+}
+
+/** The leak or out-of-book event of a game that has a node a guide can link to. */
+function repertoireRef(db: DatabaseSync, gameId: number): GameRepertoireRef | null {
+  const e = db.prepare(`SELECT repertoire_id, node_id, kind FROM opening_events
+    WHERE game_id = ? AND kind IN ('leak', 'out_of_book') AND node_id IS NOT NULL`).get(gameId) as unknown as
+    { repertoire_id: string; node_id: string; kind: GameRepertoireRef['kind'] } | undefined;
+  return e ? { id: e.repertoire_id, nodeId: e.node_id, kind: e.kind } : null;
 }
 
 export function gamesRoutes(db: DatabaseSync): Hono {
@@ -36,7 +44,7 @@ export function gamesRoutes(db: DatabaseSync): Hono {
       const row = /^\d+$/.test(id) ? getGameRow(db, Number(id)) : null;
       if (!row) return c.json({ error: 'not found' }, 404);
       const { startFen, moves } = parsePgn(row.pgn);
-      const detail: GameDetail = { ...row, startFen, moves };
+      const detail: GameDetail = { ...row, startFen, moves, repertoire: repertoireRef(db, row.id) };
       return c.json(detail);
     });
 }

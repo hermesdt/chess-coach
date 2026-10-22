@@ -302,3 +302,9 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   `superpowers:brainstorming`. Then M11 content audit (spec
   `docs/superpowers/specs/2026-10-20-content-audit-design.md`; it also audits the guide texts).
 - All milestones through M9 are merged into `main`.
+- Temporary task (owner, 2026-10-22): read the problems the owner reported
+  with "Report a problem" in the running app (table `card_flags`, shown in
+  Settings → "Reported problems"). Open `data/chess.db` read-only; never write
+  to it. Sort each report: a content error goes to the M11 audit list, an app
+  bug gets a fix. Do not restore cards for the owner. **Delete this item when
+  done.**

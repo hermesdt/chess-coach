@@ -1,7 +1,8 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Hono } from 'hono';
-import type { GameResult, OpeningDetail, OpeningLeakGroup, OpeningSummary, RepNodeDTO } from '../../shared/types.js';
+import type { GameResult, GuideIndexEntry, OpeningDetail, OpeningLeakGroup, OpeningSummary, RepNodeDTO } from '../../shared/types.js';
 import { currentLevel } from '../level.js';
+import type { GuideFile } from '../guides/types.js';
 import { scanLeaks } from '../repertoire/leaks.js';
 import type { RepNode, Repertoire } from '../repertoire/types.js';
 import { listCardsByKind } from '../srs/cards-repo.js';
@@ -26,7 +27,18 @@ function toDto(node: RepNode, level: number): RepNodeDTO {
   };
 }
 
-export function openingsRoutes(db: DatabaseSync, getReps: () => Repertoire[]): Hono {
+/** Variation keys and roots of the guide of a repertoire, or null when it has none or the guides cannot load. */
+function variationIndex(getGuides: () => GuideFile[], repertoireId: string): GuideIndexEntry[] | null {
+  try {
+    const guide = getGuides().find((g) => g.repertoireId === repertoireId);
+    return guide ? guide.variations.map((v) => ({ key: v.key, roots: v.roots })) : null;
+  } catch (e) {
+    console.error('could not load the guides', e);
+    return null;
+  }
+}
+
+export function openingsRoutes(db: DatabaseSync, getReps: () => Repertoire[], getGuides: () => GuideFile[]): Hono {
   return new Hono()
     .get('/openings', (c) => {
       try {
@@ -38,7 +50,7 @@ export function openingsRoutes(db: DatabaseSync, getReps: () => Repertoire[]): H
       const list: OpeningSummary[] = getReps().map((rep) => ({
         id: rep.id, name: rep.name, color: rep.color, nodeCount: rep.byId.size,
         cardCount: cards.filter((card) => card.refs.some((r) => r.repertoire === rep.id)).length,
-        stats: stats(db, rep),
+        stats: stats(db, rep), variationIndex: variationIndex(getGuides, rep.id),
       }));
       return c.json(list);
     })

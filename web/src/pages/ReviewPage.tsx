@@ -5,6 +5,8 @@ import { api } from '../api';
 import { DrillBoard, type DrillArrow } from '../components/DrillBoard';
 import { bestSan, checkAnswer } from '../lib/drill';
 import { REVIEW_FINISHED } from '../lib/events';
+import { partForNode, planHref } from '../lib/guide-links';
+import { useGuideIndex } from '../lib/use-guide-index';
 
 const RATINGS: { rating: Rating; label: string }[] = [
   { rating: 'again', label: 'Again' },
@@ -83,6 +85,11 @@ export function ReviewPage() {
   }, []);
 
   const card = cards?.[index];
+  const cardRef = card?.kind === 'opening' ? card.refs.find((r) => r.repertoire && r.nodeId) : undefined;
+  const guideIndex = useGuideIndex(cardRef?.repertoire);
+  const plan = cardRef?.repertoire && cardRef.nodeId && card
+    ? planHref(guideIndex, cardRef.repertoire, cardRef.nodeId, partForNode(cardRef.nodeId, card.sideToMove))
+    : null;
 
   const next = useCallback(() => {
     setIndex((i) => i + 1);
@@ -247,6 +254,7 @@ export function ReviewPage() {
           {card.solution.explanation && <p>{card.solution.explanation}</p>}
           {answer.check?.state === 'pending' && <p className="muted">Checking your move…</p>}
           {answer.check?.state === 'done' && <p>{checkLine(answer.check.result, bestSan(card))}</p>}
+          {plan && <p><Link to={plan}>Plan</Link></p>}
           <div className="ratings">
             {RATINGS.map(({ rating, label }, i) => (
               <button
