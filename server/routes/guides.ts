@@ -1,7 +1,7 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Chess } from 'chess.js';
 import { Hono } from 'hono';
-import type { GuideDTO, GuideVariationDTO } from '../../shared/types.js';
+import type { GuideDTO, GuideMove, GuideVariationDTO } from '../../shared/types.js';
 import { personalBoxes } from '../guides/personal.js';
 import type { GuideFile, GuideVariation } from '../guides/types.js';
 import { currentLevel } from '../level.js';
@@ -29,6 +29,14 @@ function fenAfter(moves: string[]): string {
   return chess.fen();
 }
 
+/** Resolves a SAN move at the position after `moves` to its squares. */
+function resolveMove(moves: string[], san: string): GuideMove {
+  const chess = new Chess();
+  for (const m of moves) chess.move(m);
+  const move = chess.move(san);
+  return { san: move.san, from: move.from, to: move.to };
+}
+
 function toDto(rep: Repertoire, v: GuideVariation, level: number, personal: GuideVariationDTO['personal']): GuideVariationDTO {
   const final = line(rep, v.finalForm.nodeId);
   const requiredLevel = Math.max(1, ...final.map((n) => n.level)) as 1 | 2 | 3;
@@ -49,7 +57,11 @@ function toDto(rep: Repertoire, v: GuideVariation, level: number, personal: Guid
     route: v.route.map((r) => ({ nodeId: r.nodeId, san: node(rep, r.nodeId).san, why: r.why, level: node(rep, r.nodeId).level })),
     deviations,
     middlegame: v.middlegame,
-    mistakes: v.mistakes.map((m) => ({ moves: m.moves, fen: fenAfter(m.moves), text: m.text })),
+    mistakes: v.mistakes.map((m) => ({
+      moves: m.moves, fen: fenAfter(m.moves), text: m.text,
+      ...(m.bad === undefined ? {} : { bad: resolveMove(m.moves, m.bad) }),
+      ...(m.good === undefined ? {} : { good: m.good.map((g) => resolveMove(m.moves, g)) }),
+    })),
     locked: requiredLevel > level,
     requiredLevel,
     personal,

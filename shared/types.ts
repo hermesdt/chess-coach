@@ -152,8 +152,11 @@ export interface GuideVariation {
   /** nodeId is an opponent move; showNodeId is a deeper node that shows the plan. */
   deviations: { nodeId: string; plan: string; showNodeId?: string }[];
   middlegame: string;
-  /** moves: SAN list from the start; it may leave the repertoire tree. */
-  mistakes: { moves: string[]; text: string }[];
+  /**
+   * moves: SAN list from the start; it may leave the repertoire tree.
+   * bad: SAN of the move to avoid; good: SAN of 1 to 3 moves to play. Both are legal after `moves`, and they come as a pair.
+   */
+  mistakes: { moves: string[]; text: string; bad?: string; good?: string[] }[];
 }
 export interface GuideFile { repertoireId: string; why: string; variations: GuideVariation[] }
 
@@ -174,10 +177,12 @@ export interface GuideVariationDTO {
   /** showMoves: SAN list from the start to the deeper node that shows the plan. */
   deviations: { nodeId: string; san: string; plan: string; showMoves?: string[]; level: 1 | 2 | 3 }[];
   middlegame: string;
-  mistakes: { moves: string[]; fen: string; text: string }[];
+  mistakes: { moves: string[]; fen: string; text: string; bad?: GuideMove; good?: GuideMove[] }[];
   locked: boolean; requiredLevel: 1 | 2 | 3;
   personal: VariationPersonal | null;
 }
+/** A move resolved on the server: SAN plus the squares to draw an arrow. */
+export interface GuideMove { san: string; from: string; to: string }
 export interface GuideDTO {
   repertoireId: string; name: string; color: Color; level: 1 | 2 | 3; why: string; variations: GuideVariationDTO[];
 }

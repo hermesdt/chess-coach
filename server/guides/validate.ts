@@ -6,6 +6,7 @@ import type { RepNode, Repertoire, ValidationIssue } from '../repertoire/types.j
 import { MAX_WIN_LOSS } from '../repertoire/validate.js';
 import type { GuideFile, GuideVariation } from './types.js';
 
+export const MAX_GOOD = 3;
 export const MIN_JOBS = 3;
 export const MAX_JOBS = 6;
 const DEFAULT_NODES = 1_000_000;
@@ -43,7 +44,9 @@ export async function validateGuide(
     if (text.includes('%')) add(nodeId, 'percent-text', 'Text must not contain a "%" sign');
   }
 
-  const offTreeOwn: { key: string; fenBefore: string; san: string; uci: string; fenAfter: string }[] = [];
+  interface Checked { key: string; fenBefore: string; san: string; uci: string; fenAfter: string }
+  const offTreeOwn: Checked[] = [];
+  const goodMoves: Checked[] = [];
 
   const seenKeys = new Set<string>();
   for (const v of guide.variations) {
@@ -103,10 +106,11 @@ export async function validateGuide(
       if (d.showNodeId !== undefined) node(v, d.showNodeId, 'Deviation show node');
     }
 
-    for (const m of v.mistakes) checkMistake(v, m.moves);
+    for (const m of v.mistakes) checkMistake(v, m);
   }
 
-  function checkMistake(v: GuideVariation, moves: string[]): void {
+  function checkMistake(v: GuideVariation, mistake: GuideVariation['mistakes'][number]): void {
+    const { moves } = mistake;
     const game = new Chess();
     let id = '';
     let onTree = true;
@@ -126,6 +130,42 @@ export async function validateGuide(
         offTreeOwn.push({ key: `${v.key}: ${moves.join(' ')}`, fenBefore, san: move.san, uci: move.from + move.to + (move.promotion ?? ''), fenAfter: game.fen() });
       }
     }
+    checkBadGood(v, mistake, game);
+  }
+
+  /** `game` stands at the position after the mistake line. */
+  function checkBadGood(v: GuideVariation, m: GuideVariation['mistakes'][number], game: Chess): void {
+    if (m.bad === undefined && m.good === undefined) return;
+    const line = m.moves.join(' ');
+    const where = `mistake line "${line}" (variation "${v.key}")`;
+    const good = m.good ?? [];
+    if (m.bad === undefined || good.length === 0) {
+      add(line, 'bad-good-pair', `A mistake needs both a bad move and at least one good move; ${where}`);
+    }
+    if (good.length > MAX_GOOD) add(line, 'good-count', `Mistake has ${good.length} good moves, at most ${MAX_GOOD} are allowed; ${where}`);
+    const legal = (san: string) => {
+      const board = new Chess(game.fen());
+      try {
+        const move = board.move(san);
+        return { san: move.san, uci: move.from + move.to + (move.promotion ?? ''), fenAfter: board.fen() };
+      } catch {
+        return null;
+      }
+    };
+    const bad = m.bad === undefined ? null : legal(m.bad);
+    if (m.bad !== undefined && !bad) add(line, 'illegal-bad', `Illegal bad move "${m.bad}" in ${where}`);
+    const seen = new Set<string>();
+    for (const g of good) {
+      const move = legal(g);
+      if (!move) {
+        add(line, 'illegal-good', `Illegal good move "${g}" in ${where}`);
+        continue;
+      }
+      if (seen.has(move.san)) add(line, 'duplicate-good', `Good move "${move.san}" is listed twice in ${where}`);
+      seen.add(move.san);
+      if (bad && bad.san === move.san) add(line, 'bad-in-good', `Move "${move.san}" is both bad and good in ${where}`);
+      goodMoves.push({ key: `${v.key}: ${line}`, fenBefore: game.fen(), ...move });
+    }
   }
 
   if (engine) {
@@ -138,14 +178,16 @@ export async function validateGuide(
       cache.set(fen, lines);
       return lines;
     };
-    for (const m of offTreeOwn) {
+    const checkLoss = async (m: Checked, rule: string): Promise<void> => {
       const best = (await search(m.fenBefore))[0];
-      if (!best || best.pv[0] === m.uci) continue;
+      if (!best || best.pv[0] === m.uci) return;
       const after = await search(m.fenAfter);
       const winAfter = after.length === 0 ? (new Chess(m.fenAfter).isCheckmate() ? 100 : 50) : moverWinAfter(after[0]!.score);
       const loss = winPct(best.score) - winAfter;
-      if (loss >= MAX_WIN_LOSS) add(m.key, 'engine-loss', `${m.san} loses ${loss.toFixed(1)} win % (mistake line ${m.key})`);
-    }
+      if (loss >= MAX_WIN_LOSS) add(m.key, rule, `${m.san} loses ${loss.toFixed(1)} win % (mistake line ${m.key})`);
+    };
+    for (const m of offTreeOwn) await checkLoss(m, 'engine-loss');
+    for (const m of goodMoves) await checkLoss(m, 'engine-loss-good');
   }
   return issues;
 }

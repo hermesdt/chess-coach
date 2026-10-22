@@ -69,6 +69,25 @@ describe('GET /api/openings/:id/guide', () => {
     expect(v.mistakes[0]!.fen).toBe(board.fen());
   });
 
+  it('resolves bad and good moves to squares, and leaves old mistakes alone', async () => {
+    const withMoves: GuideVariation = {
+      ...advance,
+      mistakes: [
+        { moves: ['e4', 'c6', 'd4', 'd5', 'e5', 'e6'], text: 'x', bad: 'f4', good: ['Nf3', 'Nc3'] },
+        { moves: ['e4', 'c6', 'd4', 'd5', 'e5', 'Bf5', 'Nf3', 'e6'], text: 'y', bad: 'Bb5', good: ['Be2'] },
+        { moves: ['e4', 'c6'], text: 'z' },
+      ],
+    };
+    const app2 = createApp({ db, repertoires: reps, guides: [{ ...sample, variations: [withMoves] }] });
+    const g = (await (await app2.request('/api/openings/caro-kann/guide')).json()) as GuideDTO;
+    const [a, b, c] = g.variations[0]!.mistakes;
+    expect(a!.bad).toEqual({ san: 'f4', from: 'f2', to: 'f4' });
+    expect(a!.good).toEqual([{ san: 'Nf3', from: 'g1', to: 'f3' }, { san: 'Nc3', from: 'b1', to: 'c3' }]);
+    expect(b!.bad).toEqual({ san: 'Bb5', from: 'f1', to: 'b5' });
+    expect(c).not.toHaveProperty('bad');
+    expect(c).not.toHaveProperty('good');
+  });
+
   it('marks locked and requiredLevel per owner level', async () => {
     const at = async (level: 1 | 2 | 3) => {
       setSetting(db, 'level_override', String(level));

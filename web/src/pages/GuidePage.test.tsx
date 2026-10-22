@@ -11,12 +11,13 @@ vi.mock('react-chessboard', () => ({
   Chessboard: ({ options }: {
     options: {
       position: string;
+      arrows?: { startSquare: string; endSquare: string; color: string }[];
       onSquareClick?: (a: { piece: null; square: string }) => void;
       onMouseOverSquare?: (a: { piece: null; square: string }) => void;
       onMouseOutSquare?: (a: { piece: null; square: string }) => void;
     };
   }) => (
-    <div data-testid="board" data-fen={options.position}>
+    <div data-testid="board" data-fen={options.position} data-arrows={JSON.stringify(options.arrows ?? [])}>
       <button type="button" onClick={() => options.onSquareClick?.({ piece: null, square: 'c3' })}>square c3</button>
       <button
         type="button"
@@ -100,6 +101,36 @@ describe('GuidePage', () => {
     }
     const hrefs = within(screen.getByRole('navigation', { name: 'Contents' })).getAllByRole('link').map((a) => a.getAttribute('href'));
     expect(hrefs).toContain('#route-advance');
+  });
+
+  describe('bad and good moves on the mistake boards', () => {
+    const mistakeBoards = (container: HTMLElement) =>
+      Array.from(container.querySelectorAll<HTMLElement>('.guide-mistake'));
+    const arrowsOf = (el: HTMLElement) => JSON.parse(el.querySelector('[data-testid="board"]')!.getAttribute('data-arrows')!);
+    const LEGEND = 'Red: the move to avoid. Green: the move to play.';
+
+    it('draws a red arrow for the bad move and green arrows for the good moves, with a legend', async () => {
+      const mistakes = [
+        {
+          moves: ['e4', 'c6'], fen: START, text: 'With moves.',
+          bad: { san: 'f4', from: 'f2', to: 'f4' },
+          good: [{ san: 'Nf3', from: 'g1', to: 'f3' }, { san: 'Nc3', from: 'b1', to: 'c3' }],
+        },
+        { moves: ['e4', 'e5'], fen: START, text: 'Old mistake.' },
+      ];
+      const { container } = renderPage(guide([variation('advance', 'Advance', { mistakes })]));
+      await screen.findByText('With moves.');
+      const [withMoves, old] = mistakeBoards(container);
+      expect(arrowsOf(withMoves!)).toEqual([
+        { startSquare: 'f2', endSquare: 'f4', color: '#cf222e' },
+        { startSquare: 'g1', endSquare: 'f3', color: '#1a7f37' },
+        { startSquare: 'b1', endSquare: 'c3', color: '#1a7f37' },
+      ]);
+      expect(within(withMoves!).getByText(LEGEND)).toBeTruthy();
+      expect(arrowsOf(old!)).toEqual([]);
+      expect(within(old!).queryByText(LEGEND)).toBeNull();
+      expect(screen.getAllByText(LEGEND)).toHaveLength(1);
+    });
   });
 
   it('selects the tab from ?v= and switches on click', async () => {

@@ -2,12 +2,17 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams, useSearchParams } from 'react-router';
 import type { GuideDTO, GuideVariationDTO } from '../../../shared/types';
 import { api } from '../api';
-import { DrillBoard } from '../components/DrillBoard';
+import { DrillBoard, type DrillArrow } from '../components/DrillBoard';
 import { FinalFormBoard } from '../components/guide/FinalFormBoard';
 import { PersonalBox } from '../components/guide/PersonalBox';
 import { RouteStepper } from '../components/guide/RouteStepper';
 import { fenAfterMoves, lastMoveAfter, moveLabel, paragraphs } from '../lib/guide';
 import { formatLeak } from '../lib/openings';
+
+const mistakeArrows = (m: GuideVariationDTO['mistakes'][number]): DrillArrow[] => [
+  ...(m.bad ? [{ from: m.bad.from, to: m.bad.to, color: 'red' as const }] : []),
+  ...(m.good ?? []).map((g) => ({ from: g.from, to: g.to, color: 'green' as const })),
+];
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
@@ -134,9 +139,11 @@ function VariationParts({ guide, v }: { guide: GuideDTO; v: GuideVariationDTO })
                   fen={m.fen}
                   orientation={guide.color}
                   lastMove={lastMoveAfter(m.moves, m.moves.length)}
+                  arrows={mistakeArrows(m)}
                   onMove={() => {}}
                   locked
                 />
+                {(m.bad || m.good) && <p className="muted guide-legend">Red: the move to avoid. Green: the move to play.</p>}
               </div>
               <p>{m.text}</p>
             </div>
