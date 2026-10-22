@@ -360,7 +360,7 @@
           "showNodeId": "d4 c5 Nf3 Nf6 e3 cxd4 exd4 d5 Bf4 Nc6 c3 Bf5 Bd3"
         }
       ],
-      "middlegame": "Next, bring the f1 bishop out and castle short. Bd3 is the usual square. If ...Bd6 attacks your bishop, play Bg3. Then play Bd3 and O-O, as in the ...d5 part.\n\nIf Black plays ...cxd4, retake with the e-pawn or the c-pawn. If Black plays ...Qb6, play Qb3. Black can answer ...c4. Then take the queen with Qxb6.\n\nYour breaks are e4 and Ne5. The d4 pawn and the f4 bishop guard e5. The d2 knight supports e4. After Bd3 the bishop supports it too.",
+      "middlegame": "Next, bring the f1 bishop out and castle short. Bd3 is the usual square. If ...Bd6 attacks your bishop, play Bg3. Then play Bd3 and O-O, as in the ...d5 part.\n\nIf Black plays ...cxd4, retake with the e-pawn or the c-pawn. If Black plays ...Qb6, play Qb3. Black can answer ...c4. Then take the queen with Qxb6.\n\nYour breaks are e4 and Ne5. The d4 pawn and the f4 bishop guard e5. Prepare e4 with Bd3 and Re1. Play it when your f4 bishop has gone to g3.",
       "mistakes": [
         {
           "moves": [
@@ -375,7 +375,7 @@
             "Nf3",
             "e6"
           ],
-          "text": "Do not push e4 yet. Nothing guards the e4 pawn. After ...dxe4 the black pawn attacks your f3 knight and Black has won a pawn. Play Nbd2 and Bd3 first. Then two pieces support e4."
+          "text": "Do not push e4 yet. Nothing guards the e4 pawn. After ...dxe4 the black pawn attacks your f3 knight and Black has won a pawn. Play Nbd2 and Bd3 first. The e4 push takes a guard from d4 and from your f4 bishop."
         },
         {
           "moves": [
