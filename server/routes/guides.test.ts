@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import type { DatabaseSync } from 'node:sqlite';
 import { Chess } from 'chess.js';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { GuideDTO } from '../../shared/types.js';
 import { createApp } from '../app.js';
 import { openDb } from '../db/db.js';
@@ -97,5 +97,13 @@ describe('GET /api/openings/:id/guide', () => {
     const v = (await guideOf()).variations[0]!;
     expect(v.personal).toMatchObject({ games: 7 });
     expect(v.deviations.map((d) => d.san)).toEqual(['g4', 'h4', 'Nc3']);
+  });
+
+  it('fails on a deviation showNodeId that is not a node', async () => {
+    const bad: GuideVariation = { ...advance, deviations: [{ nodeId: 'e4 c6 d4 d5 e5 Bf5 g4', plan: 'x', showNodeId: 'e4 zz' }] };
+    app = createApp({ db, repertoires: reps, guides: [{ ...sample, variations: [bad] }] });
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect((await app.request('/api/openings/caro-kann/guide')).status).toBe(500);
+    spy.mockRestore();
   });
 });

@@ -21,7 +21,7 @@ function node(rep: Repertoire, nodeId: string): RepNode {
   return n;
 }
 
-const sans = (rep: Repertoire, nodeId: string) => line(rep, nodeId).map((n) => n.san);
+const sans = (rep: Repertoire, nodeId: string) => line(rep, node(rep, nodeId).id).map((n) => n.san);
 
 function fenAfter(moves: string[]): string {
   const chess = new Chess();

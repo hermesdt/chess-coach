@@ -18,7 +18,10 @@ const variation = (key: string, root: string): GuideVariation => ({
 });
 const guide: GuideFile = {
   repertoireId: 'caro-kann', why: '',
-  variations: [variation('advance', 'e4 c6 d4 d5 e5'), variation('exchange', 'e4 c6 d4 d5 exd5')],
+  variations: [{ ...variation('advance', 'e4 c6 d4 d5 e5'), deviations: [
+    { nodeId: 'e4 c6 d4 d5 e5 Bf5 g4', plan: 'Attack the bishop.' },
+    { nodeId: 'e4 c6 d4 d5 e5 Bf5 h4', plan: 'Ignore the pawn.' },
+  ] }, variation('exchange', 'e4 c6 d4 d5 exd5')],
 };
 
 const ADVANCE_LEAK = 'e4 c6 d4 d5 e5 e6';
@@ -159,5 +162,48 @@ describe('personalBoxes', () => {
       { gameId: ids[0], ply: 6, san: 'Bf5', reason: 'Blunder' },
       { gameId: ids[1], ply: 8, san: 'Bxd3', reason: 'You missed free material' },
     ]);
+  });
+
+  it.each([2, 3] as const)('counts in-book guide deviations at level %i', (level) => {
+    setSetting(db, 'level_override', String(level));
+    const g4 = many(4, ADVANCE_OPP);
+    many(3, 'e4 c6 d4 d5 e5 Bf5 h4 h5');
+    addGame('e4 c6 d4 d5 e5 Bf5 Nf3 e6 Be2'); // an in-book game that met no deviation
+    const p = boxes(level).get('advance')!;
+    expect(db.prepare("SELECT COUNT(*) AS n FROM opening_events WHERE kind = 'out_of_book'").get()?.n).toBe(0);
+    expect(p.opponentMoves.map((o) => [o.nodeId, o.playedSan, o.count])).toEqual([
+      ['e4 c6 d4 d5 e5 Bf5', 'g4', 4],
+      ['e4 c6 d4 d5 e5 Bf5', 'h4', 3],
+    ]);
+    expect(p.opponentMoves[0]!.gameIds).toEqual(g4);
+  });
+
+  it('counts a deviation once when it is out of book at level 1 and a guide deviation', () => {
+    many(3, ADVANCE_OPP);
+    const p = boxes().get('advance')!;
+    expect(p.opponentMoves).toHaveLength(1);
+    expect(p.opponentMoves[0]).toMatchObject({ playedSan: 'g4', count: 3 });
+  });
+
+  it('keeps the 3-event threshold for in-book deviations', () => {
+    setSetting(db, 'level_override', '2');
+    many(2, ADVANCE_OPP);
+    many(2, 'e4 c6 d4 d5 e5 Bf5 Nf3 e6 Be2');
+    expect(boxes(2).get('advance')?.opponentMoves).toEqual([]);
+  });
+
+  it('counts an end_of_book game at level 2 through its deepest node', () => {
+    setSetting(db, 'level_override', '2');
+    many(3, 'e4 c6 d4 d5 e5 Bf5 Nf3 e6 c3', 'win');
+    expect(boxes(2).get('advance')).toMatchObject({ games: 3, win: 3 });
+  });
+
+  it('counts a leak whose expected node is outside every root nowhere', () => {
+    many(5, 'e4 e5 Nf3 Nc6');
+    scanLeaks(db, [rep]);
+    expect(db.prepare("SELECT node_id FROM opening_events WHERE kind = 'leak' LIMIT 1").get()?.node_id).toBe('e4 c6');
+    const m = boxes();
+    expect(m.get('advance')).toBeNull();
+    expect(m.get('exchange')).toBeNull();
   });
 });
