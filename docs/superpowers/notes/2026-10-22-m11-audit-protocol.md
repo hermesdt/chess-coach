@@ -94,3 +94,15 @@ Check these first. Put each one in the Claims table, even if it is fine.
 | id | location | position (FEN) | sentence | claim type | check | verdict | fix |
 |---|---|---|---|---|---|---|---|
 | ex-01 | `caro-kann.json`, node `e4 c6 d4 d5 Nc3 dxe4`, comment | `rnbqkbnr/pp2pppp/2p5/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR b KQkq - 1 3` | "Take the pawn. You open the c8 bishop." | line-open/blocked | chess.js: d7, e6, f5, g4, h3 are all empty before 3...dxe4. The c8 bishop already has Bd7, Be6, Bf5, Bg4 and Bh3. The line was open since 2.d4 d5. The capture changes nothing for this bishop. | `false` | "Take the pawn. After Nxe4 you play ...Bf5: your light bishop comes out before ...e6 shuts it in." (commit `963d710`) |
+
+## Rulings from the pilot batch (ck-advance), binding for all batches
+
+- **Position column:** write `before` or `after` next to the FEN. Use the position before the move for instructions and for reasons for choosing the move; use the position after it for claims about the result.
+- **Rows:** one row per factual claim. Pure instructions ("Take it.", "Play ...c5.") and sentences with no chess fact get no row; merge a short pair into the claim it supports.
+- **Positional words** ("solid", "active", "safe", "loose", "weakens", "easy game", "better game"): `ok` when the board facts behind the word hold and Stockfish (≥ 1M nodes) does not disagree; `misleading` when the engine disagrees or the word has no support; an unsupported evaluation phrase such as "an easy game" is `misleading`.
+- **Unnamed threats:** for every move that attacks a piece, list the target piece and its guards; a text that names one threat but leaves out a second, bigger one is `misleading`.
+- **Fix length:** a fix may replace the whole comment (repertoire: one or two sentences) when a true reason and a second fact do not fit; keep every correct fact the old text had.
+- **Engine numbers:** may appear in the report's check column; never in the content text.
+- **Engine use:** Stockfish ≥ 1M nodes, `ucinewgame` before each search, MultiPV 3 for "best move" claims, `searchmoves` to test an alternative. A shared helper may exist at `/tmp/m11-shared/` (attackers batch, SAN replay, Stockfish wrapper); if it is missing, write your own under `/tmp`.
+- **Sequence check:** `pnpm check:sequences <file>` prints totals only; zero issues means no sequence problem was found, not that no sequence exists. Find the sequences yourself (SAN tokens in order) as part of "every sentence".
+- **Report footer:** end each report with `Protocol feedback` only if you hit something new; otherwise write "none".
