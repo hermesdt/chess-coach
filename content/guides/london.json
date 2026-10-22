@@ -1,0 +1,658 @@
+{
+  "repertoireId": "london",
+  "why": "The London is your opening as White. You play d4 and bring the c1 bishop to f4 early. Then you play e3, Nf3, Nbd2, c3 and Bd3, and you castle short. You use the same set-up against most Black replies.\n\nIn most lines the bishop goes to f4 before you play e3. The e3 pawn would shut the c1 bishop in. On f4 the bishop stays outside your pawns and controls the b8-h2 diagonal.\n\nYour pawns on c3, d4 and e3 are the base. Black attacks d4 with ...c5 and ...Nc6. The c3 pawn, the e3 pawn and the f3 knight guard it.\n\nThe opening asks for patience. You learn one set-up and a few ideas. You do not need long lines. Watch for ...c5 and ...Qb6. The first attacks d4. The second attacks b2.\n\nThe London connects to your other openings. In the Slav, the pawn on e6 can shut your c8 bishop in. In the London, the pawn on e3 can shut your c1 bishop in. In both openings the bishop comes out first. The Caro-Kann uses the same idea.",
+  "variations": [
+    {
+      "key": "vs-d5",
+      "name": "Against ...d5 (also ...Nf6 and ...e6 first)",
+      "roots": [
+        "d4 d5",
+        "d4 Nf6 Bf4 d5",
+        "d4 Nf6 Bf4 e6"
+      ],
+      "finalForm": {
+        "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 Bd6 Bg3 O-O Nbd2 c5 c3 Nc6 Bd3 b6 O-O",
+        "jobs": [
+          {
+            "square": "g3",
+            "text": "The bishop stands on the b8-h2 diagonal and faces the d6 bishop. If Black plays ...Bxg3, retake with hxg3. The h-file is then half open."
+          },
+          {
+            "square": "d3",
+            "text": "The bishop aims at h7 through e4, f5 and g6. Black's king stands next to h7."
+          },
+          {
+            "square": "f3",
+            "text": "The knight guards d4 and e5. It can go to e5, where the d4 pawn and the g3 bishop guard it."
+          },
+          {
+            "square": "d2",
+            "text": "The knight supports e4, so you can push the e-pawn later."
+          },
+          {
+            "square": "d4",
+            "text": "The c5 pawn and the c6 knight attack this pawn. The c3 pawn, the e3 pawn and the f3 knight guard it."
+          }
+        ]
+      },
+      "route": [
+        {
+          "nodeId": "d4",
+          "why": "Take space in the centre. The move also opens the diagonal of your c1 bishop."
+        },
+        {
+          "nodeId": "d4 d5 Bf4",
+          "why": "Bring the bishop out before you play e3. The e3 pawn would shut it in. On f4 it controls the b8-h2 diagonal."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3",
+          "why": "Guard d4 and f4. The pawn also opens your f1 bishop."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3",
+          "why": "Develop a knight. It guards d4 and e5."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 Bd6 Bg3",
+          "why": "The bishop on d6 attacks your bishop on f4. Step back to g3. The bishop stays on the b8-h2 diagonal. If Black takes on g3, retake with hxg3."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 Bd6 Bg3 O-O Nbd2",
+          "why": "Develop your second knight. It supports e4. It also leaves the c3 square free for your pawn."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 Bd6 Bg3 O-O Nbd2 c5 c3",
+          "why": "The c5 pawn attacks d4. The c3 pawn adds a third guard. Now the pawns on c3, d4 and e3 form your base."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 Bd6 Bg3 O-O Nbd2 c5 c3 Nc6 Bd3",
+          "why": "Aim the bishop at h7. Now f1 and g1 are empty, so you can castle short."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 Bd6 Bg3 O-O Nbd2 c5 c3 Nc6 Bd3 b6 O-O",
+          "why": "Castle short. Your king goes to g1 and your rook goes to f1. The set-up is complete."
+        }
+      ],
+      "deviations": [
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 Be7",
+          "plan": "The bishop on e7 does not attack your bishop. Keep your bishop on f4. Play Bd3 and Nbd2. After ...c5 play c3. Then castle short.",
+          "showNodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 Be7 Bd3 O-O Nbd2 c5 c3"
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 Bd6 Bg3 Bxg3",
+          "plan": "Black trades bishops. Retake with the h-pawn. The h-file is then half open. Play Bd3, Nbd2 and c3. Then castle short.",
+          "showNodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 Bd6 Bg3 Bxg3 hxg3 O-O Bd3 b6 Nbd2 Bb7 c3"
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 c5",
+          "plan": "Black plays ...c5 before ...Bd6. Play c3 at once. After ...Nc6 play Nbd2. If Black plays ...Bd6 later, step back with Bg3. You can reach the same position as on the route.",
+          "showNodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 c5 c3 Nc6 Nbd2 Bd6 Bg3 O-O Bd3"
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e5",
+          "plan": "Black offers a pawn. Nothing guards e5, so take it with the bishop. If ...Nc6 attacks the bishop, go back to g3. If ...Nb4 attacks c2, play c3.",
+          "showNodeId": "d4 d5 Bf4 Nf6 e3 e5 Bxe5 Nc6 Bg3 Nb4 c3"
+        },
+        {
+          "nodeId": "d4 d5 Bf4 e6",
+          "plan": "Black plays ...e6 first. Play e3. After ...Bd6 play Bg3. Then play Nf3 and Nbd2. You can reach the same position as on the route.",
+          "showNodeId": "d4 d5 Bf4 e6 e3 Bd6 Bg3 Nf6 Nf3 O-O Nbd2"
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nc6",
+          "plan": "Play e3. If ...Bg4 attacks your queen, take it with Qxg4. Nothing guards that bishop. If ...Nb4 attacks c2, play c3. Then play Nf3.",
+          "showNodeId": "d4 d5 Bf4 Nc6 e3 Nb4 c3 Nc6 Nf3"
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 Bf5",
+          "plan": "Black puts the bishop on f5 too. Play Nf3 and then Bd3 to offer a trade. Follow the plan of the ...Bf5 part.",
+          "showNodeId": "d4 d5 Bf4 Nf6 e3 Bf5 Nf3 e6 Bd3 Bxd3 Qxd3 Bd6 Bxd6 Qxd6 Nbd2 O-O c3"
+        }
+      ],
+      "middlegame": "You have finished the set-up. The pawn on d4 is attacked twice and guarded three times, so keep those guards.\n\nYour first plan is Ne5. In the tree, Black plays ...Bb7. Then you can play Ne5. The d4 pawn and the g3 bishop guard e5. If Black takes with ...Nxe5, retake with dxe5. The pawn attacks the d6 bishop and the f6 knight, and you win a piece.\n\nYour second plan is the e4 break. The d3 bishop and the d2 knight support it. A typical order is Re1, Qe2 and then e4. The e4 pawn attacks d5.\n\nIf Black trades with ...Bxg3, retake with hxg3. Then the h-file is half open. Keep the plan: Re1, Qe2 and e4.",
+      "mistakes": [
+        {
+          "moves": [
+            "d4",
+            "d5"
+          ],
+          "text": "Move 2 is Bf4, not e3. A pawn on e3 shuts in the c1 bishop. The bishop can then go only to d2. This is not a blunder, but it breaks your plan.",
+          "bad": "e3",
+          "good": [
+            "Bf4"
+          ]
+        },
+        {
+          "moves": [
+            "d4",
+            "d5",
+            "Bf4",
+            "Nf6",
+            "e3",
+            "e6",
+            "Nf3",
+            "Bd6",
+            "Bg3",
+            "Bxg3"
+          ],
+          "text": "Retake with the h-pawn, not the f-pawn. After fxg3 you have doubled pawns on g2 and g3. After hxg3 the h-file is half open for your rook. This is not a blunder, but it breaks your plan.",
+          "bad": "fxg3",
+          "good": [
+            "hxg3"
+          ]
+        },
+        {
+          "moves": [
+            "d4",
+            "d5",
+            "Bf4",
+            "Nf6",
+            "e3",
+            "e6",
+            "Nf3",
+            "Bd6",
+            "Bg3",
+            "O-O"
+          ],
+          "text": "Play Nbd2, not Nc3. A knight on c3 blocks your own c-pawn. Then c3 is not free for your pawn when ...c5 comes. This is not a blunder, but it breaks your plan.",
+          "bad": "Nc3",
+          "good": [
+            "Nbd2"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "vs-kid",
+      "name": "Against ...Nf6 with ...g6 (also 1...e5 and 1...f5)",
+      "roots": [
+        "d4 Nf6",
+        "d4 e5",
+        "d4 f5"
+      ],
+      "finalForm": {
+        "nodeId": "d4 Nf6 Bf4 g6 e3 Bg7 Nf3 O-O Bd3 d6 h3 Nbd7 Nbd2 c5 c3 b6 O-O",
+        "jobs": [
+          {
+            "square": "f4",
+            "text": "The bishop stands outside the e3 pawn. If ...Nh5 or ...e5 attacks it, it can retreat to h2, where it stays on the b8-h2 diagonal."
+          },
+          {
+            "square": "d3",
+            "text": "The bishop aims at g6 through e4 and f5. It also guards e4, so you can push the e-pawn later."
+          },
+          {
+            "square": "h3",
+            "text": "This pawn controls g4, so a black piece on g4 can be taken. The pawn left h2, so your bishop can retreat there."
+          },
+          {
+            "square": "f3",
+            "text": "The knight guards d4 and e5."
+          },
+          {
+            "square": "d2",
+            "text": "The knight supports e4, so you can push the e-pawn later."
+          }
+        ]
+      },
+      "route": [
+        {
+          "nodeId": "d4",
+          "why": "Take space in the centre. The move also opens the diagonal of your c1 bishop."
+        },
+        {
+          "nodeId": "d4 Nf6 Bf4",
+          "why": "Bring the bishop out first, as against ...d5. The e3 pawn would shut it in."
+        },
+        {
+          "nodeId": "d4 Nf6 Bf4 g6 e3",
+          "why": "Guard d4 and f4. The pawn also opens your f1 bishop."
+        },
+        {
+          "nodeId": "d4 Nf6 Bf4 g6 e3 Bg7 Nf3",
+          "why": "Develop a knight. It guards d4 and e5."
+        },
+        {
+          "nodeId": "d4 Nf6 Bf4 g6 e3 Bg7 Nf3 O-O Bd3",
+          "why": "Aim the bishop at g6. Now f1 and g1 are empty, so you can castle short soon."
+        },
+        {
+          "nodeId": "d4 Nf6 Bf4 g6 e3 Bg7 Nf3 O-O Bd3 d6 h3",
+          "why": "Stop ...Ng4 and ...Bg4. The bishop on c8 now sees g4, and ...Bg4 would pin your f3 knight to the queen. The pawn also gives your bishop the h2 square."
+        },
+        {
+          "nodeId": "d4 Nf6 Bf4 g6 e3 Bg7 Nf3 O-O Bd3 d6 h3 Nbd7 Nbd2",
+          "why": "Develop your second knight. It supports e4. It also leaves the c3 square free for your pawn."
+        },
+        {
+          "nodeId": "d4 Nf6 Bf4 g6 e3 Bg7 Nf3 O-O Bd3 d6 h3 Nbd7 Nbd2 c5 c3",
+          "why": "The c5 pawn attacks d4. The c3 pawn adds a third guard. Now the pawns on c3, d4 and e3 form your base."
+        },
+        {
+          "nodeId": "d4 Nf6 Bf4 g6 e3 Bg7 Nf3 O-O Bd3 d6 h3 Nbd7 Nbd2 c5 c3 b6 O-O",
+          "why": "Castle short. Your king goes to g1 and your rook goes to f1. The set-up is complete."
+        }
+      ],
+      "deviations": [
+        {
+          "nodeId": "d4 Nf6 Bf4 g6 e3 Bg7 Nf3 O-O Bd3 d6 h3 Nh5",
+          "plan": "The knight attacks your bishop. Retreat to h2. The bishop stays on the b8-h2 diagonal. Then play Nbd2, c3 and O-O.",
+          "showNodeId": "d4 Nf6 Bf4 g6 e3 Bg7 Nf3 O-O Bd3 d6 h3 Nh5 Bh2 Nd7 Nbd2 e5 c3 Qe7 O-O"
+        },
+        {
+          "nodeId": "d4 e5",
+          "plan": "Black offers a pawn. Take it with dxe5. Then develop fast. After ...Nc6 play Nf3. After ...Qe7 play Bf4. After ...Qb4+ block with Bd2. After ...Qxb2 play Nc3. If the queen goes to b6, Nd5 attacks it. If Black plays ...d6, take again with exd6.",
+          "showNodeId": "d4 e5 dxe5 Nc6 Nf3 Qe7 Bf4 Qb4+ Bd2 Qxb2 Nc3 Qb6 Nd5"
+        },
+        {
+          "nodeId": "d4 f5",
+          "plan": "Black plays the Dutch. Bring the bishop out first. Play e3 and Nf3. After ...Be7 play h3. It gives your bishop the h2 square against ...Nh5. It also stops ...Ng4. Then play Bd3 and Nbd2. The bishop aims at the f5 pawn.",
+          "showNodeId": "d4 f5 Bf4 Nf6 e3 e6 Nf3 Be7 h3 O-O Bd3 b6 Nbd2"
+        }
+      ],
+      "middlegame": "The c5 pawn attacks d4, and you guard d4 three times. Black's next break is ...e5. The pawn would attack both d4 and f4.\n\nKeep your bishop ready to go to h2. From h2 it stays on the b8-h2 diagonal. In the tree, Black plays ...Bb7 and ...Re8 to prepare ...e5. You answer with Bh2 and Re1.\n\nYour own break is e4. The d3 bishop and the d2 knight support it. Put a rook on e1 first. The e4 pawn then takes space in the centre.",
+      "mistakes": [
+        {
+          "moves": [
+            "d4",
+            "Nf6",
+            "Bf4",
+            "g6",
+            "e3",
+            "Bg7",
+            "Nf3",
+            "O-O",
+            "Bd3",
+            "d6",
+            "h3",
+            "Nh5"
+          ],
+          "text": "If Black plays ...Nh5, do not play Bg3. After ...Nxg3 only the f-pawn can retake, because your h-pawn stands on h3. You get doubled pawns on g2 and g3. Play Bh2 and keep your bishop.",
+          "bad": "Bg3",
+          "good": [
+            "Bh2"
+          ]
+        },
+        {
+          "moves": [
+            "d4",
+            "Nf6",
+            "Bf4",
+            "g6",
+            "e3",
+            "Bg7",
+            "Nf3",
+            "O-O",
+            "Bd3",
+            "d6"
+          ],
+          "text": "Do not take on g6. The bishop aims at g6, but the f7 pawn and the h7 pawn guard it. After Bxg6 hxg6 you have lost a bishop for a pawn. Play h3 instead. It stops ...Bg4 and ...Ng4.",
+          "bad": "Bxg6",
+          "good": [
+            "h3"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "vs-early-c5",
+      "name": "Against an early ...c5",
+      "roots": [
+        "d4 d5 Bf4 Nf6 e3 c5",
+        "d4 d5 Bf4 c5",
+        "d4 Nf6 Bf4 c5",
+        "d4 c5"
+      ],
+      "finalForm": {
+        "nodeId": "d4 d5 Bf4 Nf6 e3 c5 c3 Nc6 Nf3 e6 Nbd2",
+        "jobs": [
+          {
+            "square": "f4",
+            "text": "The bishop stands outside the e3 pawn and controls the b8-h2 diagonal. If ...Bd6 attacks it, it can go to g3."
+          },
+          {
+            "square": "d4",
+            "text": "The c5 pawn and the c6 knight attack this pawn. The c3 pawn, the e3 pawn and the f3 knight guard it."
+          },
+          {
+            "square": "c3",
+            "text": "The pawn guards d4 and takes b4 from the black knight. It also opens c2, so your queen can reach b3 against ...Qb6."
+          },
+          {
+            "square": "f3",
+            "text": "The knight guards d4 and e5."
+          },
+          {
+            "square": "d2",
+            "text": "The knight supports e4 and guards b3. After ...Qb6 Qb3 Qxb3 it can retake on b3."
+          }
+        ]
+      },
+      "route": [
+        {
+          "nodeId": "d4",
+          "why": "Take space in the centre. The move also opens the diagonal of your c1 bishop."
+        },
+        {
+          "nodeId": "d4 d5 Bf4",
+          "why": "Bring the bishop out before you play e3. The e3 pawn would shut it in."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3",
+          "why": "Guard d4 and f4. The pawn also opens your f1 bishop."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 c5 c3",
+          "why": "The c5 pawn attacks d4. The c3 pawn guards it again. It also takes b4 from a black knight and opens c2 for your queen."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 c5 c3 Nc6 Nf3",
+          "why": "Develop a knight. It guards d4 and e5."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 c5 c3 Nc6 Nf3 e6 Nbd2",
+          "why": "Develop your second knight. It supports e4 and guards b3. Your pawn already stands on c3, so the knight goes to d2."
+        }
+      ],
+      "deviations": [
+        {
+          "nodeId": "d4 d5 Bf4 c5",
+          "plan": "Black plays ...c5 before ...Nf6. Play e3. After ...Nc6 play c3. Then develop the knights as on the route. If Black plays ...Qb6, use the plan of the ...Qb6 part.",
+          "showNodeId": "d4 d5 Bf4 c5 e3 Nc6 c3"
+        },
+        {
+          "nodeId": "d4 Nf6 Bf4 c5",
+          "plan": "Play e3. Black can now play ...Qb6. Then play Qc1, as in the ...Qb6 part. After ...cxd4 retake with the e-pawn. Then nothing guards d4. If ...Qxd4, play Nf3 and attack the queen.",
+          "showNodeId": "d4 Nf6 Bf4 c5 e3 Qb6 Qc1 cxd4 exd4"
+        },
+        {
+          "nodeId": "d4 c5",
+          "plan": "Play Nf3 first. The knight guards d4. After ...cxd4 retake with the knight. Then play Nc3. If Black plays ...Nc6, trade with Nxc6. Last, play e4. The c3 knight supports it.",
+          "showNodeId": "d4 c5 Nf3 cxd4 Nxd4 Nf6 Nc3 Nc6 Nxc6 bxc6 e4"
+        },
+        {
+          "nodeId": "d4 c5 Nf3 Nf6",
+          "plan": "Play e3. After ...cxd4 retake with the e-pawn. The e3 pawn has left, so your c1 bishop is free. Bring it out to f4.",
+          "showNodeId": "d4 c5 Nf3 Nf6 e3 cxd4 exd4 d5 Bf4 Nc6 c3 Bf5 Bd3"
+        }
+      ],
+      "middlegame": "Next, bring the f1 bishop out and castle short. Bd3 is the usual square. If ...Bd6 attacks your bishop, play Bg3. Then play Bd3 and O-O, as in the ...d5 part.\n\nIf Black plays ...cxd4, retake with the e-pawn or the c-pawn. If Black plays ...Qb6, play Qb3. Black can answer ...c4. Then take the queen with Qxb6.\n\nYour breaks are e4 and Ne5. The d4 pawn and the f4 bishop guard e5. Prepare e4 with Bd3 and Re1. Play it when your f4 bishop has gone to g3.",
+      "mistakes": [
+        {
+          "moves": [
+            "d4",
+            "d5",
+            "Bf4",
+            "Nf6",
+            "e3",
+            "c5",
+            "c3",
+            "Nc6",
+            "Nf3",
+            "e6"
+          ],
+          "text": "Do not push e4 yet. Nothing guards the e4 pawn. After ...dxe4 the black pawn attacks your f3 knight and Black has won a pawn. Play Nbd2 and Bd3 first. The e4 push takes a guard from d4 and from your f4 bishop.",
+          "bad": "e4",
+          "good": [
+            "Nbd2",
+            "Bd3"
+          ]
+        },
+        {
+          "moves": [
+            "d4",
+            "d5",
+            "Bf4",
+            "Nf6",
+            "e3",
+            "c5"
+          ],
+          "text": "Play c3, not Nc3. A knight on c3 blocks your own c-pawn. Then you cannot guard d4 with c3. This is not a blunder, but it breaks your plan.",
+          "bad": "Nc3",
+          "good": [
+            "c3"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "vs-qb6",
+      "name": "Against ...Qb6 (attack on b2)",
+      "roots": [
+        "d4 d5 Bf4 Nf6 e3 e6 Nf3 c5 c3 Nc6 Nbd2 Qb6",
+        "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6",
+        "d4 d5 Bf4 c5 e3 Qb6",
+        "d4 Nf6 Bf4 c5 e3 Qb6"
+      ],
+      "finalForm": {
+        "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 c5 c3 Nc6 Nbd2 Qb6 Qb3 c4 Qxb6 axb6 Be2",
+        "jobs": [
+          {
+            "square": "e2",
+            "text": "The c4 pawn controls d3, so the bishop goes to e2. From e2 it attacks the c4 pawn. It also lets you castle short."
+          },
+          {
+            "square": "d2",
+            "text": "The knight attacks the c4 pawn too. It also supports e4."
+          },
+          {
+            "square": "f4",
+            "text": "The bishop stands outside the e3 pawn. If ...Bd6 comes, take it with Bxd6. No black piece can take back."
+          },
+          {
+            "square": "f3",
+            "text": "The knight guards d4 and e5."
+          },
+          {
+            "square": "d4",
+            "text": "Only the c6 knight attacks this pawn now. The c3 pawn, the e3 pawn and the f3 knight guard it."
+          }
+        ]
+      },
+      "route": [
+        {
+          "nodeId": "d4",
+          "why": "Take space in the centre. The move also opens the diagonal of your c1 bishop."
+        },
+        {
+          "nodeId": "d4 d5 Bf4",
+          "why": "Bring the bishop out before you play e3. The e3 pawn would shut it in."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3",
+          "why": "Guard d4 and f4. The pawn also opens your f1 bishop."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3",
+          "why": "Develop a knight. It guards d4 and e5."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 c5 c3",
+          "why": "Guard d4 again. The pawn also opens c2, so your queen can reach b3 if Black plays ...Qb6."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 c5 c3 Nc6 Nbd2",
+          "why": "Develop your second knight. It supports e4 and guards b3."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 c5 c3 Nc6 Nbd2 Qb6 Qb3",
+          "why": "Black's queen attacks b2. Guard b2 with your queen and offer a trade. The c2 square is empty, so the queen can go to b3."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 c5 c3 Nc6 Nbd2 Qb6 Qb3 c4 Qxb6",
+          "why": "The c4 pawn attacks your queen. Trade queens with Qxb6. Then the attack on b2 is over."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 c5 c3 Nc6 Nbd2 Qb6 Qb3 c4 Qxb6 axb6 Be2",
+          "why": "The c4 pawn controls d3, so Bd3 would lose the bishop. Play Be2. It attacks the c4 pawn. Then you can castle short."
+        }
+      ],
+      "deviations": [
+        {
+          "nodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 c5 c3 Nc6 Nbd2 Qb6 Qb3 Qxb3",
+          "plan": "Black trades queens first. Retake with the knight. Your pawns stay whole. If ...c4 attacks the knight, go back with Nbd2. After ...b5 play h3. It takes g4 from the f6 knight.",
+          "showNodeId": "d4 d5 Bf4 Nf6 e3 e6 Nf3 c5 c3 Nc6 Nbd2 Qb6 Qb3 Qxb3 Nxb3 c4 Nbd2 b5 h3"
+        },
+        {
+          "nodeId": "d4 d5 Bf4 c5 e3 Qb6",
+          "plan": "Black attacks b2 at once. The c2 pawn blocks your queen, so Qb3 is not possible. Play Qc1. The queen guards b2. After ...Nc6 play Nf3.",
+          "showNodeId": "d4 d5 Bf4 c5 e3 Qb6 Qc1 Nc6 Nf3 cxd4 exd4"
+        },
+        {
+          "nodeId": "d4 Nf6 Bf4 c5 e3 Qb6",
+          "plan": "Black attacks b2 at once. The c2 pawn blocks your queen, so Qb3 is not possible. Play Qc1. The queen guards b2. After ...cxd4 retake with the e-pawn. Then nothing guards d4. If ...Qxd4, play Nf3 and attack the queen.",
+          "showNodeId": "d4 Nf6 Bf4 c5 e3 Qb6 Qc1 cxd4 exd4"
+        },
+        {
+          "nodeId": "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6",
+          "plan": "Play Qb3. After ...c4 take on b6. After ...axb6 play Nd2. If ...Bf5 comes, play e4. The pawn attacks the bishop and the d5 pawn.",
+          "showNodeId": "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6 Qb3 c4 Qxb6 axb6 Nd2 Bf5 e4"
+        },
+        {
+          "nodeId": "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6 Qb3 cxd4",
+          "plan": "Black takes on d4. Take the queen first with Qxb6. After ...axb6 retake with exd4.",
+          "showNodeId": "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6 Qb3 cxd4 Qxb6 axb6 exd4 Nf6 Nf3"
+        },
+        {
+          "nodeId": "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6 Qb3 Qxb3",
+          "plan": "Black trades queens. Retake with the a-pawn. No knight stands on d2 here, so this is the only retake. Your b-pawns are doubled, but the a-file is half open for your rook.",
+          "showNodeId": "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6 Qb3 Qxb3 axb3"
+        }
+      ],
+      "middlegame": "The queens are off, so castle short and play for the c4 pawn. The e2 bishop and the d2 knight attack it. The d5 pawn guards it. Black can add ...b5.\n\nBlack has doubled pawns on b6 and b7, and a half-open a-file. A black rook on a8 attacks your a2 pawn. Your rook on a1 guards it.\n\nYour e4 break needs more support first. The d5 pawn and the f6 knight attack e4, and only the d2 knight guards it.",
+      "mistakes": [
+        {
+          "moves": [
+            "d4",
+            "d5",
+            "Bf4",
+            "Nf6",
+            "e3",
+            "e6",
+            "Nf3",
+            "c5",
+            "c3",
+            "Nc6",
+            "Nbd2",
+            "Qb6",
+            "Qb3",
+            "c4",
+            "Qxb6",
+            "axb6"
+          ],
+          "text": "Do not play Bd3 here. The c4 pawn controls d3. After ...cxd3 you lose the bishop and you cannot retake. Play Be2.",
+          "bad": "Bd3",
+          "good": [
+            "Be2"
+          ]
+        },
+        {
+          "moves": [
+            "d4",
+            "d5",
+            "Bf4",
+            "c5",
+            "e3",
+            "Qb6"
+          ],
+          "text": "Do not play Bc7. It attacks the queen, but the queen takes it with ...Qxc7. Nothing of yours guards c7, so you lose a bishop for nothing. Play Qc1.",
+          "bad": "Bc7",
+          "good": [
+            "Qc1"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "vs-bf5",
+      "name": "Against ...Bf5 (Black copies your bishop)",
+      "roots": [
+        "d4 d5 Bf4 Bf5"
+      ],
+      "finalForm": {
+        "nodeId": "d4 d5 Bf4 Bf5 e3 e6 Nf3 Nf6 Bd3 Bxd3 Qxd3",
+        "jobs": [
+          {
+            "square": "f4",
+            "text": "The bishop stands outside the e3 pawn. If ...Bd6 attacks it, you can trade on d6."
+          },
+          {
+            "square": "d3",
+            "text": "The queen stands in the centre. It guards d4 and can go to b5 with check."
+          },
+          {
+            "square": "f3",
+            "text": "The knight guards d4 and e5."
+          },
+          {
+            "square": "d4",
+            "text": "The e3 pawn, the f3 knight and the d3 queen guard this pawn. No black piece attacks it yet."
+          },
+          {
+            "square": "b1",
+            "text": "Play this knight to d2, not c3. Then your c-pawn can go to c3."
+          }
+        ]
+      },
+      "route": [
+        {
+          "nodeId": "d4",
+          "why": "Take space in the centre. The move also opens the diagonal of your c1 bishop."
+        },
+        {
+          "nodeId": "d4 d5 Bf4",
+          "why": "Bring the bishop out before you play e3. The e3 pawn would shut it in."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Bf5 e3",
+          "why": "Guard d4 and f4. The pawn also opens your f1 bishop. The f5 bishop attacks c2, but your queen guards it."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Bf5 e3 e6 Nf3",
+          "why": "Develop a knight. It guards d4 and e5."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Bf5 e3 e6 Nf3 Nf6 Bd3",
+          "why": "Offer a bishop trade. Both bishops stand on the b1-h7 diagonal. If Black takes on d3, retake."
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Bf5 e3 e6 Nf3 Nf6 Bd3 Bxd3 Qxd3",
+          "why": "Retake with the queen. It guards d4 and can go to b5 with check. You keep the c2 pawn at home."
+        }
+      ],
+      "deviations": [
+        {
+          "nodeId": "d4 d5 Bf4 Bf5 e3 e6 Nf3 Nf6 Bd3 Bxd3 Qxd3 Bd6",
+          "plan": "Black attacks your bishop. Trade it with Bxd6. After ...Qxd6 play Nbd2. Then play c3 and castle short.",
+          "showNodeId": "d4 d5 Bf4 Bf5 e3 e6 Nf3 Nf6 Bd3 Bxd3 Qxd3 Bd6 Bxd6 Qxd6 Nbd2 O-O c3"
+        },
+        {
+          "nodeId": "d4 d5 Bf4 Bf5 e3 Nf6",
+          "plan": "Black plays ...Nf6 before ...e6. Play Nf3. After ...e6 play Bd3. You reach the same position as on the route.",
+          "showNodeId": "d4 d5 Bf4 Bf5 e3 Nf6 Nf3 e6 Bd3"
+        }
+      ],
+      "middlegame": "Black has no light-squared bishop now, and you have no light-squared bishop either. Castle short soon. Until then, ...Bb4+ is a check.\n\nWatch for ...Nc6 and ...Nb4. The knight on b4 attacks your queen on d3. The c3 pawn takes b4 away, so play Nbd2 and c3 early.\n\nYour knight can go to e5. The d4 pawn and the f4 bishop guard e5. Your break is e4, supported by the d2 knight and the d3 queen.",
+      "mistakes": [
+        {
+          "moves": [
+            "d4",
+            "d5",
+            "Bf4",
+            "Bf5",
+            "e3",
+            "Nc6",
+            "Nf3",
+            "Nb4"
+          ],
+          "text": "If Black plays ...Nc6 and ...Nb4, the f5 bishop and the b4 knight both attack c2. Only your queen guards it. Do not play the usual c3. After c3 the knight goes to c2 with check and forks your king and your rook on a1. After Qxc2 Bxc2 you lose your queen for a knight. After Kd2 Nxa1 you lose the rook. Play Na3 instead. It guards c2.",
+          "bad": "c3",
+          "good": [
+            "Na3"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -16,12 +16,18 @@ function intOr(v: string | undefined, fallback: number, min: number, max: number
   return Math.min(max, Math.max(min, Number(v)));
 }
 
-/** The leak or out-of-book event of a game that has a node a guide can link to. */
+/**
+ * The opening event of a game, as a link target for the guide. A leak or out-of-book event gives its node;
+ * an end-of-book event gives an empty node, so the link opens the guide at its intro. No event, or a game
+ * of another opening, gives no link.
+ */
 function repertoireRef(db: DatabaseSync, gameId: number): GameRepertoireRef | null {
   const e = db.prepare(`SELECT repertoire_id, node_id, kind FROM opening_events
-    WHERE game_id = ? AND kind IN ('leak', 'out_of_book') AND node_id IS NOT NULL`).get(gameId) as unknown as
-    { repertoire_id: string; node_id: string; kind: GameRepertoireRef['kind'] } | undefined;
-  return e ? { id: e.repertoire_id, nodeId: e.node_id, kind: e.kind } : null;
+    WHERE game_id = ? AND kind IN ('leak', 'out_of_book', 'end_of_book')`).get(gameId) as unknown as
+    { repertoire_id: string; node_id: string | null; kind: GameRepertoireRef['kind'] } | undefined;
+  if (!e) return null;
+  if (e.kind === 'end_of_book') return { id: e.repertoire_id, nodeId: '', kind: e.kind };
+  return e.node_id === null ? null : { id: e.repertoire_id, nodeId: e.node_id, kind: e.kind };
 }
 
 export function gamesRoutes(db: DatabaseSync): Hono {

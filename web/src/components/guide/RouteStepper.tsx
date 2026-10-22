@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { inRoot } from '../../../../shared/guide-roots';
 import type { Color, GuideVariationDTO, OpeningDetail } from '../../../../shared/types';
 import { api } from '../../api';
 import { fenAfterMoves, lastMoveAfter, moveLabel } from '../../lib/guide';
@@ -13,8 +14,7 @@ export interface RouteStepperProps {
 
 /** The root of the variation that holds the final form (the longest root that starts the final-form line). */
 function drillRoot(v: GuideVariationDTO): string[] {
-  const line = v.finalForm.nodeId;
-  const roots = v.roots.filter((r) => line === r || line.startsWith(`${r} `));
+  const roots = v.roots.filter((r) => inRoot(v.finalForm.nodeId, r));
   const best = roots.sort((a, b) => b.length - a.length)[0] ?? v.roots[0] ?? '';
   return best.split(' ').filter(Boolean);
 }

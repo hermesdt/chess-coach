@@ -82,6 +82,68 @@ describe('validateGuide', () => {
     expect(await rules((g) => { g.variations[0]!.mistakes[0]!.moves = ['e4', 'c6', 'Qh6']; })).toContain('illegal-san');
   });
 
+  describe('bad and good moves', () => {
+    // White to move after 1.e4 c6 2.d4 d5 3.e5 e6 (the sample mistake line).
+    const withMoves = (bad: string | undefined, good: string[] | undefined) => rules((g) => {
+      const m = g.variations[0]!.mistakes[0]!;
+      if (bad !== undefined) m.bad = bad;
+      if (good !== undefined) m.good = good;
+    });
+
+    it('accepts legal bad and good moves', async () => {
+      expect(await withMoves('f4', ['Nf3', 'Nc3'])).toEqual([]);
+    });
+
+    it('accepts a mistake without bad and good', async () => {
+      expect(await withMoves(undefined, undefined)).toEqual([]);
+    });
+
+    it('reports an illegal bad move', async () => {
+      expect(await withMoves('Qh6', ['Nf3'])).toEqual(['illegal-bad']);
+    });
+
+    it('reports an illegal good move', async () => {
+      expect(await withMoves('f4', ['Nf3', 'Ke2x'])).toEqual(['illegal-good']);
+      expect(await withMoves('f4', ['Qh6'])).toEqual(['illegal-good']);
+    });
+
+    it('reports a bad move that is also a good move', async () => {
+      expect(await withMoves('f4', ['Nf3', 'f4'])).toEqual(['bad-in-good']);
+    });
+
+    it('reports bad without good and good without bad', async () => {
+      expect(await withMoves('f4', undefined)).toEqual(['bad-good-pair']);
+      expect(await withMoves('f4', [])).toEqual(['bad-good-pair']);
+      expect(await withMoves(undefined, ['Nf3'])).toEqual(['bad-good-pair']);
+    });
+
+    it('reports more than 3 good moves', async () => {
+      expect(await withMoves('f4', ['Nf3', 'Nc3', 'c4', 'a3'])).toEqual(['good-count']);
+    });
+
+    it('reports duplicate good moves', async () => {
+      expect(await withMoves('f4', ['Nf3', 'Nf3'])).toEqual(['duplicate-good']);
+    });
+  });
+
+  it('reports a show node that is not below its deviation node', async () => {
+    expect(await rules((g) => { g.variations[0]!.deviations[0]!.showNodeId = 'e4 c6 d4 d5 e5 Bf5 h4 h5'; })).toEqual(['show-not-descendant']);
+    expect(await rules((g) => { g.variations[0]!.deviations[0]!.showNodeId = 'e4 c6 d4 d5 e5 Bf5 g4'; })).toEqual([]);
+  });
+
+  it('reports two jobs on one square', async () => {
+    expect(await rules((g) => { g.variations[0]!.finalForm.jobs.push({ square: 'f5', text: 'Again.' }); })).toEqual(['duplicate-job']);
+  });
+
+  it('reports a root used twice in one variation or in two variations', async () => {
+    expect(await rules((g) => { g.variations[0]!.roots.push('e4 c6 d4 d5 e5'); })).toEqual(['duplicate-root']);
+    expect(await rules((g) => {
+      const other = structuredClone(g.variations[0]!);
+      other.key = 'other';
+      g.variations.push(other);
+    })).toEqual(['duplicate-root']);
+  });
+
   it('reports duplicate variation keys', async () => {
     expect(await rules((g) => { g.variations.push(structuredClone(g.variations[0]!)); })).toContain('duplicate-variation');
   });
@@ -126,5 +188,32 @@ describe('validateGuide engine rule', () => {
     const g = withLine(['e4', 'c6', 'd4', 'd5', 'e5', 'Bf5', 'a3']);
     expect(await validateGuide(g, rep, { analyse } as never)).toEqual([]);
     expect(analyse).not.toHaveBeenCalled();
+  });
+
+  describe('good moves', () => {
+    // Black to move after the line; best is e7e6.
+    const line = ['e4', 'c6', 'd4', 'd5', 'e5', 'Bf5', 'Nf3'];
+    const withGood = (good: string[]) => {
+      const g = sample();
+      g.variations[0]!.mistakes = [{ moves: line, text: 'x', bad: 'Bg4', good }];
+      return g;
+    };
+
+    it('flags a good move that loses 15 win % or more, and uses newGame', async () => {
+      const analyse = engineWith(600);
+      const issues = await validateGuide(withGood(['e6', 'h6']), rep, { analyse } as never);
+      expect(issues).toHaveLength(1);
+      expect(issues[0]).toMatchObject({ rule: 'engine-loss-good' });
+      expect(issues[0]!.detail).toContain('h6');
+      for (const call of analyse.mock.calls) expect(call[1]).toMatchObject({ newGame: true });
+    });
+
+    it('accepts good moves with a small loss, and never checks the bad move', async () => {
+      expect(await validateGuide(withGood(['e6', 'h6']), rep, { analyse: engineWith(20) } as never)).toEqual([]);
+      const analyse = engineWith(600);
+      await validateGuide(withGood(['e6']), rep, { analyse } as never);
+      // Only the position before the move is searched: the best move needs no second search, and the bad move is never searched.
+      expect(analyse).toHaveBeenCalledTimes(1);
+    });
   });
 });

@@ -52,7 +52,13 @@ function loadVariation(file: string, raw: unknown): GuideVariation {
   if (!Array.isArray(raw.mistakes)) fail('mistakes must be an array');
   const mistakes = (raw.mistakes as unknown[]).map((m) => {
     if (!isObject(m) || !isStringArray(m.moves) || !isString(m.text)) return fail('Each mistake needs a moves string array and a text string');
-    return { moves: m.moves, text: m.text };
+    if (m.bad !== undefined && !isString(m.bad)) return fail('A mistake bad move needs a string');
+    if (m.good !== undefined && !isStringArray(m.good)) return fail('A mistake good needs a string array');
+    return {
+      moves: m.moves, text: m.text,
+      ...(m.bad === undefined ? {} : { bad: m.bad }),
+      ...(m.good === undefined ? {} : { good: m.good }),
+    };
   });
   return {
     key, name: raw.name, roots: raw.roots as string[], finalForm: { nodeId: finalForm.nodeId, jobs },

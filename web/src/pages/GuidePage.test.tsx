@@ -11,12 +11,13 @@ vi.mock('react-chessboard', () => ({
   Chessboard: ({ options }: {
     options: {
       position: string;
+      arrows?: { startSquare: string; endSquare: string; color: string }[];
       onSquareClick?: (a: { piece: null; square: string }) => void;
       onMouseOverSquare?: (a: { piece: null; square: string }) => void;
       onMouseOutSquare?: (a: { piece: null; square: string }) => void;
     };
   }) => (
-    <div data-testid="board" data-fen={options.position}>
+    <div data-testid="board" data-fen={options.position} data-arrows={JSON.stringify(options.arrows ?? [])}>
       <button type="button" onClick={() => options.onSquareClick?.({ piece: null, square: 'c3' })}>square c3</button>
       <button
         type="button"
@@ -57,8 +58,8 @@ const guide = (variations: GuideVariationDTO[], level: 1 | 2 | 3 = 1): GuideDTO 
 });
 const personal = {
   games: 6, win: 2, draw: 0, loss: 4,
-  leaks: [{ nodeId: 'e4 c6 d4 d5 e5 Bf5', expectedSan: 'Bf5', playedSan: 'e6', count: 4, gameIds: [11, 12] }],
-  opponentMoves: [{ nodeId: 'e4 c6 d4 d5 e5 Bf5', playedSan: 'Nf3', count: 3, gameIds: [13] }],
+  leaks: [{ nodeId: 'e4 c6 d4 d5 e5 Bf5', expectedSan: 'Bf5', playedSan: 'e6', count: 4, gameIds: [11, 12], moreGames: 0 }],
+  opponentMoves: [{ nodeId: 'e4 c6 d4 d5 e5 Bf5', playedSan: 'Nf3', count: 3, gameIds: [13], moreGames: 0 }],
   mistakes: [{ gameId: 14, ply: 8, san: 'Qh4', reason: 'You left a piece to be taken.' }],
 };
 const detail = { id: 'caro-kann', roots: [] } as unknown as OpeningDetail;
@@ -87,7 +88,8 @@ describe('GuidePage', () => {
     }
     const toc = screen.getByRole('navigation', { name: 'Contents' });
     expect(within(toc).getAllByRole('link')).toHaveLength(6);
-    expect(screen.getAllByRole('tab').map((t) => t.textContent)).toEqual(['Advance', 'Classical']);
+    const variations = within(screen.getByRole('group', { name: 'Variations' }));
+    expect(variations.getAllByRole('button').map((t) => t.textContent)).toEqual(['Advance', 'Classical']);
     expect(screen.getByText('It has a clear plan.')).toBeTruthy();
     expect(screen.getByText('Move the knight to e7.')).toBeTruthy();
   });
@@ -102,11 +104,43 @@ describe('GuidePage', () => {
     expect(hrefs).toContain('#route-advance');
   });
 
+  describe('bad and good moves on the mistake boards', () => {
+    const mistakeBoards = (container: HTMLElement) =>
+      Array.from(container.querySelectorAll<HTMLElement>('.guide-mistake'));
+    const arrowsOf = (el: HTMLElement) => JSON.parse(el.querySelector('[data-testid="board"]')!.getAttribute('data-arrows')!);
+    const LEGEND = 'Red: the move to avoid. Green: the move to play.';
+
+    it('draws a red arrow for the bad move and green arrows for the good moves, with a legend', async () => {
+      const mistakes = [
+        {
+          moves: ['e4', 'c6'], fen: START, text: 'With moves.',
+          bad: { san: 'f4', from: 'f2', to: 'f4' },
+          good: [{ san: 'Nf3', from: 'g1', to: 'f3' }, { san: 'Nc3', from: 'b1', to: 'c3' }],
+        },
+        { moves: ['e4', 'e5'], fen: START, text: 'Old mistake.' },
+      ];
+      const { container } = renderPage(guide([variation('advance', 'Advance', { mistakes })]));
+      await screen.findByText('With moves.');
+      const [withMoves, old] = mistakeBoards(container);
+      expect(arrowsOf(withMoves!)).toEqual([
+        { startSquare: 'f2', endSquare: 'f4', color: '#cf222e' },
+        { startSquare: 'g1', endSquare: 'f3', color: '#1a7f37' },
+        { startSquare: 'b1', endSquare: 'c3', color: '#1a7f37' },
+      ]);
+      expect(within(withMoves!).getByText(LEGEND)).toBeTruthy();
+      expect(arrowsOf(old!)).toEqual([]);
+      expect(within(old!).queryByText(LEGEND)).toBeNull();
+      expect(screen.getAllByText(LEGEND)).toHaveLength(1);
+    });
+  });
+
   it('selects the tab from ?v= and switches on click', async () => {
     renderPage(guide([variation('advance', 'Advance'), variation('classical', 'Classical', { middlegame: 'Classical plan.' })]), '/openings/caro-kann/guide?v=classical');
     await screen.findByText('Classical plan.');
-    expect(screen.getByRole('tab', { name: 'Classical' }).getAttribute('aria-selected')).toBe('true');
-    fireEvent.click(screen.getByRole('tab', { name: 'Advance' }));
+    const variations = within(screen.getByRole('group', { name: 'Variations' }));
+    expect(variations.getByRole('button', { name: 'Classical' }).getAttribute('aria-pressed')).toBe('true');
+    expect(variations.getByRole('button', { name: 'Advance' }).getAttribute('aria-pressed')).toBe('false');
+    fireEvent.click(variations.getByRole('button', { name: 'Advance' }));
     await screen.findByText('Move the knight to e7.');
     expect(screen.queryByText('Classical plan.')).toBeNull();
   });
@@ -175,6 +209,55 @@ describe('GuidePage', () => {
     expect(screen.getByRole('link', { name: 'Game 14' }).getAttribute('href')).toBe('/games/14');
   });
 
+  it('uses h3 for the "Your games" boxes', async () => {
+    renderPage(guide([variation('advance', 'Advance', { personal })]));
+    await screen.findByText('Advance: 6 games, 2 wins, 4 losses');
+    expect(screen.getAllByRole('heading', { level: 3, name: 'Your games' }).length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('shows "and N more" only for a group with more games than listed', async () => {
+    const more = {
+      ...personal,
+      leaks: [{ ...personal.leaks[0]!, moreGames: 3 }],
+      opponentMoves: [{ ...personal.opponentMoves[0]!, moreGames: 0 }],
+    };
+    renderPage(guide([variation('advance', 'Advance', { personal: more })]));
+    await screen.findByText('Advance: 6 games, 2 wins, 4 losses');
+    expect(screen.getAllByText('and 3 more')).toHaveLength(1);
+  });
+
+  it('announces the job text in a polite live region and names squares in the hint', async () => {
+    const { container } = renderPage(guide([variation('advance', 'Advance')]));
+    await screen.findByRole('heading', { name: 'Final form' });
+    const section = container.querySelector<HTMLElement>('#final-advance')!;
+    const live = section.querySelector('[aria-live="polite"]')!;
+    expect(live.textContent).toBe('');
+    fireEvent.click(within(section).getByRole('button', { name: 'square c3' }));
+    expect(live.textContent).toContain('The knight guards e4 and d5.');
+    expect(within(section).getByText(/Click a green square or a square button/)).toBeTruthy();
+  });
+
+  it('shows a message and a link back when the opening has no guide', async () => {
+    vi.spyOn(api, 'getGuide').mockRejectedValue(new Error('not found'));
+    render(
+      <MemoryRouter initialEntries={['/openings/london/guide']}>
+        <Routes><Route path="/openings/:id/guide" element={<GuidePage />} /></Routes>
+      </MemoryRouter>,
+    );
+    await screen.findByText('There is no guide for this opening yet.');
+    expect(screen.getByRole('link', { name: 'Back to Openings' }).getAttribute('href')).toBe('/openings');
+  });
+
+  it('shows other errors as they are', async () => {
+    vi.spyOn(api, 'getGuide').mockRejectedValue(new Error('Request failed (500)'));
+    render(
+      <MemoryRouter initialEntries={['/openings/london/guide']}>
+        <Routes><Route path="/openings/:id/guide" element={<GuidePage />} /></Routes>
+      </MemoryRouter>,
+    );
+    await screen.findByText('Request failed (500)');
+  });
+
   it('hides every personal box and the results line when personal is null', async () => {
     renderPage(guide([variation('advance', 'Advance')]));
     await screen.findByRole('heading', { name: 'Why this opening' });
@@ -192,7 +275,7 @@ describe('GuidePage', () => {
     expect(screen.getByText('Move 6 of 6')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Show' }));
     fireEvent.click(within(container.querySelector<HTMLElement>('#final-advance')!).getByRole('button', { name: 'square c3' }));
-    fireEvent.click(screen.getByRole('tab', { name: 'Classical' }));
+    fireEvent.click(within(screen.getByRole('group', { name: 'Variations' })).getByRole('button', { name: 'Classical' }));
     expect(screen.queryByText(/Move \d+ of/)).toBeNull();
     expect(screen.queryByRole('button', { name: 'Hide board' })).toBeNull();
     expect(screen.queryByText('The knight guards e4 and d5.')).toBeNull();

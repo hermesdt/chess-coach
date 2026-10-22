@@ -39,7 +39,7 @@ export function FinalFormBoard({ fen, orientation, jobs }: FinalFormBoardProps) 
         />
       </div>
       <div className="final-form-jobs">
-        <p className="muted">Key pieces. Click a green square or a name to read its job.</p>
+        <p className="muted">Key pieces. Click a green square or a square button to read its job.</p>
         <div className="job-buttons">
           {jobs.map((j) => (
             <button
@@ -55,7 +55,9 @@ export function FinalFormBoard({ fen, orientation, jobs }: FinalFormBoardProps) 
             </button>
           ))}
         </div>
-        {job && <p className="job-text"><strong>{job.square}:</strong> {job.text}</p>}
+        <div aria-live="polite">
+          {job && <p className="job-text"><strong>{job.square}:</strong> {job.text}</p>}
+        </div>
       </div>
     </div>
   );

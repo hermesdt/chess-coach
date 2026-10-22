@@ -60,7 +60,7 @@ async function repertoireIssues(paths: string[]): Promise<ValidationIssue[]> {
   return issues;
 }
 
-async function guideIssues(paths: string[]): Promise<ValidationIssue[]> {
+async function guideIssues(paths: string[], withEngine = true): Promise<ValidationIssue[]> {
   const issues: ValidationIssue[] = [];
   const reps = loadAllRepertoires();
   for (const path of paths) {
@@ -69,13 +69,30 @@ async function guideIssues(paths: string[]): Promise<ValidationIssue[]> {
       const guide = loadGuide(JSON.parse(readFileSync(path, 'utf8')), reps);
       const rep = reps.find((r) => r.id === guide.repertoireId)!;
       console.log(`${file}: checking ${guide.variations.length} variations`);
-      issues.push(...(await validateGuide(guide, rep, lazyEnginePool, { nodes: NODES })).map((i) => ({ ...i, file })));
+      issues.push(...(await validateGuide(guide, rep, withEngine ? lazyEnginePool : undefined, { nodes: NODES })).map((i) => ({ ...i, file })));
     } catch (e) {
       if (!(e instanceof GuideError || e instanceof SyntaxError)) throw e;
       issues.push({ file, nodeId: '(file)', rule: 'invalid-guide', detail: e.message });
     }
   }
   return issues;
+}
+
+/** The guide files that belong to a repertoire file (matched by the repertoire id). */
+function guidesOfRepertoire(repertoirePath: string): string[] {
+  let id: unknown;
+  try {
+    id = (JSON.parse(readFileSync(repertoirePath, 'utf8')) as { id?: unknown }).id;
+  } catch {
+    return [];
+  }
+  return listGuideFiles().filter((g) => {
+    try {
+      return (JSON.parse(readFileSync(g, 'utf8')) as { repertoireId?: unknown }).repertoireId === id;
+    } catch {
+      return false;
+    }
+  });
 }
 
 /** A guide file has a `repertoireId` key. */
@@ -106,6 +123,8 @@ async function main(): Promise<number> {
     }
     const run = isGuideFile(args.file) ? guideIssues : isLessonFile(args.file) ? lessonIssues : repertoireIssues;
     issues.push(...(await run([args.file])));
+    // A repertoire change can break its guides: re-check them, without the engine (a guide file alone gets the full check).
+    if (run === repertoireIssues) issues.push(...(await guideIssues(guidesOfRepertoire(args.file), false)));
   } else {
     if (args.repertoires) issues.push(...(await repertoireIssues(listRepertoireFiles())));
     if (args.lessons) issues.push(...(await lessonIssues(listLessonFiles())));

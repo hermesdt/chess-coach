@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { CardWithState, OpeningSummary } from '../../../shared/types';
 import { api } from '../api';
+import { resetGuideIndexCache } from '../lib/use-guide-index';
 import { ReviewPage } from './ReviewPage';
 
 // jsdom has no layout, so the real board cannot render. The stub exposes the position and the click handler.
@@ -36,6 +37,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  resetGuideIndexCache();
   cleanup();
   vi.restoreAllMocks();
 });

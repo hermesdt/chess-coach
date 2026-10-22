@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 export function PersonalBox({ children }: { children: ReactNode }) {
   return (
     <aside className="guide-personal">
-      <h4>Your games</h4>
+      <h3>Your games</h3>
       {children}
     </aside>
   );

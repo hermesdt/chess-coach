@@ -28,6 +28,26 @@ describe('loadGuide', () => {
   });
 });
 
+describe('loadGuide bad and good', () => {
+  const withMistake = (m: object) => {
+    const j = sampleJson();
+    j.variations[0].mistakes[0] = { moves: ['e4', 'c6', 'd4', 'd5', 'e5', 'e6'], text: 'x', ...m };
+    return j;
+  };
+
+  it('keeps bad and good when present and omits them otherwise', () => {
+    const g = loadGuide(withMistake({ bad: 'f4', good: ['Nf3', 'Nc3'] }), reps);
+    expect(g.variations[0]!.mistakes[0]).toMatchObject({ bad: 'f4', good: ['Nf3', 'Nc3'] });
+    expect(loadGuide(sampleJson(), reps).variations[0]!.mistakes[0]).not.toHaveProperty('bad');
+    expect(loadGuide(sampleJson(), reps).variations[0]!.mistakes[0]).not.toHaveProperty('good');
+  });
+
+  it('rejects a wrong shape', () => {
+    expect(() => loadGuide(withMistake({ bad: 3, good: ['Nf3'] }), reps)).toThrow(/bad move needs a string/);
+    expect(() => loadGuide(withMistake({ bad: 'f4', good: 'Nf3' }), reps)).toThrow(/good needs a string array/);
+  });
+});
+
 describe('loadGuides', () => {
   it('ignores __test__ directories and non-json files, and skips malformed files', () => {
     const dir = mkdtempSync(join(tmpdir(), 'guides-'));
