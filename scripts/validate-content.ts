@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { basename } from 'node:path';
 import { closeEnginePool, lazyEnginePool } from '../server/engine/pool.js';
-import { loadContentSources, sequenceIssues } from '../server/content/sequences.js';
+import { sequenceCheck } from '../server/content/sequences.js';
 import { LessonError, listLessonFiles, loadLesson, validateLesson } from '../server/course/load.js';
 import type { LessonEngineCache } from '../server/course/validate.js';
 import { GuideError, listGuideFiles, loadGuide, validateGuide } from '../server/guides/load.js';
@@ -14,17 +14,6 @@ const NODES = 1_000_000;
 const PROGRESS_EVERY = 20;
 /** Until the M11 audit batches fix the real errors, an illegal sequence is a warning. Task 22 sets this to true. */
 const SEQUENCES_STRICT = false;
-
-/** The sequence-replay check of the comments, explanations and guide texts (no engine). */
-function sequenceCheck(args: { lessons: boolean; repertoires: boolean }): ValidationIssue[] {
-  const sources = loadContentSources();
-  if (!args.repertoires) {
-    sources.repertoires = [];
-    sources.guides = [];
-  }
-  if (!args.lessons) sources.lessons = [];
-  return sequenceIssues(sources).map((i) => (SEQUENCES_STRICT ? i : { ...i, severity: 'warning' as const }));
-}
 
 async function lessonIssues(paths: string[]): Promise<ValidationIssue[]> {
   const issues: ValidationIssue[] = [];
@@ -139,11 +128,12 @@ async function main(): Promise<number> {
     issues.push(...(await run([args.file])));
     // A repertoire change can break its guides: re-check them, without the engine (a guide file alone gets the full check).
     if (run === repertoireIssues) issues.push(...(await guideIssues(guidesOfRepertoire(args.file), false)));
+    issues.push(...sequenceCheck({ file: args.file }, SEQUENCES_STRICT));
   } else {
     if (args.repertoires) issues.push(...(await repertoireIssues(listRepertoireFiles())));
     if (args.lessons) issues.push(...(await lessonIssues(listLessonFiles())));
     if (args.repertoires) issues.push(...(await guideIssues(listGuideFiles())));
-    issues.push(...sequenceCheck(args));
+    issues.push(...sequenceCheck(args, SEQUENCES_STRICT));
   }
   const errors = issues.filter((i) => i.severity !== 'warning');
   const warnings = issues.filter((i) => i.severity === 'warning');

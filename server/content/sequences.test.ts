@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Chess } from 'chess.js';
 import { loadRepertoire } from '../repertoire/load.js';
-import { checkSequence, extractSan, sequenceIssues, type ContentSources } from './sequences.js';
+import { applySeverity, checkSequence, extractSan, sequenceCheck, REJECT, sequenceExitCode, sequenceIssues, splitSentences, type ContentSources } from './sequences.js';
 
 const START = new Chess().fen();
 const afterE4 = (() => {
@@ -78,10 +78,97 @@ describe('sequenceIssues', () => {
   it('gives a warning when one unnamed move makes the line legal', () => {
     const issues = sequenceIssues(sources('Black has Nc6 Nf6 ready.'));
     expect(issues).toHaveLength(1);
-    expect(issues[0]).toMatchObject({ severity: 'warning' });
+    expect(issues[0]).toMatchObject({ rule: 'skipped-move', severity: 'warning' });
     expect(issues[0]!.detail).toContain('unnamed move');
   });
   it('accepts a legal sequence from the position after the move', () => {
     expect(sequenceIssues(sources('Black plays e5 and White answers Nf3.'))).toEqual([]);
+  });
+});
+
+describe('annotations and lone squares', () => {
+  it('ignores move annotations', () => {
+    expect(extractSan('Play e4!? e5?! Nf3!')).toEqual(['e4', 'e5', 'Nf3']);
+    expect(extractSan('Then Nc6?? or Bb5!! and Qh5?')).toEqual(['Nc6', 'Bb5', 'Qh5']);
+    expect(checkSequence('Play e4!? e5?! Nf3!', [START]).ok).toBe(true);
+  });
+  it('does not read a lone square word as a move', () => {
+    expect(extractSan('the e4 square')).toEqual([]);
+    expect(extractSan('Watch the e4 square and the d5 square.')).toEqual([]);
+  });
+});
+
+describe('splitSentences', () => {
+  it('splits at full stops, paragraphs, semicolons and clause words', () => {
+    expect(splitSentences('Play e4. Then d4.\n\nNext one; and more, so go, and stop against it.')).toEqual([
+      'Play e4.', 'Then d4.', 'Next one', 'and more', 'go', 'stop', 'it.',
+    ]);
+  });
+  it('keeps a move number with its move and splits before an ellipsis', () => {
+    expect(splitSentences('Play 1. e4 e5. ...Nc6 follows.')).toEqual(['Play 1. e4 e5.', '...Nc6 follows.']);
+  });
+});
+
+describe('skip rules', () => {
+  it('REJECT: words that reject a move are matched', () => {
+    for (const t of ['Nf3 is bad.', 'It is not possible.', 'Nf3 fails to Ng5.', 'A blunder.', 'It loses to Ng5.']) expect(REJECT.test(t)).toBe(true);
+    for (const t of ['Play Nf3.', 'The knight guards e5.']) expect(REJECT.test(t)).toBe(false);
+  });
+  it('PLAN_WORD: moves after threatens/prepares/plans are not part of the line', () => {
+    expect(extractSan('Nf3 threatens Ng5 and then plans Bc4.')).toEqual(['Nf3']);
+    expect(checkSequence('Black plays Nc6 Nf3 and threatens Qh5.', [afterE4])).toEqual({ ok: true, replayed: 2 });
+    expect(checkSequence('Play Nc6 Nf3 which prepares ...Qh4.', [afterE4]).replayed).toBe(2);
+  });
+  it('REF_WORD: "as in the ...d5 part" is a reference, not a move', () => {
+    expect(checkSequence('Play Nc6 Nf3 as in the ...d5 part.', [afterE4]).ok).toBe(true);
+  });
+});
+
+describe('list and side rules', () => {
+  it('LIST_GAP: moves joined by comma, and, or, not are a list, not a line', () => {
+    expect(checkSequence('Play Bc4, Nf3 and Qh5.', [START]).replayed).toBe(1);
+    expect(checkSequence('Play Nf3, not Nc3.', [START]).replayed).toBe(1);
+  });
+  it('mixedSides: a black then a white move with a comma stay one line', () => {
+    expect(checkSequence('After ...e5, Nf3 Nc6 follows.', [afterE4]).ok).toBe(true);
+    expect(checkSequence('After ...e5, Nf3 Nc6 follows.', [afterE4]).replayed).toBe(3);
+  });
+  it('sameSide: two black moves with dots, or equal move numbers, are alternatives', () => {
+    expect(checkSequence('Black has ...e5 ...c5 ready.', [afterE4]).ok).toBe(true);
+    expect(checkSequence('Play 2.Nf3 or 2.Nc3 here.', [afterE4]).ok).toBe(true);
+  });
+});
+
+describe('thread leniency does not hide errors', () => {
+  it('reports a later line that is illegal from every start', () => {
+    // After "Play e5." the thread stands after e4 e5. "Qh5 Rd1" is illegal there and from every other start.
+    const issues = sequenceIssues(sources('Black plays e5. Qh5 Rd1 follows.'));
+    const bad = issues.filter((i) => i.rule === 'illegal-sequence');
+    expect(bad).toHaveLength(1);
+    expect(bad[0]!.severity).toBe('error');
+  });
+});
+
+describe('severity helpers', () => {
+  const err = { file: 'f', nodeId: 'n', rule: 'illegal-sequence', detail: 'd' };
+  const skip = { file: 'f', nodeId: 'n', rule: 'skipped-move', detail: 'd', severity: 'warning' as const };
+  it('applySeverity downgrades errors unless strict and never upgrades skipped-move', () => {
+    expect(applySeverity([err, skip], false).map((i) => i.severity)).toEqual(['warning', 'warning']);
+    expect(applySeverity([err, skip], true).map((i) => i.severity)).toEqual([undefined, 'warning']);
+  });
+  it('sequenceExitCode is 1 only with an error', () => {
+    expect(sequenceExitCode([skip])).toBe(0);
+    expect(sequenceExitCode([err])).toBe(1);
+  });
+  it('sequenceCheck filters by scope and by file without the engine', { timeout: 60000 }, () => {
+    const lessonsOnly = sequenceCheck({ lessons: true, repertoires: false }, false);
+    expect(lessonsOnly.every((i) => /^\d\d-/.test(i.file))).toBe(true);
+    const repsOnly = sequenceCheck({ lessons: false, repertoires: true }, false);
+    expect(repsOnly.some((i) => /^\d\d-/.test(i.file))).toBe(false);
+    const one = sequenceCheck({ file: 'content/lessons/07-bishop-pair.json' }, true);
+    expect(one.map((i) => i.file)).toEqual(['07-bishop-pair.json']);
+    expect(one[0]).toMatchObject({ rule: 'illegal-sequence' });
+    expect(one[0]!.severity).toBe('error');
+    expect(applySeverity(one, false)[0]!.severity).toBe('warning');
   });
 });

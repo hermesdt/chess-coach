@@ -14,7 +14,7 @@ const STRONG = String.raw`(?:O-O-O|O-O|[KQRBN](?:[a-h][1-8]|[a-h]|[1-8])?x?[a-h]
 /** A pawn push such as e4 or e8=Q. Prose names squares this way too, so it needs a move context. */
 const PUSH = String.raw`[a-h][1-8](?:=[QRBN])?[+#]?`;
 const NUMBER = String.raw`(?:\d+\s*(?:\.\.\.|…|\.)\s*|(?:\.\.\.|…)\s*)`;
-const TOKEN = new RegExp(String.raw`(?<![\w-])(?:(${NUMBER})?(${STRONG}|${PUSH}))(?![\w-])`, 'gu');
+const TOKEN = new RegExp(String.raw`(?<![\w-])(?:(${NUMBER})?(${STRONG}|${PUSH})[!?]*)(?![\w-])`, 'gu');
 
 interface Candidate { san: string; start: number; end: number; push: boolean; num: boolean }
 
@@ -32,7 +32,7 @@ function candidates(sentence: string): Candidate[] {
   const cands: Candidate[] = [];
   const pushRe = new RegExp(`^${PUSH}$`, 'u');
   for (const m of sentence.matchAll(TOKEN)) {
-    const san = m[2]!;
+    const san = m[2]!.replace(/[!?]+$/u, '');
     cands.push({ san, start: m.index!, end: m.index! + m[0].length, push: pushRe.test(san), num: !!m[1] });
   }
   const gap = (a: number, b: number) => /^\s*$/u.test(sentence.slice(a, b));
@@ -59,7 +59,8 @@ const LIST_GAP = /^[\s,]*(?:(?:and|or|then|not|instead of|[a-h][1-8](?:=[QRBN])?
 
 /** The ellipsis or move number in front of a candidate: "...", "3...", "3.", or "". */
 function marker(sentence: string, c: Candidate): string {
-  return /^\s*(\d*)\s*(\.\.\.|…|\.)?/u.exec(sentence.slice(c.start, c.end))?.slice(1).join('') ?? '';
+  const g = /^\s*(?<number>\d*)\s*(?<dots>\.\.\.|…|\.)?/u.exec(sentence.slice(c.start, c.end))?.groups;
+  return `${g?.number ?? ''}${g?.dots ?? ''}`;
 }
 
 /** Two neighbours that are both black ("...c6 ... d5") or numbered alternatives ("3.Nd2 ... 3.Nc3") are not one line. */
@@ -124,6 +125,7 @@ function replayAll(tokens: string[], numbered: boolean, starts: string[]): { end
   return { ends, best };
 }
 
+/** `replayed` counts only the tokens of the replayed run (list members and planned moves are left out), so it can differ from `extractSan(...).length`. */
 /** ok when the SAN tokens of the sentence replay legally from at least one start FEN. One token is not a sequence. */
 export function checkSequence(sentence: string, starts: string[]): { ok: boolean; replayed: number } {
   const { tokens, numbered } = lineTokens(sentence);
@@ -143,7 +145,7 @@ export function splitSentences(text: string): string[] {
 }
 
 /** A clause that rejects a move or a line: the text does not go on from it. */
-const REJECT = /\b(?:not|impossible|fail|fails|cannot|never|loses to|bad|wrong|mistake|blunder)\b/iu;
+export const REJECT = /\b(?:not|impossible|fail|fails|cannot|never|loses to|bad|wrong|mistake|blunder)\b/iu;
 
 const HEDGE = /\b(?:or|instead|not|if|before|rather)\b/iu;
 
@@ -238,10 +240,12 @@ function scan(text: string, starts: string[], file: string, nodeId: string, out:
     const lenientAll = lenient.length > 0 ? lenient : replayWithOneUnnamedMove(tokens, [...seen]);
     const elided = lenientAll.length > 0;
     if (elided && !rejected) frontier = cap(lenientAll);
-    out.push({
-      file, nodeId, rule: 'illegal-sequence', severity: HEDGE.test(sentence) || elided ? 'warning' : 'error',
-      detail: `"${sentence}" (moves ${tokens.join(' ')}: ${Math.max(now.best, again.best)} of ${tokens.length} replay from the position${elided ? '; legal only after one unnamed move, name that move' : ''})`,
-    });
+    const detail = `"${sentence}" (moves ${tokens.join(' ')}: ${Math.max(now.best, again.best)} of ${tokens.length} replay from the position`;
+    if (elided) {
+      out.push({ file, nodeId, rule: 'skipped-move', severity: 'warning', detail: `${detail}; legal only after one unnamed move, name that move)` });
+    } else {
+      out.push({ file, nodeId, rule: 'illegal-sequence', severity: HEDGE.test(sentence) ? 'warning' : 'error', detail: `${detail})` });
+    }
   }
 }
 
@@ -363,4 +367,32 @@ export function countSequenceSentences(sources: ContentSources = loadContentSour
     }
   }
   return texts.flatMap(splitSentences).filter((s) => lineTokens(s).tokens.length >= 2).length;
+}
+
+/**
+ * `skipped-move` is always a warning. `illegal-sequence` errors are warnings too unless `strict`
+ * (the audit batches run non-strict until Task 22 turns it on).
+ */
+export function applySeverity(issues: ValidationIssue[], strict: boolean): ValidationIssue[] {
+  return issues.map((i) => (strict || i.severity === 'warning' ? i : { ...i, severity: 'warning' as const }));
+}
+
+/** 1 when any issue is an error, else 0. */
+export function sequenceExitCode(issues: ValidationIssue[]): number {
+  return issues.some((i) => i.severity !== 'warning') ? 1 : 0;
+}
+
+export type SequenceScope = { file: string } | { lessons: boolean; repertoires: boolean };
+
+/** The sequence issues of one file, or of the lessons and/or repertoires (with their guides). No engine. */
+export function sequenceCheck(scope: SequenceScope, strict: boolean): ValidationIssue[] {
+  const sources = loadContentSources('file' in scope ? scope.file : null);
+  if (!('file' in scope)) {
+    if (!scope.repertoires) {
+      sources.repertoires = [];
+      sources.guides = [];
+    }
+    if (!scope.lessons) sources.lessons = [];
+  }
+  return applySeverity(sequenceIssues(sources), strict);
 }

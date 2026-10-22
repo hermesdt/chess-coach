@@ -3,7 +3,7 @@ import { closeEnginePool, lazyEnginePool } from '../server/engine/pool.js';
 import { isStockfishAvailable } from '../server/engine/stockfish-path.js';
 import type { EngineLine } from '../server/engine/uci.js';
 import { loadLessons, validateLesson } from '../server/course/load.js';
-import { parseValidateArgs } from './validate-args.js';
+import { parseCheckArgs, parseValidateArgs } from './validate-args.js';
 import type { Lesson } from '../shared/types.js';
 import { loadRepertoire } from '../server/repertoire/load.js';
 import { validateRepertoire } from '../server/repertoire/validate.js';
@@ -319,5 +319,16 @@ describe('parseValidateArgs', () => {
   });
   it('rejects unknown flags', () => {
     expect(() => parseValidateArgs(['--nope'])).toThrow(/Unknown option/);
+  });
+});
+
+describe('parseCheckArgs', () => {
+  it('reads --strict and one file', () => {
+    expect(parseCheckArgs([])).toEqual({ strict: false, file: null });
+    expect(parseCheckArgs(['--strict', 'a.json'])).toEqual({ strict: true, file: 'a.json' });
+  });
+  it('rejects unknown flags and two files', () => {
+    expect(parseCheckArgs(['--lessons'])).toBeNull();
+    expect(parseCheckArgs(['a.json', 'b.json'])).toBeNull();
   });
 });

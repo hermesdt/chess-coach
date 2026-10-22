@@ -20,3 +20,10 @@ export function parseValidateArgs(argv: string[]): ValidateArgs {
   if (!lessons && !repertoires) return { lessons: true, repertoires: true, file: null };
   return { lessons, repertoires, file: null };
 }
+
+/** Arguments of `pnpm check:sequences`: `--strict` and one optional file. Null means a usage error. */
+export function parseCheckArgs(argv: string[]): { strict: boolean; file: string | null } | null {
+  const files = argv.filter((a) => !a.startsWith('--'));
+  if (files.length > 1 || argv.some((a) => a.startsWith('--') && a !== '--strict')) return null;
+  return { strict: argv.includes('--strict'), file: files[0] ?? null };
+}
