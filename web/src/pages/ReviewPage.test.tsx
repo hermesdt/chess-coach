@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { CardWithState } from '../../../shared/types';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { CardWithState, OpeningSummary } from '../../../shared/types';
 import { api } from '../api';
 import { ReviewPage } from './ReviewPage';
 
@@ -24,6 +24,15 @@ const card = (id: number): CardWithState => ({
   id, kind: 'opening', positionKey: 'k', fen: START, sideToMove: 'white', prompt: `Prompt ${id}`,
   solution: { accepted: ['e2e4'], best: 'e2e4', explanation: null },
   refs: [], suspended: false, createdAt: 0, due: null, isNew: true,
+});
+
+const summary = (over: Partial<OpeningSummary>): OpeningSummary => ({
+  id: 'caro-kann', name: 'Caro-Kann', color: 'black', nodeCount: 1, cardCount: 1,
+  stats: { games: 0, win: 0, draw: 0, loss: 0 }, variationIndex: null, ...over,
+});
+
+beforeEach(() => {
+  vi.spyOn(api, 'listOpenings').mockResolvedValue([]);
 });
 
 afterEach(() => {
@@ -162,6 +171,42 @@ describe('ReviewPage', () => {
       await screen.findByText('Not quite — the best move was Nf3');
       expect(check).not.toHaveBeenCalled();
       expect(defaultButton()).toBe('1 Again');
+    });
+  });
+
+  describe('Plan link', () => {
+    const openingCard = (nodeId: string): CardWithState => ({
+      ...card(1), refs: [{ repertoire: 'caro-kann', nodeId }],
+    });
+    const answerCard = async () => {
+      render(<MemoryRouter><ReviewPage /></MemoryRouter>);
+      await screen.findByText('Prompt 1');
+      fireEvent.click(screen.getByText('sq-e2'));
+      fireEvent.click(screen.getByText('sq-e4'));
+      await screen.findByText('Correct');
+    };
+
+    it('links to the variation of the card after the answer', async () => {
+      vi.spyOn(api, 'getReviewSession').mockResolvedValue({ cards: [openingCard('e4 c6 d4 d5 e5')], dueCount: 0, newAvailable: 1 });
+      vi.spyOn(api, 'listOpenings').mockResolvedValue([summary({ variationIndex: [{ key: 'advance', roots: ['e4 c6 d4 d5 e5'] }] })]);
+      await answerCard();
+      const link = await screen.findByRole('link', { name: 'Plan' });
+      expect(link.getAttribute('href')).toBe('/openings/caro-kann/guide?v=advance#route-advance');
+    });
+
+    it('opens the guide at #why when the node is in no variation', async () => {
+      vi.spyOn(api, 'getReviewSession').mockResolvedValue({ cards: [openingCard('e4 c6 Nc3')], dueCount: 0, newAvailable: 1 });
+      vi.spyOn(api, 'listOpenings').mockResolvedValue([summary({ variationIndex: [{ key: 'advance', roots: ['e4 c6 d4 d5 e5'] }] })]);
+      await answerCard();
+      expect((await screen.findByRole('link', { name: 'Plan' })).getAttribute('href')).toBe('/openings/caro-kann/guide#why');
+    });
+
+    it('shows no link when the repertoire has no guide', async () => {
+      vi.spyOn(api, 'getReviewSession').mockResolvedValue({ cards: [openingCard('e4 c6 d4 d5 e5')], dueCount: 0, newAvailable: 1 });
+      const list = vi.spyOn(api, 'listOpenings').mockResolvedValue([summary({ variationIndex: null })]);
+      await answerCard();
+      await waitFor(() => expect(list).toHaveBeenCalled());
+      expect(screen.queryByRole('link', { name: 'Plan' })).toBeNull();
     });
   });
 });

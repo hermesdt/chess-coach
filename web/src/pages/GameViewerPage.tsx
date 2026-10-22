@@ -13,6 +13,8 @@ import { KeyMoments } from '../components/KeyMoments';
 import { MoveList } from '../components/MoveList';
 import { noteIndexFor } from '../lib/coach-notes';
 import { formatDate } from '../lib/format';
+import { planHref } from '../lib/guide-links';
+import { useGuideIndex } from '../lib/use-guide-index';
 import { moveToUci } from '../lib/drill';
 import {
   addLine,
@@ -75,6 +77,7 @@ export function GameViewerPage() {
   const [momentPly, setMomentPly] = useState<number | null>(null);
   const [lineError, setLineError] = useState<string | null>(null);
   const [liveArrow, setLiveArrow] = useState<LiveArrow | null>(null);
+  const guideIndex = useGuideIndex(game?.repertoire?.id);
 
   useEffect(() => {
     setGame(null);
@@ -276,6 +279,9 @@ export function GameViewerPage() {
     }
   };
   const opening = [game.eco, game.openingName].filter(Boolean).join(' ');
+  const plan = game.repertoire
+    ? planHref(guideIndex, game.repertoire.id, game.repertoire.nodeId, game.repertoire.kind === 'leak' ? 'route' : 'deviations')
+    : null;
 
   return (
     <section>
@@ -286,6 +292,7 @@ export function GameViewerPage() {
       <p className="muted">
         {game.result && <span className={`badge ${game.result}`}>{game.result}</span>}{' '}
         {opening && <>{opening} · </>}
+        {plan && <><Link to={plan}>Plan</Link>{' · '}</>}
         {formatDate(game.playedAt)}
         {game.url && (
           <>

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import type { GameList, NewGame } from '../../shared/types.js';
+import type { GameDetail, GameList, NewGame } from '../../shared/types.js';
 import { createApp } from '../app.js';
 import { openDb } from '../db/db.js';
 import { insertGames } from '../db/games-repo.js';
@@ -11,8 +11,9 @@ const game = (i: number, over: Partial<NewGame> = {}): NewGame => ({
 });
 
 let app: ReturnType<typeof createApp>;
+let db: ReturnType<typeof openDb>;
 beforeEach(() => {
-  const db = openDb(':memory:');
+  db = openDb(':memory:');
   insertGames(db, [game(1), game(2, { source: 'lichess', result: 'loss' }), game(3)]);
   app = createApp({ db });
 });
@@ -54,6 +55,27 @@ describe('GET /api/games/:id', () => {
   it('returns 404 for unknown or malformed ids', async () => {
     expect((await app.request('/api/games/9999')).status).toBe(404);
     expect((await app.request('/api/games/abc')).status).toBe(404);
+  });
+});
+
+describe('GET /api/games/:id repertoire', () => {
+  const addEvent = (gameId: number, kind: string, nodeId: string | null) =>
+    db.prepare(`INSERT INTO opening_events (game_id, repertoire_id, kind, node_id, ply, level) VALUES (?, 'caro-kann', ?, ?, 3, 1)`)
+      .run(gameId, kind, nodeId);
+  const detail = async (id: number) => (await (await app.request(`/api/games/${id}`)).json()) as GameDetail;
+  const idOf = (sourceId: string) => Number((db.prepare('SELECT id FROM games WHERE source_id = ?').get(sourceId) as { id: number }).id);
+
+  it('gives the repertoire and node of a leak or an out-of-book event', async () => {
+    addEvent(idOf('g1'), 'leak', 'e4 c6 d4');
+    addEvent(idOf('g2'), 'out_of_book', 'e4 c6');
+    expect((await detail(idOf('g1'))).repertoire).toEqual({ id: 'caro-kann', nodeId: 'e4 c6 d4', kind: 'leak' });
+    expect((await detail(idOf('g2'))).repertoire).toEqual({ id: 'caro-kann', nodeId: 'e4 c6', kind: 'out_of_book' });
+  });
+
+  it('is null without an event, or when the event has no node to link', async () => {
+    addEvent(idOf('g2'), 'end_of_book', null);
+    expect((await detail(idOf('g1'))).repertoire).toBeNull();
+    expect((await detail(idOf('g2'))).repertoire).toBeNull();
   });
 });
 

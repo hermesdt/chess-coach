@@ -14,7 +14,9 @@ export interface NewGame {
 }
 export interface GameSummary extends Omit<NewGame, 'pgn'> { id: number; analysis?: AnalysisBadge }
 export interface MoveInfo { ply: number; san: string; uci: string; fenBefore: string; fenAfter: string }
-export interface GameDetail extends GameSummary { pgn: string; startFen: string; moves: MoveInfo[] }
+/** M10: the opening event of a game, when it has a node a guide can link to. */
+export interface GameRepertoireRef { id: string; nodeId: string; kind: 'leak' | 'out_of_book' }
+export interface GameDetail extends GameSummary { pgn: string; startFen: string; moves: MoveInfo[]; /** Set by GET /api/games/:id. */ repertoire?: GameRepertoireRef | null }
 export interface GameListQuery { source?: Source; color?: Color; result?: GameResult; q?: string; limit?: number; offset?: number; includeDuplicates?: boolean }
 export interface GameList { items: GameSummary[]; total: number }
 // M5: AI coach providers
@@ -112,6 +114,8 @@ export interface RepNodeDTO {
 export interface OpeningSummary {
   id: string; name: string; color: Color; nodeCount: number; cardCount: number;
   stats: { games: number; win: number; draw: number; loss: number };
+  /** The variations of the guide of this repertoire, or null when it has no guide. */
+  variationIndex: GuideIndexEntry[] | null;
 }
 export interface OpeningDetail { id: string; name: string; color: Color; level: 1 | 2 | 3; roots: RepNodeDTO[] }
 export interface OpeningLeakGroup { nodeId: string; expectedSan: string; playedSan: string; count: number; gameIds: number[] }
@@ -161,6 +165,8 @@ export interface VariationPersonal {
   opponentMoves: { nodeId: string; playedSan: string; count: number; gameIds: number[] }[];
   mistakes: { gameId: number; ply: number; san: string; reason: string }[];
 }
+/** Light view of a guide variation for "Plan" links: node ids map to a variation by longest root prefix. */
+export interface GuideIndexEntry { key: string; roots: string[] }
 export interface GuideVariationDTO {
   key: string; name: string; roots: string[];
   finalForm: { nodeId: string; moves: string[]; fen: string; jobs: GuideJob[]; level: 1 | 2 | 3 };

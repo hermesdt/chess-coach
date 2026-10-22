@@ -5,6 +5,7 @@ import { api } from '../api';
 import { DrillBoard } from '../components/DrillBoard';
 import { LineDrill } from '../components/LineDrill';
 import { RepertoireTree } from '../components/RepertoireTree';
+import { partForNode, planHref } from '../lib/guide-links';
 import { nodeAtPath } from '../lib/line-drill';
 import { formatLeak, tabRank } from '../lib/openings';
 
@@ -97,7 +98,7 @@ export function OpeningsPage() {
         <p className="muted">
           You play {summary.color}. {summary.stats.games} games: {summary.stats.win} won, {summary.stats.draw} drawn,{' '}
           {summary.stats.loss} lost. {summary.cardCount} cards.{' '}
-          <Link to={`/openings/${summary.id}/guide`}>Read the guide</Link>
+          {summary.variationIndex && <Link to={`/openings/${summary.id}/guide`}>Read the guide</Link>}
         </p>
       )}
       {!detail && <p className="muted">Loading…</p>}
@@ -136,7 +137,12 @@ export function OpeningsPage() {
                   <span>{path.length === 0 ? 'Start position' : formatPath(path)}</span>
                 </div>
                 {current?.comment && <p className="rep-current-comment">{current.comment}</p>}
-                <RepertoireTree nodes={next} repColor={detail.color} onSelect={(san) => setPath([...path, san])} />
+                <RepertoireTree
+                  nodes={next}
+                  repColor={detail.color}
+                  onSelect={(san) => setPath([...path, san])}
+                  planHref={(n) => planHref(summary?.variationIndex, detail.id, n.id, partForNode(n.id, detail.color))}
+                />
                 <div className="actions">
                   <button type="button" className="big" disabled={next.every((n) => n.locked)} onClick={() => setDrilling(true)}>
                     Drill from here

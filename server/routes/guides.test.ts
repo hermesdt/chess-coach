@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import type { DatabaseSync } from 'node:sqlite';
 import { Chess } from 'chess.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { GuideDTO } from '../../shared/types.js';
+import type { GuideDTO, OpeningSummary } from '../../shared/types.js';
 import { createApp } from '../app.js';
 import { openDb } from '../db/db.js';
 import { insertGames } from '../db/games-repo.js';
@@ -105,5 +105,15 @@ describe('GET /api/openings/:id/guide', () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     expect((await app.request('/api/openings/caro-kann/guide')).status).toBe(500);
     spy.mockRestore();
+  });
+});
+
+describe('GET /api/openings variationIndex', () => {
+  it('lists the variation keys and roots of a repertoire with a guide, and null without one', async () => {
+    const list = (await (await app.request('/api/openings')).json()) as OpeningSummary[];
+    expect(list.find((o) => o.id === 'caro-kann')!.variationIndex).toEqual(
+      guide.variations.map((v) => ({ key: v.key, roots: v.roots })),
+    );
+    expect(list.find((o) => o.id === 'london')!.variationIndex).toBeNull();
   });
 });
