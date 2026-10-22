@@ -923,6 +923,29 @@
                ]
               }
              ]
+            },
+            {
+             "san": "Nf6",
+             "comment": null,
+             "children": [
+              {
+               "san": "Nf3",
+               "comment": "Develop a knight. It guards d4 and e5.",
+               "children": [
+                {
+                 "san": "e6",
+                 "comment": null,
+                 "children": [
+                  {
+                   "san": "Bd3",
+                   "comment": "Offer a trade. If they take on d3, retake with the queen. This move order reaches the main line.",
+                   "children": []
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
             }
            ]
           }
