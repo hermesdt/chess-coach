@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router';
 import type { OpeningDetail, OpeningLeakGroup, OpeningSummary } from '../../../shared/types';
 import { api } from '../api';
 import { DrillBoard } from '../components/DrillBoard';
@@ -95,7 +96,8 @@ export function OpeningsPage() {
       {summary && (
         <p className="muted">
           You play {summary.color}. {summary.stats.games} games: {summary.stats.win} won, {summary.stats.draw} drawn,{' '}
-          {summary.stats.loss} lost. {summary.cardCount} cards.
+          {summary.stats.loss} lost. {summary.cardCount} cards.{' '}
+          <Link to={`/openings/${summary.id}/guide`}>Read the guide</Link>
         </p>
       )}
       {!detail && <p className="muted">Loading…</p>}

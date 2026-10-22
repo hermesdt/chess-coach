@@ -189,3 +189,25 @@ button.big:hover:not(:disabled) { background: #0757b3; }
 .chat-checking { font-style: italic; }
 .chat-deep { margin-top: 0.6rem; padding-top: 0.4rem; border-top: 1px dashed #d0d7de; }
 .chat-deep-label { margin: 0 0 0.25rem; }
+
+/* M10: opening guide */
+.guide-layout { display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start; }
+.guide-toc { position: sticky; top: 1rem; flex: 0 0 11rem; display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.95rem; }
+.guide-body { flex: 1 1 480px; min-width: 0; max-width: 1000px; }
+.guide-part { margin-bottom: 2rem; scroll-margin-top: 4rem; }
+.guide-tabs { position: sticky; top: 0; z-index: 1; background: #fff; padding-top: 0.5rem; }
+.guide-results { margin: 0.25rem 0 1.25rem; font-weight: 600; }
+.level-badge { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 999px; background: #fff8c5; border: 1px solid #d4a72c; color: #633c01; font-size: 0.8rem; }
+.final-form { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-start; }
+.final-form .drill-board { flex: 1 1 320px; max-width: 480px; min-width: 0; }
+.final-form-jobs { flex: 1 1 220px; }
+.job-buttons { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0; }
+.job-text { padding: 0.5rem 0.75rem; background: #ddf4ff; border-radius: 6px; }
+.route-steps { padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.guide-deviations { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.guide-deviations p { margin: 0.2rem 0 0.4rem; }
+.guide-personal { margin: 1rem 0; padding: 0.5rem 0.9rem; border-left: 4px solid #0969da; background: #f6f8fa; border-radius: 0 6px 6px 0; }
+.guide-personal h4 { margin: 0 0 0.3rem; font-size: 0.9rem; color: #0969da; }
+.guide-personal ul { margin: 0; padding-left: 1.1rem; }
+.guide-mistakes { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+.guide-mistake { flex: 1 1 260px; max-width: 360px; }
