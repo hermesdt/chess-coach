@@ -1,6 +1,6 @@
 {
   "repertoireId": "slav",
-  "why": "The Slav is your answer to 1.d4. You play 1...d5. After 2.c4 you play 2...c6. The c6 pawn guards d5, so your centre pawn has support. The Caro-Kann uses the same idea.\n\nIn most lines your light-squared bishop comes out to f5 or g4 before you play ...e6. Then ...e6 does not shut the bishop in. There are exceptions. In the 3.Nc3 and 3.e3 set-ups you play ...e6 early, and the bishop stays at home for a while. Later ...dxc4 and ...b5 give it the b7 square.\n\nThe opening asks for patience. Develop your pieces, castle short, and then use a pawn break. Your breaks are ...c5 and ...e5.\n\nAgainst 2.Bf4 you do not play ...c6. You play ...c5 and attack the d4 pawn. Against 1.c4 and 1.Nf3 you often reach the Slav by a different move order.",
+  "why": "The Slav is your answer to 1.d4. You play 1...d5. After 2.c4 you play 2...c6. The c6 pawn guards d5, so your centre pawn has support. The Caro-Kann uses the same idea.\n\nIn most lines your light-squared bishop comes out to f5 or g4 before you play ...e6. Then ...e6 does not shut the bishop in. There are exceptions. After 3.Nc3, or after 3.e3 and 4.Nc3, you play ...e6 early. Then the bishop stays at home for a while. Later ...dxc4 and ...b5 give it the b7 square.\n\nThe opening asks for patience. Develop your pieces, castle short, and then use a pawn break. Your breaks are ...c5 and ...e5.\n\nAgainst 2.Bf4 you do not play ...c6. You play ...c5 and attack the d4 pawn. Against 1.c4 and 1.Nf3 you often reach the Slav by a different move order.",
   "variations": [
     {
       "key": "main-slav",
@@ -84,17 +84,17 @@
         },
         {
           "nodeId": "d4 d5 c4 c6 Nf3 Nf6 e3",
-          "plan": "White plays e3 at once. Play ...Bf5. After Nc3 play ...e6. If the knight goes to h4, step back with ...Bg6.",
-          "showNodeId": "d4 d5 c4 c6 Nf3 Nf6 e3 Bf5 Nc3 e6 Nh4 Bg6"
+          "plan": "White plays e3 at once. Play ...Bf5. After Nc3 play ...e6. If the knight goes to h4, step back with ...Bg6. If White plays Nxg6, retake with ...hxg6. Your h8 rook then has the half-open h-file. Play ...Nbd7. If White takes on d5, retake with the e-pawn.",
+          "showNodeId": "d4 d5 c4 c6 Nf3 Nf6 e3 Bf5 Nc3 e6 Nh4 Bg6 Nxg6 hxg6 Bd2 Nbd7 cxd5 exd5"
         },
         {
           "nodeId": "d4 d5 c4 c6 Nc3",
-          "plan": "This is the e6 set-up. Play ...Nf6. After e3 play ...e6. After Nf3 play ...Nbd7. After Bd3 take with ...dxc4. After Bxc4 attack the bishop with ...b5. Later ...Bb7 frees your c8 bishop.",
+          "plan": "This is the e6 set-up. Play ...Nf6. After e3 play ...e6. After Nf3 play ...Nbd7. After Bd3 take with ...dxc4. After Bxc4 attack the bishop with ...b5. Later ...Bb7 and ...c5 bring your c8 bishop into play.",
           "showNodeId": "d4 d5 c4 c6 Nc3 Nf6 e3 e6 Nf3 Nbd7 Bd3 dxc4 Bxc4 b5 Bd3"
         },
         {
           "nodeId": "d4 d5 c4 c6 e3",
-          "plan": "Play ...Nf6. After Nc3 play ...e6. After Nf3 play ...Nbd7. You reach the same set-up as after 3.Nc3.",
+          "plan": "Play ...Nf6. After Nc3 play ...e6. After Nf3 play ...Nbd7. You reach the same set-up as after 3.Nc3. If White plays 4.Nf3 instead of 4.Nc3, play ...Bf5, as in the main Slav.",
           "showNodeId": "d4 d5 c4 c6 e3 Nf6 Nc3 e6 Nf3 Nbd7"
         },
         {
@@ -103,7 +103,7 @@
           "showNodeId": "d4 d5 Nf3 Nf6 c4 c6"
         }
       ],
-      "middlegame": "After ...Bb4 you play ...Nbd7 and castle short. A typical order is O-O Nbd7 Qe2 Bg6 e4 O-O. Move the bishop to g6 before White plays e4. The e4 pawn would attack the bishop on f5.\n\nYour pawn breaks are ...e5 and ...c5. Both hit the d4 pawn. Play ...e5 only when your pieces guard it. After Bd3 Re8 Rd1, the d7 knight and the e8 rook guard e5.\n\nIn the e3 set-up your c8 bishop comes out to b7 after ...dxc4 and ...b5. Then ...c5 opens its diagonal.",
+      "middlegame": "After ...Bb4 you play ...Nbd7 and castle short. A typical order is O-O Nbd7 Qe2 Bg6 e4 O-O. Move the bishop to g6 before White plays e4. The e4 pawn would attack the bishop on f5.\n\nYour pawn breaks are ...e5 and ...c5. Both hit the d4 pawn. Play ...e5 only when your pieces guard it. After Bd3 Re8 Rd1, the d7 knight and the e8 rook guard e5.\n\nIn the ...e6 set-up (after 3.Nc3 or 3.e3), your c8 bishop comes out to b7 after ...dxc4 and ...b5. Then ...c5 opens its diagonal.",
       "mistakes": [
         {
           "moves": [
@@ -131,7 +131,7 @@
             "dxc4",
             "a4"
           ],
-          "text": "Do not play ...e6 before ...Bf5. Your c8 bishop would have only the d7 square. Play ...Bf5 first."
+          "text": "Do not play ...e6 before ...Bf5. Your c8 bishop would have only the d7 square. It is not a blunder, but it breaks your plan. Play ...Bf5 first."
         },
         {
           "moves": [
@@ -224,13 +224,8 @@
       ],
       "deviations": [
         {
-          "nodeId": "d4 d5 c4 c6 cxd5 cxd5 Nc3 Nf6 Bf4",
-          "plan": "White develops the bishop first. Play ...Nc6. It attacks d4. After e3 bring the bishop out with ...Bf5 before you play ...e6.",
-          "showNodeId": "d4 d5 c4 c6 cxd5 cxd5 Nc3 Nf6 Bf4 Nc6 e3 Bf5"
-        },
-        {
           "nodeId": "d4 d5 c4 c6 cxd5 cxd5 Nc3 Nf6 Bf4 Nc6 e3 Bf5 Qb3",
-          "plan": "The queen attacks the b7 pawn and the d5 pawn. Play ...Na5. The knight attacks the queen and guards b7. After Qa4+ block with ...Bd7. The bishop attacks the queen.",
+          "plan": "The queen attacks the b7 pawn and the d5 pawn. Play ...Na5. The knight attacks the queen and guards b7. After Qa4+ block with ...Bd7. The check also attacks your a5 knight. Your queen guards it.",
           "showNodeId": "d4 d5 c4 c6 cxd5 cxd5 Nc3 Nf6 Bf4 Nc6 e3 Bf5 Qb3 Na5 Qa4+ Bd7"
         },
         {
@@ -244,7 +239,7 @@
           "showNodeId": "d4 d5 c4 c6 cxd5 cxd5 Nc3 Nf6 Bf4 Nc6 e3 Bf5 Nf3 e6 Bd3 Bxd3 Qxd3 Bb4 O-O O-O Rfc1 Bxc3 Rxc3 Ne4 Rcc1 Qb6"
         }
       ],
-      "middlegame": "If White plays Bd3, trade bishops. Then pin the c3 knight with ...Bb4, and castle short. A typical order is Bd3 Bxd3 Qxd3 Bb4 O-O O-O.\n\nBoth sides have an open c-file. Your pawn on d5 is attacked by the c3 knight, so keep it guarded. If a white rook comes to c1, trade ...Bxc3 and play ...Ne4. The d5 pawn guards that knight.\n\nAfter the trades on c3, ...Qb6 attacks the b2 pawn. In that line nothing guards b2.",
+      "middlegame": "If White plays Bd3, trade bishops. Then pin the c3 knight with ...Bb4, and castle short. A typical order is Bd3 Bxd3 Qxd3 Bb4 O-O O-O.\n\nBoth sides have an open c-file. Your pawn on d5 is attacked by the c3 knight, so keep it guarded. If a white rook comes to c1, trade ...Bxc3 and play ...Ne4. The d5 pawn guards that knight.\n\nAfter ...Bxc3 Rxc3 Ne4 Rcc1, ...Qb6 attacks the b2 pawn. In that line nothing guards b2.",
       "mistakes": [
         {
           "moves": [
@@ -284,7 +279,7 @@
     },
     {
       "key": "anti-london",
-      "name": "Anti-London (2.Bf4) and other bishop set-ups",
+      "name": "Anti-London (2.Bf4) and early Bg5 or Nc3",
       "roots": [
         "d4 d5 Bf4",
         "d4 d5 Bg5",
@@ -325,7 +320,7 @@
         },
         {
           "nodeId": "d4 d5 Bf4 c5",
-          "why": "Hit d4 at once. The bishop left c1, so only the queen guards d4. It is the Caro-Kann ...c5 break."
+          "why": "Hit d4 at once. Only the white queen guards it. It is the Caro-Kann ...c5 break."
         },
         {
           "nodeId": "d4 d5 Bf4 c5 e3 Nc6",
@@ -356,7 +351,7 @@
         },
         {
           "nodeId": "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6 Nd2",
-          "plan": "The knight does not guard b2. You do not need to rush. Play ...Bf5 and develop.",
+          "plan": "The knight does not guard b2, so ...Qxb2 is possible. The simple plan is ...Bf5 and develop.",
           "showNodeId": "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6 Nd2 Bf5"
         },
         {
@@ -381,8 +376,23 @@
         },
         {
           "nodeId": "d4 d5 Bg5",
-          "plan": "Play ...c5. After e3 play ...Qb6. After Nc3 play ...e6.",
+          "plan": "Play ...c5. After e3 play ...Qb6. After Nc3 play ...e6. The c3 knight attacks d5, and ...e6 guards it. Do not take on b2: Nxd5 gives White a strong attack.",
           "showNodeId": "d4 d5 Bg5 c5 e3 Qb6 Nc3 e6"
+        },
+        {
+          "nodeId": "d4 d5 Nc3",
+          "plan": "Play ...Nf6. After Bf4 play ...c6 and ...Bf5. The c6 pawn guards d5 and stops Nb5.",
+          "showNodeId": "d4 d5 Nc3 Nf6 Bf4 c6 e3 Bf5"
+        },
+        {
+          "nodeId": "d4 d5 Nf3 Nf6 Bg5",
+          "plan": "Play ...Ne4. It attacks the bishop. If Bf4, play ...c5 at once.",
+          "showNodeId": "d4 d5 Nf3 Nf6 Bg5 Ne4 Bf4 c5"
+        },
+        {
+          "nodeId": "d4 d5 Nf3 Nf6 Nc3",
+          "plan": "Play ...c6. After Bf4 play ...Bf5. Bring the bishop out before you play ...e6.",
+          "showNodeId": "d4 d5 Nf3 Nf6 Nc3 c6 Bf4 Bf5"
         },
         {
           "nodeId": "d4 d5 Nf3 Nf6 Bf4",
@@ -414,7 +424,7 @@
             "c5",
             "dxc5"
           ],
-          "text": "Do not play ...e5 here. Nothing guards e5, so Bxe5 wins a second pawn. Play ...e6. Then ...Bxc5 takes the pawn back."
+          "text": "Do not play ...e5 here. Nothing guards e5, so Bxe5 wins a second pawn. After Bxe5 White has two of your pawns. You win one back, but you stay a pawn down. Play ...e6. Then ...Bxc5 takes the pawn back."
         }
       ]
     },
@@ -441,7 +451,7 @@
           },
           {
             "square": "c8",
-            "text": "The bishop has a free diagonal. Bring it out to f5 before you play ...e6."
+            "text": "The bishop has a free diagonal. Its plan depends on White's next move. See the main Slav tab."
           },
           {
             "square": "b8",
@@ -480,7 +490,7 @@
           "showNodeId": "c4 c6 d4 d5 Nf3 Nf6"
         }
       ],
-      "middlegame": "After Nc3 the position is the same as in the main Slav. Take on c4 with ...dxc4. Bring the bishop out with ...Bf5. Then play ...e6.\n\nAfter that, develop ...Nbd7 and castle short. Your pawn breaks are ...c5 and ...e5.\n\nIf White plays e3 and d4, you reach the set-up with ...e6 first. Free your c8 bishop with ...dxc4 and ...b5.",
+      "middlegame": "After Nc3 the position is the same as in the main Slav. Take on c4 with ...dxc4 and follow the main Slav tab. After a4 bring the bishop to f5, then play ...e6.\n\nAfter that, develop ...Nbd7 and castle short. Your pawn breaks are ...c5 and ...e5.\n\nIf White plays e3 and Nc3 before d4, play ...e6. Then free your c8 bishop with ...dxc4, ...b5 and ...Bb7.",
       "mistakes": [
         {
           "moves": [
@@ -500,7 +510,7 @@
     },
     {
       "key": "vs-nf3",
-      "name": "Against 1.Nf3 and quiet set-ups (2.Nf3, 2.e3, 2.e4)",
+      "name": "Against 1.Nf3 and other second moves (2.Nf3, 2.e3, 2.e4)",
       "roots": [
         "Nf3",
         "d4 d5 Nf3",
@@ -547,15 +557,15 @@
         },
         {
           "nodeId": "d4 d5 Nf3 Nf6 e3 Bf5 Bd3 Bxd3",
-          "why": "Trade bishops. Then your pawns on c6, d5 and e6 will block no bishop of yours, because your bishop on f8 is dark-squared."
+          "why": "Trade bishops. Then your pawns on c6, d5 and e6 will block no bishop of yours. Your bishop on f8 is dark-squared."
         },
         {
           "nodeId": "d4 d5 Nf3 Nf6 e3 Bf5 Bd3 Bxd3 Qxd3 c6",
-          "why": "Play ...c6 to guard d5. Then ...e6 follows."
+          "why": "Play ...c6. It stops Qb5+, a check that also attacks b7. It also guards d5."
         },
         {
           "nodeId": "d4 d5 Nf3 Nf6 e3 Bf5 Bd3 Bxd3 Qxd3 c6 O-O e6",
-          "why": "Close the centre. The e6 pawn guards d5. Your set-up is complete: c6, d5, e6 and Nf6."
+          "why": "Guard d5 again. The e6 pawn closes the centre. Your set-up is complete: c6, d5, e6 and Nf6."
         }
       ],
       "deviations": [
@@ -619,7 +629,7 @@
             "Nf6",
             "e3"
           ],
-          "text": "Do not play ...e6 here. Your c8 bishop would have only the d7 square. Play ...Bf5 first."
+          "text": "Do not play ...e6 here. Your c8 bishop would have only the d7 square. It is not a blunder, but it breaks your plan. Play ...Bf5 first."
         }
       ]
     }
