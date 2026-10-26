@@ -100,7 +100,16 @@ None. No move in this subtree rests on a false reason (the fixes are text only).
 
 ## Re-check
 
-(empty until the fixer's round)
+Commit `c4f129f`. `git diff c4f129f~1..c4f129f -- content/repertoires/slav.json`: exactly 6 comment lines changed, the 6 recorded nodes; no move, id or other field changed. `loadNodes` confirms the new texts are in place. Checks: chess.js helpers; Stockfish 19, 1M nodes, `ucinewgame` before each search.
+
+- sl-al-02: "Strike at d4 at once. Only the White queen guards d4. This is the Caro-Kann ...c5 break you know." After 2.Bf4: `attackers(d4,'w')` = [d1] (before 2.Bf4 also [d1]); the false c1 cause is gone. `ok`.
+- sl-al-13: "Bring the knight out. Later you play ...Bf5, the Caro-Kann bishop move." Tree: 8.a3 b5 9.Be2 Bf5. Stockfish 1M at move 9: Bf5 loses 0.0 win % (best ...b4, the same value). `ok`.
+- sl-al-24: "... If Qb3, play ...e6 and keep the queens." After 6.Qb3 (`r3kbnr/pp2pppp/1qn5/2pp1b2/3P1B2/1QP1P3/PP1N1PPP/R3KBNR b KQkq - 4 6`): Stockfish 1M: ...e6 0.00 best, ...cxd4 +0.23, ...Qxb3 +0.48 (`compareMoves`: Qxb3 loses about 4 win %, e6 0.0). Qb3 attacks d5 (`attackers(d5,'w')` = [b3], no black guard); after ...e6, d5 and f5 are guarded by e6 and b6 by a7. White's best after ...e6 keeps the queens (dxc5 / h4 0.00). ...e6 is not a tree node (advice only, as the fixer notes). `ok`.
+- sl-al-27: "Hit b2. The bishop left c1, so nothing guards that pawn." `attackers(b2,'w')` = [] now, [c1] before 2.Bf4. `ok`.
+- sl-al-32: "Bishop out before ...e6. Then ...e6 opens the f8 bishop and ...Nf6 clears g8 for castling." The fixer's change is right: my "clear the way to castle" was false (the f8 bishop still blocks O-O). Replay 6.Nf3 e6 7.Bd3 Nf6 8.O-O: after ...e6 the f8 bishop has Be7, Bd6, Bc5, Bb4, Ba3 (none before); after ...Nf6, g8 is empty; O-O is not legal with the bishop on f8 and is legal after ...Be7. The text does not say castling is ready; "opens the f8 bishop" tells the learner it must move. True and clear. `ok`.
+- sl-al-60: "Open the f8 bishop. After e3 you play ...Bxc5 and win the pawn back." After 4.e3: Stockfish 1M ...Bxc5 -0.03 best; pawns 7 v 7 after it. The text no longer covers 4.Qd4 (where ...Bxc5?? Qxc5). `ok`.
+
+No item reopened. No changed sentence without a record.
 
 ## Protocol feedback
 
