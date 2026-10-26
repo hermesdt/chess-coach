@@ -82,7 +82,16 @@ Totals: 50 claims; 45 `ok`, 0 `false`, 5 `misleading` (05, 10, 21, 37, 42), 0 `u
 
 ## Re-check
 
-Pending (no fixes yet).
+Fixer commit `ab1a760`. Date 2026-10-26. Tools: chess.js via `m11-audit-helpers`, Stockfish 19 at 1M nodes, MultiPV 3, `ucinewgame` before each search.
+Diff check: `git diff ab1a760^..ab1a760 -- content/repertoires/slav.json` changes exactly five `comment` fields: nodes `c4 c6 Nf3 d5 d4 Nf6`, `c4 c6 Nf3 d5 e3 Nf6 Nc3 e6`, `c4 c6 d4 d5 Nf3 Nf6`, `Nf3` and `Nf3 d5 c4 c6`. These are the five claims below. No other sentence changed. The texts match the "Fixes" record.
+
+- sl-fm-05: "Develop and guard d5. You are in the Slav: in the main line your plan is ...dxc4, then ...Bf5, then ...e6." Check: from the node, `4.Nc3 dxc4 5.a4 Bf5 6.e3 e6` replays legally and reaches the node `d4 d5 c4 c6 Nf3 Nf6 Nc3 dxc4 a4 Bf5 e3 e6` (same 4-field FEN). "In the main line" limits the plan, so 4.e3 (...Bf5 at once) and 5.e3 / 5.e4 (...b5) no longer contradict it. The text now matches its twin node `d4 d5 c4 c6 Nf3 Nf6`. Stockfish at 3...: Nf6 is in the top 3 (e6 +0.25, Nf6 +0.33). The sentence has no evaluation word. `ok`.
+- sl-fm-10: "Guard d5 with the e-pawn and open the f8 bishop. The e6 pawn blocks the c8 bishop's diagonal for now; ...dxc4, ...b5, ...Bb7 and later ...c5 can free it." Check: after ...e6, `lineOpen(c8,h3)` is blocked by e6 only, and c8 still has Bd7. "Diagonal" makes this exact. The tree line `d4 Nbd7 Bd3 dxc4 Bxc4 b5 Bd3 Bb7` replays legally. After a later ...c5 (sample `O-O a6 e4 c5`) the b7-h1 diagonal has no black pawn on it. The first white piece on it is the e4 pawn. Without ...dxc4 the own d5 pawn still blocks b7-h1, so ...dxc4 is needed in the list. The first sentence is unchanged (sl-fm-09, `ok`). Stockfish at 4...: e6 is top 1 (+0.23; Nbd7 +0.27). `ok`.
+- sl-fm-21: "Develop and guard d5. In the main Slav line your plan is ...dxc4, then ...Bf5, then ...e6." Check: same position as sl-fm-05, and the main line replays legally from this node too. `ok`.
+- sl-fm-37: "White develops the knight and does not yet show which centre pawn comes next." Check: after 1.Nf3 all eight white pawns are on rank 2, so no centre pawn has moved. The knight is developed and controls d4 and e5 (`attackers` = [f3]). The tree meets both 2.d4 and 2.c4. `ok`.
+- sl-fm-42: "Guard d5 with the c-pawn. This is your Slav set-up; if White plays d4, you are in the Slav." Check: White's pawn is on d2 and d4 is empty, so the text no longer says the position is the Slav. After 3.d4 the position has the same 4-field FEN as the Slav node `d4 d5 c4 c6 Nf3`. `attackers(d5,'b')` = [d8,c6]. Stockfish at 2...: c6 is in the top 3 (+0.26), so "your Slav set-up" makes no evaluation claim. `ok`.
+
+Result: 5 of 5 `ok`. Nothing is reopened. Open `false` verdicts: 0.
 
 ## Protocol feedback
 
