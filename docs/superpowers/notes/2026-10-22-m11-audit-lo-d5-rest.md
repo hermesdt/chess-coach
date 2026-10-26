@@ -111,7 +111,20 @@ Totals: 81 claims; 73 `ok`, 2 `false` (lo-d5-29, lo-d5-64), 6 `misleading` (lo-d
 
 ## Re-check
 
-(Empty until the fixer's round.)
+Fix commit `65f69cd`. Diff `65f69cd^..65f69cd -- content/repertoires/london.json`: 7 comment edits, all on the nodes of the 8 non-ok claims (lo-d5-30 and -31 share one node). No other sentence changed. Each new text was checked from its own position: chess.js `attackers()` plus legal-move lists, and Stockfish 1.5M nodes with MultiPV 3 and `ucinewgame` before each search. Scores are from White's side.
+
+- lo-d5-12 (`... axb6 Nd2`): "Develop the knight. It attacks the c4 pawn and supports a later e4 push." c4 attacked by [d2,f1], guarded by [d5]. After the tree moves ...Bf5 e4, e4 is guarded by [d2]. e4 is the tree move and the best move (+1.28). `ok`.
+- lo-d5-20 (`... cxd4 Qxb6`): "Trade queens before you take back on d4. After ...axb6, Black has doubled b-pawns." After ...axb6, Black has pawns on b7 and b6, and exd4 is legal next (it is the tree move). The text no longer names a danger to b2. `ok`.
+- lo-d5-23 (`... Qb3 Qxb3`): "Black takes your queen. Take back, and the queens are traded." The only recapture on b3 is axb3, and every other move loses the queen (row 23). `ok`.
+- lo-d5-29 (`... Qc1 Nc6 Nf3`): "Develop a knight. It guards d4, which the c5 pawn and the c6 knight attack." d4 is attacked by [c6,c5]. It was guarded by [e3] before Nf3 and by [e3,f3] after it. The false claim about "later" is gone. Black's best replies (cxd4 -0.17, Nf6 -0.11, Bf5 0.00) do not make the new sentence false. `ok`.
+- lo-d5-30/31 (`... Nf3 cxd4 exd4`): "Retake with the pawn. Now d4 has two attackers and one guard, so play c3 soon." d4 is attacked by [b6,c6] and guarded by [f3]. Black's top replies are Nf6 -0.16 and Nxd4 -0.09.
+  - After the tree move 6...Nf6, c3 is White's best move (-0.22), and the tree plays it.
+  - After 6...Nxd4 7.Nxd4 Qxd4, the pawn is lost before c3 can come (best is Bb5+ -0.26). The sentence does not say that c3 saves the pawn in that line. The attacker count it gives is a true warning.
+  - `ok`. The missing node for 6...Nxd4 stays in "For the owner".
+- lo-d5-32 (`... Nf6 c3`): "Guard d4 once more. Then develop the f1 bishop and castle." d4 is guarded by [c3,f3]. After the tree reply 7...Bf5, Be2 is as good as the best move (-0.20 vs a4 -0.21), and the tree plays it. After 7...e6, the bishop has Be2 (+0.22) and Bd3 (+0.20); the best move is h3 +0.33. The new text does not name Bd3. `ok`.
+- lo-d5-64 (`... Bg4 Be2`): "Their bishop pins your knight to the queen. Be2 develops and breaks the pin: the queen no longer stands behind the knight." After Be2 the line from g4 runs f3 (knight), then e2 (bishop), then d1 (queen), so the queen is no longer directly behind the knight. f3 is guarded by [g2,d1] before Be2 and by [e2,g2] after it. The new text makes no claim about guards. After Be2, Black's best is e6 (+0.27), and nothing is lost. `ok`.
+
+Result: all 8 claims are `ok`. Nothing is reopened. Final totals: 81 claims, 81 `ok`.
 
 ## Protocol feedback
 
