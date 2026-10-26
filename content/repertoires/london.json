@@ -653,7 +653,7 @@
                          "children": [
                           {
                            "san": "Nd2",
-                           "comment": "Develop the knight. It heads to f3 and attacks the c4 pawn.",
+                           "comment": "Develop the knight. It attacks the c4 pawn and supports a later e4 push.",
                            "children": [
                             {
                              "san": "Bf5",
@@ -706,7 +706,7 @@
                      "children": [
                       {
                        "san": "Qxb6",
-                       "comment": "Trade queens first. Then b2 is safe.",
+                       "comment": "Trade queens before you take back on d4. After ...axb6, Black has doubled b-pawns.",
                        "level": 2,
                        "children": [
                         {
@@ -742,7 +742,7 @@
                     },
                     {
                      "san": "Qxb3",
-                     "comment": "Black offers a trade.",
+                     "comment": "Black takes your queen. Take back, and the queens are traded.",
                      "level": 2,
                      "children": [
                       {
@@ -775,7 +775,7 @@
                  "children": [
                   {
                    "san": "Nf3",
-                   "comment": "Develop a knight. It guards d4, so Black's queen cannot win that pawn later.",
+                   "comment": "Develop a knight. It guards d4, which the c5 pawn and the c6 knight attack.",
                    "children": [
                     {
                      "san": "cxd4",
@@ -783,7 +783,7 @@
                      "children": [
                       {
                        "san": "exd4",
-                       "comment": "Retake with the pawn. Your centre is solid. Develop with Nc3 and Bd3.",
+                       "comment": "Retake with the pawn. Now d4 has two attackers and one guard, so play c3 soon.",
                        "children": [
                         {
                          "san": "Nf6",
@@ -792,7 +792,7 @@
                          "children": [
                           {
                            "san": "c3",
-                           "comment": "Guard d4 once more. Then play Bd3 and castle.",
+                           "comment": "Guard d4 once more. Then develop the f1 bishop and castle.",
                            "level": 2,
                            "children": [
                             {
@@ -1071,7 +1071,7 @@
                  "children": [
                   {
                    "san": "Be2",
-                   "comment": "Their bishop pins your knight to the queen. Be2 adds a guard on f3, so you can retake if they trade.",
+                   "comment": "Their bishop pins your knight to the queen. Be2 develops and breaks the pin: the queen no longer stands behind the knight.",
                    "level": 2,
                    "children": [
                     {
