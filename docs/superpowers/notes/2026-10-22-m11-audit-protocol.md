@@ -103,6 +103,6 @@ Check these first. Put each one in the Claims table, even if it is fine.
 - **Unnamed threats:** for every move that attacks a piece, list the target piece and its guards; a text that names one threat but leaves out a second, bigger one is `misleading`.
 - **Fix length:** a fix may replace the whole comment (repertoire: one or two sentences) when a true reason and a second fact do not fit; keep every correct fact the old text had.
 - **Engine numbers:** may appear in the report's check column; never in the content text.
-- **Engine use:** Stockfish ≥ 1M nodes, `ucinewgame` before each search, MultiPV 3 for "best move" claims, `searchmoves` to test an alternative. A shared helper may exist at `/tmp/m11-shared/` (attackers batch, SAN replay, Stockfish wrapper); if it is missing, write your own under `/tmp`.
+- **Engine use:** Stockfish ≥ 1M nodes, `ucinewgame` before each search, MultiPV 3 for "best move" claims, `searchmoves` to test an alternative. The shared helper is in `docs/superpowers/notes/m11-audit-helpers/` (README there: attackers batch, pins, open lines, SAN replay, Stockfish wrapper, node loader); run it from that folder, and write your own throwaway scripts under `/tmp`.
 - **Sequence check:** `pnpm check:sequences <file>` prints totals only; zero issues means no sequence problem was found, not that no sequence exists. Find the sequences yourself (SAN tokens in order) as part of "every sentence".
 - **Report footer:** end each report with `Protocol feedback` only if you hit something new; otherwise write "none".
