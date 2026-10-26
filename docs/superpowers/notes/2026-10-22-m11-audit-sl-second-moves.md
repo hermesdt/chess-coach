@@ -91,7 +91,18 @@ Totals: 60 claims; 53 `ok`, 1 `false` (sl-2nd-36), 6 `misleading` (sl-2nd-04, -0
 
 ## Re-check
 
-(empty until the fixer's commit)
+Fixer commit `91905e0`. Date 2026-10-26. Tools: chess.js via `m11-audit-helpers`, Stockfish 19 at 1M nodes with `ucinewgame` before each search (searchmoves for single moves, MultiPV for top lines). Scores from White's side.
+Diff check: `git diff 91905e0^..91905e0 -- content/repertoires/slav.json` changes exactly seven `comment` fields. They are the seven claims below. No other sentence changed. The texts match the "Fixes" record.
+
+- sl-2nd-04: "White offers to trade bishops. Nothing guards your f5 bishop, so you must answer: a slow move loses it to Bxf5." Check: `attackers(f5)` W [d3], B []. Slow moves lose the bishop: ...c6 +7.66, ...a6 +7.33 (PV Bxf5). Good answers: ...e6 +0.07, ...Bg6 +0.17, ...Bxd3 +0.18. `ok`.
+- sl-2nd-06: "Now ...e6 is safe: ...c6 stops Qb5+, a check that would also hit b7. This is the Slav and Caro-Kann pawn shape again." Check: after ...e6 with no ...c6, Qb5+ is legal and gives check, and b7 has no black guard. ...e6 at once is +0.61 (PV Qb5+); ...c6 is +0.17. After ...c6, `attackers(b5,'b')` = [c6]. After ...c6 O-O e6 a queen move to b5 is no check and the pawn takes it. Pawns c6 + d5. `ok`.
+- sl-2nd-22: "Guard d5 with the c-pawn. You reach the Slav: in the main line your plan is ...dxc4, then ...Bf5, then ...e6." Check: the main line 4.Nc3 dxc4 5.a4 Bf5 6.e3 e6 replays legally. "In the main line" limits the plan, as in the accepted sl-nf3-07 fix. `ok`.
+- sl-2nd-33: "Guard d5 with the c-pawn. Next you bring the bishop out with ...Bf5." Check: `attackers(d5,'b')` = [d8,c6,f6]. In the tree, Bf4 is followed by ...Bf5 (+0.07). The sentence no longer says ...c6 is needed for ...Bf5 (3...Bf5 at once is +0.01, ...c6 +0.08). `ok`.
+- sl-2nd-36: "Develop and guard d5. After Nf3 you play ...Bf5, but after Bd3 play ...c5: there ...Bf5 loses the bishop to Bxf5." Check: after 3.Bd3 Bf5, `attackers(f5)` W [d3], B []. ...Bf5 is +7.44 (Bxf5), ...c5 is -0.11 (the tree move). After 3.Nf3, ...Bf5 is +0.28. That is a plan choice (best ...e6 +0.07), with no material loss. The text no longer says "...Bf5 next" for every line. `ok`.
+- sl-2nd-50: "Guard d5 and open the f8 bishop. Do not take on b2: after Nxd5 White threatens Nc7+, a fork of your king and rook." Check: 4...Qxb2 is +3.99, about four pawns (PV Nxd5 Kd8). ...e6 is -0.07. In the position after 5.Nxd5 (null-move test), Nc7+ gives check and attacks a8. `ok`.
+- sl-2nd-55 (text changed by the fixer): "Take again. After Nxf3 play ...Bf5 or ...e6. After Qxf3 do not play ...Bf5, because the queen would take it." Check: after Qxf3 Bf5, `attackers(f5)` W [f3], B []. ...Bf5 is +6.28 (Qxf5). The new text recommends no move after Qxf3. That is right: ...e6 (-0.68) is well below the top lines Qxd4 -1.71, a6 -1.46, g6 -1.23. After Nxf3, ...Bf5 is -0.33 and ...e6 is -0.32. Both are in MultiPV 5 (best ...g6 -0.71), and Black stays better: about 4 win % below the best, no material loss. The old text already gave these two moves. `ok`.
+
+Result: 7 of 7 `ok`. Nothing is reopened. Open `false` verdicts: 0.
 
 ## Protocol feedback
 
