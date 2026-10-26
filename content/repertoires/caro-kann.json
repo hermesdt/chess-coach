@@ -1790,7 +1790,7 @@
                            "children": [
                             {
                              "san": "Nbd7",
-                             "comment": "Develop the b8 knight. It guards the e5 square, so you can play ...e5 later.",
+                             "comment": "Develop the b8 knight. It guards e5: if White pushes the e-pawn to e5, this knight takes it.",
                              "children": [
                               {
                                "san": "O-O",
@@ -1915,7 +1915,7 @@
                              "children": [
                               {
                                "san": "Bd3",
-                               "comment": "White offers a bishop trade.",
+                               "comment": "White's bishop attacks your f5 bishop, and nothing guards it. White offers a trade.",
                                "children": [
                                 {
                                  "san": "Bxd3",
@@ -1962,7 +1962,7 @@
       },
       {
        "san": "d3",
-       "comment": "A quiet move. White does not fight for the centre.",
+       "comment": "A quiet move. The d3 pawn guards e4 but takes no centre square, as d4 would.",
        "tags": [
         "sideline"
        ],
@@ -1997,7 +1997,7 @@
                    "children": [
                     {
                      "san": "Ngf6",
-                     "comment": "Develop with a plan. Next, castle.",
+                     "comment": "Develop with a plan. Next, play ...Bd6 and castle.",
                      "children": []
                     }
                    ]
@@ -2027,7 +2027,7 @@
                "children": [
                 {
                  "san": "e6",
-                 "comment": "Solid. Next ...Nf6 and castle.",
+                 "comment": "Solid. Next ...Nf6 and ...Bd6, then castle.",
                  "level": 2,
                  "children": []
                 }
@@ -2128,7 +2128,7 @@
            "children": [
             {
              "san": "Bg4",
-             "comment": "Develop the bishop before ...e6. White may trade; that is fine.",
+             "comment": "Develop the bishop before ...e6. If White plays h3, you can take the knight.",
              "children": [
               {
                "san": "Be2",
@@ -2198,7 +2198,7 @@
                "children": [
                 {
                  "san": "Bd7",
-                 "comment": "Block the check and offer a trade. Be careful with your king.",
+                 "comment": "Block the check and offer a trade.",
                  "level": 2,
                  "children": []
                 }
@@ -2238,14 +2238,14 @@
       },
       {
        "san": "Qf3",
-       "comment": "White moves the queen early. Develop with tempo.",
+       "comment": "White moves the queen early. Take the centre with ...d5 and develop your pieces.",
        "tags": [
         "common-mistake"
        ],
        "children": [
         {
          "san": "d5",
-         "comment": "Their queen is out early. Take the centre with ...d5 and develop with tempo.",
+         "comment": "Their queen is out early. Take the centre with ...d5 and develop your pieces.",
          "children": [
           {
            "san": "Nc3",
@@ -2307,7 +2307,7 @@
        "children": [
         {
          "san": "d5",
-         "comment": "Their queen is out early. Take the centre with ...d5, then hit the queen with ...Nf6.",
+         "comment": "Their queen is out early. Take the centre with ...d5. After Nc3 hit the queen with ...Nf6, but not after e5, because the e5 pawn takes the knight.",
          "children": [
           {
            "san": "Nc3",
@@ -2369,7 +2369,7 @@
        "children": [
         {
          "san": "d5",
-         "comment": "Hit the centre. Now exchange and take space.",
+         "comment": "Hit the centre. Your d5 pawn attacks both the c4 and the e4 pawn.",
          "children": [
           {
            "san": "exd5",
