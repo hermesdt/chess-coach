@@ -117,7 +117,24 @@ Totals: 87 claims; 79 `ok`, 2 `false` (ck-adv-13, ck-adv-84), 6 `misleading` (ck
 
 ## Re-check
 
-(Empty until the fixer's round.)
+Date 2026-10-26. Commit `7869031`. Tools: chess.js 1.4.0; shared helper `m11-audit-helpers/engine.mjs` (Stockfish 19, `ucinewgame` before each search, 1M-2M nodes). Positions are loaded from the fixed file with `loadNodes`. Engine scores are from White's side, in centipawns.
+
+Diff check: `git diff cc1f36f..7869031 -- content/repertoires/caro-kann.json` has 8 hunks, all comment fields. They are the 8 claims ck-adv-09, -11, -13, -17, -68, -71, -79, -84. No other sentence changed, and no move, id or tag changed.
+
+| id | new sentence | check | verdict |
+|---|---|---|---|
+| ck-adv-09 | "Take the d4 pawn with your c-pawn. It attacks the e3 bishop, so White must take back, and then no white pawn guards e5." | (1) c5xd4 takes the d4 pawn. (2) After ...cxd4: `attackers(e3,'b')` = [d4]. (3) "Must take back", 2M nodes, MultiPV 6: Nxd4 +54, Bb5+ +5, Qxd4 -21, Bxd4 -38. The moves that do not take back lose at least a pawn: Bc1 -99, Bf4 -109. After Bb5+ White takes back next move after each Black reply: Nd7 Nxd4, Nc6 Nxd4, Ke7 Nxd4, Qd7 Bxd7+ then Nxd4. (4) After Nxd4, Bxd4 or Qxd4, no white pawn attacks e5 (d4 pawn gone, f-pawn on f2). (5) Plain words, two sentences, 7 + 17 words. It names the pawn, the reason White takes back, and what Black gets, which matches the guide's middlegame text. | `ok` |
+| ck-adv-11 | "Develop and get ready to castle. The knight guards your f5 bishop, and the b8 knight goes to c6 next." | `attackers(f5,'b')` = [e7,e6]. Next tree move for Black after O-O is ...Nbc6. Matches the guide (b8 knight to c6). | `ok` |
+| ck-adv-13 | "Hit the d4 knight. Now both your knights fight for the centre." | Nc6 attacks d4 and e5. Ne7 attacks d5 (`attackers(d5,'b')` = [d8,e7,e6]). | `ok` |
+| ck-adv-17 | "Attack the bishop with the pawn. A bishop is worth more than a pawn, so White takes on c6 or moves the bishop." | 2M nodes, MultiPV 6: Bxc6+ +36, Nxc6 -44, Ba4 -59, Nxf5 -71 (then Bxc6+), Be2 -77, Bd3 -148. All of White's good moves take on c6 or move the bishop. Only Nxf5 delays it, and it then takes on c6. | `ok` |
+| ck-adv-68 | "White's bishop attacks your f5 bishop, and nothing guards it. White offers a trade." | `attackers(f5,'w')` = [d3], `attackers(f5,'b')` = []. Bxd3 is legal. | `ok` |
+| ck-adv-71 | "The g-pawn attacks your bishop. The pawn leaves g2, so no pawn guards f3 and h3 now." | `attackers(f5,'w')` = [g4]. g2 is empty. No white pawn attacks f3 or h3 (only pieces: d1/g1 and f1/g1). | `ok` |
+| ck-adv-79 | "Develop the bishop before ...e6. If White plays h3, you can take the knight." | After 4.h3, Bxf3 is legal and best (+34). The alternatives are worse: dxe4 +90, Bh5 +93. | `ok` |
+| ck-adv-84 | "Take on e4. White takes back with the bishop, so the pawns are traded." | `attackers(e4,'w')` = [d3]. Bxe4 is best (+1). Bc4 is -124. After dxe4 Bxe4 each side has lost one pawn. | `ok` |
+
+Result: 8 of 8 `ok`, 0 reopened. Batch totals after the re-check: 87 claims, 87 `ok`.
+
+Note for the controller: the fixer reports that node `e4 c6 Nf3 d5 d4 Bg4` (a transposition, outside this batch) still has the old ck-adv-79 text, "White may trade; that is fine." It has the same `misleading` problem. The batch that owns that node must fix it with the same new text.
 
 ## Protocol feedback (pilot)
 
