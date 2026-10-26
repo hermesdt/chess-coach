@@ -25,7 +25,7 @@
            "children": [
             {
              "san": "Nf6",
-             "comment": "Develop and guard d5 again. Your plan: ...dxc4, then ...Bf5, then ...e6.",
+             "comment": "Develop and guard d5 again. In the main line your plan is ...dxc4, then ...Bf5, then ...e6.",
              "children": [
               {
                "san": "Nc3",
@@ -33,7 +33,7 @@
                "children": [
                 {
                  "san": "dxc4",
-                 "comment": "Take the pawn on c4. Your next job is the bishop: it must leave before you play ...e6.",
+                 "comment": "Take the pawn on c4. While your b7 pawn is at home, bring the bishop out before you play ...e6.",
                  "children": [
                   {
                    "san": "a4",
@@ -85,7 +85,7 @@
                                          "children": [
                                           {
                                            "san": "Bd3",
-                                           "comment": "White puts the bishop on d3, behind the e4 pawn.",
+                                           "comment": "White puts the bishop on d3. It guards the e4 pawn, which blocks its diagonal to your g6 bishop.",
                                            "children": [
                                             {
                                              "san": "Re8",
@@ -132,7 +132,7 @@
                                                "children": [
                                                 {
                                                  "san": "Bxd3",
-                                                 "comment": "Trade bishops. After e5, the white bishop on d3 looks at your bishop on g6.",
+                                                 "comment": "Trade bishops: the d3 bishop now looks at your g6 bishop. Your f6 knight can wait, because exf6 loses the queen to ...Bxe2.",
                                                  "children": [
                                                   {
                                                    "san": "Qxd3",
@@ -582,7 +582,7 @@
                        "children": [
                         {
                          "san": "Bg6",
-                         "comment": "Step back. If White takes on g6, you retake with the h-pawn and open the h-file.",
+                         "comment": "Step back. If White takes on g6, retake with the h-pawn: your h8 rook gets the half-open h-file.",
                          "children": [
                           {
                            "san": "Nxg6",
