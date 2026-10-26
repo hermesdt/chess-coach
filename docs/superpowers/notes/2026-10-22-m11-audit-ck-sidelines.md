@@ -129,7 +129,25 @@ No move in this scope was chosen for a false reason; the items above are engine 
 
 ## Re-check
 
-(pending: after the fixer's commit)
+Date 2026-10-26. Commit `7473140`. Tools: chess.js 1.4.0; shared helper `m11-audit-helpers` (`loadNodes` on the fixed file, Stockfish 19 at 1M nodes, `ucinewgame` before each search). Engine scores are from White's side, in pawns.
+
+Diff check: `git diff 7473140~1..7473140 -- content/repertoires/caro-kann.json` has 11 hunks, all `comment` fields. They are the 11 claims ck-side-16, -33, -38, -43, -45, -56, -64, -67, -68, -75, -81. No other sentence changed. No move, id, level or tag changed. After the commit: `pnpm check:sequences` gives "6 clause(s) with 2+ moves, 0 error(s), 0 warning(s)"; `pnpm validate:content content/repertoires/caro-kann.json` gives "content OK".
+
+| id | new sentence | check | verdict |
+|---|---|---|---|
+| ck-side-16 | "Develop the b8 knight. It guards e5: if White pushes the e-pawn to e5, this knight takes it." | `attackers(e5,'b')` = [d7], `attackers(e5,'w')` = []. After e4-e5 Nxe5 is legal, and the pawn has no guard. Stockfish: e5 -2.59 (e5 Nxe5 Qe3), O-O +0.29. | `ok` |
+| ck-side-33 | "White's bishop attacks your f5 bishop, and nothing guards it. White offers a trade." | `attackers(f5,'w')` = [d3], `attackers(f5,'b')` = []. Same text as ck-adv-68. | `ok` |
+| ck-side-38 | "A quiet move. The d3 pawn guards e4 but takes no centre square, as d4 would." | `attackers(e4,'w')` = [d3]. d4 is empty. d3 is not one of d4, e4, d5, e5. | `ok` |
+| ck-side-43 | "Develop with a plan. Next, play ...Bd6 and castle." | After 6.Bg2, Black has no legal O-O, but Bd6 is legal. After Bd6 and a white move, O-O is legal. Stockfish lines: Bg2 Bd6 ..., exd5 cxd5 Bg2 Bd6 (0.00). | `ok` |
+| ck-side-45 | "Solid. Next ...Nf6 and ...Bd6, then castle." | After O-O Nf6 Nbd2, Black has no legal O-O, but Bd6 is legal. After Bd6, O-O is legal. Stockfish lines play ...Nf6 and ...Bd6 (O-O Bd6 ...; h3 Bh5 Nbd2 Nf6 Ne5 Bd6). One line has ...Be7 instead; the plan is still sound (+0.10 to +0.18). | `ok` |
+| ck-side-56 | "Develop the bishop before ...e6. If White plays h3, you can take the knight." (the fixer reused the verified ck-adv-79 text, which is the same as my proposal) | `attackers(g4,'w')` = []. After 4.h3: Bxf3 +0.38, Bh5 +0.83, dxe4 +1.17. Bxf3 is best, so "you can take" is true. Plain words. | `ok` |
+| ck-side-64 | "Block the check and offer a trade." (the second sentence "Be careful with your king." is deleted; the first sentence stays) | `attackers(b5,'b')` = [d7], `attackers(e8,'w')` = []. Without the warning the node still states the true facts: Bd7 blocks the check and offers a trade. | `ok` |
+| ck-side-67 | "White moves the queen early. Take the centre with ...d5 and develop your pieces." | ...d5 is legal and close to best: Stockfish d5 +0.02, best e5 -0.12 (about 1 win %). No claim of tempo is left. | `ok` |
+| ck-side-68 | "Their queen is out early. Take the centre with ...d5 and develop your pieces." | Same position as ck-side-67; same check. | `ok` |
+| ck-side-75 | "Their queen is out early. Take the centre with ...d5. After Nc3 hit the queen with ...Nf6, but not after e5, because the e5 pawn takes the knight." | The content is true and plain. After 3.Nc3, Nf6 attacks h5 and is best (-0.87, loss 0.1 win %). After 3.e5 Nf6, `attackers(f6,'w')` = [e5] and exf6 is legal: Stockfish +5.32 (Nf6 exf6 gxf6). e5 is one of White's top replies (Qe2 -0.30, exd5 -0.36, e5 -0.42). The guide says the same. The only problem is length: the comment now has three sentences. The Global Constraints allow one or two for a repertoire comment, and the old text had two. Reopened for length only. Proposed: drop the first sentence, so the comment becomes "Take the centre with ...d5. After Nc3 hit the queen with ...Nf6, but not after e5, because the e5 pawn takes the knight." The sequence-check wording stays the same. | reopened (length only) |
+| ck-side-81 | "Hit the centre. Your d5 pawn attacks both the c4 and the e4 pawn." | `attackers(c4,'b')` = [d5], `attackers(e4,'b')` = [d5]. | `ok` |
+
+Result: 10 of 11 `ok`, 1 reopened (ck-side-75, length only, with a proposed text). The fixer gets one more round on ck-side-75. Batch totals after the re-check: 84 claims, 83 `ok`, 1 open.
 
 ## Protocol feedback
 
@@ -153,3 +171,7 @@ File: `content/repertoires/caro-kann.json` (comment fields only). 11 comments ch
 - ck-side-81: "Hit the centre. Now exchange and take space." -> "Hit the centre. Your d5 pawn attacks both the c4 and the e4 pawn." Check: `attackers(c4,'b')` = [d5], `attackers(e4,'b')` = [d5].
 
 "For the owner" items are move questions; only comment texts were changed, and they stay true for the tree moves.
+
+## Fix round 2
+
+- ck-side-75 (length: 3 sentences, rule allows 2): "Their queen is out early. Take the centre with ...d5. After Nc3 hit the queen with ...Nf6, but not after e5, because the e5 pawn takes the knight." -> "Take the centre with ...d5. After Nc3 hit the queen with ...Nf6, but not after e5, because the e5 pawn takes the knight." Content facts unchanged (checked in round 1).

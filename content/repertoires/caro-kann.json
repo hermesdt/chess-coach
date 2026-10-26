@@ -2307,7 +2307,7 @@
        "children": [
         {
          "san": "d5",
-         "comment": "Their queen is out early. Take the centre with ...d5. After Nc3 hit the queen with ...Nf6, but not after e5, because the e5 pawn takes the knight.",
+         "comment": "Take the centre with ...d5. After Nc3 hit the queen with ...Nf6, but not after e5, because the e5 pawn takes the knight.",
          "children": [
           {
            "san": "Nc3",
