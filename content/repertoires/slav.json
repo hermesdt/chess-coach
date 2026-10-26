@@ -1198,7 +1198,7 @@
        "children": [
         {
          "san": "c5",
-         "comment": "Strike at d4 at once. Bf4 left c1, so only the queen guards d4. This is the Caro-Kann ...c5 break you know.",
+         "comment": "Strike at d4 at once. Only the White queen guards d4. This is the Caro-Kann ...c5 break you know.",
          "children": [
           {
            "san": "e3",
@@ -1238,7 +1238,7 @@
                            "children": [
                             {
                              "san": "Nf6",
-                             "comment": "Bring the knight out. Next you play ...Bf5, the Caro-Kann bishop move.",
+                             "comment": "Bring the knight out. Later you play ...Bf5, the Caro-Kann bishop move.",
                              "children": [
                               {
                                "san": "a3",
@@ -1338,7 +1338,7 @@
                    "children": [
                     {
                      "san": "Bf5",
-                     "comment": "Bishop out before ...e6. Nd2 does not guard b2, so ...Qxb2 is still possible. If Qb3, trade queens.",
+                     "comment": "Bishop out before ...e6. Nd2 does not guard b2, so ...Qxb2 is still possible. If Qb3, play ...e6 and keep the queens.",
                      "children": [],
                      "level": 2
                     }
@@ -1366,7 +1366,7 @@
                    "children": [
                     {
                      "san": "Qb6",
-                     "comment": "Hit b2. With Nf3 and Bf4 out, nothing guards that pawn.",
+                     "comment": "Hit b2. The bishop left c1, so nothing guards that pawn.",
                      "children": [
                       {
                        "san": "Qb3",
@@ -1444,7 +1444,7 @@
                    "children": [
                     {
                      "san": "Bf5",
-                     "comment": "Bishop out before ...e6. Then ...e6 and ...Nf6 finish your development.",
+                     "comment": "Bishop out before ...e6. Then ...e6 opens the f8 bishop and ...Nf6 clears g8 for castling.",
                      "children": [],
                      "level": 2
                     }
@@ -1664,7 +1664,7 @@
            "children": [
             {
              "san": "e6",
-             "comment": "Open the f8 bishop. Next you play ...Bxc5 and win the pawn back.",
+             "comment": "Open the f8 bishop. After e3 you play ...Bxc5 and win the pawn back.",
              "children": [
               {
                "san": "e3",
