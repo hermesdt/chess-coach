@@ -1824,7 +1824,7 @@
              "children": [
               {
                "san": "Bd3",
-               "comment": "White offers to trade your bishop.",
+               "comment": "White offers to trade bishops. Nothing guards your f5 bishop, so you must answer: a slow move loses it to Bxf5.",
                "children": [
                 {
                  "san": "Bxd3",
@@ -1836,7 +1836,7 @@
                    "children": [
                     {
                      "san": "c6",
-                     "comment": "Prepare ...e6 and ...Nbd7. This is the Slav and Caro-Kann pawn shape again.",
+                     "comment": "Now ...e6 is safe: ...c6 stops Qb5+, a check that would also hit b7. This is the Slav and Caro-Kann pawn shape again.",
                      "children": [
                       {
                        "san": "O-O",
@@ -1958,7 +1958,7 @@
            "children": [
             {
              "san": "c6",
-             "comment": "Guard d5 with the c-pawn. You reach the Slav. Follow the Slav plan: ...dxc4, ...Bf5, ...e6.",
+             "comment": "Guard d5 with the c-pawn. You reach the Slav: in the main line your plan is ...dxc4, then ...Bf5, then ...e6.",
              "children": [],
              "tags": [
               "main"
@@ -2049,7 +2049,7 @@
            "children": [
             {
              "san": "c6",
-             "comment": "Guard d5 with the c-pawn and prepare ...Bf5.",
+             "comment": "Guard d5 with the c-pawn. Next you bring the bishop out with ...Bf5.",
              "children": [
               {
                "san": "Bf4",
@@ -2086,7 +2086,7 @@
        "children": [
         {
          "san": "Nf6",
-         "comment": "Develop and guard d5. You will play ...Bf5 next.",
+         "comment": "Develop and guard d5. After Nf3 you play ...Bf5, but after Bd3 play ...c5: there ...Bf5 loses the bishop to Bxf5.",
          "children": [
           {
            "san": "Nf3",
@@ -2191,7 +2191,7 @@
                "children": [
                 {
                  "san": "e6",
-                 "comment": "Guard d5 and open the f8 bishop. The b2 pawn looks free, but taking it is risky.",
+                 "comment": "Guard d5 and open the f8 bishop. Do not take on b2: after Nxd5 White threatens Nc7+, a fork of your king and rook.",
                  "children": [],
                  "level": 2
                 }
@@ -2232,7 +2232,7 @@
                "children": [
                 {
                  "san": "exf3",
-                 "comment": "Take again. Then play ...Bf5 or ...e6 and finish your development.",
+                 "comment": "Take again. After Nxf3 play ...Bf5 or ...e6. After Qxf3 do not play ...Bf5, because the queen would take it.",
                  "children": [],
                  "level": 2
                 }
