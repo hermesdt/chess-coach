@@ -89,7 +89,19 @@ Totals: 56 claims; 51 `ok`, 2 `false` (ck-cl-11, ck-cl-17), 3 `misleading` (ck-c
 
 ## Re-check
 
-(pending: after the fixer's commit)
+Date 2026-10-26. Commit `7ca6803`. Tools: chess.js 1.4.0; shared helper `m11-audit-helpers/` (`loadNodes` from the fixed file, `lineOpen`, `after`, `attackers`; `evalFen` with Stockfish 19, 1M nodes, `ucinewgame` before each search). Each new sentence was checked on both twin boards (the Nc3 node and the Nd2 node). The FENs on the two boards are the same, and so are the results. Scores are from White's side, in pawns.
+
+Diff check: `git diff 7ca6803^..7ca6803 -- content/repertoires/caro-kann.json` has 10 changed lines, all `comment` fields. They are the claims ck-cl-11, -17, -20, -37, -52, each on its Nc3 node and its Nd2 twin. No other sentence changed, and no move, id or tag changed. The commit also adds the "Fixes" section to this report.
+
+| id | new sentence (both twins) | check | verdict |
+|---|---|---|---|
+| ck-cl-11 | "Keep the bishop. It stays on the b1-h7 diagonal and keeps an eye on d3 and c2." | f5 and g6 are both on b1, c2, d3, e4, f5, g6, h7. The sentence no longer says "long diagonal". `lineOpen(g6,c2)` is open. `attackers(d3,'b')` = [g6] and `attackers(c2,'b')` = [g6]. | `ok` |
+| ck-cl-17 | "Retreat to h7. The bishop stays on the b1-h7 diagonal, so Bd3 will meet a trade." | h7 is on b1-h7, and "long diagonal" is gone. `lineOpen(h7,d3)` is open. After 9.Bd3, ...Bxd3 is legal and best: Bxd3 +0.38, Ngf6 +0.41, Ndf6 +0.80. | `ok` |
+| ck-cl-20 | "Trade their active bishop: it attacks your h7 bishop. If you play ...e6 instead, Bxh7 Rxh7 puts your rook on h7 and White gets the better game." | "Fewer pieces" is gone. `attackers(h7,'w')` = [d3] and the guard is [h8]. After 9...e6, White's best move is Bxh7 (+1.54; next Bf4 +0.46). After 10.Bxh7, Rxh7 is the only legal recapture, and the score is +1.13 (Ngf6 +6.88). After 9...Bxd3 the score is +0.38. "Better game" is backed by the engine, and the text has no engine numbers. | `ok` |
+| ck-cl-37 | "Solid. This blocks the bishop line to f7, and ...Nf6 comes next." | `lineOpen(c4,f7)` is blocked by the e6 pawn. "Prepares" is gone. ...Nf6 is legal next, and the tree plays 7.N1e2 Nf6. | `ok` |
+| ck-cl-52 | "White guards the e4 knight with the bishop. If you take the knight, White takes back with the bishop." | `attackers(e4,'w')` is [] before 5.Bd3 and [d3] after it. `lineOpen(d3,f5)` is blocked by the e4 knight, so the sentence no longer suggests a bishop trade. After 5...Bxe4, Bxe4 is the only legal recapture on e4 and White's best move (+0.20; Nf3 -6.63, Bf1 -7.22). The text matches the guide deviation ("White guards the knight on e4 with the bishop. Take the knight with ...Bxe4."). | `ok` |
+
+Result: 5 of 5 claims `ok` on both twins (10 fields), 0 reopened. Batch totals after the re-check: 56 claims, 56 `ok`.
 
 ## Protocol feedback
 
