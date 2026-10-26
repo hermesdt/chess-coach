@@ -722,7 +722,7 @@
                                              "children": [
                                               {
                                                "san": "exf6",
-                                               "comment": "White takes your f6 knight. You can retake with the g-pawn, the queen or the d7 knight.",
+                                               "comment": "White takes your f6 knight. Retake with the g-pawn or the d7 knight, not the queen: after ...Qxf6, Bg5 wins the queen for a bishop.",
                                                "children": [
                                                 {
                                                  "san": "gxf6",
@@ -954,7 +954,7 @@
                                "children": [
                                 {
                                  "san": "Bxd3",
-                                 "comment": "Trade your good bishop for theirs. Then ...Bb4 pins the knight.",
+                                 "comment": "Trade bishops, so White cannot take on f5 and double your f-pawns. Then ...Bb4 pins the knight.",
                                  "children": [
                                   {
                                    "san": "Qxd3",
@@ -978,7 +978,7 @@
                                            "children": [
                                             {
                                              "san": "Bxc3",
-                                             "comment": "Trade the bishop for the c3 knight. That knight controls e4, so your f6 knight can jump there next.",
+                                             "comment": "Trade the bishop for the c3 knight. That knight guards e4. With it gone, your f6 knight can jump to e4 next.",
                                              "children": [
                                               {
                                                "san": "Rxc3",
