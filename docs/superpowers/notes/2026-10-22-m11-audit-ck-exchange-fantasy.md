@@ -116,7 +116,18 @@
 
 ## Re-check
 
-(pending: filled in after the fixer's round)
+Fixer commit `7d813e7`. Date 2026-10-26. Tools: chess.js 1.4.0, helper `board.mjs` / `engine.mjs`, Stockfish 19 at 1M nodes, `ucinewgame` before each search, MultiPV 3. Scores are from White's side.
+
+Diff check: `git diff 7d813e7^..7d813e7 -- content/repertoires/caro-kann.json` changes 6 `comment` fields, and only these 6. They are the nodes of ck-exf-37, -47, -53, -57, -59 and -61. Each new text is the proposed text, word for word. No other sentence, move, tag or id changed.
+
+- ck-exf-57 (node `... f3 dxe4`). New text: "Take the pawn. If White takes back with fxe4, material is equal and the diagonal from h4 to e1 stays open." Check: after 4.fxe4 the count is 7 pawns, 2R, 2N, 2B, Q for each side (equal). `lineOpen(h4,e1)` is open (g3 and f2 are empty). White's best reply is fxe4 (+0.33). The text no longer says that White gives something. Verdict: `ok`.
+- ck-exf-59 (node `... fxe4 e5`). New text: "Strike in the centre: the pawn attacks d4. Develop fast, and if White takes on e5, ...Qh4+ wins the e4 pawn." Check: `attackers(d4,'b')` = [d8,e5]. After 5.dxe5 Qh4+ the legal replies are g3, Kd2 and Ke2. After each one, Qxe4 is legal: g3 Qxe4+ (-5.81, best), Ke2 Qxe4+ (-2.69, best), Kd2 Qxe4 (best is Qf4+ Ke1 Qxe4+, -1.04, which also takes e4). The "if" makes the claim hold only for 5.dxe5, so it is not a general rule. No evaluation word is left (after ...e5 the score is +0.33). Verdict: `ok`.
+- ck-exf-61 (node `... e5 Nf3 Bg4`). New text: "Pin the knight to the queen and develop. Do not play ...Qh4+ here: the f3 knight guards h4." Check: in the position before the move, `attackers(h4,'w')` = [f3]. ...Qh4+ is legal, and `searchmoves d8h4` gives +9.67 (Nxh4). The word "here" limits the rule to this position, so 5.dxe5 Qh4+ does not break it. ...Bg4 is best (+0.29). The pin part was already `ok` (ck-exf-60). Verdict: `ok`.
+- ck-exf-47 (node `... Nf3 Bb4 Bd3`). New text: "White develops the bishop to d3. It guarded the c4 pawn from f1 already, and it still does." Check: before Bd3, `attackers(c4,'w')` = [f1] and `lineOpen(f1,c4)` is open. After Bd3 the guards are [d3]. The bishop leaves its home square, so "develops" is true. Verdict: `ok`.
+- ck-exf-53 (node `... c4 Nf6 cxd5 Nxd5`). New text: "Take back with the knight. Your knight sits in the centre." Check: ...Nxd5 is a knight capture. The knight stands on d5, with `attackers(d5,'w')` = [] and `attackers(d5,'b')` = [d8]. Verdict: `ok`.
+- ck-exf-37 (node `... Bd2 Nc6 Bd3 Nf6`). New text: "Bring the knight back to f6. There it guards h7, which the d3 bishop attacks. Next, castle." Check: after ...Nf6, `attackers(h7,'b')` = [h8,f6] and `attackers(h7,'w')` = [d3]. The d3 bishop attacked h7 before the move as well. O-O is legal for Black now, and it is still legal after White's 10.O-O. Verdict: `ok`.
+
+Result: all 6 changed claims are `ok`. Nothing is reopened.
 
 ## Protocol feedback
 
