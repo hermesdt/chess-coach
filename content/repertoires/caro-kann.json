@@ -758,7 +758,7 @@
                                    "children": [
                                     {
                                      "san": "Nf6",
-                                     "comment": "Retreat and develop. Next, castle.",
+                                     "comment": "Bring the knight back to f6. There it guards h7, which the d3 bishop attacks. Next, castle.",
                                      "children": [
                                       {
                                        "san": "O-O",
@@ -823,7 +823,7 @@
                           },
                           {
                            "san": "Bd3",
-                           "comment": "White guards the c4 pawn with the bishop.",
+                           "comment": "White develops the bishop to d3. It guarded the c4 pawn from f1 already, and it still does.",
                            "level": 3,
                            "children": [
                             {
@@ -872,7 +872,7 @@
                    "children": [
                     {
                      "san": "Nxd5",
-                     "comment": "Take back with a developing move. Your knight sits in the centre.",
+                     "comment": "Take back with the knight. Your knight sits in the centre.",
                      "children": [
                       {
                        "san": "Nc3",
@@ -1454,7 +1454,7 @@
            "children": [
             {
              "san": "dxe4",
-             "comment": "Take the pawn. They have to give something for it.",
+             "comment": "Take the pawn. If White takes back with fxe4, material is equal and the diagonal from h4 to e1 stays open.",
              "children": [
               {
                "san": "fxe4",
@@ -1462,7 +1462,7 @@
                "children": [
                 {
                  "san": "e5",
-                 "comment": "Strike in the centre. Develop fast to get an easy game.",
+                 "comment": "Strike in the centre: the pawn attacks d4. Develop fast, and if White takes on e5, ...Qh4+ wins the e4 pawn.",
                  "tags": [
                   "main"
                  ],
@@ -1476,7 +1476,7 @@
                    "children": [
                     {
                      "san": "Bg4",
-                     "comment": "Pin the knight to the queen and develop. Do not move the queen early.",
+                     "comment": "Pin the knight to the queen and develop. Do not play ...Qh4+ here: the f3 knight guards h4.",
                      "children": [
                       {
                        "san": "Bd3",
