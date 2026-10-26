@@ -1,0 +1,21 @@
+import * as B from './board.mjs';
+import * as E from './engine.mjs';
+import * as R from './repertoire.mjs';
+const START='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+const f = B.after(START,['e4','c6','d4','d5','Nc3']);
+console.log('after len',f.length);
+try{B.after(START,['e4','Ke5'])}catch(e){console.log('err:',e.message)}
+console.log('lineOpen c8-h3', JSON.stringify(B.lineOpen(f.at(-1),'c8','h3')));
+console.log('lineOpen a1-a8 start', JSON.stringify(B.lineOpen(START,'a1','a8')));
+const t=B.attackersTable(START); console.log('start e2',JSON.stringify(t.e2));
+console.log('pinned start',JSON.stringify(B.pinned(START)));
+console.log('pinned Ne2',JSON.stringify(B.pinned('4k3/4r3/8/8/8/8/4N3/4K3 w - - 0 1')));
+console.log('pinned Ne2 in check by Ra1? (expect Ne2 not pinned)',JSON.stringify(B.pinned('4k3/8/8/8/8/8/4N3/r3K3 w - - 0 1')));
+console.log('pinned Nd2 in check + pinned (expect Nd2)',JSON.stringify(B.pinned('3rk3/8/8/8/8/1b6/3N4/3K4 w - - 0 1')));
+console.log('bishopMoves c8 (black, white to move)',B.bishopMoves(f.at(-1),'c8').join(' '), '| turn kept:', f.at(-1).split(' ')[1]);
+let t0=Date.now(); const r=await E.evalFen(START,{nodes:200000}); console.log('eval ms',Date.now()-t0,'lines',r.lines.length,'top',r.lines[0].pvSan[0],r.lines[0].scoreCp);
+const c=await E.compareMoves(START,['e4','f3','Nc3'],{nodes:200000}); console.log(JSON.stringify(c.moves.map(m=>[m.san,+m.loss.toFixed(1)])));
+E.close();
+const n=R.loadNodes('caro-kann',['e4 c6 d4 d5 e5']); console.log('nodes',n.length,'commented',n.filter(x=>x.comment).length);
+const l=R.loadLesson('11-caro-kann-plans.json'); console.log(l.id,l.exercises.length,l.exercises[0].solution);
+console.log('bishopMoves f1 off-turn (white bishop, black to move)',B.bishopMoves(B.after(START,['e4','e5']).at(-1),'f1').join(' '));
