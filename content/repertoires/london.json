@@ -1291,7 +1291,7 @@
                  "children": [
                   {
                    "san": "Bd3",
-                   "comment": "Bishop to d3 hits the g6 pawn. Castle next to keep your king safe.",
+                   "comment": "Bishop to d3 hits the g6 pawn. Castle soon to keep your king safe.",
                    "children": [
                     {
                      "san": "d6",
@@ -1407,7 +1407,7 @@
                                 },
                                 {
                                  "san": "c5",
-                                 "comment": "Black attacks your d4 pawn with the c-pawn.",
+                                 "comment": "Black attacks your d4 pawn with the c-pawn. The g7 bishop also hits d4, so it is attacked twice.",
                                  "level": 3,
                                  "children": [
                                   {
@@ -1420,7 +1420,7 @@
                                      "children": [
                                       {
                                        "san": "cxd4",
-                                       "comment": "Retake with the c-pawn. Your e3 pawn stays and guards the pawn on d4.",
+                                       "comment": "Retake with the c-pawn. Your e3 pawn stays and guards d4, and the c-file opens for your rooks.",
                                        "children": []
                                       }
                                      ]
@@ -1586,7 +1586,7 @@
                  "children": [
                   {
                    "san": "exd4",
-                   "comment": "Retake with the pawn. Your queen on c1 guards b2, and your bishop keeps its diagonal.",
+                   "comment": "Retake with the pawn: it is the only capture. Your queen guards b2, but nothing guards d4 now, so if ...Qxd4, play Nf3 and hit the queen.",
                    "level": 2,
                    "children": []
                   }
@@ -1696,7 +1696,7 @@
                      "children": [
                       {
                        "san": "c3",
-                       "comment": "Support d4. Your pawns on c3 and d4 give a solid centre. Watch for ...Nb4.",
+                       "comment": "Support d4. Your pawns on c3 and d4 give a solid centre, and the c3 pawn takes b4 from the c6 knight.",
                        "level": 2,
                        "children": [
                         {
@@ -1760,7 +1760,7 @@
          "children": [
           {
            "san": "e3",
-           "comment": "Guard d4 and keep things solid. Play Bf4 later, only when ...e5 would not hit both your d4 pawn and your bishop.",
+           "comment": "Guard d4 and keep things solid. Your c1 bishop is now behind the e3 pawn; it can go to f4 only after the e-pawn leaves e3, for example after ...cxd4 exd4.",
            "level": 2,
            "children": [
             {
@@ -1782,7 +1782,7 @@
         },
         {
          "san": "e6",
-         "comment": "Black prepares ...d5 or ...Nf6.",
+         "comment": "Black prepares ...d5: the e6 pawn would guard it.",
          "level": 2,
          "children": [
           {
@@ -1850,7 +1850,7 @@
                "children": [
                 {
                  "san": "Qb4+",
-                 "comment": "Black checks and hits b2.",
+                 "comment": "Black checks and attacks both b2 and your f4 bishop.",
                  "children": [
                   {
                    "san": "Bd2",
@@ -1870,7 +1870,7 @@
                          "children": [
                           {
                            "san": "Nd5",
-                           "comment": "The knight attacks the queen on b6. Your pieces are far ahead in development.",
+                           "comment": "The knight attacks the queen on b6, and most queen moves allow Nxc7+, a fork of the king and the a8 rook. Your pieces are far ahead in development.",
                            "children": []
                           }
                          ]
@@ -1969,7 +1969,7 @@
                      "children": [
                       {
                        "san": "Bd3",
-                       "comment": "Bishop to d3 hits the f5 pawn. Castle next.",
+                       "comment": "Bishop to d3 hits the f5 pawn. Castle soon.",
                        "level": 2,
                        "children": [
                         {
