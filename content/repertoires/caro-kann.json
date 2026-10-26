@@ -73,7 +73,7 @@
                        "children": [
                         {
                          "san": "cxd4",
-                         "comment": "Take the pawn. If they take back, you play on with an easy game.",
+                         "comment": "Take the d4 pawn with your c-pawn. It attacks the e3 bishop, so White must take back, and then no white pawn guards e5.",
                          "children": [
                           {
                            "san": "Nxd4",
@@ -81,7 +81,7 @@
                            "children": [
                             {
                              "san": "Ne7",
-                             "comment": "Develop and get ready to castle. The knight guards your bishop on f5 and can go to c6 next.",
+                             "comment": "Develop and get ready to castle. The knight guards your f5 bishop, and the b8 knight goes to c6 next.",
                              "children": [
                               {
                                "san": "O-O",
@@ -90,7 +90,7 @@
                                "children": [
                                 {
                                  "san": "Nbc6",
-                                 "comment": "Hit the d4 knight. Now every piece fights for the centre.",
+                                 "comment": "Hit the d4 knight. Now both your knights fight for the centre.",
                                  "children": [
                                   {
                                    "san": "Bb5",
@@ -99,7 +99,7 @@
                                    "children": [
                                     {
                                      "san": "a6",
-                                     "comment": "Attack the bishop with the pawn. The d4 knight guards it, so White can take on c6 or move the bishop.",
+                                     "comment": "Attack the bishop with the pawn. A bishop is worth more than a pawn, so White takes on c6 or moves the bishop.",
                                      "children": [
                                       {
                                        "san": "Bxc6+",
@@ -396,7 +396,7 @@
               },
               {
                "san": "Bd3",
-               "comment": "They offer a bishop trade.",
+               "comment": "White's bishop attacks your f5 bishop, and nothing guards it. White offers a trade.",
                "children": [
                 {
                  "san": "Bxd3",
@@ -420,7 +420,7 @@
               },
               {
                "san": "g4",
-               "comment": "A loose attack. It weakens their own king.",
+               "comment": "The g-pawn attacks your bishop. The pawn leaves g2, so no pawn guards f3 and h3 now.",
                "level": 2,
                "children": [
                 {
@@ -1677,7 +1677,7 @@
            "children": [
             {
              "san": "Bg4",
-             "comment": "Develop the bishop before ...e6. White may trade; that is fine.",
+             "comment": "Develop the bishop before ...e6. If White plays h3, you can take the knight.",
              "children": [
               {
                "san": "h3",
@@ -1715,7 +1715,7 @@
            "children": [
             {
              "san": "dxe4",
-             "comment": "Take the free pawn. They take it back.",
+             "comment": "Take on e4. White takes back with the bishop, so the pawns are traded.",
              "children": [
               {
                "san": "Bxe4",
