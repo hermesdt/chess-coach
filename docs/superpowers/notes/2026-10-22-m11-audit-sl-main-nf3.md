@@ -129,7 +129,16 @@ Totals: 96 claims; 91 `ok`, 0 `false`, 5 `misleading` (sl-nf3-07, -08, -24, -34,
 
 ## Re-check
 
-(Empty until the fixer's round.)
+Fixer commit `c6da2ff`. Date 2026-10-26. Tools: chess.js via `m11-audit-helpers`, Stockfish 19 at 1.5M nodes with `ucinewgame` before each search.
+Diff check: `git diff c6da2ff^..c6da2ff -- content/repertoires/slav.json` changes exactly five `comment` fields, which are the five claims below. No other sentence changed. The texts match the "Fixes" record.
+
+- sl-nf3-07: "Develop and guard d5 again. In the main line your plan is ...dxc4, then ...Bf5, then ...e6." Check: the main line 4.Nc3 dxc4 5.a4 Bf5 6.e3 e6 replays legally. "In the main line" now limits the plan, so 4.e3 (...Bf5 at once) and 5.e3 / 5.e4 / 5.Ne5 no longer contradict it. `ok`.
+- sl-nf3-08: "Take the pawn on c4. While your b7 pawn is at home, bring the bishop out before you play ...e6." Check: in the 5.a4 line the b7 pawn is at home, and after ...e6 the c8 bishop has only Bd7. In the 5.e3 and 5.e4 lines b7 is empty when ...e6 comes, and the bishop keeps Bb7 and Ba6. In the 5.Ne5 line the bishop goes to b7 before ...e6. The rule holds in every child line. Engine at the 5.a4 position: ...Bf5 +0.40, ...e6 +0.25. That is a small gap, and the sentence makes a plan point, not an evaluation. `ok`.
+- sl-nf3-24: "White puts the bishop on d3. It guards the e4 pawn, which blocks its diagonal to your g6 bishop." Check: `attackers(e4,'w')` = [c3,d3,e2]. `lineOpen(d3,g6)` shows one blocker, the e4 pawn. `ok`.
+- sl-nf3-34: "Trade bishops: the d3 bishop now looks at your g6 bishop. Your f6 knight can wait, because exf6 loses the queen to ...Bxe2." Check: before ...Bxd3 the line d3-g6 is open, and `attackers(f6,'w')` = [e5]. After ...Bxd3, the line exf6 Bxe2 replays legally. Searchmoves exf6 = -8.95 (exf6 Bxe2 Nxe2 Nxf6). Best is Qxd3 +0.33. `ok`.
+- sl-nf3-91: "Step back. If White takes on g6, retake with the h-pawn: your h8 rook gets the half-open h-file." Check: Nxg6 hxg6 replays legally, and Nxg6 is White's top move (+0.25). After it the h-file has the white rook on h1, the white pawn on h2 and the black rook on h8, and no black pawn. That makes it half-open. Line h8-h2 is open. `ok`.
+
+Result: 5 of 5 `ok`. Nothing is reopened. Open `false` verdicts: 0.
 
 ## Protocol feedback
 
