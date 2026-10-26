@@ -2324,7 +2324,7 @@
            "children": [
             {
              "san": "Nf6",
-             "comment": "Develop and guard d5. You are in the Slav. Play ...dxc4, ...Bf5, ...e6.",
+             "comment": "Develop and guard d5. You are in the Slav: in the main line your plan is ...dxc4, then ...Bf5, then ...e6.",
              "children": [],
              "tags": [
               "main"
@@ -2346,7 +2346,7 @@
                "children": [
                 {
                  "san": "e6",
-                 "comment": "Guard d5 with the e-pawn and open the f8 bishop. The e6 pawn blocks your c8 bishop for now; ...b5, ...Bb7 and later ...c5 can free it.",
+                 "comment": "Guard d5 with the e-pawn and open the f8 bishop. The e6 pawn blocks the c8 bishop's diagonal for now; ...dxc4, ...b5, ...Bb7 and later ...c5 can free it.",
                  "children": [
                   {
                    "san": "d4",
@@ -2430,7 +2430,7 @@
            "children": [
             {
              "san": "Nf6",
-             "comment": "Develop and guard d5. Slav plan: ...dxc4, ...Bf5, ...e6.",
+             "comment": "Develop and guard d5. In the main Slav line your plan is ...dxc4, then ...Bf5, then ...e6.",
              "children": [],
              "tags": [
               "main"
@@ -2576,7 +2576,7 @@
   },
   {
    "san": "Nf3",
-   "comment": "White waits and keeps all options open.",
+   "comment": "White develops the knight and does not yet show which centre pawn comes next.",
    "children": [
     {
      "san": "d5",
@@ -2602,7 +2602,7 @@
        "children": [
         {
          "san": "c6",
-         "comment": "Guard d5 with the c-pawn. Now you have the Slav.",
+         "comment": "Guard d5 with the c-pawn. This is your Slav set-up; if White plays d4, you are in the Slav.",
          "children": [
           {
            "san": "g3",
