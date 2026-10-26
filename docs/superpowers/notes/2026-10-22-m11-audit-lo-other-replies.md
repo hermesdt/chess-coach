@@ -124,7 +124,22 @@ Totals: 91 claims; 81 `ok`, 2 `false` (lo-oth-55, lo-oth-63), 8 `misleading` (lo
 
 ## Re-check
 
-(Empty until the fixer's round.)
+Fix commit `9721d7f`. Checked on 2026-10-26 with chess.js and Stockfish (1M nodes, `ucinewgame` before each search). `git diff 9721d7f^..9721d7f -- content/repertoires/london.json`: exactly 10 comments changed, all on the 10 claim nodes. No other sentence in this scope changed.
+
+| id | new sentence | check | verdict |
+|---|---|---|---|
+| lo-oth-07 | "Bishop to d3 hits the g6 pawn. Castle soon to keep your king safe." | The tree castles on move 9, after h3, Nbd2 and c3. "Soon" does not clash with h3 as the next move. The first sentence is unchanged (ok, lo-oth-06). | `ok` |
+| lo-oth-25 | "...with the c-pawn. The g7 bishop also hits d4, so it is attacked twice." | d4 B[g7,c5] = 2. | `ok` |
+| lo-oth-28 | "Retake with the c-pawn. Your e3 pawn stays and guards d4, and the c-file opens for your rooks." (the fixer dropped "and f4") | d4 W[e3,f3] B[g7]. The c-file has no pawns: c1 to c7 are empty and c8 holds a black bishop. The fixer was right to drop "f4": the bishop is on h2 and f4 is an empty square. | `ok` |
+| lo-oth-45 | "Retake with the pawn: it is the only capture. Your queen guards b2, but nothing guards d4 now, so if ...Qxd4, play Nf3 and hit the queen." | exd4 is the only capture on d4. After exd4: d4 W[] B[b6]; b2 W[c1]. Stockfish: ...Qxd4 -0.55 (best). After ...Qxd4, Nf3 attacks d4 and is best (-0.44; Nc3 -0.74). The text names the loose pawn and makes no evaluation claim. | `ok` |
+| lo-oth-55 | "Support d4. Your pawns on c3 and d4 give a solid centre, and the c3 pawn takes b4 from the c6 knight." | b4 W[c3]; d4 W[c3,f3,d1]. Stockfish after c3: +0.11, so "solid" holds. The false "Watch for ...Nb4" is gone. | `ok` |
+| lo-oth-63 | "Guard d4 and keep things solid. Your c1 bishop is now behind the e3 pawn; it can go to f4 only after the e-pawn leaves e3, for example after ...cxd4 exd4." | After e3 the c1 bishop's only move is Bd2. From d2, the c1-h6 diagonal is still blocked by e3, and the a5-e1 diagonal does not lead to f4. After ...cxd4 exd4 (then ...Nc6), Bf4 is legal. Stockfish after e3: +0.17. | `ok` |
+| lo-oth-65 | "Black prepares ...d5: the e6 pawn would guard it." | d5 B[e6]. | `ok` |
+| lo-oth-75 | "Black checks and attacks both b2 and your f4 bishop." | Black's move gives check. b2 B[b4]; f4 B[b4] W[]. | `ok` |
+| lo-oth-78 | "The knight attacks the queen on b6, and most queen moves allow Nxc7+, a fork of the king and the a8 rook. Your pieces are far ahead in development." (the fixer's version) | b6 W[d5]. The queen has 11 legal moves. Nxc7+ is legal after 10 of them; ...Qxf2+ is the exception. After ...Qa5, the queen guards c7 (Bxa5 wins it anyway). So 9 of 11 moves allow a real fork. Stockfish (1M) gives White +6.6 to +11.2 after every queen move. The fixer was right: my "threatens Nxc7+" was wrong, because Nxc7+ now loses the knight to ...Qxc7. The second sentence is unchanged (ok, lo-oth-79). | `ok` |
+| lo-oth-90 | "Bishop to d3 hits the f5 pawn. Castle soon." | The tree's next move Nbd2 does not clash with "soon". O-O is legal. | `ok` |
+
+Result: all 10 fixed claims are `ok`. No item is reopened.
 
 ## Protocol feedback
 
