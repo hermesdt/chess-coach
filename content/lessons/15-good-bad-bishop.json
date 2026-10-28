@@ -3,9 +3,9 @@
   "order": 15,
   "level": 2,
   "title": "Good and bad bishops",
-  "summary": "A bishop is bad when your own pawns stand on its colour. Free it, trade it, or keep your pawns on the other colour.",
+  "summary": "A bishop is bad when your own pawns stand on its colour and block its diagonals. Free it, trade it, or keep your pawns on the other colour.",
   "tags": [],
-  "body": "### Your pawns decide your bishop\n\nA bishop stays on one colour of squares. Your pawns decide if it is good or bad.\n\n- **Bad bishop.** Many of your pawns stand on the same colour as the bishop. The pawns block its diagonals. The bishop does little.\n- **Good bishop.** Your pawns stand on the other colour. The bishop has open diagonals and can attack.\n\nLook at the Slav and Caro-Kann. Black has pawns on c6, d5 and e6. They all stand on light squares. So Black's light-squared bishop is bad if it stays behind them. Now look at the London. White has pawns on c3, d4 and e3. They stand on dark squares. So White's light-squared bishop is good.\n\nHow to fix a bad bishop:\n\n- Bring it outside the pawn chain before you play ...e6. The Caro-Kann bishop goes to f5 (lesson 11).\n- Change the pawns. In the Semi-Slav, ...dxc4 trades your d5 pawn for White's c-pawn. You give up the centre square d5, but your bishop gets room. Then ...b5 and ...Bb7 bring the bishop to the long diagonal, and ...c5 opens it.\n- Trade it for a piece that matters.\n\nHow to keep a good bishop good:\n\n- Put your pawns on the colour opposite to your bishop.\n- Do not trade it for a knight without a reason (lesson 7).\n- Aim it at weak enemy pawns on its colour.\n\nYou can find the colour of a square quickly. A1 is dark. Squares side by side on a rank or a file have different colours.\n\nRule of thumb: keep your pawns on the colour opposite to your bishop, and free a bad bishop before it gets locked in.",
+  "body": "### Your pawns decide your bishop\n\nA bishop stays on one colour of squares. Your pawns decide if it is good or bad.\n\n- **Bad bishop.** Many of your pawns stand on the same colour as the bishop. The pawns block its diagonals. The bishop does little.\n- **Good bishop.** Your pawns stand on the other colour. The bishop has open diagonals and can attack.\n\nLook at the Slav and Caro-Kann. Black has pawns on c6, d5 and e6. They all stand on light squares. So Black's light-squared bishop is bad if it stays behind them. Now look at the London. White has pawns on c3, d4 and e3. They stand on dark squares. So White's light-squared bishop is good.\n\nHow to fix a bad bishop:\n\n- Bring it outside the pawn chain before you play ...e6. The Caro-Kann bishop goes to f5 (lesson 11).\n- Change the pawns. In the Semi-Slav, ...dxc4 trades your d5 pawn for White's c-pawn. You give up your pawn in the centre, so White can play e4 later, but your bishop gets room. Then ...b5 and ...Bb7 bring the bishop to the long diagonal, and ...c5 opens it.\n- Trade it for a piece that matters.\n\nHow to keep a good bishop good:\n\n- Put your pawns on the colour opposite to your bishop.\n- Do not trade it for a knight without a reason (lesson 7).\n- Aim it at weak enemy pawns on its colour.\n\nYou can find the colour of a square quickly. A1 is dark. Squares side by side on a rank or a file have different colours.\n\nRule of thumb: keep your pawns on the colour opposite to your bishop, and free a bad bishop before it gets locked in.",
   "exercises": [
     {
       "id": "bishop-out-classical",
@@ -23,7 +23,7 @@
       "solution": [
         "d5c4"
       ],
-      "explanation": "dxc4 trades your d5 pawn for the white c-pawn. You give up the centre square d5, but your bishop gets room. If White takes back with Bxc4, ...b5 attacks the bishop and prepares ...Bb7. The bishop gets out of its prison."
+      "explanation": "dxc4 trades your d5 pawn for the white c-pawn. You give up your pawn in the centre, so White can play e4 later, but your bishop gets room. If White takes back with Bxc4, ...b5 attacks the bishop and prepares ...Bb7. The bishop gets out of its prison."
     },
     {
       "id": "long-diagonal",
