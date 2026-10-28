@@ -84,6 +84,24 @@ describe('mapLichessGame', () => {
 describe('fetchLichessGames', () => {
   const ok = () => new Response(ndjson);
 
+  it('discards Stockfish levels 1 and 2 while keeping stronger and human games', async () => {
+    const entries = [
+      { ...games[0]!, id: 'level1', players: { white: { aiLevel: 1 }, black: { user: { name: 'Lance5500' } } } },
+      { ...games[0]!, id: 'level2', players: { white: { user: { name: 'Lance5500' } }, black: { aiLevel: 2 } } },
+      { ...games[0]!, id: 'level3', players: { white: { aiLevel: 3 }, black: { user: { name: 'Lance5500' } } } },
+      { ...games[0]!, id: 'human' },
+    ];
+    const batches: NewGame[][] = [];
+    const total = await fetchLichessGames('lance5500', {
+      sinceMs: 0,
+      token: null,
+      fetchFn: recordingFetch(() => new Response(entries.map((g) => JSON.stringify(g)).join('\n'))),
+      onBatch: (batch) => batches.push(batch),
+    });
+    expect(total).toBe(2);
+    expect(batches.flat().map((g) => g.sourceId)).toEqual(['level3', 'human']);
+  });
+
   it('sends since, pgnInJson and the token only when given', async () => {
     const calls: { url: string; init?: RequestInit }[] = [];
     await fetchLichessGames('Lance5500', { sinceMs: 12345, token: 'tok', fetchFn: recordingFetch(ok, calls) });

@@ -33,6 +33,7 @@ function timeClassOf(speed: string): TimeClass {
 
 export function mapLichessGame(g: LichessGame, username: string): NewGame | null {
   if (g.variant !== 'standard' && g.variant !== 'fromPosition') return null;
+  if ([g.players.white, g.players.black].some((player) => player.aiLevel !== undefined && player.aiLevel <= 2)) return null;
   const parsed = gameFromPgn(g.pgn, { source: 'lichess', sourceId: g.id, usernames: [username] });
   if ('skipped' in parsed) return null;
   const is = (p: LichessPlayer) => p.user?.name.toLowerCase() === username.toLowerCase();
