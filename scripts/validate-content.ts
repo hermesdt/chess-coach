@@ -134,7 +134,7 @@ async function main(): Promise<number> {
     if (args.repertoires) issues.push(...(await repertoireIssues(listRepertoireFiles())));
     if (args.lessons) issues.push(...(await lessonIssues(listLessonFiles())));
     if (args.repertoires) issues.push(...(await guideIssues(listGuideFiles())));
-    issues.push(...sequenceCheck(args, SEQUENCES_STRICT));
+    issues.push(...sequenceCheck({ lessons: args.lessons, repertoires: args.repertoires }, SEQUENCES_STRICT));
   }
   const errors = issues.filter((i) => i.severity !== 'warning');
   const warnings = issues.filter((i) => i.severity === 'warning');
