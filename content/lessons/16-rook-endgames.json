@@ -5,7 +5,7 @@
   "title": "Rook endgames",
   "summary": "Learn two key rook endings: Lucena, where you win with a bridge, and Philidor, where you draw on the third rank.",
   "tags": [],
-  "body": "### Rook endings\n\nRook endings are very common. Many are draws, and good technique saves half points or wins them. Learn these rules and two key positions.\n\n- **Rook behind the passed pawn.** Put your rook behind your passed pawn. It guards the pawn and gets stronger when the pawn moves. Do the same against the pawn of your opponent.\n- **Active rook.** A passive rook is a weak rook. Keep your rook active.\n\n**Lucena: the win.** You have a pawn on the seventh rank. Your king stands in front of it, on the eighth rank. The enemy king is cut off from the pawn. But your king cannot leave: the enemy rook gives checks. The plan is the bridge:\n\n- Put your rook on the fourth rank, counted from your side.\n- Walk your king out, so the pawn can move.\n- When the enemy rook checks, block the check with your rook on the fourth rank.\n- The pawn promotes.\n\n**Philidor: the draw.** You defend. The enemy pawn is on the fifth rank, and your king stands in front of it. Follow this plan:\n\n- Put your rook on the third rank, counted from your side. It stops the enemy king from stepping forward.\n- When the pawn moves to the sixth rank, send your rook to the far side of the board, behind the pawn.\n- Give checks from behind. The enemy king has no shelter, so you draw.\n\nIn our exercises Black defends against a white pawn. So the third rank is the sixth rank. The far side is the first rank.\n\nWhen you defend, keep your king in front of the pawn.\n\nRule of thumb: win with the bridge when the pawn is on the seventh, and defend on the third rank, then check from behind.",
+  "body": "### Rook endings\n\nRook endings are very common. Many are draws, and good technique saves half points or wins them. Learn these rules and two key positions.\n\n- **Rook behind the passed pawn.** Put your rook behind your passed pawn. It guards the pawn and gets stronger when the pawn moves. Do the same against the pawn of your opponent.\n- **Active rook.** A passive rook is a weak rook. Keep your rook active.\n\n**Lucena: the win.** You have a pawn on the seventh rank, but not on the a- or h-file. Your king stands in front of it, on the eighth rank. The enemy king is cut off from the pawn. But your king cannot leave: the enemy rook gives checks. The plan is the bridge:\n\n- Put your rook on the fourth rank, counted from your side.\n- Walk your king out, so the pawn can move.\n- When the enemy rook checks, block the check with your rook on the fourth rank.\n- The pawn promotes.\n\n**Philidor: the draw.** You defend. The enemy pawn is on the fifth rank, and your king stands in front of it. Follow this plan:\n\n- Put your rook on the third rank, counted from your side. It stops the enemy king from stepping forward.\n- When the pawn moves to the sixth rank, send your rook to the far side of the board, to your first rank.\n- Give checks from behind. The enemy king has no shelter, so you draw.\n\nIn our exercises Black defends against a white pawn. So the third rank is the sixth rank. The far side is the first rank.\n\nWhen you defend, keep your king in front of the pawn.\n\nRule of thumb: win with the bridge when the pawn is on the seventh, and defend on the third rank, then check from behind.",
   "exercises": [
     {
       "id": "lucena-bridge",
@@ -37,11 +37,11 @@
     {
       "id": "philidor-checks",
       "fen": "4k3/1R6/r3P3/3K4/8/8/8/8 b - - 0 1",
-      "prompt": "Black to move. The pawn has reached the sixth rank. Move your rook to the first rank, behind the pawn, to give checks from behind.",
+      "prompt": "Black to move. The pawn has reached the sixth rank. Move your rook to the first rank, far from the white king, to give checks from behind.",
       "solution": [
         "a6a1"
       ],
-      "explanation": "Ra1 goes behind the pawn and prepares checks from behind. The white king cannot hide from them, so the game is a draw."
+      "explanation": "Ra1 goes to the far side of the board and prepares checks from behind. The white king cannot hide from them, so the game is a draw."
     },
     {
       "id": "rook-behind-pawn",

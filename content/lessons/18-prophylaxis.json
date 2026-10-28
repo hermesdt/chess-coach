@@ -14,7 +14,7 @@
       "solution": [
         "e4e5"
       ],
-      "explanation": "Black wants to trade on e4 with ...Nxe4 or ...dxe4. The trade frees the black position. If White waits, the engine edge falls from 69 % to about 52 %. e5 takes the break away. The pawn leaves e4 and attacks the knight on f6. In one line Black plays ...Ng8, then White plays Ne2 and c3, and White keeps the space. The knight on f6 is attacked. If Black castles, exf6 wins the knight for a pawn."
+      "explanation": "Black wants to trade on e4 with ...Nxe4 or ...dxe4. The trade frees the black position. If White waits, Black makes the trade, and the edge of White is much smaller. e5 takes the break away. The pawn leaves e4 and attacks the knight on f6. In one line Black plays ...Ng8, then White plays Ne2 and c3, and White keeps the space. The knight on f6 is attacked. If Black castles, exf6 wins the knight for a pawn."
     },
     {
       "id": "king-guards-pawn",
@@ -32,7 +32,7 @@
       "solution": [
         "c2b3"
       ],
-      "explanation": "Black wants ...Ka2, then ...b3+, ...b2 and ...b1=Q. The plan needs four moves, so stop it now. The check ...b3+ at once fails to Kxb3, so Black first needs ...Ka2. If White waits, the line is ...Ka2 h4 b3+ Kd2 b2 h5 b1=Q. Kb3 takes a2 away from the black king, blocks the pawn and attacks it. The pawn on b4 cannot move, and the black king can only go to b1. After Kd3 Black plays ...b3 and queens."
+      "explanation": "Black wants ...Ka2, then ...b3+, ...b2 and ...b1=Q. The plan needs four moves, so stop it now. The check ...b3+ at once fails to Kxb3, so Black first needs ...Ka2. If White waits, for example with f4, one line is ...Ka2 h4 b3+ Kd2 b2 h5 b1=Q. Kb3 takes a2 away from the black king, blocks the pawn and attacks it. The pawn on b4 cannot move, and the black king can only go to b1. After Kd3 Black plays ...b3 and queens."
     },
     {
       "id": "king-stops-king-walk",
