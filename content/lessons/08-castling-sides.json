@@ -5,7 +5,7 @@
   "title": "Opposite-side and same-side castling",
   "summary": "Same-side castling is calmer. Opposite-side castling is a race: use it when you can storm fast.",
   "tags": [],
-  "body": "### Which side should I castle?\n\nYou may know the advice: castle on the same side as your opponent. At your level, this is good advice.\n\nKingside is the h-file side, where O-O goes. Queenside is the a-file side, where O-O-O goes.\n\nWhen both kings are on the same side, a pawn storm is dangerous. You push pawns towards the enemy king, but those pawns leave holes next to your own king. The game stays calm. You can fight for the centre and use your pieces.\n\nBut sometimes opposite-side castling is better. Both kings are then far apart, and the game becomes a race. Each player pushes pawns towards the enemy king and opens files for the rooks. The faster side wins.\n\nOpposite-side castling is a good choice when:\n\n- you want to attack and you know the plan;\n- your pieces are developed faster than your opponent's pieces;\n- your opponent has already moved pawns in front of their king.\n\nIt has a cost. You use the pawns that protect your own king. If your attack is slow, your opponent attacks first and your king has no shield. Do not storm when your pieces are not developed.\n\nUse this plan:\n\n- Look at where the enemy king is.\n- If the enemy king is on the kingside, castle kingside too, and play in the centre.\n- If the enemy king is on the other side, you castled opposite sides. Then the faster pawn storm usually wins.\n- If you are faster, push the pawns next to the enemy king and bring your pieces.\n\nA pawn storm needs speed. Do not stop halfway.\n\nRule of thumb: castle on the same side to stay safe. Castle on the opposite side only when you plan a fast pawn storm.",
+  "body": "### Which side should I castle?\n\nYou may know the advice: castle on the same side as your opponent. At your level, this is good advice.\n\nKingside is the h-file side, where O-O goes. Queenside is the a-file side, where O-O-O goes.\n\nWhen both kings are on the same side, a pawn storm is dangerous. You push pawns towards the enemy king, but those pawns leave holes next to your own king. The game stays calm. You can fight for the centre and use your pieces.\n\nBut sometimes opposite-side castling is better. Both kings are then far apart, and the game becomes a race. Each player pushes pawns towards the enemy king and opens files for the rooks. The faster side usually wins.\n\nOpposite-side castling is a good choice when:\n\n- you want to attack and you know the plan;\n- your pieces are developed faster than your opponent's pieces;\n- your opponent has already moved pawns in front of their king.\n\nIt has a cost. Your opponent also storms your king. If your attack is slow, the enemy pawns reach your king first. Do not storm when your pieces are not developed.\n\nUse this plan:\n\n- Look at where the enemy king is.\n- If the enemy king is on the kingside, castle kingside too, and play in the centre.\n- If the enemy king is on the other side, you castled opposite sides. Then the faster pawn storm usually wins.\n- If you are faster, push the pawns next to the enemy king and bring your pieces.\n\nA pawn storm needs speed. Do not stop halfway.\n\nRule of thumb: castle on the same side to stay safe. Castle on the opposite side only when you plan a fast pawn storm.",
   "exercises": [
     {
       "id": "storm-white-1",
@@ -15,7 +15,7 @@
         "g2g4",
         "h2h4"
       ],
-      "explanation": "Your king is on c1 and Black's king is on g8. Pushing the g- or h-pawn opens the files in front of the Black king. Your king is far from the fight."
+      "explanation": "Your king is on c1 and Black's king is on g8. The g- and h-pawns go forward to open files in front of the Black king. Your king is far from the fight."
     },
     {
       "id": "storm-white-2",
@@ -43,7 +43,7 @@
       "solution": [
         "b5b4"
       ],
-      "explanation": "b4 attacks the knight on c3 and brings the pawn closer to the White king on c1. White has used the h-pawn on the other side, so Black can hurry with the queenside storm. h5 is also fine, but it is not the storm."
+      "explanation": "b4 attacks the knight on c3 and brings the pawn closer to the White king on c1. White has started a storm with the h-pawn, so Black should hurry with the queenside storm. h5 is also fine, but it is not the storm."
     },
     {
       "id": "same-side",

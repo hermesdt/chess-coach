@@ -5,7 +5,7 @@
  "moves": [
   {
    "san": "d4",
-   "comment": "Take the centre. This starts the London: one safe set-up you can use in almost every game.",
+   "comment": "Take the centre. This starts the London: one safe set-up you can use against most Black replies.",
    "children": [
     {
      "san": "d5",
@@ -37,7 +37,7 @@
                  "children": [
                   {
                    "san": "Bg3",
-                   "comment": "Their bishop attacks yours. Step back to g3. If they take, retake with the h-pawn and the h-file opens.",
+                   "comment": "Their bishop attacks yours. Step back to g3. If they take, retake with the h-pawn. Then the h-file is half open for your rook.",
                    "children": [
                     {
                      "san": "O-O",
@@ -141,11 +141,11 @@
                     },
                     {
                      "san": "Bxg3",
-                     "comment": "Black trades bishops. This is common.",
+                     "comment": "Black trades bishops.",
                      "children": [
                       {
                        "san": "hxg3",
-                       "comment": "Retake with the h-pawn. The h-file opens for your rook, and g4 can start a kingside attack later.",
+                       "comment": "Retake with the h-pawn. The h-file is half open for your rook, and g4 can start a kingside attack later.",
                        "children": [
                         {
                          "san": "O-O",
@@ -188,7 +188,7 @@
                                        "children": [
                                         {
                                          "san": "h6",
-                                         "comment": "Black makes room for the king and controls g5.",
+                                         "comment": "Black controls g5. The king cannot use h7 yet, because your d3 bishop covers it.",
                                          "children": [
                                           {
                                            "san": "g4",
@@ -262,7 +262,7 @@
                                  "children": [
                                   {
                                    "san": "Ne5",
-                                   "comment": "Knight to e5. The d4 pawn guards it. If ...Nxe5, dxe5 attacks the knight on f6.",
+                                   "comment": "Knight to e5, guarded by the d4 pawn. It attacks the c6 knight, which has no guard, and if ...Nxe5, dxe5 hits the f6 knight.",
                                    "level": 2,
                                    "children": [
                                     {
@@ -335,7 +335,7 @@
                      "children": [
                       {
                        "san": "Nbd2",
-                       "comment": "Develop your last knight. It supports e4 and keeps the London base solid.",
+                       "comment": "Develop your last knight. It supports e4 and guards b3.",
                        "children": [
                         {
                          "san": "Bd6",
@@ -382,7 +382,7 @@
                                  "children": [
                                   {
                                    "san": "Be2",
-                                   "comment": "Develop calmly. The c4 pawn controls d3, so the bishop goes to e2. O-O and e4 are next.",
+                                   "comment": "Develop calmly. The c4 pawn controls d3, so the bishop goes to e2, and you can castle next.",
                                    "children": [
                                     {
                                      "san": "Bd6",
@@ -406,12 +406,12 @@
                             },
                             {
                              "san": "Qxb3",
-                             "comment": "Black offers to trade.",
+                             "comment": "Black trades queens. Take back on b3.",
                              "level": 2,
                              "children": [
                               {
                                "san": "Nxb3",
-                               "comment": "Retake with the knight. Your pawns stay healthy and your pieces keep developing.",
+                               "comment": "Retake with the knight. Your pawns stay healthy: you get no doubled b-pawns.",
                                "level": 2,
                                "children": [
                                 {
@@ -464,7 +464,7 @@
              "children": [
               {
                "san": "c3",
-               "comment": "Guard d4 again. You can now retake on d4 with a pawn if they capture.",
+               "comment": "Guard d4 again. If Black takes on d4, you can take back with the c-pawn or the e-pawn.",
                "children": [
                 {
                  "san": "Nc6",
@@ -653,7 +653,7 @@
                          "children": [
                           {
                            "san": "Nd2",
-                           "comment": "Develop the knight. It heads to f3 and attacks the c4 pawn.",
+                           "comment": "Develop the knight. It attacks the c4 pawn and supports a later e4 push.",
                            "children": [
                             {
                              "san": "Bf5",
@@ -706,7 +706,7 @@
                      "children": [
                       {
                        "san": "Qxb6",
-                       "comment": "Trade queens first. Then b2 is safe.",
+                       "comment": "Trade queens before you take back on d4. After ...axb6, Black has doubled b-pawns.",
                        "level": 2,
                        "children": [
                         {
@@ -742,7 +742,7 @@
                     },
                     {
                      "san": "Qxb3",
-                     "comment": "Black offers a trade.",
+                     "comment": "Black takes your queen. Take back, and the queens are traded.",
                      "level": 2,
                      "children": [
                       {
@@ -775,7 +775,7 @@
                  "children": [
                   {
                    "san": "Nf3",
-                   "comment": "Develop a knight. It guards d4, so Black's queen cannot win that pawn later.",
+                   "comment": "Develop a knight. It guards d4, which the c5 pawn and the c6 knight attack.",
                    "children": [
                     {
                      "san": "cxd4",
@@ -783,7 +783,7 @@
                      "children": [
                       {
                        "san": "exd4",
-                       "comment": "Retake with the pawn. Your centre is solid. Develop with Nc3 and Bd3.",
+                       "comment": "Retake with the pawn. Now d4 has two attackers and one guard, so play c3 soon.",
                        "children": [
                         {
                          "san": "Nf6",
@@ -792,7 +792,7 @@
                          "children": [
                           {
                            "san": "c3",
-                           "comment": "Guard d4 once more. Then play Bd3 and castle.",
+                           "comment": "Guard d4 once more. Then develop the f1 bishop and castle.",
                            "level": 2,
                            "children": [
                             {
@@ -1071,7 +1071,7 @@
                  "children": [
                   {
                    "san": "Be2",
-                   "comment": "Their bishop pins your knight to the queen. Be2 adds a guard on f3, so you can retake if they trade.",
+                   "comment": "Their bishop pins your knight to the queen. Be2 develops and breaks the pin: the queen no longer stands behind the knight.",
                    "level": 2,
                    "children": [
                     {
@@ -1291,7 +1291,7 @@
                  "children": [
                   {
                    "san": "Bd3",
-                   "comment": "Bishop to d3 hits the g6 pawn. Castle next to keep your king safe.",
+                   "comment": "Bishop to d3 hits the g6 pawn. Castle soon to keep your king safe.",
                    "children": [
                     {
                      "san": "d6",
@@ -1407,7 +1407,7 @@
                                 },
                                 {
                                  "san": "c5",
-                                 "comment": "Black attacks your d4 pawn with the c-pawn.",
+                                 "comment": "Black attacks your d4 pawn with the c-pawn. The g7 bishop also hits d4, so it is attacked twice.",
                                  "level": 3,
                                  "children": [
                                   {
@@ -1420,7 +1420,7 @@
                                      "children": [
                                       {
                                        "san": "cxd4",
-                                       "comment": "Retake with the c-pawn. Your e3 pawn stays and guards the pawn on d4.",
+                                       "comment": "Retake with the c-pawn. Your e3 pawn stays and guards d4, and the c-file opens for your rooks.",
                                        "children": []
                                       }
                                      ]
@@ -1586,7 +1586,7 @@
                  "children": [
                   {
                    "san": "exd4",
-                   "comment": "Retake with the pawn. Your queen on c1 guards b2, and your bishop keeps its diagonal.",
+                   "comment": "Retake with the pawn: it is the only capture. Your queen guards b2, but nothing guards d4 now, so if ...Qxd4, play Nf3 and hit the queen.",
                    "level": 2,
                    "children": []
                   }
@@ -1696,7 +1696,7 @@
                      "children": [
                       {
                        "san": "c3",
-                       "comment": "Support d4. Your pawns on c3 and d4 give a solid centre. Watch for ...Nb4.",
+                       "comment": "Support d4. Your pawns on c3 and d4 give a solid centre, and the c3 pawn takes b4 from the c6 knight.",
                        "level": 2,
                        "children": [
                         {
@@ -1760,7 +1760,7 @@
          "children": [
           {
            "san": "e3",
-           "comment": "Guard d4 and keep things solid. Play Bf4 later, only when ...e5 would not hit both your d4 pawn and your bishop.",
+           "comment": "Guard d4 and keep things solid. Your c1 bishop is now behind the e3 pawn; it can go to f4 only after the e-pawn leaves e3, for example after ...cxd4 exd4.",
            "level": 2,
            "children": [
             {
@@ -1782,7 +1782,7 @@
         },
         {
          "san": "e6",
-         "comment": "Black prepares ...d5 or ...Nf6.",
+         "comment": "Black prepares ...d5: the e6 pawn would guard it.",
          "level": 2,
          "children": [
           {
@@ -1850,7 +1850,7 @@
                "children": [
                 {
                  "san": "Qb4+",
-                 "comment": "Black checks and hits b2.",
+                 "comment": "Black checks and attacks both b2 and your f4 bishop.",
                  "children": [
                   {
                    "san": "Bd2",
@@ -1870,7 +1870,7 @@
                          "children": [
                           {
                            "san": "Nd5",
-                           "comment": "The knight attacks the queen on b6. Your pieces are far ahead in development.",
+                           "comment": "The knight attacks the queen on b6, and most queen moves allow Nxc7+, a fork of the king and the a8 rook. Your pieces are far ahead in development.",
                            "children": []
                           }
                          ]
@@ -1969,7 +1969,7 @@
                      "children": [
                       {
                        "san": "Bd3",
-                       "comment": "Bishop to d3 hits the f5 pawn. Castle next.",
+                       "comment": "Bishop to d3 hits the f5 pawn. Castle soon.",
                        "level": 2,
                        "children": [
                         {

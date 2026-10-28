@@ -73,7 +73,7 @@
                        "children": [
                         {
                          "san": "cxd4",
-                         "comment": "Take the pawn. If they take back, you play on with an easy game.",
+                         "comment": "Take the d4 pawn with your c-pawn. It attacks the e3 bishop, so White must take back, and then no white pawn guards e5.",
                          "children": [
                           {
                            "san": "Nxd4",
@@ -81,7 +81,7 @@
                            "children": [
                             {
                              "san": "Ne7",
-                             "comment": "Develop and get ready to castle. The knight guards your bishop on f5 and can go to c6 next.",
+                             "comment": "Develop and get ready to castle. The knight guards your f5 bishop, and the b8 knight goes to c6 next.",
                              "children": [
                               {
                                "san": "O-O",
@@ -90,7 +90,7 @@
                                "children": [
                                 {
                                  "san": "Nbc6",
-                                 "comment": "Hit the d4 knight. Now every piece fights for the centre.",
+                                 "comment": "Hit the d4 knight. Now both your knights fight for the centre.",
                                  "children": [
                                   {
                                    "san": "Bb5",
@@ -99,7 +99,7 @@
                                    "children": [
                                     {
                                      "san": "a6",
-                                     "comment": "Attack the bishop with the pawn. The d4 knight guards it, so White can take on c6 or move the bishop.",
+                                     "comment": "Attack the bishop with the pawn. A bishop is worth more than a pawn, so White takes on c6 or moves the bishop.",
                                      "children": [
                                       {
                                        "san": "Bxc6+",
@@ -396,7 +396,7 @@
               },
               {
                "san": "Bd3",
-               "comment": "They offer a bishop trade.",
+               "comment": "White's bishop attacks your f5 bishop, and nothing guards it. White offers a trade.",
                "children": [
                 {
                  "san": "Bxd3",
@@ -420,7 +420,7 @@
               },
               {
                "san": "g4",
-               "comment": "A loose attack. It weakens their own king.",
+               "comment": "The g-pawn attacks your bishop. The pawn leaves g2, so no pawn guards f3 and h3 now.",
                "level": 2,
                "children": [
                 {
@@ -758,7 +758,7 @@
                                    "children": [
                                     {
                                      "san": "Nf6",
-                                     "comment": "Retreat and develop. Next, castle.",
+                                     "comment": "Bring the knight back to f6. There it guards h7, which the d3 bishop attacks. Next, castle.",
                                      "children": [
                                       {
                                        "san": "O-O",
@@ -823,7 +823,7 @@
                           },
                           {
                            "san": "Bd3",
-                           "comment": "White guards the c4 pawn with the bishop.",
+                           "comment": "White develops the bishop to d3. It guarded the c4 pawn from f1 already, and it still does.",
                            "level": 3,
                            "children": [
                             {
@@ -872,7 +872,7 @@
                    "children": [
                     {
                      "san": "Nxd5",
-                     "comment": "Take back with a developing move. Your knight sits in the centre.",
+                     "comment": "Take back with the knight. Your knight sits in the centre.",
                      "children": [
                       {
                        "san": "Nc3",
@@ -931,7 +931,7 @@
                    "children": [
                     {
                      "san": "Bg6",
-                     "comment": "Keep the bishop. It stays on the long diagonal and keeps an eye on d3 and c2.",
+                     "comment": "Keep the bishop. It stays on the b1-h7 diagonal and keeps an eye on d3 and c2.",
                      "children": [
                       {
                        "san": "h4",
@@ -959,7 +959,7 @@
                                "children": [
                                 {
                                  "san": "Bh7",
-                                 "comment": "Retreat to h7. The bishop keeps the long diagonal, so Bd3 will meet a trade.",
+                                 "comment": "Retreat to h7. The bishop stays on the b1-h7 diagonal, so Bd3 will meet a trade.",
                                  "children": [
                                   {
                                    "san": "Bd3",
@@ -967,7 +967,7 @@
                                    "children": [
                                     {
                                      "san": "Bxd3",
-                                     "comment": "Trade their active bishop. Fewer pieces means less danger for you.",
+                                     "comment": "Trade their active bishop: it attacks your h7 bishop. If you play ...e6 instead, Bxh7 Rxh7 puts your rook on h7 and White gets the better game.",
                                      "children": [
                                       {
                                        "san": "Qxd3",
@@ -1079,7 +1079,7 @@
                        "children": [
                         {
                          "san": "e6",
-                         "comment": "Solid. This blocks the bishop line to f7 and prepares ...Nf6.",
+                         "comment": "Solid. This blocks the bishop line to f7, and ...Nf6 comes next.",
                          "children": [
                           {
                            "san": "N1e2",
@@ -1184,7 +1184,7 @@
                   },
                   {
                    "san": "Bd3",
-                   "comment": "They offer a trade.",
+                   "comment": "White guards the e4 knight with the bishop. If you take the knight, White takes back with the bishop.",
                    "tags": [
                     "sideline"
                    ],
@@ -1250,7 +1250,7 @@
                    "children": [
                     {
                      "san": "Bg6",
-                     "comment": "Keep the bishop. It stays on the long diagonal and keeps an eye on d3 and c2.",
+                     "comment": "Keep the bishop. It stays on the b1-h7 diagonal and keeps an eye on d3 and c2.",
                      "children": [
                       {
                        "san": "h4",
@@ -1278,7 +1278,7 @@
                                "children": [
                                 {
                                  "san": "Bh7",
-                                 "comment": "Retreat to h7. The bishop keeps the long diagonal, so Bd3 will meet a trade.",
+                                 "comment": "Retreat to h7. The bishop stays on the b1-h7 diagonal, so Bd3 will meet a trade.",
                                  "children": [
                                   {
                                    "san": "Bd3",
@@ -1286,7 +1286,7 @@
                                    "children": [
                                     {
                                      "san": "Bxd3",
-                                     "comment": "Trade their active bishop. Fewer pieces means less danger for you.",
+                                     "comment": "Trade their active bishop: it attacks your h7 bishop. If you play ...e6 instead, Bxh7 Rxh7 puts your rook on h7 and White gets the better game.",
                                      "children": [
                                       {
                                        "san": "Qxd3",
@@ -1362,7 +1362,7 @@
                        "children": [
                         {
                          "san": "e6",
-                         "comment": "Solid. This blocks the bishop line to f7 and prepares ...Nf6.",
+                         "comment": "Solid. This blocks the bishop line to f7, and ...Nf6 comes next.",
                          "children": [
                           {
                            "san": "N1e2",
@@ -1412,7 +1412,7 @@
                   },
                   {
                    "san": "Bd3",
-                   "comment": "They offer a trade.",
+                   "comment": "White guards the e4 knight with the bishop. If you take the knight, White takes back with the bishop.",
                    "tags": [
                     "sideline"
                    ],
@@ -1454,7 +1454,7 @@
            "children": [
             {
              "san": "dxe4",
-             "comment": "Take the pawn. They have to give something for it.",
+             "comment": "Take the pawn. If White takes back with fxe4, material is equal and the diagonal from h4 to e1 stays open.",
              "children": [
               {
                "san": "fxe4",
@@ -1462,7 +1462,7 @@
                "children": [
                 {
                  "san": "e5",
-                 "comment": "Strike in the centre. Develop fast to get an easy game.",
+                 "comment": "Strike in the centre: the pawn attacks d4. Develop fast, and if White takes on e5, ...Qh4+ wins the e4 pawn.",
                  "tags": [
                   "main"
                  ],
@@ -1476,7 +1476,7 @@
                    "children": [
                     {
                      "san": "Bg4",
-                     "comment": "Pin the knight to the queen and develop. Do not move the queen early.",
+                     "comment": "Pin the knight to the queen and develop. Do not play ...Qh4+ here: the f3 knight guards h4.",
                      "children": [
                       {
                        "san": "Bd3",
@@ -1677,7 +1677,7 @@
            "children": [
             {
              "san": "Bg4",
-             "comment": "Develop the bishop before ...e6. White may trade; that is fine.",
+             "comment": "Develop the bishop before ...e6. If White plays h3, you can take the knight.",
              "children": [
               {
                "san": "h3",
@@ -1715,7 +1715,7 @@
            "children": [
             {
              "san": "dxe4",
-             "comment": "Take the free pawn. They take it back.",
+             "comment": "Take on e4. White takes back with the bishop, so the pawns are traded.",
              "children": [
               {
                "san": "Bxe4",
@@ -1790,7 +1790,7 @@
                            "children": [
                             {
                              "san": "Nbd7",
-                             "comment": "Develop the b8 knight. It guards the e5 square, so you can play ...e5 later.",
+                             "comment": "Develop the b8 knight. It guards e5: if White pushes the e-pawn to e5, this knight takes it.",
                              "children": [
                               {
                                "san": "O-O",
@@ -1915,7 +1915,7 @@
                              "children": [
                               {
                                "san": "Bd3",
-                               "comment": "White offers a bishop trade.",
+                               "comment": "White's bishop attacks your f5 bishop, and nothing guards it. White offers a trade.",
                                "children": [
                                 {
                                  "san": "Bxd3",
@@ -1962,7 +1962,7 @@
       },
       {
        "san": "d3",
-       "comment": "A quiet move. White does not fight for the centre.",
+       "comment": "A quiet move. The d3 pawn guards e4 but takes no centre square, as d4 would.",
        "tags": [
         "sideline"
        ],
@@ -1997,7 +1997,7 @@
                    "children": [
                     {
                      "san": "Ngf6",
-                     "comment": "Develop with a plan. Next, castle.",
+                     "comment": "Develop with a plan. Next, play ...Bd6 and castle.",
                      "children": []
                     }
                    ]
@@ -2027,7 +2027,7 @@
                "children": [
                 {
                  "san": "e6",
-                 "comment": "Solid. Next ...Nf6 and castle.",
+                 "comment": "Solid. Next ...Nf6 and ...Bd6, then castle.",
                  "level": 2,
                  "children": []
                 }
@@ -2128,7 +2128,7 @@
            "children": [
             {
              "san": "Bg4",
-             "comment": "Develop the bishop before ...e6. White may trade; that is fine.",
+             "comment": "Develop the bishop before ...e6. If White plays h3, you can take the knight.",
              "children": [
               {
                "san": "Be2",
@@ -2198,7 +2198,7 @@
                "children": [
                 {
                  "san": "Bd7",
-                 "comment": "Block the check and offer a trade. Be careful with your king.",
+                 "comment": "Block the check and offer a trade.",
                  "level": 2,
                  "children": []
                 }
@@ -2238,14 +2238,14 @@
       },
       {
        "san": "Qf3",
-       "comment": "White moves the queen early. Develop with tempo.",
+       "comment": "White moves the queen early. Take the centre with ...d5 and develop your pieces.",
        "tags": [
         "common-mistake"
        ],
        "children": [
         {
          "san": "d5",
-         "comment": "Their queen is out early. Take the centre with ...d5 and develop with tempo.",
+         "comment": "Their queen is out early. Take the centre with ...d5 and develop your pieces.",
          "children": [
           {
            "san": "Nc3",
@@ -2307,7 +2307,7 @@
        "children": [
         {
          "san": "d5",
-         "comment": "Their queen is out early. Take the centre with ...d5, then hit the queen with ...Nf6.",
+         "comment": "Take the centre with ...d5. After Nc3 hit the queen with ...Nf6, but not after e5, because the e5 pawn takes the knight.",
          "children": [
           {
            "san": "Nc3",
@@ -2369,7 +2369,7 @@
        "children": [
         {
          "san": "d5",
-         "comment": "Hit the centre. Now exchange and take space.",
+         "comment": "Hit the centre. Your d5 pawn attacks both the c4 and the e4 pawn.",
          "children": [
           {
            "san": "exd5",

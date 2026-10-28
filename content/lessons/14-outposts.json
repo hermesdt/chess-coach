@@ -5,7 +5,7 @@
   "title": "Outposts and weak squares",
   "summary": "An outpost is a square deep in enemy land that no enemy pawn can attack. A knight there is very strong.",
   "tags": [],
-  "body": "### A square no pawn can attack\n\nAn **outpost** is a square in the enemy half of the board. One of your pawns guards it, and no enemy pawn can attack it. A knight on an outpost is very strong. Your opponent cannot chase it away with a pawn. It controls many important squares.\n\nHow to find an outpost:\n\n- A pawn attacks only the two squares diagonally in front of it. A pawn cannot go back.\n- So look for a square that no enemy pawn guards now, and none can guard later. This is a **hole**, or weak square.\n- Check that one of your own pawns can guard that square.\n\nTwo examples:\n\n- Black has no c-pawn and no e-pawn. No pawn can attack d5 soon. Your pawn on e4 guards it.\n- Black plays ...d5 and ...f5. These pawns cannot go back to d6 or f6. So no pawn can attack e5 soon. A white knight on e5, guarded by the d4 pawn, is very strong. London players know this square well.\n\nHow to use an outpost:\n\n- Put a knight there. A bishop can also be good there.\n- Pawns cannot chase your piece, but enemy pieces can still take it. Trade or avoid those pieces.\n- Check the route. Do not stop on a square that a pawn can attack. A knight on b5 can be hit by ...a6.\n\nHow to avoid giving one away:\n\n- Think before every pawn move. Pawns never come back. The squares they stop guarding stay weak.\n\nRule of thumb: put a knight on a square that no enemy pawn can attack, and think before you push a pawn.",
+  "body": "### A square no pawn can attack\n\nAn **outpost** is a square in the enemy half of the board. One of your pawns guards it, and no enemy pawn can attack it. A knight on an outpost is very strong. Your opponent cannot chase it away with a pawn. It controls many important squares.\n\nHow to find an outpost:\n\n- A pawn attacks only the squares diagonally in front of it. A pawn cannot go back.\n- So look for a square that no enemy pawn guards now, and none can guard later. This is a **hole**, or weak square.\n- Check that one of your own pawns can guard that square.\n\nTwo examples:\n\n- Black has no c-pawn and no e-pawn. No pawn can attack d5 soon. Your pawn on e4 guards it.\n- Black plays ...d5 and ...f5. These pawns cannot go back to d6 or f6. So no pawn can attack e5 soon. A white knight on e5, guarded by the d4 pawn, is very strong. London players know this square well.\n\nHow to use an outpost:\n\n- Put a knight there. A bishop can also be good there.\n- Pawns cannot chase your piece, but enemy pieces can still take it. Trade or avoid those pieces.\n- Check the route. Do not stop on a square that a pawn can attack. A knight on b5 can be hit by ...a6.\n\nHow to avoid giving one away:\n\n- Think before every pawn move. Pawns never come back. The squares they stop guarding stay weak.\n\nRule of thumb: put a knight on a square that no enemy pawn can attack, and think before you push a pawn.",
   "exercises": [
     {
       "id": "outpost-d5",
@@ -14,7 +14,7 @@
       "solution": [
         "c3d5"
       ],
-      "explanation": "Nd5 stands on a hole. Black has no c-pawn and no e-pawn, so no pawn can attack d5 soon. The e4 pawn guards it. Nb5 is worse: Black plays ...a6."
+      "explanation": "Nd5 stands on a hole. Black has no c-pawn and no e-pawn, so no pawn can attack d5 soon. The e4 pawn guards it. It also attacks the e7 bishop, which has no guard. Nb5 is worse: Black plays ...a6."
     },
     {
       "id": "outpost-e5",
@@ -32,7 +32,7 @@
       "solution": [
         "c6d4"
       ],
-      "explanation": "Nd4 is guarded by the e5 pawn. White has no c-pawn and no e-pawn, so no pawn can attack d4 soon. Nb4 is worse: White plays a3."
+      "explanation": "Nd4 is guarded by the e5 pawn. White has no c-pawn and no e-pawn, so no pawn can attack d4 soon. It also attacks the e2 bishop, which has no guard. Nb4 is worse: White plays a3."
     }
   ],
   "links": []

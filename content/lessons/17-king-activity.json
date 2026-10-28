@@ -32,7 +32,7 @@
       "solution": [
         "f1e2"
       ],
-      "explanation": "Black has two passed pawns, on a5 and c3. The white king must catch both. Ke2 goes to d3 next. If Black plays ...c2, Kd2 wins the pawn. After ...Kd6 Kd3, every black move loses, for example ...c2 Kxc2. White cannot use d2, because the pawn on c3 guards it. Ke1 is one move too slow. The line is ...a4 Ke2 a3 Kd3 a2 Kxc3 a1=Q+, and Black queens first."
+      "explanation": "Black has two passed pawns, on a5 and c3. The white king must catch both. Ke2 goes to d3 next. If Black plays ...c2, Kd2 wins the pawn. After ...Kd6 Kd3, every black move loses, for example ...c2 Kxc2. White cannot use d2, because the pawn on c3 guards it. Ke1 is one move too slow. One line is ...a4 Ke2 a3 Kd3 a2 Kxc3 a1=Q+, and Black queens first."
     },
     {
       "id": "king-leads-passed-pawn",

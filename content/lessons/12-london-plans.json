@@ -5,7 +5,7 @@
   "title": "London plans",
   "summary": "The London is one set-up for many games: Bf4, e3, Nf3, Bd3, c3. Then use Ne5, keep your bishop, and aim at the kingside.",
   "tags": [],
-  "body": "### The London set-up\n\nThe London is a plan, not a list of moves to learn. You play the same set-up against many openings. You make the same pawn and piece moves, so you know where everything goes.\n\nThe set-up has five parts:\n\n- **Bf4 first.** Bring the c1 bishop out before you play e3. After e3 the bishop is shut in.\n- **e3, c3 and Nf3.** The pawns on d4, e3 and c3 protect each other. The knight on f3 guards d4.\n- **Bd3 and Nbd2.** The bishop on d3 aims at the black kingside. The second knight goes to d2. Then you castle.\n- **Ne5.** A knight on e5 is a strong outpost. Your d4 pawn and your bishop support it. Check that no black pawn can kick it away.\n- **Keep your bishop.** Black often attacks your bishop on f4. For example, ...Bd6 hits it, or ...Nh5 hits it. Step back to g3, or play h3 first, so the bishop can go to h2.\n\nWhy keep the bishop? It is the best piece in your set-up. When you trade it for a knight, your plan is weaker.\n\nWhen your pieces are ready, you can attack the kingside. The bishop on d3 and the knight on e5 aim at it. Do not attack with only one piece.\n\nDo not move kingside pawns before your pieces are out, except h3 to save your bishop. And look at what your opponent threatens. The London is safe, but it does not play itself.\n\nThe exercises use positions from your London repertoire. Find the set-up move in each one.\n\nRule of thumb: bishop out before e3, bishop to d3, knight to e5, and keep your bishop.",
+  "body": "### The London set-up\n\nThe London is a plan, not a list of moves to learn. You play the same set-up against many openings. You make the same pawn and piece moves, so you know where everything goes.\n\nThe set-up has five parts:\n\n- **Bf4 first.** Bring the c1 bishop out before you play e3. After e3 the bishop is shut in.\n- **e3, c3 and Nf3.** The c3 and e3 pawns both guard the d4 pawn. The knight on f3 guards d4.\n- **Bd3 and Nbd2.** The bishop on d3 aims at the black kingside. The second knight goes to d2. Then you castle.\n- **Ne5.** A knight on e5 is strong. It is an outpost only when no black pawn can attack it (lesson 14). Your d4 pawn and your bishop support it. Check that no black pawn can kick it away.\n- **Keep your bishop.** Black often attacks your bishop on f4. For example, ...Bd6 hits it, or ...Nh5 hits it. Against ...Bd6, step back to g3. Against ...Nh5, play h3 in advance, so the bishop can go to h2.\n\nWhy keep the bishop? It stands outside your pawns and guards e5, the square for your knight. When you trade it for a knight, your plan is weaker.\n\nWhen your pieces are ready, you can attack the kingside. The bishop on d3 and the knight on e5 aim at it. Do not attack with only one piece.\n\nDo not move kingside pawns before your pieces are out, except h3 to save your bishop. And look at what your opponent threatens. The London is safe, but it does not play itself.\n\nThe exercises use positions from your London repertoire. Find the set-up move in each one.\n\nRule of thumb: bishop out before e3, bishop to d3, knight to e5, and keep your bishop.",
   "exercises": [
     {
       "id": "bishop-first",
@@ -32,16 +32,16 @@
       "solution": [
         "f3e5"
       ],
-      "explanation": "Ne5 is supported by the d4 pawn and the bishop on f4. No black pawn on d6 or f6 can kick it away. It also points at the kingside."
+      "explanation": "Ne5 is supported by the d4 pawn and the bishop on f4. It attacks the c6 knight, which has no guard. The d5 pawn has passed d6, and the f7 pawn can only kick it after the f6 knight moves. It also points at the kingside."
     },
     {
       "id": "keep-bishop",
       "fen": "rnbqk2r/ppp2ppp/3bpn2/3p4/3P1B2/4PN2/PPP2PPP/RN1QKB1R w KQkq - 2 5",
-      "prompt": "White to move. Black's bishop attacks yours. Keep your bishop.",
+      "prompt": "White to move. Black's bishop attacks yours. Step back and keep your bishop on the b8-h2 diagonal.",
       "solution": [
         "f4g3"
       ],
-      "explanation": "Bg3 keeps your bishop. If Black plays ...Bxg3, hxg3 opens the h-file for your rook. Other moves allow ...Bxf4 exf4 and your bishop is gone."
+      "explanation": "Bg3 keeps your bishop on the b8-h2 diagonal. If Black plays ...Bxg3, retake with hxg3: the h-file is then half open for your rook. If you leave the bishop on f4, ...Bxf4 exf4 doubles your f-pawns."
     },
     {
       "id": "h3-retreat",

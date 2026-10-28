@@ -358,22 +358,30 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 - All milestones through M10 are merged into `main`.
 - **TEMPORARY continuation point (M11, written 2026-10-28; delete this item
   when M11 is done).** M11 is in progress on branch `m11-content-audit`, in
-  the worktree `../chess-m11` (not merged, not pushed). Plan:
+  the worktree `../chess-m11`. **Partly merged into `main` on 2026-10-28**
+  (everything audited, fixed and re-checked, up to commit `edf57c5`: the
+  sequence check, the protocol, the reports and the content fixes for all
+  three repertoires and lessons 01–20); not pushed. The branch still holds
+  commit `ed748dd` (lessons 21–25) and will get the guide fixes: merge it
+  again at the end. Plan:
   `docs/superpowers/plans/2026-10-22-m11-content-audit.md`. The owner's
   reported problems are done (note
-  `docs/superpowers/notes/2026-10-22-m11-reported-problems.md` on the branch;
-  the app issue is a follow-up item on the branch's ROADMAP).
+  `docs/superpowers/notes/2026-10-22-m11-reported-problems.md`; the app issue
+  is the follow-up item below).
   - **Done (19 of 22 tasks):** sequence check (`pnpm check:sequences`),
     protocol note, reported problems, all 12 repertoire batches (T4–T15), and
     the lesson batches T16 (01–05), T17 (06–10), T18 (11–15), T19 (16–20):
     each audited, fixed and re-checked; reports in
-    `docs/superpowers/notes/2026-10-22-m11-audit-*.md` on the branch.
+    `docs/superpowers/notes/2026-10-22-m11-audit-*.md`.
   - **Left (3 tasks):** T20 lessons 21–25: audit done, fix committed
-    (`ed748dd` on the branch, 11 sentences, three of the auditor's proposals
-    changed by the fixer), re-check NOT yet done. T21 guide texts: the audit
-    was running when this note was written (report
-    `docs/superpowers/notes/2026-10-22-m11-audit-guides.md`, uncommitted until
-    its re-check is done), then fix and re-check. T22 close:
+    (`ed748dd` on the branch only, 11 sentences, three of the auditor's
+    proposals changed by the fixer), re-check NOT yet done. T21 guide texts:
+    audit DONE (34 claims: 24 ok, 10 misleading, none false; the 10 are
+    gd-01, -05, -09, -10, -11, -18, -19, -20, -22, -23, each with a proposed
+    text; the report
+    `docs/superpowers/notes/2026-10-22-m11-audit-guides.md` is an uncommitted
+    file in the worktree `../chess-m11`, "Re-check" pending), then fix and
+    re-check. T22 close:
     `pnpm check:sequences --strict` default, full gate, full
     `pnpm validate:content` (about 20 min), audit index note, ROADMAP M11
     done, merge to `main`, push, delete this item.
@@ -399,3 +407,9 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
     after `d4 d5 Bg5 c5 e3`, the vs-c4 short final form; lessons: 10 `make-luft`
     (f3, f4, h4, g4 also stop the mate but are marked wrong), 11 `bishop-d6`,
     12 `keep-bishop` (add Bg5?), 19 exercise id `queen-sacrifice-mate`.
+- Follow-up (from the owner's reported problems, 2026-10-22; note
+  `docs/superpowers/notes/2026-10-22-m11-reported-problems.md`): the coach's
+  "why it matters" line on a mistake card is not checked against attack facts
+  (a card said "b3 would have protected your bishop on c4" while nothing
+  attacked it). Grounding checks moves only. Not part of M11; plan it as a
+  small fix (check non-move claims, or drop the line when no attack fact backs it).

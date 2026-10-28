@@ -25,7 +25,7 @@
            "children": [
             {
              "san": "Nf6",
-             "comment": "Develop and guard d5 again. Your plan: ...dxc4, then ...Bf5, then ...e6.",
+             "comment": "Develop and guard d5 again. In the main line your plan is ...dxc4, then ...Bf5, then ...e6.",
              "children": [
               {
                "san": "Nc3",
@@ -33,7 +33,7 @@
                "children": [
                 {
                  "san": "dxc4",
-                 "comment": "Take the pawn on c4. Your next job is the bishop: it must leave before you play ...e6.",
+                 "comment": "Take the pawn on c4. While your b7 pawn is at home, bring the bishop out before you play ...e6.",
                  "children": [
                   {
                    "san": "a4",
@@ -85,7 +85,7 @@
                                          "children": [
                                           {
                                            "san": "Bd3",
-                                           "comment": "White puts the bishop on d3, behind the e4 pawn.",
+                                           "comment": "White puts the bishop on d3. It guards the e4 pawn, which blocks its diagonal to your g6 bishop.",
                                            "children": [
                                             {
                                              "san": "Re8",
@@ -132,7 +132,7 @@
                                                "children": [
                                                 {
                                                  "san": "Bxd3",
-                                                 "comment": "Trade bishops. After e5, the white bishop on d3 looks at your bishop on g6.",
+                                                 "comment": "Trade bishops: the d3 bishop now looks at your g6 bishop. Your f6 knight can wait, because exf6 loses the queen to ...Bxe2.",
                                                  "children": [
                                                   {
                                                    "san": "Qxd3",
@@ -582,7 +582,7 @@
                        "children": [
                         {
                          "san": "Bg6",
-                         "comment": "Step back. If White takes on g6, you retake with the h-pawn and open the h-file.",
+                         "comment": "Step back. If White takes on g6, retake with the h-pawn: your h8 rook gets the half-open h-file.",
                          "children": [
                           {
                            "san": "Nxg6",
@@ -722,7 +722,7 @@
                                              "children": [
                                               {
                                                "san": "exf6",
-                                               "comment": "White takes your f6 knight. You can retake with the g-pawn, the queen or the d7 knight.",
+                                               "comment": "White takes your f6 knight. Retake with the g-pawn or the d7 knight, not the queen: after ...Qxf6, Bg5 wins the queen for a bishop.",
                                                "children": [
                                                 {
                                                  "san": "gxf6",
@@ -954,7 +954,7 @@
                                "children": [
                                 {
                                  "san": "Bxd3",
-                                 "comment": "Trade your good bishop for theirs. Then ...Bb4 pins the knight.",
+                                 "comment": "Trade bishops, so White cannot take on f5 and double your f-pawns. Then ...Bb4 pins the knight.",
                                  "children": [
                                   {
                                    "san": "Qxd3",
@@ -978,7 +978,7 @@
                                            "children": [
                                             {
                                              "san": "Bxc3",
-                                             "comment": "Trade the bishop for the c3 knight. That knight controls e4, so your f6 knight can jump there next.",
+                                             "comment": "Trade the bishop for the c3 knight. That knight guards e4. With it gone, your f6 knight can jump to e4 next.",
                                              "children": [
                                               {
                                                "san": "Rxc3",
@@ -1198,7 +1198,7 @@
        "children": [
         {
          "san": "c5",
-         "comment": "Strike at d4 at once. Bf4 left c1, so only the queen guards d4. This is the Caro-Kann ...c5 break you know.",
+         "comment": "Strike at d4 at once. Only the White queen guards d4. This is the Caro-Kann ...c5 break you know.",
          "children": [
           {
            "san": "e3",
@@ -1238,7 +1238,7 @@
                            "children": [
                             {
                              "san": "Nf6",
-                             "comment": "Bring the knight out. Next you play ...Bf5, the Caro-Kann bishop move.",
+                             "comment": "Bring the knight out. Later you play ...Bf5, the Caro-Kann bishop move.",
                              "children": [
                               {
                                "san": "a3",
@@ -1338,7 +1338,7 @@
                    "children": [
                     {
                      "san": "Bf5",
-                     "comment": "Bishop out before ...e6. Nd2 does not guard b2, so ...Qxb2 is still possible. If Qb3, trade queens.",
+                     "comment": "Bishop out before ...e6. Nd2 does not guard b2, so ...Qxb2 is still possible. If Qb3, play ...e6 and keep the queens.",
                      "children": [],
                      "level": 2
                     }
@@ -1366,7 +1366,7 @@
                    "children": [
                     {
                      "san": "Qb6",
-                     "comment": "Hit b2. With Nf3 and Bf4 out, nothing guards that pawn.",
+                     "comment": "Hit b2. The bishop left c1, so nothing guards that pawn.",
                      "children": [
                       {
                        "san": "Qb3",
@@ -1444,7 +1444,7 @@
                    "children": [
                     {
                      "san": "Bf5",
-                     "comment": "Bishop out before ...e6. Then ...e6 and ...Nf6 finish your development.",
+                     "comment": "Bishop out before ...e6. Then ...e6 opens the f8 bishop and ...Nf6 clears g8 for castling.",
                      "children": [],
                      "level": 2
                     }
@@ -1664,7 +1664,7 @@
            "children": [
             {
              "san": "e6",
-             "comment": "Open the f8 bishop. Next you play ...Bxc5 and win the pawn back.",
+             "comment": "Open the f8 bishop. After e3 you play ...Bxc5 and win the pawn back.",
              "children": [
               {
                "san": "e3",
@@ -1824,7 +1824,7 @@
              "children": [
               {
                "san": "Bd3",
-               "comment": "White offers to trade your bishop.",
+               "comment": "White offers to trade bishops. Nothing guards your f5 bishop, so you must answer: a slow move loses it to Bxf5.",
                "children": [
                 {
                  "san": "Bxd3",
@@ -1836,7 +1836,7 @@
                    "children": [
                     {
                      "san": "c6",
-                     "comment": "Prepare ...e6 and ...Nbd7. This is the Slav and Caro-Kann pawn shape again.",
+                     "comment": "Now ...e6 is safe: ...c6 stops Qb5+, a check that would also hit b7. This is the Slav and Caro-Kann pawn shape again.",
                      "children": [
                       {
                        "san": "O-O",
@@ -1958,7 +1958,7 @@
            "children": [
             {
              "san": "c6",
-             "comment": "Guard d5 with the c-pawn. You reach the Slav. Follow the Slav plan: ...dxc4, ...Bf5, ...e6.",
+             "comment": "Guard d5 with the c-pawn. You reach the Slav: in the main line your plan is ...dxc4, then ...Bf5, then ...e6.",
              "children": [],
              "tags": [
               "main"
@@ -2049,7 +2049,7 @@
            "children": [
             {
              "san": "c6",
-             "comment": "Guard d5 with the c-pawn and prepare ...Bf5.",
+             "comment": "Guard d5 with the c-pawn. Next you bring the bishop out with ...Bf5.",
              "children": [
               {
                "san": "Bf4",
@@ -2086,7 +2086,7 @@
        "children": [
         {
          "san": "Nf6",
-         "comment": "Develop and guard d5. You will play ...Bf5 next.",
+         "comment": "Develop and guard d5. After Nf3 you play ...Bf5, but after Bd3 play ...c5: there ...Bf5 loses the bishop to Bxf5.",
          "children": [
           {
            "san": "Nf3",
@@ -2191,7 +2191,7 @@
                "children": [
                 {
                  "san": "e6",
-                 "comment": "Guard d5 and open the f8 bishop. The b2 pawn looks free, but taking it is risky.",
+                 "comment": "Guard d5 and open the f8 bishop. Do not take on b2: after Nxd5 White threatens Nc7+, a fork of your king and rook.",
                  "children": [],
                  "level": 2
                 }
@@ -2232,7 +2232,7 @@
                "children": [
                 {
                  "san": "exf3",
-                 "comment": "Take again. Then play ...Bf5 or ...e6 and finish your development.",
+                 "comment": "Take again. After Nxf3 play ...Bf5 or ...e6. After Qxf3 do not play ...Bf5, because the queen would take it.",
                  "children": [],
                  "level": 2
                 }
@@ -2324,7 +2324,7 @@
            "children": [
             {
              "san": "Nf6",
-             "comment": "Develop and guard d5. You are in the Slav. Play ...dxc4, ...Bf5, ...e6.",
+             "comment": "Develop and guard d5. You are in the Slav: in the main line your plan is ...dxc4, then ...Bf5, then ...e6.",
              "children": [],
              "tags": [
               "main"
@@ -2346,7 +2346,7 @@
                "children": [
                 {
                  "san": "e6",
-                 "comment": "Guard d5 with the e-pawn and open the f8 bishop. The e6 pawn blocks your c8 bishop for now; ...b5, ...Bb7 and later ...c5 can free it.",
+                 "comment": "Guard d5 with the e-pawn and open the f8 bishop. The e6 pawn blocks the c8 bishop's diagonal for now; ...dxc4, ...b5, ...Bb7 and later ...c5 can free it.",
                  "children": [
                   {
                    "san": "d4",
@@ -2430,7 +2430,7 @@
            "children": [
             {
              "san": "Nf6",
-             "comment": "Develop and guard d5. Slav plan: ...dxc4, ...Bf5, ...e6.",
+             "comment": "Develop and guard d5. In the main Slav line your plan is ...dxc4, then ...Bf5, then ...e6.",
              "children": [],
              "tags": [
               "main"
@@ -2576,7 +2576,7 @@
   },
   {
    "san": "Nf3",
-   "comment": "White waits and keeps all options open.",
+   "comment": "White develops the knight and does not yet show which centre pawn comes next.",
    "children": [
     {
      "san": "d5",
@@ -2602,7 +2602,7 @@
        "children": [
         {
          "san": "c6",
-         "comment": "Guard d5 with the c-pawn. Now you have the Slav.",
+         "comment": "Guard d5 with the c-pawn. This is your Slav set-up; if White plays d4, you are in the Slav.",
          "children": [
           {
            "san": "g3",
