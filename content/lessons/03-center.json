@@ -3,9 +3,9 @@
   "order": 3,
   "level": 1,
   "title": "Take the centre",
-  "summary": "Fight for d4, e4, d5 and e5. Pieces and pawns in the centre control the whole board.",
+  "summary": "Fight for d4, e4, d5 and e5. Pieces and pawns in the centre reach more of the board.",
   "tags": [],
-  "body": "### Take the centre\n\nThe centre is the four squares d4, e4, d5 and e5. Pieces near these squares reach the whole board. A knight in the centre attacks up to eight squares. A knight on the edge attacks only four.\n\nPawns in the centre also take space. They push enemy pieces back and give your pieces room. If your opponent owns the centre, you have no room and you get squeezed.\n\nHere is how to fight for the centre:\n\n- Start with a centre pawn. Play e4 or d4 as White. Play e5 or d5 as Black.\n- Support your centre pawns with knights and bishops.\n- Look for a pawn move that attacks an enemy piece. The enemy must move it, and you gain time.\n- Do not give up your centre pawns for no reason.\n\nOther setups work too. In the Caro-Kann and the Slav, Black plays c6 first and d5 next. That also fights for the centre.\n\nYou do not need to fill the centre with pawns at once. You can also control it with pieces from far away. But you must fight for it.\n\nPawn moves in the centre are often strong because a pawn is worth little. An enemy piece will not take a pawn if a pawn takes it back. So a centre pawn can attack bigger pieces and push them away. The exercises below show this.\n\nRule of thumb: put a pawn in the centre, then support it with your pieces.",
+  "body": "### Take the centre\n\nThe centre is the four squares d4, e4, d5 and e5. Pieces near these squares reach more of the board. A knight in the centre attacks up to eight squares. A knight on the edge attacks four squares or fewer.\n\nPawns in the centre also take space. They push enemy pieces back and give your pieces room. If your opponent owns the centre and you do not fight for it, your pieces get less room.\n\nHere is how to fight for the centre:\n\n- Start with a centre pawn. Play e4 or d4 as White. Play e5 or d5 as Black.\n- Support your centre pawns with knights and bishops.\n- Look for a pawn move that attacks an enemy piece. The enemy must answer it, and often you gain time.\n- Do not give up your centre pawns for no reason.\n\nOther setups work too. In the Caro-Kann and the Slav, Black supports d5 with a pawn on c6. That also fights for the centre.\n\nYou do not need to fill the centre with pawns at once. You can also control it with pieces from far away. But you must fight for it.\n\nPawn moves in the centre are often strong because a pawn is worth little. A piece that takes a pawn guarded by a pawn usually loses the piece for a pawn or two. So a centre pawn can attack bigger pieces and push them away. The exercises below show this.\n\nRule of thumb: put a pawn in the centre, then support it with your pieces.",
   "exercises": [
     {
       "id": "first-move",
@@ -38,7 +38,7 @@
         "d2d3",
         "d2d4"
       ],
-      "explanation": "The c3 pawn prepares d4. The pawn on d4 hits e5 and builds a big centre. d3 is calmer, but it also supports e4."
+      "explanation": "The c3 pawn prepares d4. The pawn on d4 attacks the c5 bishop and the e5 pawn, and builds a big centre. d3 is calmer, but it also supports e4."
     },
     {
       "id": "d5-fork",
@@ -56,7 +56,7 @@
       "solution": [
         "e4e5"
       ],
-      "explanation": "The pawn on e5 is guarded by d4. It attacks the bishop on d6 and the knight on f6 at once, and Black cannot save both. Taking the pawn only loses more."
+      "explanation": "The pawn on e5 is guarded by d4. It attacks the bishop on d6 and the knight on f6 at once, and Black cannot save both. Taking the e5 pawn with a piece is Black's best try, but it still costs a piece for two pawns."
     }
   ],
   "links": []
