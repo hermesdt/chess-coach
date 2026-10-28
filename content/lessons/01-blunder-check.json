@@ -25,7 +25,7 @@
       "solution": [
         "a5d8"
       ],
-      "explanation": "The bishop on d2 attacks your queen on a5. Qd8 is safe. Qxd5 and Qxd2+ lose the queen. After Bxd5 or Nxd2 and you win back only a knight and a bishop for it."
+      "explanation": "The bishop on d2 attacks your queen on a5. Qd8 is safe. Qxd5 and Qxd2+ lose the queen. After Bxd5 or Nxd2 you win back only a knight and a bishop for it."
     },
     {
       "id": "two-pieces-hit",
