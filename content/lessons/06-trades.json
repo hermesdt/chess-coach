@@ -7,7 +7,7 @@
   "tags": [
     "bad_trade"
   ],
-  "body": "### Taking is not always good\n\nA free capture looks nice. But your opponent can often capture back. Before you take, count.\n\nCount the attackers: the pieces that can take on that square. Count the defenders: the pieces that can take back. Then compare the values. A pawn is worth 1, a knight or bishop 3, a rook 5, and a queen 9.\n\nAt your level, this is a common mistake. You take a pawn, your opponent takes your piece back, and you lose material. Or you play a check like Bxf7+, and the king takes your bishop.\n\nUse this plan before each capture:\n\n- Count attackers and defenders on the square.\n- If nothing defends the piece, take it. First check that your opponent has no strong reply.\n- If something defends it, take only when you win more than you lose. A pawn that takes a knight wins. A queen that takes a guarded pawn loses.\n- If you take, start with your cheapest piece.\n- Look at your opponent's reply: a recapture, a check, or a fork.\n\nA check or a capture is not a free move. A bishop that takes a pawn next to the king, with the king guarding that pawn, usually loses the bishop for a pawn.\n\nTrades also matter. When you are ahead in material, trades help you. When you are behind, keep your pieces and look for tricks.\n\nRule of thumb: count attackers and defenders before you capture, and take with your cheapest piece first.",
+  "body": "### Taking is not always good\n\nA free capture looks nice. But your opponent can often capture back. Before you take, count.\n\nCount the attackers: the pieces that can take on that square. Count the defenders: the pieces that can take back. Then compare the values. A pawn is worth 1, a knight or bishop 3, a rook 5, and a queen 9.\n\nAt your level, this is a common mistake. You take a pawn, your opponent takes your piece back, and you lose material. Or you play a check like Bxf7+, and the king takes your bishop.\n\nUse this plan before each capture:\n\n- Count attackers and defenders on the square.\n- If nothing defends the piece, take it. First check that your opponent has no strong reply.\n- If something defends it, take only when you win more than you lose. A pawn that takes a knight wins. A queen that takes a guarded pawn loses, if the defender can take her back.\n- If the square is defended, take first with your cheapest piece.\n- Look at your opponent's reply: a recapture, a check, or a fork.\n\nA check or a capture is not a free move. A bishop that takes a pawn next to the king, with the king guarding that pawn, usually loses the bishop for a pawn.\n\nTrades also matter. When you are ahead in material, trades help you. When you are behind, keep your pieces and look for tricks.\n\nRule of thumb: count attackers and defenders before you capture. On a defended square, take with your cheapest piece first.",
   "exercises": [
     {
       "id": "take-undefended-knight",
@@ -16,7 +16,7 @@
       "solution": [
         "e2e4"
       ],
-      "explanation": "Nothing guards the knight on e4, so Qxe4 wins it for free. Bxf7+ looks strong, but Kxf7 takes the bishop for a pawn. Nxe4 allows d5, which attacks the bishop and the knight."
+      "explanation": "Nothing guards the knight on e4, so Qxe4 wins it for free. Bxf7+ Kxf7 Qxe4 only makes material level, because the king takes your bishop for a pawn. Nxe4 allows d5, which attacks the bishop and the knight."
     },
     {
       "id": "count-c6",
@@ -43,7 +43,7 @@
       "solution": [
         "d5c4"
       ],
-      "explanation": "The pawn on d5 takes the bishop on c4. White can take back with the d3 pawn, but a pawn is worth less than a bishop. Bxf2+ looks strong, but Kxf2 takes the bishop for a pawn."
+      "explanation": "The pawn on d5 takes the bishop on c4. White can take back with the d3 pawn, but a pawn is worth less than a bishop. Bxf2+ Kxf2 dxc4 dxc4 only makes material level, because the king takes your bishop for a pawn."
     },
     {
       "id": "poisoned-pawn",
@@ -52,7 +52,7 @@
       "solution": [
         "f4g3"
       ],
-      "explanation": "The pawn on g5 attacks your bishop, but the f6 pawn guards g5. Bxg5 fxg5 or Nxg5 fxg5 loses a piece for only two pawns. Bg3 saves the bishop and takes nothing."
+      "explanation": "The pawn on g5 attacks your bishop, but the f6 pawn guards g5. Bxg5 fxg5 Nxg5 gives a piece for only two pawns. Nxg5 fxg5 Bxg5 does the same. Bg3 saves the bishop and takes nothing."
     }
   ],
   "links": []

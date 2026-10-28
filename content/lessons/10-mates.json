@@ -8,7 +8,7 @@
     "missed_mate",
     "allowed_mate"
   ],
-  "body": "### Mate patterns\n\nCheckmate ends the game. A few simple patterns win most games at your level. Learn them and you will also see them coming.\n\n- **Back-rank mate.** The king stands on its first row. Its own pawns block it. A rook or a queen gives check on that row. The king cannot escape.\n- **Queen and king.** Bring your king next to your queen. The queen gives check. The king guards the queen and takes away the escape squares, so the enemy king cannot take it.\n- **Two rooks.** Use the rooks like a ladder. One rook controls one row. The other rook gives check on the next row. The king has no square left.\n\nBe careful with a lone king. If the enemy king has no move and is not in check, the game is a draw by stalemate. Before you play a quiet queen move, check that the enemy king still has a move or that you give mate.\n\nYour own king can fall to the same patterns. Ask these questions before every move:\n\n- What check can my opponent give next move?\n- Does my king have an escape square?\n- Do two enemy pieces aim at f7 or f2? Scholar's mate uses the queen and the bishop on this square.\n\nIf your king has no escape square, make one. Move a pawn next to your king, for example h3 or g3. This small hole in the pawns is called luft. It stops the back-rank mate.\n\nYou do not need luft in every game. Make it when an enemy rook or queen can reach your back row and no piece of yours guards it.\n\nThe exercises show each pattern once. Two of them ask you to defend.\n\nRule of thumb: before you move, look for your opponent's mate threat. Then look for your own.",
+  "body": "### Mate patterns\n\nCheckmate ends the game. A few simple patterns come up again and again at your level. Learn them and you will also see them coming.\n\n- **Back-rank mate.** The king stands on its first row. Its own pawns block it. A rook or a queen gives check on that row. The king cannot escape.\n- **Queen and king.** Bring your king close to the enemy king. Your king takes away escape squares, and the queen gives check. If the queen checks from next to the enemy king, your king must guard her.\n- **Two rooks.** Use the rooks like a ladder. One rook controls one row. The other rook gives check on the next row. Repeat until the king is on the edge: then it has no square left.\n\nBe careful with a lone king. If the enemy king has no move and is not in check, the game is a draw by stalemate. Before you play a quiet queen move, check that the enemy king still has a move or that you give mate.\n\nYour own king can fall to the same patterns. Ask these questions before every move:\n\n- What check can my opponent give next move?\n- Does my king have an escape square?\n- Do two enemy pieces aim at f7 or f2? Scholar's mate uses the queen and the bishop on this square.\n\nIf your king has no escape square, make one. Move a pawn next to your king, for example h3 or g3. This small hole in the pawns is called luft. It stops the back-rank mate.\n\nYou do not need luft in every game. Make it when an enemy rook or queen can reach your back row and no piece of yours guards it.\n\nThe exercises show each pattern once. Two of them ask you to defend.\n\nRule of thumb: before you move, look for your opponent's mate threat. Then look for your own.",
   "exercises": [
     {
       "id": "back-rank",
@@ -17,7 +17,7 @@
       "solution": [
         "e1e8"
       ],
-      "explanation": "The king on g8 has no square, because its own pawns block it. The rook on e8 gives check and nothing can block or take it. Other moves let Black escape."
+      "explanation": "Its own pawns block the king on g8, and the rook on e8 takes away f8 and h8. The rook on e8 gives check and nothing can block or take it. Other moves let Black escape."
     },
     {
       "id": "make-luft",
@@ -28,7 +28,7 @@
         "g2g3",
         "h2h3"
       ],
-      "explanation": "Black threatens Re1 mate. Your king has no escape square. Kf1, g3 or h3 stop it. Almost every other move, such as a4 or Nd5, loses to Re1#."
+      "explanation": "Black threatens Re1 mate. Your king has no escape square. Kf1, g3 or h3 stop it. Many other moves, such as a4 or Nd5, lose to Re1#."
     },
     {
       "id": "queen-and-king",

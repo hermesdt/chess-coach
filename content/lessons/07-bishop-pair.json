@@ -5,7 +5,7 @@
   "title": "The bishop pair",
   "summary": "Two bishops are strong in open positions. Keep them, and trade one only when you get something real.",
   "tags": [],
-  "body": "### The bishop pair\n\nTwo bishops cover both colours of squares. One bishop moves on light squares. The other moves on dark squares. Together they leave no weak colour for your opponent to use.\n\nBishops are long-range pieces. They are strongest in open positions, where few pawns block the diagonals. In a closed position, a knight can be just as good. A bishop that looks at its own pawns does little.\n\nTwo bishops work well as a team. They attack from far away. They support each other, and they hit your opponent's pawns and king on both colours. A player with only knights and one bishop finds it hard to defend every square.\n\nAt your level, players often trade a bishop for a knight with no reason. That trade gives up your best pair for nothing.\n\nHow to keep the pair:\n\n- When a knight or a pawn attacks a bishop, retreat it to a safe square. Do not trade it for a knight.\n- Open the position. Trade pawns and open lines for your bishops.\n- Do not put your bishops behind your own pawns.\n\nWhen to give one up:\n\n- The trade damages your opponent's pawns, for example doubled pawns.\n- The trade wins material.\n- The trade removes a strong enemy attacker, and your king is in danger.\n\nGive up a bishop only when you get something real in return.\n\nRule of thumb: keep both bishops in open positions, and trade one only when you get something real.",
+  "body": "### The bishop pair\n\nTwo bishops cover both colours of squares. One bishop moves on light squares. The other moves on dark squares. Together they leave no weak colour for your opponent to use.\n\nBishops are long-range pieces. They are strongest in open positions, where few pawns block the diagonals. In a closed position, a knight can be just as good. A bishop that looks at its own pawns does little.\n\nTwo bishops work well as a team. They attack from far away. They hit your opponent's pawns and king on both colours. A player with only knights and one bishop finds it hard to defend every square.\n\nAt your level, players often trade a bishop for a knight with no reason. That trade gives up your best pair for nothing.\n\nHow to keep the pair:\n\n- When a knight or a pawn attacks a bishop, retreat it to a safe square. Do not trade it for a knight.\n- Open the position. Trade pawns and open lines for your bishops.\n- Do not put your bishops behind your own pawns.\n\nWhen to give one up:\n\n- The trade damages your opponent's pawns, for example doubled pawns.\n- The trade wins material.\n- The trade removes a strong enemy attacker, and your king is in danger.\n\nGive up a bishop only when you get something real in return.\n\nRule of thumb: keep both bishops in open positions, and trade one only when you get something real.",
   "exercises": [
     {
       "id": "keep-ruy",
@@ -14,7 +14,7 @@
       "solution": [
         "a4b3"
       ],
-      "explanation": "Bb3 saves the bishop and keeps both bishops. Bxc6 dxc6 gives up a bishop and wins nothing. Other moves leave the bishop to the b5 pawn."
+      "explanation": "Bb3 saves the bishop and keeps both bishops. Bxc6 is not possible, because the b5 pawn blocks the diagonal. Bxb5 axb5 gives the bishop for a pawn, and other moves leave it to the b5 pawn."
     },
     {
       "id": "keep-london",
@@ -26,7 +26,7 @@
         "f4d2",
         "f4g5"
       ],
-      "explanation": "The knight on h5 attacks the bishop on f4. Retreat to c1, e3, d2 or g5 and you keep both bishops. Bg3 allows Nxg3, and after hxg3 you have only one bishop."
+      "explanation": "The knight on h5 attacks the bishop on f4. Move it to c1, e3, d2 or g5 and you keep both bishops. Bg3 allows Nxg3, and after hxg3 you have only one bishop."
     },
     {
       "id": "keep-knight-trade",
