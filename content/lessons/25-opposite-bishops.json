@@ -23,7 +23,7 @@
       "solution": [
         "e5e6"
       ],
-      "explanation": "Black has a dark-squared bishop. The pawn on e6 stands on a light square, so the bishop cannot take it. e6+ gives check. After e6+ Kg8 e7 Bf8 exf8=Q+ Kxf8, White has won the bishop: king, bishop and two pawns against two pawns. All four king moves lose. Be2 is too slow: Black plays ...Ke8 or ...Kf8 and blocks the pawn on the dark square e7, and the engine rates it a draw."
+      "explanation": "Black has a dark-squared bishop. The pawn on e6 stands on a light square, so the bishop cannot take it. e6+ gives check. After e6+ Kg8 e7 Bf8 exf8=Q+ Kxf8, White has won the bishop: king, bishop and two pawns against two pawns. After e6+, all four king moves of Black lose. Be2 is too slow: Black plays ...Ke8 or ...Kf8 and guards the dark square e7, and the engine rates it a draw."
     },
     {
       "id": "hold-the-draw",
