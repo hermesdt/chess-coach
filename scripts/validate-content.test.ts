@@ -323,8 +323,8 @@ describe('parseValidateArgs', () => {
 });
 
 describe('parseCheckArgs', () => {
-  it('reads --strict and one file', () => {
-    expect(parseCheckArgs([])).toEqual({ strict: false, file: null });
+  it('is strict by default and reads one file', () => {
+    expect(parseCheckArgs([])).toEqual({ strict: true, file: null });
     expect(parseCheckArgs(['--strict', 'a.json'])).toEqual({ strict: true, file: 'a.json' });
   });
   it('rejects unknown flags and two files', () => {

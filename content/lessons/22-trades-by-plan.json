@@ -23,7 +23,7 @@
       "solution": [
         "g5e7"
       ],
-      "explanation": "This is the Carlsbad position, but Black has no knight on f8. White is a knight up, so trades help when White keeps the extra piece. Bxe7 Qxe7 trades a pair and keeps the extra knight. One winning line is Bxe7 Qxe7 Ra1 Bf5. Bf4 and h4 also keep a big edge, but they keep more black pieces on the board. Nxe4 dxe4 Bxe4 Bxg5 gives back the extra piece, and White keeps only one or two extra pawns. The engine rates it about 87 %, against about 94 % for Bxe7."
+      "explanation": "This is the Carlsbad position, but Black has no knight on f8. White is a knight up, so trades help when White keeps the extra piece. Bxe7 Qxe7 trades a pair and keeps the extra knight. One winning line is Bxe7 Qxe7 Ra1 Bf5. Bf4 and h4 also keep a big edge, but they keep more black pieces on the board. Nxe4 dxe4 Bxe4 Bxg5 gives back the extra piece, and White keeps only one extra pawn. The engine rates it about 87 %, against about 94 % for Bxe7."
     },
     {
       "id": "rooks-to-won-pawns",

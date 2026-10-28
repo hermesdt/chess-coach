@@ -1,6 +1,6 @@
 {
   "repertoireId": "slav",
-  "why": "The Slav is your answer to 1.d4. You play 1...d5. After 2.c4 you play 2...c6. The c6 pawn guards d5, so your centre pawn has support. The Caro-Kann uses the same idea.\n\nIn most lines your light-squared bishop comes out to f5 or g4 before you play ...e6. Then ...e6 does not shut the bishop in. There are exceptions. If White plays Nc3 and e3 before Nf3, you play ...e6 early. Then the bishop stays at home for a while. Later ...dxc4 and ...b5 give it the b7 square.\n\nThe opening asks for patience. Develop your pieces, castle short, and then use a pawn break. Your breaks are ...c5 and ...e5.\n\nAgainst 2.Bf4 you do not play ...c6. You play ...c5 and attack the d4 pawn. Against 1.c4 and 1.Nf3 you often reach the Slav by a different move order.",
+  "why": "The Slav is your answer to 1.d4. You play 1...d5. After 2.c4 you play 2...c6. The c6 pawn guards d5, so your centre pawn has support. The Caro-Kann uses the same idea.\n\nIn most lines your light-squared bishop comes out to f5 or g4 before you play ...e6. Then ...e6 does not shut the bishop in. There are exceptions. If White plays Nc3 and e3 before Nf3, you play ...e6 early. Against 1.c4, White can play e3 and Nc3 before d4. Then you also play ...e6 early. Then the bishop stays at home for a while. Later ...dxc4 and ...b5 give it the b7 square.\n\nThe opening asks for patience. Develop your pieces, castle short, and then use a pawn break. Your breaks are ...c5 and ...e5.\n\nAgainst 2.Bf4 you do not play ...c6. You play ...c5 and attack the d4 pawn. Against 1.c4 and 1.Nf3 you often reach the Slav by a different move order.",
   "variations": [
     {
       "key": "main-slav",
@@ -51,7 +51,7 @@
         },
         {
           "nodeId": "d4 d5 c4 c6 Nf3 Nf6 Nc3 dxc4",
-          "why": "Take the pawn on c4. Your next job is the bishop: it comes out before ...e6."
+          "why": "Take the pawn on c4. While your b7 pawn is at home, bring the bishop out before you play ...e6."
         },
         {
           "nodeId": "d4 d5 c4 c6 Nf3 Nf6 Nc3 dxc4 a4 Bf5",
@@ -89,7 +89,7 @@
         },
         {
           "nodeId": "d4 d5 c4 c6 Nc3",
-          "plan": "This is the e6 set-up. Play ...Nf6. After e3 play ...e6. After Nf3 play ...Nbd7. After Bd3 take with ...dxc4. After Bxc4 attack the bishop with ...b5. Later ...Bb7 and ...c5 bring your c8 bishop into play. After 4.Nf3 play ...dxc4. You reach the main Slav.",
+          "plan": "Play ...Nf6. After 4.e3 this is the ...e6 set-up: play ...e6. After Nf3 play ...Nbd7. After Bd3 take with ...dxc4. After Bxc4 attack the bishop with ...b5. Later ...Bb7 and ...c5 bring your c8 bishop into play. After 4.Nf3 play ...dxc4. You reach the main Slav.",
           "showNodeId": "d4 d5 c4 c6 Nc3 Nf6 e3 e6 Nf3 Nbd7 Bd3 dxc4 Bxc4 b5 Bd3"
         },
         {

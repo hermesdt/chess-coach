@@ -1,7 +1,7 @@
 import { applySeverity, countSequenceSentences, loadContentSources, sequenceExitCode, sequenceIssues } from '../server/content/sequences.js';
 import { parseCheckArgs } from './validate-args.js';
 
-/** Prints the sequence issues. Without --strict an illegal sequence prints as a warning and the exit code stays 0. */
+/** Prints the sequence issues. An illegal sequence is an error and the exit code is 1. */
 function main(): number {
   const args = parseCheckArgs(process.argv.slice(2));
   if (args === null) {

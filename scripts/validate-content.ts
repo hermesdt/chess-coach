@@ -12,8 +12,8 @@ import { parseValidateArgs } from './validate-args.js';
 
 const NODES = 1_000_000;
 const PROGRESS_EVERY = 20;
-/** Until the M11 audit batches fix the real errors, an illegal sequence is a warning. Task 22 sets this to true. */
-const SEQUENCES_STRICT = false;
+/** An illegal sequence in content text is an error (M11 audit done). */
+const SEQUENCES_STRICT = true;
 
 async function lessonIssues(paths: string[]): Promise<ValidationIssue[]> {
   const issues: ValidationIssue[] = [];

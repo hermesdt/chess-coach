@@ -187,7 +187,7 @@
         },
         {
           "nodeId": "e4 c6 d4 d5 e5 Bf5 Nf3 e6 Be2 c5 Be3 cxd4",
-          "why": "Take on d4. White can retake on d4."
+          "why": "Take on d4. Your pawn attacks the e3 bishop, so White must take back. Then no white pawn guards e5."
         },
         {
           "nodeId": "e4 c6 d4 d5 e5 Bf5 Nf3 e6 Be2 c5 Be3 cxd4 Nxd4 Ne7",
@@ -476,7 +476,7 @@
             "Nxd5",
             "Qb3"
           ],
-          "text": "This is off the route: you played ...Nc6 and ...Bg4 instead of ...e6. The queen on b3 attacks the b7 pawn and your d5 knight. The c3 knight also attacks d5. Do not play ...e6. Then Qxb7 attacks your c6 knight and your a8 rook. Play ...Bxf3 first. It removes the guard of d4. After gxf3 e6 Qxb7, take the pawn with ...Nxd4.",
+          "text": "This is off the route: you played ...Nc6 and ...Bg4 instead of ...e6 and ...Bb4. The queen on b3 attacks the b7 pawn and your d5 knight. The c3 knight also attacks d5. Do not play ...e6. Then Qxb7 attacks your c6 knight and your a8 rook. Play ...Bxf3 first. It removes the guard of d4. After gxf3 e6 Qxb7, take the pawn with ...Nxd4.",
           "bad": "e6",
           "good": [
             "Bxf3"
@@ -528,7 +528,7 @@
         },
         {
           "nodeId": "e4 c6 Nc3 d5 Nf3 Bg4 h3 Bxf3",
-          "why": "The h3 pawn attacks your bishop. Trade it for the knight. After the trade you have no light-squared bishop, so your pawns on c6, d5 and e6 will not block any bishop of yours."
+          "why": "The h3 pawn attacks your bishop. Trade it for the knight. After the trade you have no light-squared bishop. Your pawns on c6, d5 and e6 then block no bishop of yours."
         },
         {
           "nodeId": "e4 c6 Nc3 d5 Nf3 Bg4 h3 Bxf3 Qxf3 e6",
@@ -596,7 +596,7 @@
         "jobs": [
           {
             "square": "e5",
-            "text": "This pawn attacks d4. The d4 pawn and the f3 knight attack it, and no piece guards it yet. ...Nd7 comes next."
+            "text": "This pawn attacks d4. The d4 pawn and the f3 knight attack it, and no piece guards it yet. But if Nxe5, ...Bxd1 takes the queen. ...Nd7 comes next."
           },
           {
             "square": "g4",
