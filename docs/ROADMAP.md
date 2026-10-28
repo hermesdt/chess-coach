@@ -356,6 +356,57 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   `docs/superpowers/specs/2026-10-20-content-audit-design.md`; it also audits
   the guide texts and starts from the M10 notes above).
 - All milestones through M10 are merged into `main`.
+- **TEMPORARY continuation point (M11, written 2026-10-28; delete this item
+  when M11 is done).** M11 is in progress on branch `m11-content-audit`, in
+  the worktree `../chess-m11`. **Partly merged into `main` on 2026-10-28**
+  (everything audited, fixed and re-checked, up to commit `edf57c5`: the
+  sequence check, the protocol, the reports and the content fixes for all
+  three repertoires and lessons 01–20); not pushed. The branch still holds
+  commit `ed748dd` (lessons 21–25) and will get the guide fixes: merge it
+  again at the end. Plan:
+  `docs/superpowers/plans/2026-10-22-m11-content-audit.md`. The owner's
+  reported problems are done (note
+  `docs/superpowers/notes/2026-10-22-m11-reported-problems.md`; the app issue
+  is the follow-up item below).
+  - **Done (19 of 22 tasks):** sequence check (`pnpm check:sequences`),
+    protocol note, reported problems, all 12 repertoire batches (T4–T15), and
+    the lesson batches T16 (01–05), T17 (06–10), T18 (11–15), T19 (16–20):
+    each audited, fixed and re-checked; reports in
+    `docs/superpowers/notes/2026-10-22-m11-audit-*.md`.
+  - **Left (3 tasks):** T20 lessons 21–25: audit done, fix committed
+    (`ed748dd` on the branch only, 11 sentences, three of the auditor's
+    proposals changed by the fixer), re-check NOT yet done. T21 guide texts:
+    audit DONE (34 claims: 24 ok, 10 misleading, none false; the 10 are
+    gd-01, -05, -09, -10, -11, -18, -19, -20, -22, -23, each with a proposed
+    text; the report
+    `docs/superpowers/notes/2026-10-22-m11-audit-guides.md` is an uncommitted
+    file in the worktree `../chess-m11`, "Re-check" pending), then fix and
+    re-check. T22 close:
+    `pnpm check:sequences --strict` default, full gate, full
+    `pnpm validate:content` (about 20 min), audit index note, ROADMAP M11
+    done, merge to `main`, push, delete this item.
+  - **How to continue:** `cd ../chess-m11`; read the tail of the ledger
+    `.superpowers/sdd/2026-10-22-m11-content-audit/progress.md` (git-ignored,
+    on disk) and `git log --oneline -12`; check that each report in
+    `docs/superpowers/notes/2026-10-22-m11-audit-ls-21-25.md` and
+    `...-audit-guides.md` has a real "Re-check" section (not "(pending");
+    run the remaining fix/re-check steps with `superpowers:subagent-driven-development`.
+    To spend fewer credits: run one batch at a time, use sonnet for the
+    re-checks of small fixes, and check one-word fixes from the diff.
+  - **Rules that came out of M11:** fixers re-verify every new sentence
+    (auditor proposals were wrong several times); one fixer at a time per file;
+    a report is committed only when its Re-check is not "(pending"; no tree
+    nodes, moves or solutions change in M11; the engine `validate:content` runs
+    once, in T22.
+  - **Questions for the owner (collected in the audit reports; list them
+    again in the T22 index):** London Qc1 at `d4 Nf6 Bf4 c5 e3 Qb6` (about 0.6
+    pawn behind Nc3) and in the `d4 d5` line (about 0.85); London c3 versus Ne5,
+    Nxb3 versus axb3, Be2 versus a3; the missing 6…Nxd4 reply; Caro-Kann tree
+    moves 4 to 11 win % behind the engine (3…Bg4, 4…e6, Qh4 …dxe4, Qf3 …Nf6,
+    5…Bd7 and others); Slav: the missing 9.Nxd1 and 5.Qxf3 lines, ...Qb6
+    after `d4 d5 Bg5 c5 e3`, the vs-c4 short final form; lessons: 10 `make-luft`
+    (f3, f4, h4, g4 also stop the mate but are marked wrong), 11 `bishop-d6`,
+    12 `keep-bishop` (add Bg5?), 19 exercise id `queen-sacrifice-mate`.
 - Follow-up (from the owner's reported problems, 2026-10-22; note
   `docs/superpowers/notes/2026-10-22-m11-reported-problems.md`): the coach's
   "why it matters" line on a mistake card is not checked against attack facts
