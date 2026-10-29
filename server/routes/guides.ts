@@ -1,6 +1,7 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Chess } from 'chess.js';
 import { Hono } from 'hono';
+import type { PlanFile } from '../../shared/plans.js';
 import type { GuideDTO, GuideMove, GuideVariationDTO } from '../../shared/types.js';
 import { personalBoxes, type ReplayCache } from '../guides/personal.js';
 import type { GuideFile, GuideVariation } from '../guides/types.js';
@@ -37,7 +38,7 @@ function resolveMove(moves: string[], san: string): GuideMove {
   return { san: move.san, from: move.from, to: move.to };
 }
 
-function toDto(rep: Repertoire, v: GuideVariation, level: number, personal: GuideVariationDTO['personal']): GuideVariationDTO {
+function toDto(rep: Repertoire, v: GuideVariation, level: number, personal: GuideVariationDTO['personal'], plans: readonly PlanFile[]): GuideVariationDTO {
   const final = line(rep, v.finalForm.nodeId);
   const requiredLevel = Math.max(1, ...final.map((n) => n.level)) as 1 | 2 | 3;
   const personalOpp = new Map((personal?.opponentMoves ?? []).map((o) => [o.nodeId ? `${o.nodeId} ${o.playedSan}` : o.playedSan, o.count]));
@@ -65,10 +66,13 @@ function toDto(rep: Repertoire, v: GuideVariation, level: number, personal: Guid
     locked: requiredLevel > level,
     requiredLevel,
     personal,
+    plans: plans
+      .filter((p) => p.guideLinks.some((l) => l.repertoireId === rep.id && l.variation === v.key))
+      .map((p) => ({ id: p.id, title: p.title })),
   };
 }
 
-export function guidesRoutes(db: DatabaseSync, getReps: () => Repertoire[], getGuides: () => GuideFile[]): Hono {
+export function guidesRoutes(db: DatabaseSync, getReps: () => Repertoire[], getGuides: () => GuideFile[], getPlans: () => PlanFile[] = () => []): Hono {
   const replays: ReplayCache = new Map();
   return new Hono().get('/openings/:id/guide', (c) => {
     const rep = getReps().find((r) => r.id === c.req.param('id'));
@@ -83,7 +87,7 @@ export function guidesRoutes(db: DatabaseSync, getReps: () => Repertoire[], getG
     const boxes = personalBoxes(db, rep, guide, level, replays);
     const body: GuideDTO = {
       repertoireId: rep.id, name: rep.name, color: rep.color, level, why: guide.why,
-      variations: guide.variations.map((v) => toDto(rep, v, level, boxes.get(v.key) ?? null)),
+      variations: guide.variations.map((v) => toDto(rep, v, level, boxes.get(v.key) ?? null, getPlans())),
     };
     return c.json(body);
   });

@@ -130,7 +130,7 @@ export interface Lesson {
 }
 export type LessonStatus = 'new' | 'done' | 'locked';
 export interface CourseLesson { id: string; order: number; level: 1 | 2 | 3; title: string; summary: string; status: LessonStatus; exercises: number }
-export type CourseLessonDetail = Lesson & { status: LessonStatus };
+export type CourseLessonDetail = Lesson & { status: LessonStatus; /** Plans that name this lesson (M12). */ relatedPlans: { id: string; title: string }[] };
 
 // M7: insights
 export type InsightsWindow = '30d' | '90d' | '365d' | 'all';
@@ -184,6 +184,8 @@ export interface GuideVariationDTO {
   mistakes: { moves: string[]; fen: string; text: string; bad?: GuideMove; good?: GuideMove[] }[];
   locked: boolean; requiredLevel: 1 | 2 | 3;
   personal: VariationPersonal | null;
+  /** Plans that name this variation in `guideLinks` (M12). */
+  plans: { id: string; title: string }[];
 }
 /** A move resolved on the server: SAN plus the squares to draw an arrow. */
 export interface GuideMove { san: string; from: string; to: string }

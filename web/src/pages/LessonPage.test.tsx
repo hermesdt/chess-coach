@@ -22,7 +22,7 @@ vi.mock('react-chessboard', () => ({
 
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const lesson: CourseLessonDetail = {
-  id: 'center', order: 3, level: 1, title: 'Take the centre', summary: 's', tags: [], status: 'new', links: [],
+  id: 'center', order: 3, level: 1, title: 'Take the centre', summary: 's', tags: [], status: 'new', links: [], relatedPlans: [],
   body: '### Centre rule\n\nPlay **e4** early. <b>raw</b>',
   exercises: [{ id: 'x1', fen: START, prompt: 'White to move. Take the centre.', solution: ['e2e4'], explanation: 'The e4 pawn owns the centre.' }],
 };

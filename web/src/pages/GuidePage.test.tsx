@@ -51,6 +51,7 @@ const variation = (key: string, name: string, over: Partial<GuideVariationDTO> =
   mistakes: [{ moves: ['e4', 'c6', 'd4', 'd5', 'e5', 'Bf5', 'g4'], fen: START, text: 'Do not let g4 hit the bishop.' }],
   locked: false, requiredLevel: 1,
   personal: null,
+  plans: [],
   ...over,
 });
 const guide = (variations: GuideVariationDTO[], level: 1 | 2 | 3 = 1): GuideDTO => ({
