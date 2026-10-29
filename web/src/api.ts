@@ -29,6 +29,8 @@ import type {
   OpeningLeakGroup,
   OpeningSummary,
   PlanDTO,
+  GamePlanDTO,
+  PlanGamesDTO,
   PlanIndexEntry,
   SettingsDTO,
   DataInfo,
@@ -149,6 +151,8 @@ export const api = {
   getLesson: (id: string) => request<CourseLessonDetail>(`/course/${encodeURIComponent(id)}`),
   listPlans: () => request<PlanIndexEntry[]>('/plans'),
   getPlan: (id: string) => request<PlanDTO>(`/plans/${encodeURIComponent(id)}`),
+  getGamePlans: (gameId: number) => request<GamePlanDTO[]>(`/games/${gameId}/plans`),
+  getPlanGames: (id: string) => request<PlanGamesDTO>(`/plans/${encodeURIComponent(id)}/games`),
   trainPlan: (id: string) => post<{ created: number }>(`/plans/${encodeURIComponent(id)}/train`),
   completeLesson: (id: string) => post<{ created: number }>(`/course/${encodeURIComponent(id)}/complete`),
   importPgn: (pgn: string, colors?: (Color | null)[]) =>
