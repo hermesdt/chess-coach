@@ -1,0 +1,506 @@
+{
+  "id": "london-kingside-attack",
+  "title": "Attack the castled king",
+  "group": "london",
+  "side": "white",
+  "level": 1,
+  "summary": "Bring more pieces to the castled black king before you push any pawns.",
+  "guideLinks": [
+    {
+      "repertoireId": "london",
+      "variation": "vs-d5"
+    }
+  ],
+  "lessons": [
+    "london-plans",
+    "mates"
+  ],
+  "position": {
+    "moves": [
+      "d4",
+      "d5",
+      "Bf4",
+      "Nf6",
+      "e3",
+      "e6",
+      "Nf3",
+      "Bd6",
+      "Bg3",
+      "O-O",
+      "Nbd2",
+      "c5",
+      "c3",
+      "Nc6",
+      "Bd3",
+      "b6",
+      "O-O",
+      "Bb7"
+    ],
+    "arrows": [
+      {
+        "from": "d3",
+        "to": "h7",
+        "kind": "attack"
+      }
+    ],
+    "marks": [
+      "h7"
+    ]
+  },
+  "trigger": {
+    "all": [
+      {
+        "type": "piece",
+        "side": "opp",
+        "piece": "K",
+        "on": [
+          "g8",
+          "h8"
+        ]
+      },
+      {
+        "type": "pawns",
+        "side": "own",
+        "on": [
+          "c3",
+          "d4",
+          "e3"
+        ]
+      },
+      {
+        "type": "piece",
+        "side": "own",
+        "piece": "B",
+        "on": [
+          "d3"
+        ]
+      },
+      {
+        "type": "queensOn"
+      }
+    ]
+  },
+  "goal": "Add pieces to the attack on the black king. Use the d3 bishop, a knight on e5, the queen and a rook.",
+  "steps": [
+    {
+      "text": "Your d3 bishop aims at h7. The f6 knight guards h7, so do not take yet.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6",
+          "O-O",
+          "Bb7"
+        ],
+        "arrows": [
+          {
+            "from": "d3",
+            "to": "h7",
+            "kind": "attack"
+          }
+        ],
+        "marks": [
+          "h7"
+        ]
+      }
+    },
+    {
+      "text": "Play Ne5. The d4 pawn and the g3 bishop guard the knight.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6",
+          "O-O",
+          "Bb7"
+        ],
+        "arrows": [
+          {
+            "from": "f3",
+            "to": "e5",
+            "kind": "move"
+          }
+        ]
+      }
+    },
+    {
+      "text": "Bring the queen in. After Ne5 Ne7, Qf3 is a good move.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6",
+          "O-O",
+          "Bb7",
+          "Ne5",
+          "Ne7"
+        ],
+        "arrows": [
+          {
+            "from": "d1",
+            "to": "f3",
+            "kind": "move"
+          }
+        ]
+      }
+    },
+    {
+      "text": "Add a rook. Re1 puts it behind the e3 pawn.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6",
+          "O-O",
+          "Bb7",
+          "Ne5",
+          "Ne7"
+        ],
+        "arrows": [
+          {
+            "from": "f1",
+            "to": "e1",
+            "kind": "move"
+          }
+        ]
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "square": "d3",
+      "text": "The bishop aims at h7 through e4, f5 and g6."
+    },
+    {
+      "square": "g3",
+      "text": "The bishop guards e5 and faces the d6 bishop."
+    },
+    {
+      "square": "f3",
+      "text": "The knight can go to e5."
+    },
+    {
+      "square": "d2",
+      "text": "The knight guards e4."
+    }
+  ],
+  "breaks": [],
+  "opponent": [
+    {
+      "text": "Black can trade bishops with ...Bxg3. Retake with hxg3. Then the h-file is half open."
+    },
+    {
+      "text": "Black can take on e5 with ...Nxe5. Retake with dxe5. The new pawn attacks the d6 bishop and the f6 knight."
+    }
+  ],
+  "notNow": [
+    "Do not play Bxh7+ while the f6 knight guards h7. After Bxh7+ Nxh7 you lose a bishop for a pawn."
+  ],
+  "mistakes": [
+    {
+      "moves": [
+        "d4",
+        "d5",
+        "Bf4",
+        "Nf6",
+        "e3",
+        "e6",
+        "Nf3",
+        "Bd6",
+        "Bg3",
+        "O-O",
+        "Nbd2",
+        "c5",
+        "c3",
+        "Nc6",
+        "Bd3",
+        "b6",
+        "O-O",
+        "Bb7"
+      ],
+      "text": "Bxh7+ Nxh7 loses a bishop for a pawn. Bring more pieces first.",
+      "bad": "Bxh7+",
+      "good": [
+        "Re1",
+        "Qe2"
+      ]
+    },
+    {
+      "moves": [
+        "d4",
+        "d5",
+        "Bf4",
+        "Nf6",
+        "e3",
+        "e6",
+        "Nf3",
+        "Bd6",
+        "Bg3",
+        "O-O",
+        "Nbd2",
+        "c5",
+        "c3",
+        "Nc6",
+        "Bd3",
+        "b6",
+        "O-O",
+        "Bb7"
+      ],
+      "text": "b4 cxb4 cxb4 Nxb4 loses a pawn.",
+      "bad": "b4",
+      "good": [
+        "Re1",
+        "Ne5"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "title": "Knight, queen and rook",
+      "moves": [
+        "d4",
+        "d5",
+        "Bf4",
+        "Nf6",
+        "e3",
+        "e6",
+        "Nf3",
+        "Bd6",
+        "Bg3",
+        "O-O",
+        "Nbd2",
+        "c5",
+        "c3",
+        "Nc6",
+        "Bd3",
+        "b6",
+        "O-O",
+        "Bb7",
+        "Ne5",
+        "Ne7",
+        "Qf3",
+        "Qc7",
+        "Rfe1",
+        "Ng6"
+      ],
+      "startPly": 18,
+      "kind": "plan",
+      "source": "stockfish",
+      "comments": [
+        {
+          "ply": 19,
+          "text": "The knight goes to e5. The d4 pawn and the g3 bishop guard it."
+        },
+        {
+          "ply": 21,
+          "text": "The queen joins the knight and the bishop."
+        },
+        {
+          "ply": 23,
+          "text": "The rook goes to e1, behind the e3 pawn."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "first-move",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6",
+          "O-O",
+          "Bb7"
+        ]
+      },
+      "prompt": "White to move. Their king is on g8. Start the plan.",
+      "choices": [
+        {
+          "san": "Re1",
+          "why": "Re1 puts a rook behind the e3 pawn."
+        },
+        {
+          "san": "Qe2",
+          "why": "Qe2 brings the queen in."
+        },
+        {
+          "san": "Bxh7+",
+          "why": "Bxh7+ Nxh7 loses a bishop for a pawn."
+        },
+        {
+          "san": "b4",
+          "why": "b4 cxb4 cxb4 Nxb4 loses a pawn."
+        }
+      ],
+      "accepted": [
+        "Re1",
+        "Qe2"
+      ],
+      "explanation": "Add a piece before you attack. Bxh7+ and b4 lose material."
+    },
+    {
+      "id": "queen-in",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6",
+          "O-O",
+          "Bb7",
+          "Ne5",
+          "Ne7"
+        ]
+      },
+      "prompt": "White to move. Your knight is on e5. Add a piece.",
+      "choices": [
+        {
+          "san": "Qf3",
+          "why": "Qf3 brings the queen in."
+        },
+        {
+          "san": "Re1",
+          "why": "Re1 brings a rook in."
+        },
+        {
+          "san": "Qh5",
+          "why": "Qh5 Nxh5 loses the queen."
+        },
+        {
+          "san": "Nxf7",
+          "why": "Nxf7 Rxf7 loses a knight for a pawn."
+        }
+      ],
+      "accepted": [
+        "Qf3",
+        "Re1"
+      ],
+      "explanation": "The queen or a rook joins the attack. Qh5 and Nxf7 lose material."
+    },
+    {
+      "id": "rook-in",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6",
+          "O-O",
+          "Bb7",
+          "Qe2",
+          "Ne7"
+        ]
+      },
+      "prompt": "White to move. Your queen is on e2. Add a rook.",
+      "choices": [
+        {
+          "san": "Rad1",
+          "why": "Rad1 brings the a1 rook into the game."
+        },
+        {
+          "san": "Rfd1",
+          "why": "Rfd1 brings the f1 rook to the d-file."
+        },
+        {
+          "san": "Bxh7+",
+          "why": "Bxh7+ Nxh7 loses a bishop for a pawn."
+        }
+      ],
+      "accepted": [
+        "Rad1",
+        "Rfd1"
+      ],
+      "explanation": "A rook on d1 joins the centre. Bxh7+ still loses a bishop for a pawn."
+    }
+  ]
+}

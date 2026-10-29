@@ -1,0 +1,445 @@
+{
+  "id": "caro-advance-d4",
+  "title": "Break the chain in the Advance Caro-Kann",
+  "group": "caro-kann",
+  "side": "black",
+  "level": 1,
+  "summary": "Hit the d4 pawn with ...c5, then attack d4 and e5 with your pieces.",
+  "guideLinks": [
+    {
+      "repertoireId": "caro-kann",
+      "variation": "advance"
+    }
+  ],
+  "lessons": [
+    "caro-kann-plans",
+    "pawn-breaks"
+  ],
+  "position": {
+    "moves": [
+      "e4",
+      "c6",
+      "d4",
+      "d5",
+      "e5",
+      "Bf5",
+      "Nf3",
+      "e6",
+      "Be2"
+    ],
+    "arrows": [
+      {
+        "from": "c6",
+        "to": "c5",
+        "kind": "move"
+      }
+    ],
+    "marks": [
+      "d4"
+    ]
+  },
+  "trigger": {
+    "all": [
+      {
+        "type": "pawns",
+        "side": "opp",
+        "on": [
+          "e5"
+        ]
+      },
+      {
+        "type": "pawns",
+        "side": "own",
+        "on": [
+          "d5",
+          "e6"
+        ]
+      }
+    ]
+  },
+  "goal": "Break the white pawn chain with ...c5. Then attack d4 and e5 with your pieces.",
+  "steps": [
+    {
+      "text": "Play ...c5. It attacks the d4 pawn, the base of the white pawn chain.",
+      "board": {
+        "moves": [
+          "e4",
+          "c6",
+          "d4",
+          "d5",
+          "e5",
+          "Bf5",
+          "Nf3",
+          "e6",
+          "Be2"
+        ],
+        "arrows": [
+          {
+            "from": "c6",
+            "to": "c5",
+            "kind": "move"
+          }
+        ],
+        "marks": [
+          "d4"
+        ]
+      }
+    },
+    {
+      "text": "After ...c5 Be3 cxd4 Nxd4, no white pawn guards e5. The chain is broken.",
+      "board": {
+        "moves": [
+          "e4",
+          "c6",
+          "d4",
+          "d5",
+          "e5",
+          "Bf5",
+          "Nf3",
+          "e6",
+          "Be2",
+          "c5",
+          "Be3",
+          "cxd4",
+          "Nxd4"
+        ],
+        "marks": [
+          "e5"
+        ]
+      }
+    },
+    {
+      "text": "Play ...Nbc6. It attacks the d4 knight and the e5 pawn.",
+      "board": {
+        "moves": [
+          "e4",
+          "c6",
+          "d4",
+          "d5",
+          "e5",
+          "Bf5",
+          "Nf3",
+          "e6",
+          "Be2",
+          "c5",
+          "Be3",
+          "cxd4",
+          "Nxd4",
+          "Ne7",
+          "O-O",
+          "Nbc6"
+        ],
+        "arrows": [
+          {
+            "from": "c6",
+            "to": "d4",
+            "kind": "attack"
+          },
+          {
+            "from": "c6",
+            "to": "e5",
+            "kind": "attack"
+          }
+        ]
+      }
+    },
+    {
+      "text": "Keep the e7 knight at home. It guards the f5 bishop and the d5 pawn.",
+      "board": {
+        "moves": [
+          "e4",
+          "c6",
+          "d4",
+          "d5",
+          "e5",
+          "Bf5",
+          "Nf3",
+          "e6",
+          "Be2",
+          "c5",
+          "Be3",
+          "cxd4",
+          "Nxd4",
+          "Ne7",
+          "O-O"
+        ],
+        "arrows": [
+          {
+            "from": "e7",
+            "to": "f5",
+            "kind": "attack"
+          },
+          {
+            "from": "e7",
+            "to": "d5",
+            "kind": "attack"
+          }
+        ]
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "square": "f5",
+      "text": "The bishop stands outside the pawn chain."
+    },
+    {
+      "square": "e6",
+      "text": "The pawn guards d5 and f5."
+    },
+    {
+      "square": "d5",
+      "text": "The pawn holds the centre."
+    },
+    {
+      "square": "b8",
+      "text": "The knight goes to c6, where it attacks d4 and e5."
+    },
+    {
+      "square": "g8",
+      "text": "The knight goes to e7, not f6. The e5 pawn attacks f6."
+    }
+  ],
+  "breaks": [
+    {
+      "from": "c6",
+      "to": "c5",
+      "text": "The c5 pawn attacks d4, the base of the white pawn chain."
+    }
+  ],
+  "opponent": [
+    {
+      "text": "White can take with dxc5. Retake with ...Bxc5."
+    },
+    {
+      "text": "White can push g4. Move the bishop to g6."
+    }
+  ],
+  "notNow": [
+    "Do not play ...Nf6 here. The e5 pawn takes it with exf6.",
+    "After ...Ne7 and O-O, do not play ...Ng6 or ...Qb6. Both lose material."
+  ],
+  "mistakes": [
+    {
+      "moves": [
+        "e4",
+        "c6",
+        "d4",
+        "d5",
+        "e5",
+        "Bf5",
+        "Nf3",
+        "e6",
+        "Be2"
+      ],
+      "text": "Do not play ...Nf6. The e5 pawn takes it with exf6, and you lose a knight for a pawn.",
+      "bad": "Nf6",
+      "good": [
+        "c5",
+        "Nd7"
+      ]
+    },
+    {
+      "moves": [
+        "e4",
+        "c6",
+        "d4",
+        "d5",
+        "e5",
+        "Bf5",
+        "Nf3",
+        "e6",
+        "Be2",
+        "c5",
+        "Be3",
+        "cxd4",
+        "Nxd4",
+        "Ne7",
+        "O-O"
+      ],
+      "text": "...Ng6 takes the knight away from the bishop and the d5 pawn. After Bb5+ Nd7 Nxf5 exf5 Qxd5 Black is a pawn down and the d7 knight is pinned.",
+      "bad": "Ng6",
+      "good": [
+        "Nbc6"
+      ]
+    },
+    {
+      "moves": [
+        "e4",
+        "c6",
+        "d4",
+        "d5",
+        "e5",
+        "Bf5",
+        "Nf3",
+        "e6",
+        "Be2",
+        "c5",
+        "Be3",
+        "cxd4",
+        "Nxd4",
+        "Ne7",
+        "O-O"
+      ],
+      "text": "...Qb6 Nxf5 Nxf5 Bxb6 axb6 costs a queen and a bishop for a knight and a bishop.",
+      "bad": "Qb6",
+      "good": [
+        "Nbc6"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "title": "Break the chain",
+      "moves": [
+        "e4",
+        "c6",
+        "d4",
+        "d5",
+        "e5",
+        "Bf5",
+        "Nf3",
+        "e6",
+        "Be2",
+        "c5",
+        "Be3",
+        "cxd4",
+        "Nxd4",
+        "Ne7"
+      ],
+      "startPly": 9,
+      "kind": "plan",
+      "source": "tree",
+      "comments": [
+        {
+          "ply": 10,
+          "text": "The c5 pawn attacks the d4 pawn."
+        },
+        {
+          "ply": 12,
+          "text": "The d4 pawn attacks the e3 bishop, so White retakes on d4. Then no white pawn guards e5."
+        },
+        {
+          "ply": 14,
+          "text": "The knight goes to e7, not f6. It guards the f5 bishop and the d5 pawn."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "break",
+      "board": {
+        "moves": [
+          "e4",
+          "c6",
+          "d4",
+          "d5",
+          "e5",
+          "Bf5",
+          "Nf3",
+          "e6",
+          "Be2"
+        ]
+      },
+      "prompt": "Black to move. White has pawns on d4 and e5. Start the plan.",
+      "choices": [
+        {
+          "san": "c5",
+          "why": "c5 attacks the d4 pawn, the base of the chain."
+        },
+        {
+          "san": "Nf6",
+          "why": "Nf6 exf6 loses a knight for a pawn."
+        },
+        {
+          "san": "Bxc2",
+          "why": "Bxc2 Qxc2 loses a bishop for a pawn."
+        }
+      ],
+      "accepted": [
+        "c5"
+      ],
+      "explanation": "Play ...c5 to hit the base of the pawn chain. ...Nf6 and ...Bxc2 lose material."
+    },
+    {
+      "id": "take",
+      "board": {
+        "moves": [
+          "e4",
+          "c6",
+          "d4",
+          "d5",
+          "e5",
+          "Bf5",
+          "Nf3",
+          "e6",
+          "Be2",
+          "c5",
+          "Be3"
+        ]
+      },
+      "prompt": "Black to move. Your c5 pawn attacks d4. Break the chain.",
+      "choices": [
+        {
+          "san": "cxd4",
+          "why": "cxd4 attacks the e3 bishop. After Nxd4 no white pawn guards e5."
+        },
+        {
+          "san": "Ne7",
+          "why": "Ne7 guards the f5 bishop and the d5 pawn."
+        },
+        {
+          "san": "Bxc2",
+          "why": "Bxc2 Qxc2 loses a bishop for a pawn."
+        }
+      ],
+      "accepted": [
+        "cxd4",
+        "Ne7"
+      ],
+      "explanation": "Take on d4 to break the chain. Ne7 is also a good move. Bxc2 loses a bishop."
+    },
+    {
+      "id": "knight",
+      "board": {
+        "moves": [
+          "e4",
+          "c6",
+          "d4",
+          "d5",
+          "e5",
+          "Bf5",
+          "Nf3",
+          "e6",
+          "Be2",
+          "c5",
+          "Be3",
+          "cxd4",
+          "Nxd4",
+          "Ne7",
+          "O-O"
+        ]
+      },
+      "prompt": "Black to move. Add a piece against d4 and e5.",
+      "choices": [
+        {
+          "san": "Nbc6",
+          "why": "Nbc6 attacks the d4 knight and the e5 pawn."
+        },
+        {
+          "san": "Ng6",
+          "why": "Ng6 Bb5+ Nd7 Nxf5 exf5 Qxd5 leaves you a pawn down."
+        },
+        {
+          "san": "Qb6",
+          "why": "Qb6 Nxf5 Nxf5 Bxb6 axb6 costs a queen and a bishop for a knight and a bishop."
+        }
+      ],
+      "accepted": [
+        "Nbc6"
+      ],
+      "explanation": "Bring the b8 knight to c6. The e7 knight must stay, because it guards f5 and d5."
+    }
+  ]
+}

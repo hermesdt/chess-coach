@@ -354,8 +354,9 @@ function scanPlan(plan: PlanFile, file: string, out: ValidationIssue[]): void {
     plan.notNow.forEach((t, i) => scan(t, general, file, `notNow:${i + 1}`, out));
   }
   plan.steps.forEach((s, i) => {
-    const fen = boardFen(s.board) ?? main;
-    if (fen) scan(s.text, [fen], file, `step:${i + 1}`, out);
+    // A step text may name the moves that lead from the main board to the step board.
+    const starts = [boardFen(s.board), main].flatMap((f) => f ?? []);
+    if (starts.length > 0) scan(s.text, [...new Set(starts)], file, `step:${i + 1}`, out);
   });
   plan.opponent.forEach((o, i) => {
     const fen = boardFen(o.board) ?? main;

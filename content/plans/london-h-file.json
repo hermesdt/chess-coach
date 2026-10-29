@@ -1,0 +1,425 @@
+{
+  "id": "london-h-file",
+  "title": "Use the open h-file",
+  "group": "london",
+  "side": "white",
+  "level": 1,
+  "summary": "After the bishops trade on g3, keep the rook on h1 and add pieces against h7.",
+  "guideLinks": [
+    {
+      "repertoireId": "london",
+      "variation": "vs-d5"
+    }
+  ],
+  "lessons": [
+    "london-plans",
+    "mates"
+  ],
+  "position": {
+    "moves": [
+      "d4",
+      "d5",
+      "Bf4",
+      "Nf6",
+      "e3",
+      "e6",
+      "Nf3",
+      "Bd6",
+      "Bg3",
+      "Bxg3",
+      "hxg3",
+      "O-O"
+    ],
+    "arrows": [
+      {
+        "from": "h1",
+        "to": "h7",
+        "kind": "attack"
+      }
+    ],
+    "marks": [
+      "h7"
+    ]
+  },
+  "trigger": {
+    "all": [
+      {
+        "type": "noPawn",
+        "side": "own",
+        "file": "h"
+      },
+      {
+        "type": "pawns",
+        "side": "own",
+        "on": [
+          "g3",
+          "d4",
+          "e3"
+        ]
+      },
+      {
+        "type": "piece",
+        "side": "own",
+        "piece": "R",
+        "on": [
+          "h1"
+        ]
+      },
+      {
+        "type": "piece",
+        "side": "opp",
+        "piece": "K",
+        "on": [
+          "g8",
+          "h8"
+        ]
+      }
+    ]
+  },
+  "goal": "Use the half-open h-file. Keep the rook on h1. Bring a bishop and a knight to the black king.",
+  "steps": [
+    {
+      "text": "Your h-pawn is gone, so the h-file is half open. The rook on h1 attacks the h7 pawn.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "Bxg3",
+          "hxg3",
+          "O-O"
+        ],
+        "arrows": [
+          {
+            "from": "h1",
+            "to": "h7",
+            "kind": "attack"
+          }
+        ],
+        "marks": [
+          "h7"
+        ]
+      }
+    },
+    {
+      "text": "Bring the f1 bishop to d3. It also aims at h7.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "Bxg3",
+          "hxg3",
+          "O-O"
+        ],
+        "arrows": [
+          {
+            "from": "f1",
+            "to": "d3",
+            "kind": "move"
+          }
+        ]
+      }
+    },
+    {
+      "text": "Add a knight. The d4 pawn guards e5.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "Bxg3",
+          "hxg3",
+          "O-O"
+        ],
+        "arrows": [
+          {
+            "from": "f3",
+            "to": "e5",
+            "kind": "move"
+          }
+        ]
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "square": "h1",
+      "text": "The rook attacks the h7 pawn along the half-open h-file."
+    },
+    {
+      "square": "f1",
+      "text": "The bishop can go to d3, where it aims at h7."
+    },
+    {
+      "square": "f3",
+      "text": "The knight can go to e5."
+    },
+    {
+      "square": "d4",
+      "text": "The pawn guards e5, so the knight can go there."
+    }
+  ],
+  "breaks": [
+    {
+      "from": "g3",
+      "to": "g4",
+      "text": "g4 can start a kingside attack later, after Ne5."
+    }
+  ],
+  "opponent": [
+    {
+      "text": "Black can push ...h6. Your rook then attacks the h6 pawn. The g7 pawn guards it."
+    }
+  ],
+  "notNow": [
+    "Do not play Rh5 or Rxh7 alone. The f6 knight takes the rook.",
+    "Castling short moves the h1 rook to f1. Then the rook leaves the h-file."
+  ],
+  "mistakes": [
+    {
+      "moves": [
+        "d4",
+        "d5",
+        "Bf4",
+        "Nf6",
+        "e3",
+        "e6",
+        "Nf3",
+        "Bd6",
+        "Bg3",
+        "Bxg3",
+        "hxg3",
+        "O-O"
+      ],
+      "text": "Rxh7 Nxh7 loses a rook for a pawn.",
+      "bad": "Rxh7",
+      "good": [
+        "Ne5",
+        "Bd3"
+      ]
+    },
+    {
+      "moves": [
+        "d4",
+        "d5",
+        "Bf4",
+        "Nf6",
+        "e3",
+        "e6",
+        "Nf3",
+        "Bd6",
+        "Bg3",
+        "Bxg3",
+        "hxg3",
+        "O-O"
+      ],
+      "text": "Rh5 Nxh5 loses a rook. Nothing guards h5.",
+      "bad": "Rh5",
+      "good": [
+        "Ne5",
+        "Nbd2"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "title": "Keep the rook on h1",
+      "moves": [
+        "d4",
+        "d5",
+        "Bf4",
+        "Nf6",
+        "e3",
+        "e6",
+        "Nf3",
+        "Bd6",
+        "Bg3",
+        "Bxg3",
+        "hxg3",
+        "O-O",
+        "Bd3",
+        "b6",
+        "Nbd2",
+        "Bb7",
+        "c3",
+        "c5",
+        "Ne5",
+        "h6",
+        "g4"
+      ],
+      "startPly": 12,
+      "kind": "plan",
+      "source": "tree",
+      "comments": [
+        {
+          "ply": 13,
+          "text": "The bishop aims at h7. The rook on h1 attacks h7 too."
+        },
+        {
+          "ply": 19,
+          "text": "The knight jumps to e5. The d4 pawn guards it."
+        },
+        {
+          "ply": 21,
+          "text": "The g4 push starts the attack on the kingside."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "add-attacker",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "Bxg3",
+          "hxg3",
+          "O-O"
+        ]
+      },
+      "prompt": "White to move. Their king is on g8. Add a piece to the attack.",
+      "choices": [
+        {
+          "san": "Ne5",
+          "why": "Ne5 is guarded by the d4 pawn."
+        },
+        {
+          "san": "Bd3",
+          "why": "Bd3 aims at h7."
+        },
+        {
+          "san": "Rh5",
+          "why": "Rh5 Nxh5 loses a rook."
+        },
+        {
+          "san": "Rxh7",
+          "why": "Rxh7 Nxh7 loses a rook for a pawn."
+        }
+      ],
+      "accepted": [
+        "Ne5",
+        "Bd3"
+      ],
+      "explanation": "A knight or a bishop adds a second attacker. A lone rook loses to the f6 knight."
+    },
+    {
+      "id": "after-h6",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "Bxg3",
+          "hxg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "h6"
+        ]
+      },
+      "prompt": "White to move. Black played ...h6. Add a piece.",
+      "choices": [
+        {
+          "san": "Bd3",
+          "why": "Bd3 brings the bishop out."
+        },
+        {
+          "san": "Ne5",
+          "why": "Ne5 is guarded by the d4 pawn."
+        },
+        {
+          "san": "Rxh6",
+          "why": "Rxh6 gxh6 loses a rook for a pawn."
+        },
+        {
+          "san": "Rh5",
+          "why": "Rh5 Nxh5 loses a rook."
+        }
+      ],
+      "accepted": [
+        "Bd3",
+        "Ne5"
+      ],
+      "explanation": "The g7 pawn guards h6. Add pieces instead of trading a rook for a pawn."
+    },
+    {
+      "id": "bishop-out",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "Bxg3",
+          "hxg3",
+          "O-O",
+          "Bd3",
+          "c5"
+        ]
+      },
+      "prompt": "White to move. Your bishop is on d3. Their king is on g8.",
+      "choices": [
+        {
+          "san": "Nbd2",
+          "why": "Nbd2 brings the last knight out."
+        },
+        {
+          "san": "Ne5",
+          "why": "Ne5 is guarded by the d4 pawn."
+        },
+        {
+          "san": "Bxh7+",
+          "why": "Bxh7+ Nxh7 Rxh7 Kxh7 gives a bishop and a rook for a knight and a pawn."
+        },
+        {
+          "san": "Rxh7",
+          "why": "Rxh7 Nxh7 loses a rook for a pawn."
+        }
+      ],
+      "accepted": [
+        "Nbd2",
+        "Ne5"
+      ],
+      "explanation": "Bring one more piece. The h7 pawn has two defenders, so a quick capture loses material."
+    }
+  ]
+}

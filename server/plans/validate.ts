@@ -188,6 +188,7 @@ export async function validatePlan(
   }
 
   const seenIds = new Set<string>();
+  const seenFens = new Map<string, string>();
   const wantTurn = plan.side === 'white' ? 'White to move.' : 'Black to move.';
   for (const e of plan.exercises) {
     const where = `exercise:${e.id}`;
@@ -195,6 +196,11 @@ export async function validatePlan(
     seenIds.add(e.id);
     const fen = checkBoard(e.board, where);
     if (!fen) continue;
+    // A card is one (kind, position): two exercises on one position would overwrite each other.
+    const key = fen.split(' ').slice(0, 4).join(' ');
+    const other = seenFens.get(key);
+    if (other !== undefined) add(where, 'duplicate-position', `Exercise "${e.id}" has the same position as exercise "${other}"`);
+    seenFens.set(key, e.id);
     const chess = new Chess(fen);
     if (chess.turn() !== ownColor || !e.prompt.startsWith(wantTurn)) {
       add(where, 'exercise-turn', `Exercise "${e.id}" needs ${plan.side} to move, and a prompt that starts with "${wantTurn}"`);

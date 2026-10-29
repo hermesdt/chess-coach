@@ -84,6 +84,10 @@ describe('validatePlan (chess rules)', () => {
     expect(await rules((p) => { p.exercises[0]!.prompt = 'Their king is on g8.'; })).toContain('exercise-turn');
   });
 
+  it('duplicate-position: two exercises on one board would share one card', async () => {
+    expect(await rules((p) => { p.exercises[1]!.board = { moves: [...p.exercises[0]!.board.moves] }; })).toContain('duplicate-position');
+  });
+
   it('accepted-subset: accepted must be among the choices', async () => {
     expect(await rules((p) => { p.exercises[0]!.accepted = ['Qd2']; })).toContain('accepted-subset');
   });
