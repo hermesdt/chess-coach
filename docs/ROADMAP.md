@@ -39,7 +39,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M9 | Level 2–3 content (lessons, tags, deeper repertoire) | done | `docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md` |
 | M10 | Opening guides: per repertoire why, strengths, target set-up, plans, typical mistakes | done | spec `docs/superpowers/specs/2026-10-21-opening-guides-design.md`, plan `docs/superpowers/plans/2026-10-21-m10-opening-guides.md` |
 | M11 | Content quality audit: every repertoire comment, lesson and guide claim checked with chess.js + Stockfish | done | spec `docs/superpowers/specs/2026-10-20-content-audit-design.md`, plan `docs/superpowers/plans/2026-10-22-m11-content-audit.md` |
-| M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | M12a done; M12b and M12c planned | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12a plan `docs/superpowers/plans/2026-10-29-m12a-middlegame-plans.md` |
+| M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | M12a and M12b part 1 done; M12b part 2 (coach) and M12c planned | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12a plan `docs/superpowers/plans/2026-10-29-m12a-middlegame-plans.md` |
 | M13 | Missed-mate cards: a review card for each mate in 1 or 2 that the owner missed in a game, built from stored analysis and proven with chess.js | done | spec `docs/superpowers/specs/2026-10-29-m13-mate-cards-design.md`, plan `docs/superpowers/plans/2026-10-29-m13-mate-cards.md` |
 
 ## Log
@@ -449,9 +449,37 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   mate a blunder. It needs a new `ANALYSIS_VERSION` and a new analysis of all
   games.
 
+## M12b log (part 1: plans in the owner's games)
+
+- 2026-10-29 — **M12b part 1 done.** 1363 tests. No migration and no database
+  write, so no backup was needed.
+- How it works: `matchGame` replays a game and finds the first move (ply 16 to
+  60, owner to move) where a plan trigger holds. It uses only chess.js. The
+  server keeps the result in memory (key: game, opening, plan content hash).
+  Routes: `GET /api/games/:id/plans`, `GET /api/plans/:id/games`, and
+  `gameCount` on `GET /api/plans`.
+- What the owner sees: a "Middlegame plan" line on the game page (with "Show the
+  move" and "Read the plan"), a "Plan: <title>" link on key moments up to 20
+  plies after the plan move, and a "Your games" box on the plan page.
+- Real data (a copy of the owner's database, 88 games): 13 plan moments.
+  `london-e4-break` 7, `caro-advance-d4` 3, `london-kingside-attack` 2,
+  `london-h-file` 1. Two games were checked by hand with chess.js.
+- M12b part 1 rulings (review these):
+  - The box "Your games" shows from 3 games (M10 rule). Only `london-e4-break`
+    reaches it today.
+  - The matcher also runs on games without analysis.
+  - A London, Caro-Kann or Slav plan fits only a game with the same repertoire
+    id in its opening event.
+  - Cold cost: the first `GET /api/plans` after a server start replays all games.
+    Measured: 0.75 s for 88 games, 0 ms when warm. If it grows with more games,
+    store the moments in a table (approach B).
+  - Plan pages link to the game, not to the move. A move link needs a viewer change.
+  - Final review was a self-review (no reviewer subagent).
+- Open: M12b part 2 (coach `structure` facts, `plan_id`, file-claim check).
+
 ## Next session
 
-- M13 is done. Open: the classifier fix above.
+- M13 is done. M12b part 1 is done. Next: M12b part 2 (coach) or M12c (more plans). The classifier fix stays as it is (owner decision 2026-10-29).
 - M12a is done. Next: M12b (matcher on the owner's games, game-page links,
   coach `structure` facts) or M12c (more plans, an opposite-castling plan from
   an engine-backed line). Pick with the owner.
