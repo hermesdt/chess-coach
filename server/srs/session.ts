@@ -33,9 +33,9 @@ const QUOTA_ORDER: CardKind[] = ['mistake', 'lesson', 'plan', 'opening'];
 
 /** Share of the new-card cap per kind, by level. */
 export const NEW_MIX: Record<Level, Record<CardKind, number>> = {
-  1: { mistake: 0.4, lesson: 0.3, plan: 0.1, opening: 0.2 },
-  2: { mistake: 0.35, lesson: 0.25, plan: 0.1, opening: 0.3 },
-  3: { mistake: 0.3, lesson: 0.15, plan: 0.15, opening: 0.4 },
+  1: { mistake: 0.4, mate: 0, lesson: 0.3, plan: 0.1, opening: 0.2 },
+  2: { mistake: 0.35, mate: 0, lesson: 0.25, plan: 0.1, opening: 0.3 },
+  3: { mistake: 0.3, mate: 0, lesson: 0.15, plan: 0.15, opening: 0.4 },
 };
 
 /** Split `newPerDay` by the level mix. Largest remainder; ties go to mistake, then lesson, then plan, then opening. The sum is `newPerDay`. */
@@ -43,7 +43,7 @@ export function newQuotas(level: Level, newPerDay: number): Record<CardKind, num
   const mix = NEW_MIX[level];
   // Work in hundredths of a card so the shares (multiples of 0.05) stay exact.
   const exact = QUOTA_ORDER.map((k) => ({ k, units: Math.round(mix[k] * 100) * newPerDay }));
-  const quotas: Record<CardKind, number> = { mistake: 0, lesson: 0, plan: 0, opening: 0 };
+  const quotas: Record<CardKind, number> = { mistake: 0, mate: 0, lesson: 0, plan: 0, opening: 0 };
   for (const e of exact) quotas[e.k] = Math.floor(e.units / 100);
   let left = newPerDay - QUOTA_ORDER.reduce((sum, k) => sum + quotas[k], 0);
   const byRemainder = [...exact].sort((a, b) => (b.units % 100) - (a.units % 100));

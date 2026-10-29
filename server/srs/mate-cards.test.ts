@@ -1,6 +1,11 @@
-import { describe, expect, it } from 'vitest';
-import type { MoveAnalysis } from '../../shared/types.js';
-import { findMateMisses } from './mate-cards.js';
+import type { DatabaseSync } from 'node:sqlite';
+import { beforeEach, describe, expect, it } from 'vitest';
+import type { GameAnalysis, MoveAnalysis } from '../../shared/types.js';
+import { saveAnalysis } from '../analysis/analysis-repo.js';
+import { openDb } from '../db/db.js';
+import { addFlag, listCardsByKind, listCardsByRef, positionKey, recordReview, upsertCard } from './cards-repo.js';
+import { buildMateCards, findMateMisses, syncMateCards } from './mate-cards.js';
+import { buildMistakeCards } from './mistake-cards.js';
 
 const M1 = '6k1/5ppp/8/8/8/8/8/R3K3 w - - 0 1';
 const M2W = '7k/8/8/8/8/8/1R6/R3K3 w - - 0 1';
@@ -82,5 +87,111 @@ describe('findMateMisses', () => {
   it('uses the first accepted move when the engine move is not a mate', () => {
     const { misses } = findMateMisses([move({ bestUci: 'a1a7', bestSan: 'Ra7', san: 'Kd2', uci: 'e1d2' })]);
     expect(misses[0]!.best).toBe('a1a8');
+  });
+});
+
+// --- cards ---
+function analysis(gameId: number, moves: MoveAnalysis[], version = 2): GameAnalysis {
+  return {
+    gameId, version, status: 'done', error: null, accuracyUser: null, accuracyOpp: null,
+    counts: { blunder: 0, mistake: 0, inaccuracy: 0 }, moves, keyMoments: [], analysedAt: 1,
+  };
+}
+
+let db: DatabaseSync;
+beforeEach(() => {
+  db = openDb(':memory:');
+  db.exec(`INSERT INTO games (id, source, source_id, played_at, time_class, rated, white, black, pgn, ply_count, imported_at)
+    VALUES (1, 'chesscom', 'a', 1, 'blitz', 1, 'Me', 'Opp', '*', 2, 1), (2, 'chesscom', 'b', 1, 'blitz', 1, 'Me', 'Opp', '*', 2, 1)`);
+});
+
+describe('buildMateCards', () => {
+  it('creates one card per miss with the played move in the prompt', () => {
+    const r = buildMateCards(db, analysis(1, [move({})]));
+    expect(r).toMatchObject({ created: 1, updated: 0, suspended: 0, skipped: 0 });
+    const [card] = listCardsByKind(db, 'mate');
+    expect(card).toMatchObject({
+      kind: 'mate', positionKey: positionKey(M1), fen: M1, sideToMove: 'white', suspended: false,
+      prompt: 'White to move. You played Ra7 in a game. Find the mate in 1.',
+      refs: [{ gameId: 1, ply: 1 }],
+    });
+    expect(card!.solution).toEqual({ accepted: ['a1a8'], best: 'a1a8', explanation: 'Mate in 1: Ra8#.', mateIn: 1, played: 'Ra7' });
+  });
+
+  it('explains a mate in 2 with the proven line, or with the first move only', () => {
+    const base = { fenBefore: M2W, evalBefore: { cp: null, mate: 2 }, san: 'Kd2', uci: 'e1d2', bestUci: 'a1a7', bestSan: 'Ra7' };
+    buildMateCards(db, analysis(1, [move({ ...base, pvSan: ['Ra7', 'Kg8', 'Rb8#'] })]));
+    expect(listCardsByKind(db, 'mate')[0]!.solution.explanation).toBe('Mate in 2: Ra7 Kg8 Rb8#.');
+    buildMateCards(db, analysis(1, [move({ ...base, pvSan: [] })]));
+    expect(listCardsByKind(db, 'mate')[0]!.solution.explanation).toBe('Mate in 2 starts with Ra7.');
+  });
+
+  it('a second run creates no card', () => {
+    buildMateCards(db, analysis(1, [move({})]));
+    const r = buildMateCards(db, analysis(1, [move({})]));
+    expect(r.created).toBe(0);
+    expect(listCardsByKind(db, 'mate')).toHaveLength(1);
+  });
+
+  it('two games with the same position give one card with two refs', () => {
+    buildMateCards(db, analysis(1, [move({})]));
+    buildMateCards(db, analysis(2, [move({ ply: 5 })]));
+    const cards = listCardsByKind(db, 'mate');
+    expect(cards).toHaveLength(1);
+    expect(cards[0]!.refs).toEqual([{ gameId: 1, ply: 1 }, { gameId: 2, ply: 5 }]);
+  });
+
+  it('a miss that is gone drops its ref and suspends an empty card; FSRS state stays', () => {
+    buildMateCards(db, analysis(1, [move({})]));
+    const [card] = listCardsByKind(db, 'mate');
+    recordReview(db, card!.id, { rating: 'good', answerUci: 'a1a8', durationMs: 1 }, 5);
+    const r = buildMateCards(db, analysis(1, [move({ san: 'Ra8#', uci: 'a1a8' })]));
+    expect(r.suspended).toBe(1);
+    const after = listCardsByKind(db, 'mate')[0]!;
+    expect(after.suspended).toBe(true);
+    expect(after.refs).toEqual([]);
+    expect(db.prepare('SELECT 1 FROM card_state WHERE card_id = ?').get(card!.id)).toBeDefined();
+  });
+
+  it('a mistake card at a mate ply loses its ref and is suspended', () => {
+    upsertCard(db, {
+      kind: 'mistake', positionKey: positionKey(M1), fen: M1, sideToMove: 'white', prompt: 'p',
+      solution: { accepted: ['a1a8'], best: 'a1a8', explanation: null }, refs: [{ gameId: 1, ply: 1 }], lastMove: null,
+    });
+    buildMateCards(db, analysis(1, [move({})]));
+    const mistake = listCardsByRef(db, 1).find((c) => c.kind === 'mistake');
+    expect(mistake).toBeUndefined();
+    const all = listCardsByKind(db, 'mistake');
+    expect(all[0]).toMatchObject({ suspended: true, refs: [] });
+  });
+
+  it('a flagged mate card stays suspended after a new run', () => {
+    buildMateCards(db, analysis(1, [move({})]));
+    const [card] = listCardsByKind(db, 'mate');
+    addFlag(db, card!.id, 'wrong', 1);
+    buildMateCards(db, analysis(1, [move({})]));
+    expect(listCardsByKind(db, 'mate')[0]!.suspended).toBe(true);
+  });
+});
+
+describe('syncMateCards', () => {
+  it('covers finished analyses at the current version and skips the others', () => {
+    saveAnalysis(db, analysis(1, [move({})]));
+    saveAnalysis(db, analysis(2, [move({ ply: 5, fenBefore: M2W, evalBefore: { cp: null, mate: 2 }, san: 'Kd2', uci: 'e1d2' })], 1));
+    const r = syncMateCards(db);
+    expect(r).toMatchObject({ games: 1, created: 1 });
+    expect(listCardsByKind(db, 'mate')).toHaveLength(1);
+    expect(syncMateCards(db)).toMatchObject({ games: 1, created: 0 });
+  });
+});
+
+describe('buildMistakeCards and mates', () => {
+  it('makes no mistake card at a ply that is a missed mate', async () => {
+    const calls: string[] = [];
+    const pool = { analyse: async (fen: string) => { calls.push(fen); return []; } };
+    const r = await buildMistakeCards(db, analysis(1, [move({ classification: 'blunder' })]), pool, { nodes: 1 });
+    expect(r.created).toBe(0);
+    expect(calls).toEqual([]);
+    expect(listCardsByKind(db, 'mistake')).toHaveLength(0);
   });
 });
