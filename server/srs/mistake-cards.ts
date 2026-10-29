@@ -5,6 +5,7 @@ import { winPct } from '../analysis/winpct.js';
 import type { EnginePool } from '../engine/pool.js';
 import type { EngineLine } from '../engine/uci.js';
 import { latestReviewUpTo } from '../ai/notes-repo.js';
+import { findMateMisses } from './mate-cards.js';
 import { listCardsByRef, positionKey, setRefs, setSolution, setSuspended, upsertCard } from './cards-repo.js';
 
 const MULTIPV = 3;
@@ -87,7 +88,9 @@ export async function buildMistakeCards(
   opts: { nodes: number },
 ): Promise<{ created: number; updated: number; suspended: number }> {
   const result = { created: 0, updated: 0, suspended: 0 };
-  const mistakes = analysis.moves.filter(isMistake);
+  // A missed mate gets a mate card, not a mistake card.
+  const mateMisses = new Set(findMateMisses(analysis.moves).misses.map((m) => m.ply));
+  const mistakes = analysis.moves.filter((m) => isMistake(m) && !mateMisses.has(m.ply));
   const why = whyByPly(latestReviewUpTo(db, `game:${analysis.gameId}`, analysis.version));
 
   for (const m of mistakes) {

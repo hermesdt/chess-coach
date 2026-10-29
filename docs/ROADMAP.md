@@ -40,6 +40,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M10 | Opening guides: per repertoire why, strengths, target set-up, plans, typical mistakes | done | spec `docs/superpowers/specs/2026-10-21-opening-guides-design.md`, plan `docs/superpowers/plans/2026-10-21-m10-opening-guides.md` |
 | M11 | Content quality audit: every repertoire comment, lesson and guide claim checked with chess.js + Stockfish | done | spec `docs/superpowers/specs/2026-10-20-content-audit-design.md`, plan `docs/superpowers/plans/2026-10-22-m11-content-audit.md` |
 | M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | M12a done; M12b and M12c planned | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12a plan `docs/superpowers/plans/2026-10-29-m12a-middlegame-plans.md` |
+| M13 | Missed-mate cards: a review card for each mate in 1 or 2 that the owner missed in a game, built from stored analysis and proven with chess.js | done | spec `docs/superpowers/specs/2026-10-29-m13-mate-cards-design.md`, plan `docs/superpowers/plans/2026-10-29-m13-mate-cards.md` |
 
 ## Log
 
@@ -418,8 +419,39 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   pawn" may promise more than the position gives; many middlegame quiz moves are
   within 5 win % of the best, so `missed-good-move` warnings stay.
 
+## M13 log
+
+- 2026-10-29 — **M13 done.** 1327 tests. The owner asked for cards from their own
+  games where they could mate in 1 or 2 and did not. Rule from the owner: a mate
+  that is not the fastest mate is a miss.
+- How it works: `findMates` (chess.js, no engine) finds the mating moves.
+  `findMateMisses` reads stored analysis. `buildMateCards` makes one `mate` card
+  for each position. It runs after each game analysis and at server start
+  (`syncMateCards`). The card shows the move played in the game. The answer
+  check needs no engine, because the list of mating moves is complete.
+- Real data (a copy of the owner's database): 88 games, 18 cards, 0 skipped.
+  Chess.js confirms the best move of every card. The earlier estimate of 25
+  counted games where the owner played another fastest mate.
+- M13 rulings (review these):
+  - Mate in 3 or more is out of scope.
+  - A `mate` card replaces the `mistake` card at the same ply. The sync removes
+    the ref from the mistake card. A card without refs is suspended. FSRS state stays.
+  - New-card mix: `mate` gets 10 % at every level. It takes 5 points from
+    `mistake` and 5 from `opening`.
+  - No engine runs in the scan or in the answer check.
+  - Final review was a self-review (no reviewer subagent).
+- Side effect to know: the owner's dev server (`tsx watch`) restarted when the
+  branch was checked out. Its start-up sync ran on `data/chess.db` before the
+  planned backup. Result: 18 mate cards, 3 mistake cards suspended (none had
+  reviews). Snapshot after the sync: `data/backups/post-m13-sync-2026-10-29.db`.
+  Lesson: take the backup before the first checkout of a branch that syncs at start.
+- Open item: the classifier marks some missed mates as `good`. Make a missed
+  mate a blunder. It needs a new `ANALYSIS_VERSION` and a new analysis of all
+  games.
+
 ## Next session
 
+- M13 is done. Open: the classifier fix above.
 - M12a is done. Next: M12b (matcher on the owner's games, game-page links,
   coach `structure` facts) or M12c (more plans, an opposite-castling plan from
   an engine-backed line). Pick with the owner.

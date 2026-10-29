@@ -77,14 +77,16 @@ export interface GameAnalysis {
 export interface AnalysisBadge { accuracyUser: number | null; blunders: number; mistakes: number; status: GameAnalysis['status'] }
 
 // M3: spaced-repetition cards
-export type CardKind = 'opening' | 'mistake' | 'lesson' | 'plan';
+export type CardKind = 'opening' | 'mistake' | 'lesson' | 'plan' | 'mate';
 export type Rating = 'again' | 'hard' | 'good' | 'easy';
 export interface CardRef { gameId?: number; ply?: number; repertoire?: string; nodeId?: string; lessonId?: string; planId?: string; exerciseId?: string; source?: 'chat' }
 export interface Card {
   id: number; kind: CardKind; positionKey: string; fen: string; sideToMove: Color;
   prompt: string;
   /** Plan cards also carry the arrows A to D: `choices` (UCI, SAN and the reason a wrong choice fails). */
-  solution: { accepted: string[]; best: string; explanation: string | null; choices?: { uci: string; san: string; why: string }[] };
+  solution: { accepted: string[]; best: string; explanation: string | null; choices?: { uci: string; san: string; why: string }[];
+    /** Mate cards: the mate length and the move the owner played in the game. */
+    mateIn?: 1 | 2; played?: string };
   refs: CardRef[]; suspended: boolean; createdAt: number;
   lastMove?: { uci: string } | null; // opponent's move leading to fen, for animation (openings)
 }
