@@ -133,27 +133,31 @@ describe('priority cards', () => {
 
 describe('newQuotas', () => {
   it('splits a daily cap by the level mix', () => {
-    expect(newQuotas(1, 10)).toEqual({ mistake: 4, lesson: 3, plan: 1, opening: 2 });
-    expect(newQuotas(2, 10)).toEqual({ mistake: 4, lesson: 2, plan: 1, opening: 3 });
-    expect(newQuotas(3, 10)).toEqual({ mistake: 3, lesson: 2, plan: 1, opening: 4 });
-    expect(newQuotas(1, 20)).toEqual({ mistake: 8, lesson: 6, plan: 2, opening: 4 });
+    expect(newQuotas(1, 10)).toEqual({ mistake: 4, mate: 1, lesson: 3, plan: 1, opening: 1 });
+    expect(newQuotas(2, 10)).toEqual({ mistake: 3, mate: 1, lesson: 3, plan: 1, opening: 2 });
+    expect(newQuotas(3, 10)).toEqual({ mistake: 3, mate: 1, lesson: 2, plan: 1, opening: 3 });
+    expect(newQuotas(1, 20)).toEqual({ mistake: 7, mate: 2, lesson: 6, plan: 2, opening: 3 });
+  });
+
+  it('gives mate cards 10 % at every level', () => {
+    for (const level of [1, 2, 3] as const) expect(NEW_MIX[level].mate).toBe(0.1);
   });
 
   it('keeps the sum equal to the cap, with ties going to mistake, then lesson, then opening', () => {
-    expect(newQuotas(3, 2)).toEqual({ mistake: 1, lesson: 0, plan: 0, opening: 1 });
+    expect(newQuotas(3, 2)).toEqual({ mistake: 1, mate: 0, lesson: 0, plan: 0, opening: 1 });
     for (const level of [1, 2, 3] as const) {
       for (let cap = 0; cap <= 40; cap++) {
         const q = newQuotas(level, cap);
-        expect(q.mistake + q.lesson + q.plan + q.opening).toBe(cap);
+        expect(q.mistake + q.mate + q.lesson + q.plan + q.opening).toBe(cap);
       }
     }
-    expect(newQuotas(2, 1)).toEqual({ mistake: 1, lesson: 0, plan: 0, opening: 0 });
+    expect(newQuotas(2, 1)).toEqual({ mistake: 1, mate: 0, lesson: 0, plan: 0, opening: 0 });
   });
 
   it('has shares that add up to 1 at every level', () => {
     for (const level of [1, 2, 3] as const) {
       const m = NEW_MIX[level];
-      expect(m.mistake + m.lesson + m.plan + m.opening).toBeCloseTo(1);
+      expect(m.mistake + m.mate + m.lesson + m.plan + m.opening).toBeCloseTo(1);
     }
   });
 });
@@ -174,13 +178,19 @@ describe('level mix in the session', () => {
   it('serves new cards by the level-3 quotas', () => {
     for (let i = 0; i < 10; i++) { addKind('mistake'); addKind('lesson', 'a'); addKind('opening'); }
     const s = buildSession(db, NOW, { daily: 20, newPerDay: 10, level: 3 });
-    expect([count(s, 'mistake'), count(s, 'lesson'), count(s, 'opening')]).toEqual([4, 2, 4]);
+    expect([count(s, 'mistake'), count(s, 'lesson'), count(s, 'opening')]).toEqual([4, 3, 3]);
   });
 
   it('keeps the interleaving of kinds inside the session', () => {
     for (let i = 0; i < 10; i++) { addKind('mistake'); addKind('lesson', 'a'); addKind('opening'); }
     const s = buildSession(db, NOW, { daily: 20, newPerDay: 10, level: 1 });
     expect(kinds(s.cards.map((c) => c.id)).slice(0, 3)).toEqual(['mistake', 'opening', 'lesson']);
+  });
+
+  it('serves mate cards by their quota', () => {
+    for (let i = 0; i < 10; i++) { addKind('mistake'); addKind('mate'); addKind('lesson', 'a'); addKind('opening'); }
+    const s = buildSession(db, NOW, { daily: 20, newPerDay: 10, level: 3 });
+    expect([count(s, 'mistake'), count(s, 'mate'), count(s, 'lesson'), count(s, 'opening')]).toEqual([4, 1, 2, 3]);
   });
 
   it('gives the unused quota of a kind to the other kinds', () => {
@@ -210,7 +220,7 @@ describe('level mix in the session', () => {
   it('serves plan cards by the level-1 quota (two of twenty) and interleaves them last', () => {
     for (let i = 0; i < 10; i++) { addKind('mistake'); addKind('lesson', 'a'); addPlan('p'); addKind('opening'); }
     const s = buildSession(db, NOW, { daily: 40, newPerDay: 20, level: 1 });
-    expect([count(s, 'mistake'), count(s, 'lesson'), count(s, 'plan'), count(s, 'opening')]).toEqual([8, 6, 2, 4]);
+    expect([count(s, 'mistake'), count(s, 'lesson'), count(s, 'plan'), count(s, 'opening')]).toEqual([8, 7, 2, 3]);
     expect(kinds(s.cards.map((c) => c.id)).slice(0, 4)).toEqual(['mistake', 'opening', 'lesson', 'plan']);
   });
 

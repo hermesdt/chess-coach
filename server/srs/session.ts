@@ -27,18 +27,18 @@ function withState(db: DatabaseSync, id: number, due: number | null): CardWithSt
   return { ...card, due, isNew: due === null };
 }
 
-const KIND_ORDER: CardKind[] = ['mistake', 'opening', 'lesson', 'plan'];
+const KIND_ORDER: CardKind[] = ['mistake', 'mate', 'opening', 'lesson', 'plan'];
 /** Tie-break order for quotas and for handing out unused quota. */
-const QUOTA_ORDER: CardKind[] = ['mistake', 'lesson', 'plan', 'opening'];
+const QUOTA_ORDER: CardKind[] = ['mistake', 'mate', 'lesson', 'plan', 'opening'];
 
 /** Share of the new-card cap per kind, by level. */
 export const NEW_MIX: Record<Level, Record<CardKind, number>> = {
-  1: { mistake: 0.4, mate: 0, lesson: 0.3, plan: 0.1, opening: 0.2 },
-  2: { mistake: 0.35, mate: 0, lesson: 0.25, plan: 0.1, opening: 0.3 },
-  3: { mistake: 0.3, mate: 0, lesson: 0.15, plan: 0.15, opening: 0.4 },
+  1: { mistake: 0.35, mate: 0.1, lesson: 0.3, plan: 0.1, opening: 0.15 },
+  2: { mistake: 0.3, mate: 0.1, lesson: 0.25, plan: 0.1, opening: 0.25 },
+  3: { mistake: 0.25, mate: 0.1, lesson: 0.15, plan: 0.15, opening: 0.35 },
 };
 
-/** Split `newPerDay` by the level mix. Largest remainder; ties go to mistake, then lesson, then plan, then opening. The sum is `newPerDay`. */
+/** Split `newPerDay` by the level mix. Largest remainder; ties go to mistake, then mate, then lesson, then plan, then opening. The sum is `newPerDay`. */
 export function newQuotas(level: Level, newPerDay: number): Record<CardKind, number> {
   const mix = NEW_MIX[level];
   // Work in hundredths of a card so the shares (multiples of 0.05) stay exact.
@@ -55,7 +55,7 @@ export function newQuotas(level: Level, newPerDay: number): Record<CardKind, num
   return quotas;
 }
 
-/** Round-robin over kinds (mistake, opening, lesson, plan), skipping a kind that ran out. Keeps order within a kind. */
+/** Round-robin over kinds (mistake, mate, opening, lesson, plan), skipping a kind that ran out. Keeps order within a kind. */
 function interleaveKinds(rows: { id: number; kind: string }[]): { id: number }[] {
   const queues = KIND_ORDER.map((k) => rows.filter((r) => r.kind === k));
   const out: { id: number }[] = [];
