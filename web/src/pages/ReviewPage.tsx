@@ -260,7 +260,11 @@ export function ReviewPage() {
       {answer && (
         <>
           <p className={`feedback ${answer.correct ? 'correct' : 'wrong'}`}>
-            {card.kind === 'plan'
+            {card.kind === 'mate'
+              ? answer.correct
+                ? 'Correct. This is the fastest mate.'
+                : `Not quite. The fastest mate is ${bestSan(card)}.`
+              : card.kind === 'plan'
               ? answer.correct
                 ? 'Good.'
                 : chosen
@@ -295,7 +299,7 @@ export function ReviewPage() {
         </>
       )}
       <p className="muted">
-        {gameId !== undefined && card.kind === 'mistake' && <><Link to={`/games/${gameId}`}>See the game</Link> · </>}
+        {gameId !== undefined && (card.kind === 'mistake' || card.kind === 'mate') && <><Link to={`/games/${gameId}`}>See the game</Link> · </>}
         <button type="button" className="link" onClick={() => setFlagOpen((o) => !o)}>Report a problem</button>
       </p>
       {flagOpen && (

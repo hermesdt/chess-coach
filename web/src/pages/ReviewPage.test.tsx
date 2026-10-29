@@ -176,6 +176,41 @@ describe('ReviewPage', () => {
     });
   });
 
+  describe('Mate card', () => {
+    // The stub board has no real mate; the test only needs the accepted list and the answer text.
+    const mateCard: CardWithState = {
+      ...card(1), kind: 'mate', prompt: 'White to move. You played a3 in a game. Find the mate in 1.',
+      solution: { accepted: ['e2e4'], best: 'e2e4', explanation: 'Mate in 1: e4.', mateIn: 1, played: 'a3' },
+      refs: [{ gameId: 7, ply: 3 }],
+    };
+    const open = async () => {
+      vi.spyOn(api, 'getReviewSession').mockResolvedValue({ cards: [mateCard], dueCount: 0, newAvailable: 1 });
+      render(<MemoryRouter><ReviewPage /></MemoryRouter>);
+      await screen.findByText(mateCard.prompt);
+    };
+
+    it('a move in the accepted list is correct', async () => {
+      await open();
+      fireEvent.click(screen.getByText('sq-e2'));
+      fireEvent.click(screen.getByText('sq-e4'));
+      await screen.findByText('Correct. This is the fastest mate.');
+    });
+
+    it('a wrong move shows the fastest mate and makes no engine call', async () => {
+      const check = vi.spyOn(api, 'checkOpeningMove');
+      await open();
+      fireEvent.click(screen.getByText('sq-e2'));
+      fireEvent.click(screen.getByText('sq-e3'));
+      await screen.findByText('Not quite. The fastest mate is e4.');
+      expect(check).not.toHaveBeenCalled();
+    });
+
+    it('links to the game', async () => {
+      await open();
+      expect(screen.getByRole('link', { name: 'See the game' }).getAttribute('href')).toBe('/games/7');
+    });
+  });
+
   describe('Plan link', () => {
     const openingCard = (nodeId: string): CardWithState => ({
       ...card(1), refs: [{ repertoire: 'caro-kann', nodeId }],
