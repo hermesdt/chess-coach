@@ -188,3 +188,6 @@ export interface GuideMove { san: string; from: string; to: string }
 export interface GuideDTO {
   repertoireId: string; name: string; color: Color; level: 1 | 2 | 3; why: string; variations: GuideVariationDTO[];
 }
+
+// M12: middlegame plans
+export type * from './plans';
