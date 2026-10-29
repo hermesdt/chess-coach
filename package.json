@@ -11,6 +11,7 @@
     "validate:content": "tsx scripts/validate-content.ts",
     "check:sequences": "tsx scripts/check-sequences.ts",
     "validate:lessons": "tsx scripts/validate-content.ts --lessons",
+    "validate:plans": "tsx scripts/validate-content.ts --plans",
     "smoke:start": "bash scripts/smoke-server.sh",
     "smoke:stop": "bash scripts/smoke-stop.sh"
   },

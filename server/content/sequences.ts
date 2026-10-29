@@ -3,9 +3,12 @@ import { basename } from 'node:path';
 import { Chess } from 'chess.js';
 import { listLessonFiles, loadLesson } from '../course/load.js';
 import { listGuideFiles, loadGuide } from '../guides/load.js';
+import { replayBoard } from '../plans/board.js';
+import { listPlanFiles, loadPlan } from '../plans/load.js';
 import { listRepertoireFiles, loadAllRepertoires, loadRepertoire } from '../repertoire/load.js';
 import type { RepNode, Repertoire, ValidationIssue } from '../repertoire/types.js';
 import type { GuideFile, Lesson } from '../../shared/types.js';
+import type { PlanBoard, PlanFile } from '../../shared/plans.js';
 
 const START_FEN = new Chess().fen();
 
@@ -156,6 +159,7 @@ export interface ContentSources {
   repertoires: { file: string; rep: Repertoire }[];
   lessons: { file: string; lesson: Lesson }[];
   guides: { file: string; guide: GuideFile; rep: Repertoire }[];
+  plans: { file: string; plan: PlanFile }[];
 }
 
 /** The position after one move in UCI. A bad move gives null. */
@@ -332,16 +336,78 @@ export function sequenceIssues(sources: ContentSources = loadContentSources()): 
       }
     }
   }
+  for (const { file, plan } of sources.plans) scanPlan(plan, file, out);
   return out;
+}
+
+const boardFen = (b: PlanBoard | undefined): string | null => (b ? (replayBoard(b.moves)?.fen ?? null) : null);
+
+/** The texts of a plan, each with the boards it may speak about. */
+function scanPlan(plan: PlanFile, file: string, out: ValidationIssue[]): void {
+  const main = boardFen(plan.position);
+  const stepFens = plan.steps.flatMap((s) => boardFen(s.board) ?? []);
+  const general = [...(main ? [main] : []), ...stepFens];
+  if (general.length > 0) {
+    for (const [nodeId, text] of [['(summary)', plan.summary], ['(goal)', plan.goal]] as const) scan(text, general, file, nodeId, out);
+    for (const j of plan.jobs) scan(j.text, general, file, `job:${j.square}`, out);
+    for (const b of plan.breaks) scan(b.text, general, file, `break:${b.from}${b.to}`, out);
+    plan.notNow.forEach((t, i) => scan(t, general, file, `notNow:${i + 1}`, out));
+  }
+  plan.steps.forEach((s, i) => {
+    const fen = boardFen(s.board) ?? main;
+    if (fen) scan(s.text, [fen], file, `step:${i + 1}`, out);
+  });
+  plan.opponent.forEach((o, i) => {
+    const fen = boardFen(o.board) ?? main;
+    if (fen) scan(o.text, [fen], file, `opponent:${i + 1}`, out);
+  });
+  for (const m of plan.mistakes) {
+    const g = new Chess();
+    let beforeLast = g.fen();
+    try {
+      for (const san of m.moves) {
+        beforeLast = g.fen();
+        g.move(san);
+      }
+    } catch {
+      continue;
+    }
+    scan(m.text, [g.fen(), beforeLast], file, m.moves.join(' '), out);
+  }
+  for (const model of plan.models) {
+    for (const c of model.comments) {
+      const before = replayBoard(model.moves.slice(0, Math.max(0, c.ply - 1)))?.fen;
+      const after = replayBoard(model.moves.slice(0, c.ply))?.fen;
+      const starts = [before, after].flatMap((f) => f ?? []);
+      if (starts.length > 0) scan(c.text, starts, file, `${plan.id}/model/${c.ply}`, out);
+    }
+  }
+  for (const e of plan.exercises) {
+    const fen = boardFen(e.board);
+    if (!fen) continue;
+    const starts = [fen, ...e.choices.flatMap((c) => {
+      try {
+        const g = new Chess(fen);
+        g.move(c.san);
+        return g.fen();
+      } catch {
+        return [];
+      }
+    })];
+    scan(e.explanation, starts, file, `${plan.id}/${e.id}`, out);
+    scan(e.prompt, starts, file, `${plan.id}/${e.id}`, out);
+    for (const c of e.choices) scan(c.why, starts, file, `${plan.id}/${e.id}`, out);
+  }
 }
 
 /** Loads the content files. With `path`, only that file (and, for a repertoire, nothing else). */
 export function loadContentSources(path: string | null = null): ContentSources {
   const reps = loadAllRepertoires();
   const read = (p: string): unknown => JSON.parse(readFileSync(p, 'utf8'));
-  const kind = (p: string): 'guide' | 'lesson' | 'repertoire' => {
+  const kind = (p: string): 'guide' | 'lesson' | 'plan' | 'repertoire' => {
     const j = read(p) as object;
-    return 'repertoireId' in j ? 'guide' : 'exercises' in j ? 'lesson' : 'repertoire';
+    // A plan has `exercises` too, so test its `steps` key first.
+    return 'repertoireId' in j ? 'guide' : 'steps' in j ? 'plan' : 'exercises' in j ? 'lesson' : 'repertoire';
   };
   const all = path === null;
   if (path !== null && !existsSync(path)) throw new Error(`File not found: ${path}`);
@@ -354,6 +420,7 @@ export function loadContentSources(path: string | null = null): ContentSources {
       const guide = loadGuide(read(p), reps);
       return { file: basename(p), guide, rep: reps.find((r) => r.id === guide.repertoireId)! };
     }),
+    plans: pick(listPlanFiles(), 'plan').map((p) => ({ file: basename(p), plan: loadPlan(read(p), reps) })),
   };
 }
 
@@ -371,6 +438,12 @@ export function countSequenceSentences(sources: ContentSources = loadContentSour
       texts.push(v.middlegame, ...v.finalForm.jobs.map((j) => j.text), ...v.route.map((r) => r.why), ...v.deviations.map((d) => d.plan), ...v.mistakes.map((m) => m.text));
     }
   }
+  for (const { plan } of sources.plans) {
+    texts.push(plan.summary, plan.goal, ...plan.steps.map((s) => s.text), ...plan.jobs.map((j) => j.text), ...plan.breaks.map((b) => b.text));
+    texts.push(...plan.opponent.map((o) => o.text), ...plan.notNow, ...plan.mistakes.map((m) => m.text));
+    for (const m of plan.models) texts.push(...m.comments.map((c) => c.text));
+    for (const e of plan.exercises) texts.push(e.prompt, e.explanation, ...e.choices.map((c) => c.why));
+  }
   return texts.flatMap(splitSentences).filter((s) => lineTokens(s).tokens.length >= 2).length;
 }
 
@@ -387,7 +460,7 @@ export function sequenceExitCode(issues: ValidationIssue[]): number {
   return issues.some((i) => i.severity !== 'warning') ? 1 : 0;
 }
 
-export type SequenceScope = { file: string } | { lessons: boolean; repertoires: boolean };
+export type SequenceScope = { file: string } | { lessons: boolean; repertoires: boolean; plans?: boolean };
 
 /** Keeps the sources of the scope: one file (by file name), or the lessons and/or the repertoires with their guides. */
 export function filterSources(sources: ContentSources, scope: SequenceScope): ContentSources {
@@ -397,12 +470,14 @@ export function filterSources(sources: ContentSources, scope: SequenceScope): Co
       repertoires: sources.repertoires.filter((r) => r.file === name),
       lessons: sources.lessons.filter((l) => l.file === name),
       guides: sources.guides.filter((g) => g.file === name),
+      plans: sources.plans.filter((p) => p.file === name),
     };
   }
   return {
     repertoires: scope.repertoires ? sources.repertoires : [],
     guides: scope.repertoires ? sources.guides : [],
     lessons: scope.lessons ? sources.lessons : [],
+    plans: scope.plans ? sources.plans : [],
   };
 }
 

@@ -5,6 +5,7 @@ import { sequenceCheck } from '../server/content/sequences.js';
 import { LessonError, listLessonFiles, loadLesson, validateLesson } from '../server/course/load.js';
 import type { LessonEngineCache } from '../server/course/validate.js';
 import { GuideError, listGuideFiles, loadGuide, validateGuide } from '../server/guides/load.js';
+import { listPlanFiles, loadPlan, PlanError, validatePlan } from '../server/plans/load.js';
 import { listRepertoireFiles, loadAllRepertoires, loadRepertoire, RepertoireError } from '../server/repertoire/load.js';
 import { validateRepertoire, type EngineCache } from '../server/repertoire/validate.js';
 import type { ValidationIssue } from '../server/repertoire/types.js';
@@ -81,6 +82,24 @@ async function guideIssues(paths: string[], withEngine = true): Promise<Validati
   return issues;
 }
 
+async function planIssues(paths: string[]): Promise<ValidationIssue[]> {
+  const issues: ValidationIssue[] = [];
+  const reps = loadAllRepertoires();
+  for (const path of paths) {
+    const file = basename(path);
+    try {
+      const plan = loadPlan(JSON.parse(readFileSync(path, 'utf8')), reps);
+      if (plan.id !== basename(path, '.json')) issues.push({ file, nodeId: '(plan)', rule: 'plan-id', detail: `Plan id "${plan.id}" must equal the file name` });
+      console.log(`${file}: checking ${plan.exercises.length} exercises`);
+      issues.push(...(await validatePlan(plan, reps, lazyEnginePool, { nodes: NODES })));
+    } catch (e) {
+      if (!(e instanceof PlanError || e instanceof SyntaxError)) throw e;
+      issues.push({ file, nodeId: '(file)', rule: 'invalid-plan', detail: e.message });
+    }
+  }
+  return issues;
+}
+
 /** The guide files that belong to a repertoire file (matched by the repertoire id). */
 function guidesOfRepertoire(repertoirePath: string): string[] {
   let id: unknown;
@@ -107,6 +126,15 @@ function isGuideFile(path: string): boolean {
   }
 }
 
+/** A plan file has a `steps` key (lessons also have `exercises`, so test plans first). */
+function isPlanFile(path: string): boolean {
+  try {
+    return 'steps' in (JSON.parse(readFileSync(path, 'utf8')) as object);
+  } catch {
+    return path.includes('plans');
+  }
+}
+
 /** A file with an `exercises` key is a lesson, any other file is a repertoire. */
 function isLessonFile(path: string): boolean {
   try {
@@ -124,7 +152,7 @@ async function main(): Promise<number> {
       console.log(`File not found: ${args.file}`);
       return 1;
     }
-    const run = isGuideFile(args.file) ? guideIssues : isLessonFile(args.file) ? lessonIssues : repertoireIssues;
+    const run = isGuideFile(args.file) ? guideIssues : isPlanFile(args.file) ? planIssues : isLessonFile(args.file) ? lessonIssues : repertoireIssues;
     issues.push(...(await run([args.file])));
     // A repertoire change can break its guides: re-check them, without the engine (a guide file alone gets the full check).
     if (run === repertoireIssues) issues.push(...(await guideIssues(guidesOfRepertoire(args.file), false)));
@@ -134,7 +162,8 @@ async function main(): Promise<number> {
     if (args.repertoires) issues.push(...(await repertoireIssues(listRepertoireFiles())));
     if (args.lessons) issues.push(...(await lessonIssues(listLessonFiles())));
     if (args.repertoires) issues.push(...(await guideIssues(listGuideFiles())));
-    issues.push(...sequenceCheck({ lessons: args.lessons, repertoires: args.repertoires }, SEQUENCES_STRICT));
+    if (args.plans) issues.push(...(await planIssues(listPlanFiles())));
+    issues.push(...sequenceCheck({ lessons: args.lessons, repertoires: args.repertoires, plans: args.plans }, SEQUENCES_STRICT));
   }
   const errors = issues.filter((i) => i.severity !== 'warning');
   const warnings = issues.filter((i) => i.severity === 'warning');
