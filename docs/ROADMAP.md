@@ -39,6 +39,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M9 | Level 2–3 content (lessons, tags, deeper repertoire) | done | `docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md` |
 | M10 | Opening guides: per repertoire why, strengths, target set-up, plans, typical mistakes | done | spec `docs/superpowers/specs/2026-10-21-opening-guides-design.md`, plan `docs/superpowers/plans/2026-10-21-m10-opening-guides.md` |
 | M11 | Content quality audit: every repertoire comment, lesson and guide claim checked with chess.js + Stockfish | done | spec `docs/superpowers/specs/2026-10-20-content-audit-design.md`, plan `docs/superpowers/plans/2026-10-22-m11-content-audit.md` |
+| M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | planned | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md` |
 
 ## Log
 
@@ -369,6 +370,10 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 - Open for the owner: the move-choice questions in the index (London Qc1, Caro-Kann
   tree moves 4-11 win % behind the engine, Slav missing lines, lessons 10, 11,
   12, 19).
+- 2026-10-29 — Owner asked for middlegame help: "once I have the London set up,
+  now what? How do I start attacking? How do I attack on the h file? Or the a
+  file?" They want a section like Openings for the middlegame. This is M12; the
+  spec has five open questions for the owner (each with a default).
 
 ## Next session
 
