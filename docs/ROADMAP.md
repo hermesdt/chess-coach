@@ -39,7 +39,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M9 | Level 2–3 content (lessons, tags, deeper repertoire) | done | `docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md` |
 | M10 | Opening guides: per repertoire why, strengths, target set-up, plans, typical mistakes | done | spec `docs/superpowers/specs/2026-10-21-opening-guides-design.md`, plan `docs/superpowers/plans/2026-10-21-m10-opening-guides.md` |
 | M11 | Content quality audit: every repertoire comment, lesson and guide claim checked with chess.js + Stockfish | done | spec `docs/superpowers/specs/2026-10-20-content-audit-design.md`, plan `docs/superpowers/plans/2026-10-22-m11-content-audit.md` |
-| M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | planned | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md` |
+| M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | planned | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12a plan `docs/superpowers/plans/2026-10-29-m12a-middlegame-plans.md` |
 
 ## Log
 
