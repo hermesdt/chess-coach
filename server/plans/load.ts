@@ -15,6 +15,8 @@ export class PlanError extends Error {
   }
 }
 
+export { validatePlan } from './validate.js';
+
 const DEFAULT_DIR = 'content/plans';
 
 const isString = (v: unknown): v is string => typeof v === 'string';
