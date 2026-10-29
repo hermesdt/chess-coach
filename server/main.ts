@@ -13,6 +13,8 @@ import { closeLiveEngine } from './engine/live.js';
 import { markInterruptedChats } from './chat/chat-repo.js';
 import { recoverInterruptedJobs } from './jobs.js';
 import { syncLessonCards } from './course/lesson-cards.js';
+import { loadPlans } from './plans/load.js';
+import { syncPlanCards } from './plans/plan-cards.js';
 import { loadLessons } from './course/load.js';
 import type { Lesson } from '../shared/types.js';
 import { loadAllRepertoires } from './repertoire/load.js';
@@ -67,6 +69,11 @@ const server = serve(
       syncLessonCards(db, lessons);
     } catch (err) {
       console.error('lesson card sync failed:', err);
+    }
+    try {
+      syncPlanCards(db, loadPlans(undefined, repertoires));
+    } catch (err) {
+      console.error('plan card sync failed:', err);
     }
     const app = createApp({ db, repertoires, lessons });
 

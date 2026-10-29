@@ -1,4 +1,5 @@
 import type { DatabaseSync } from 'node:sqlite';
+import type { PlanFile } from '../../shared/plans.js';
 import type { CardKind, CardRef, CardWithState, Lesson, ReviewSession } from '../../shared/types.js';
 import { getSettings } from '../config.js';
 import { currentLevel, type Level } from '../level.js';
@@ -26,23 +27,23 @@ function withState(db: DatabaseSync, id: number, due: number | null): CardWithSt
   return { ...card, due, isNew: due === null };
 }
 
-const KIND_ORDER: CardKind[] = ['mistake', 'opening', 'lesson'];
+const KIND_ORDER: CardKind[] = ['mistake', 'opening', 'lesson', 'plan'];
 /** Tie-break order for quotas and for handing out unused quota. */
-const QUOTA_ORDER: CardKind[] = ['mistake', 'lesson', 'opening'];
+const QUOTA_ORDER: CardKind[] = ['mistake', 'lesson', 'plan', 'opening'];
 
 /** Share of the new-card cap per kind, by level. */
 export const NEW_MIX: Record<Level, Record<CardKind, number>> = {
-  1: { mistake: 0.4, lesson: 0.4, opening: 0.2 },
-  2: { mistake: 0.35, lesson: 0.3, opening: 0.35 },
-  3: { mistake: 0.3, lesson: 0.2, opening: 0.5 },
+  1: { mistake: 0.4, lesson: 0.3, plan: 0.1, opening: 0.2 },
+  2: { mistake: 0.35, lesson: 0.25, plan: 0.1, opening: 0.3 },
+  3: { mistake: 0.3, lesson: 0.15, plan: 0.15, opening: 0.4 },
 };
 
-/** Split `newPerDay` by the level mix. Largest remainder; ties go to mistake, then lesson, then opening. The sum is `newPerDay`. */
+/** Split `newPerDay` by the level mix. Largest remainder; ties go to mistake, then lesson, then plan, then opening. The sum is `newPerDay`. */
 export function newQuotas(level: Level, newPerDay: number): Record<CardKind, number> {
   const mix = NEW_MIX[level];
   // Work in hundredths of a card so the shares (multiples of 0.05) stay exact.
   const exact = QUOTA_ORDER.map((k) => ({ k, units: Math.round(mix[k] * 100) * newPerDay }));
-  const quotas: Record<CardKind, number> = { mistake: 0, lesson: 0, opening: 0 };
+  const quotas: Record<CardKind, number> = { mistake: 0, lesson: 0, plan: 0, opening: 0 };
   for (const e of exact) quotas[e.k] = Math.floor(e.units / 100);
   let left = newPerDay - QUOTA_ORDER.reduce((sum, k) => sum + quotas[k], 0);
   const byRemainder = [...exact].sort((a, b) => (b.units % 100) - (a.units % 100));
@@ -54,7 +55,7 @@ export function newQuotas(level: Level, newPerDay: number): Record<CardKind, num
   return quotas;
 }
 
-/** Round-robin over kinds (mistake, opening, lesson), skipping a kind that ran out. Keeps order within a kind. */
+/** Round-robin over kinds (mistake, opening, lesson, plan), skipping a kind that ran out. Keeps order within a kind. */
 function interleaveKinds(rows: { id: number; kind: string }[]): { id: number }[] {
   const queues = KIND_ORDER.map((k) => rows.filter((r) => r.kind === k));
   const out: { id: number }[] = [];
@@ -92,6 +93,8 @@ export interface SessionLimits {
   level?: Level;
   /** Level of each lesson. A lesson card above `level` is not served. Without it no lesson card is hidden. */
   lessonLevels?: ReadonlyMap<string, number>;
+  /** Level of each plan. A plan card above `level` is not served. Without it no plan card is hidden. */
+  planLevels?: ReadonlyMap<string, number>;
 }
 
 /**
@@ -106,9 +109,15 @@ export function buildSession(
 ): ReviewSession {
   const level = limits.level ?? 1;
   const hidden = (r: { kind: string; refs_json: string }): boolean => {
-    if (r.kind !== 'lesson' || !limits.lessonLevels) return false;
-    const lessonId = (JSON.parse(r.refs_json) as CardRef[]).find((ref) => ref.lessonId !== undefined)?.lessonId;
-    return lessonId !== undefined && (limits.lessonLevels.get(lessonId) ?? 1) > level;
+    if (r.kind === 'lesson' && limits.lessonLevels) {
+      const lessonId = (JSON.parse(r.refs_json) as CardRef[]).find((ref) => ref.lessonId !== undefined)?.lessonId;
+      return lessonId !== undefined && (limits.lessonLevels.get(lessonId) ?? 1) > level;
+    }
+    if (r.kind === 'plan' && limits.planLevels) {
+      const planId = (JSON.parse(r.refs_json) as CardRef[]).find((ref) => ref.planId !== undefined)?.planId;
+      return planId !== undefined && (limits.planLevels.get(planId) ?? 1) > level;
+    }
+    return false;
   };
   const due = (db.prepare(`SELECT c.id AS id, c.kind AS kind, c.refs_json AS refs_json, s.due AS due FROM cards c JOIN card_state s ON s.card_id = c.id
     WHERE c.suspended = 0 AND s.due <= ? ORDER BY s.due, c.id`).all(now) as { id: number; kind: string; refs_json: string; due: number }[])
@@ -145,11 +154,12 @@ export function sessionSize(db: DatabaseSync, now: number, limits: SessionLimits
   return buildSession(db, now, limits).cards.length;
 }
 
-/** Limits from the settings, the current level and the level of each lesson. */
-export function sessionLimits(db: DatabaseSync, lessons: readonly Lesson[]): SessionLimits {
+/** Limits from the settings, the current level and the level of each lesson and plan. */
+export function sessionLimits(db: DatabaseSync, lessons: readonly Lesson[], plans: readonly PlanFile[] = []): SessionLimits {
   const { reviewDailyLimit, reviewNewPerDay } = getSettings(db);
   return {
     daily: reviewDailyLimit, newPerDay: reviewNewPerDay, level: currentLevel(db).level,
     lessonLevels: new Map(lessons.map((l) => [l.id, l.level])),
+    planLevels: new Map(plans.map((p) => [p.id, p.level])),
   };
 }
