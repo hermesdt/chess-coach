@@ -5,6 +5,7 @@ import type { PlanBoard, PlanDTO, PlanFile, PlanIndexEntry, PlanMoveDTO, Resolve
 import type { Lesson } from '../../shared/types.js';
 import { currentLevel } from '../level.js';
 import { replayBoard } from '../plans/board.js';
+import { planGameCounts, planGames } from '../plans/game-plans.js';
 import { plannedIds, trainPlan } from '../plans/plan-cards.js';
 import { triggerLabels } from '../plans/trigger.js';
 
@@ -64,9 +65,10 @@ export function plansRoutes(db: DatabaseSync, getPlans: () => PlanFile[], getLes
     .get('/plans', (c) => {
       const level = currentLevel(db).level;
       const trained = plannedIds(db);
+      const counts = planGameCounts(db, getPlans());
       const list: PlanIndexEntry[] = getPlans().map((p) => ({
         id: p.id, title: p.title, group: p.group, side: p.side, level: p.level, locked: p.level > level,
-        summary: p.summary, trained: trained.has(p.id), exercises: p.exercises.length, fen: resolveBoard(p.position).fen,
+        summary: p.summary, trained: trained.has(p.id), exercises: p.exercises.length, fen: resolveBoard(p.position).fen, gameCount: counts.get(p.id) ?? 0,
       }));
       return c.json(list);
     })
@@ -74,6 +76,10 @@ export function plansRoutes(db: DatabaseSync, getPlans: () => PlanFile[], getLes
       const plan = getPlans().find((p) => p.id === c.req.param('id'));
       if (!plan) return c.json({ error: 'not found' }, 404);
       return c.json(toDto(plan, currentLevel(db).level, plannedIds(db).has(plan.id), getLessons()));
+    })
+    .get('/plans/:id/games', (c) => {
+      const games = planGames(db, getPlans(), c.req.param('id'));
+      return games ? c.json(games) : c.json({ error: 'not found' }, 404);
     })
     .post('/plans/:id/train', (c) => {
       const plans = getPlans();

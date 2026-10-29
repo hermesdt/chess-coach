@@ -94,7 +94,7 @@ export function createApp(deps: AppDeps): Hono {
   app.route('/api', liveRoutes(deps.live ?? lazyLiveEngine, cache));
   app.route('/api', syncRoutes(deps.db, { fetchFn: deps.fetchFn, now: deps.now, pool }, getReps));
   app.route('/api', jobsRoutes(deps.db));
-  app.route('/api', gamesRoutes(deps.db));
+  app.route('/api', gamesRoutes(deps.db, getPlans));
   app.route('/api', importRoutes(deps.db, getReps));
   app.route('/api', analysisRoutes(deps.db, pool));
   app.route('/api', reviewRoutes(deps.db, deps.now ?? Date.now, pool, getReps, getLessons, cache, getPlans));

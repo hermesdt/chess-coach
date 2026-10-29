@@ -12,7 +12,7 @@ vi.mock('react-chessboard', () => ({
 
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const entry = (over: Partial<PlanIndexEntry>): PlanIndexEntry => ({
-  id: 'p', title: 'Plan', group: 'london', side: 'white', level: 1, locked: false, summary: 'Summary.', trained: false, exercises: 3, fen: START, ...over,
+  id: 'p', title: 'Plan', group: 'london', side: 'white', level: 1, locked: false, summary: 'Summary.', trained: false, exercises: 3, gameCount: 0, fen: START, ...over,
 });
 
 afterEach(() => {

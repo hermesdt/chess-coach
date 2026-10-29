@@ -2,9 +2,10 @@ import { readFileSync } from 'node:fs';
 import type { DatabaseSync } from 'node:sqlite';
 import { Chess } from 'chess.js';
 import { beforeEach, describe, expect, it } from 'vitest';
-import type { PlanDTO, PlanFile, PlanIndexEntry } from '../../shared/plans.js';
+import type { GamePlanDTO, PlanDTO, PlanFile, PlanGamesDTO, PlanIndexEntry } from '../../shared/plans.js';
 import { createApp } from '../app.js';
 import { openDb } from '../db/db.js';
+import { insertGames } from '../db/games-repo.js';
 import { loadAllRepertoires } from '../repertoire/load.js';
 import { loadPlan } from '../plans/load.js';
 import { listCardsByKind, positionKey, upsertCard } from '../srs/cards-repo.js';
@@ -41,7 +42,7 @@ describe('GET /api/plans', () => {
     expect(list).toHaveLength(2);
     expect(list[0]).toEqual({
       id: 'sample', title: 'Sample plan', group: 'london', side: 'white', level: 1, locked: false,
-      summary: sample().summary, trained: false, exercises: 3, fen: fenOf(A),
+      summary: sample().summary, trained: false, exercises: 3, fen: fenOf(A), gameCount: 0,
     });
     expect(list[1]).toMatchObject({ id: 'sample-2', level: 2, locked: true });
   });
@@ -124,5 +125,52 @@ describe('review check route for plan cards', () => {
       solution: { accepted: ['e2e4'], best: 'e2e4', explanation: null }, refs: [], lastMove: null,
     });
     expect((await check(card.id, 'e2e4')).status).toBe(400);
+  });
+});
+
+describe('plan moments in games', () => {
+  // The sample plan fits the London position A (White to move after ply 16).
+  const pgn = `[Event "x"]\n\n${A.map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}. ${m}` : m)).join(' ')} *`;
+  const addGame = (i: number, over: Record<string, unknown> = {}) => {
+    insertGames(db, [{
+      source: 'chesscom', sourceId: `g${i}`, playedAt: 1000 + i, timeClass: 'blitz', rated: true, white: 'me', black: `opp${i}`,
+      whiteElo: null, blackElo: null, userColor: 'white', result: 'win', termination: null, eco: null, openingName: null,
+      pgn, url: null, plyCount: 18, ...over,
+    }]);
+    db.prepare("INSERT INTO opening_events (game_id, repertoire_id, kind) VALUES (?, 'london', 'out_of_book')").run(i);
+  };
+
+  it('GET /games/:id/plans gives the plan moments', async () => {
+    addGame(1);
+    const res = await app.request('/api/games/1/plans');
+    expect(res.status).toBe(200);
+    expect((await res.json()) as GamePlanDTO[]).toEqual([
+      { planId: sample().id, title: sample().title, ply: 16 },
+      { planId: 'sample-2', title: 'Hard plan', ply: 16 },
+    ]);
+  });
+
+  it('GET /games/:id/plans gives 404 for a missing game', async () => {
+    expect((await app.request('/api/games/99/plans')).status).toBe(404);
+    expect((await app.request('/api/games/abc/plans')).status).toBe(404);
+  });
+
+  it('GET /plans/:id/games gives the stats', async () => {
+    addGame(1);
+    addGame(2, { result: 'loss' });
+    const res = await app.request(`/api/plans/${sample().id}/games`);
+    const body = (await res.json()) as PlanGamesDTO;
+    expect(body).toMatchObject({ total: 2, wins: 1, draws: 0, losses: 1 });
+    expect(body.games.map((g) => [g.id, g.ply])).toEqual([[2, 16], [1, 16]]);
+  });
+
+  it('GET /plans/:id/games gives 404 for a missing plan', async () => {
+    expect((await app.request('/api/plans/nope/games')).status).toBe(404);
+  });
+
+  it('GET /plans lists gameCount', async () => {
+    addGame(1);
+    const list = (await (await app.request('/api/plans')).json()) as PlanIndexEntry[];
+    expect(list.map((p) => p.gameCount)).toEqual([1, 1]);
   });
 });

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
-import type { PlanDTO } from '../../../shared/types';
+import type { PlanDTO, PlanGamesDTO } from '../../../shared/types';
 import { api } from '../api';
 import { DrillBoard, type DrillArrow } from '../components/DrillBoard';
 import { FinalFormBoard } from '../components/guide/FinalFormBoard';
@@ -21,6 +21,7 @@ export function PlanPage() {
   const [trained, setTrained] = useState(false);
   const [trainResult, setTrainResult] = useState<string | null>(null);
   const [training, setTraining] = useState(false);
+  const [games, setGames] = useState<PlanGamesDTO | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -37,6 +38,21 @@ export function PlanPage() {
       (e: Error) => {
         if (!stale) setError(e.message);
       },
+    );
+    return () => {
+      stale = true;
+    };
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    let stale = false;
+    setGames(null);
+    api.getPlanGames(id).then(
+      (g) => {
+        if (!stale) setGames(g);
+      },
+      () => undefined,
     );
     return () => {
       stale = true;
@@ -60,10 +76,12 @@ export function PlanPage() {
   };
 
   const guide = plan.guideLinks[0];
+  // Like the M10 guides: the box shows from three games.
+  const showGames = games !== null && games.total >= 3;
   const parts: [string, string, boolean][] = [
     ['When', 'when', plan.triggerLabels.length > 0], ['Goal', 'goal', true], ['Steps', 'steps', true],
     ['Pawn breaks', 'breaks', plan.breaks.length > 0], ['Watch out', 'watch', true], ['Typical mistakes', 'mistakes', true],
-    ['Model line', 'model', plan.models.length > 0], ['Train', 'train', true],
+    ['Model line', 'model', plan.models.length > 0], ['Your games', 'games', showGames], ['Train', 'train', true],
   ];
 
   return (
@@ -134,6 +152,19 @@ export function PlanPage() {
         <section id="model" className="guide-part">
           <h2>Model line</h2>
           {plan.models.map((m) => <ModelStepper key={m.title} model={m} orientation={plan.side} />)}
+        </section>
+      )}
+
+      {games && showGames && (
+        <section id="games" className="guide-part">
+          <h2>Your games</h2>
+          <p>{plural(games.total, 'game', 'games')} reach this plan. You won {games.wins}, drew {games.draws} and lost {games.losses}.</p>
+          <ul>
+            {games.games.map((g) => (
+              <li key={g.id}><Link to={`/games/${g.id}`}>{g.white} - {g.black}, move {Math.ceil(g.ply / 2)}</Link></li>
+            ))}
+          </ul>
+          {games.total > games.games.length && <p className="muted">and {games.total - games.games.length} more</p>}
         </section>
       )}
 

@@ -3,6 +3,8 @@ import { Hono } from 'hono';
 import type { Color, GameDetail, GameRepertoireRef, GameListQuery, GameResult, Source } from '../../shared/types.js';
 import { parsePgn } from '../chess/pgn.js';
 import { getGameRow, listGames } from '../db/games-repo.js';
+import type { PlanFile } from '../../shared/plans.js';
+import { gamePlans } from '../plans/game-plans.js';
 
 const SOURCES: readonly string[] = ['chesscom', 'lichess', 'import'];
 const COLORS: readonly string[] = ['white', 'black'];
@@ -30,7 +32,7 @@ function repertoireRef(db: DatabaseSync, gameId: number): GameRepertoireRef | nu
   return e.node_id === null ? null : { id: e.repertoire_id, nodeId: e.node_id, kind: e.kind };
 }
 
-export function gamesRoutes(db: DatabaseSync): Hono {
+export function gamesRoutes(db: DatabaseSync, getPlans: () => PlanFile[] = () => []): Hono {
   return new Hono()
     .get('/games', (c) => {
       const p = c.req.query();
@@ -52,5 +54,11 @@ export function gamesRoutes(db: DatabaseSync): Hono {
       const { startFen, moves } = parsePgn(row.pgn);
       const detail: GameDetail = { ...row, startFen, moves, repertoire: repertoireRef(db, row.id) };
       return c.json(detail);
+    })
+    .get('/games/:id/plans', (c) => {
+      const id = c.req.param('id');
+      const row = /^\d+$/.test(id) ? getGameRow(db, Number(id)) : null;
+      if (!row) return c.json({ error: 'not found' }, 404);
+      return c.json(gamePlans(db, row.id, getPlans()));
     });
 }

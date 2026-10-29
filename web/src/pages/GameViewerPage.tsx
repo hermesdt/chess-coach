@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { Chessboard } from 'react-chessboard';
+import type { GamePlanDTO } from '../../../shared/plans';
 import type { ChatLineDTO, GameAnalysis, GameDetail, GameReviewNote, ProviderId } from '../../../shared/types';
 import { api, type AnalysisResponse } from '../api';
 import { AnalyseButton } from '../components/AnalyseButton';
@@ -75,6 +76,7 @@ export function GameViewerPage() {
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [momentPly, setMomentPly] = useState<number | null>(null);
+  const [gamePlans, setGamePlans] = useState<GamePlanDTO[]>([]);
   const [lineError, setLineError] = useState<string | null>(null);
   const [liveArrow, setLiveArrow] = useState<LiveArrow | null>(null);
   const guideIndex = useGuideIndex(game?.repertoire?.id);
@@ -96,6 +98,21 @@ export function GameViewerPage() {
       (e: Error) => {
         if (!stale) setError(e.message);
       },
+    );
+    return () => {
+      stale = true;
+    };
+  }, [id]);
+
+  useEffect(() => {
+    setGamePlans([]);
+    if (!/^\d+$/.test(id ?? '')) return;
+    let stale = false;
+    api.getGamePlans(Number(id)).then(
+      (p) => {
+        if (!stale) setGamePlans(p);
+      },
+      () => undefined,
     );
     return () => {
       stale = true;
@@ -379,6 +396,14 @@ export function GameViewerPage() {
           )}
         />
       </div>
+      {gamePlans.map((p) => (
+        <p key={p.planId} className="plan-moment">
+          <strong>Middlegame plan: {p.title} (move {Math.ceil(p.ply / 2)})</strong>{' '}
+          <button type="button" className="link" onClick={() => { setMomentPly(null); setCurrent(mainNode(p.ply)); }}>Show the move</button>
+          {' · '}
+          <Link to={`/plans/${p.planId}`}>Read the plan</Link>
+        </p>
+      ))}
       {done && <CoachPanel key={game.id} gameId={game.id} notes={notes} active={activeNote} onActive={setActiveNote} onChanged={reloadNotes} error={notesError} />}
       {done && (
         <>
@@ -389,7 +414,7 @@ export function GameViewerPage() {
               <span style={{ color: PLAYED_ARROW }}>Red arrow</span>: your move ({moment.san}).
             </p>
           )}
-          <KeyMoments moments={done.keyMoments} moves={done.moves} onSelect={selectMoment} coach={notes[activeNote]?.review.moments} />
+          <KeyMoments moments={done.keyMoments} moves={done.moves} onSelect={selectMoment} coach={notes[activeNote]?.review.moments} plans={gamePlans} />
         </>
       )}
     </section>
