@@ -16,6 +16,7 @@ import { syncLessonCards } from './course/lesson-cards.js';
 import type { PlanFile } from '../shared/plans.js';
 import { loadPlans } from './plans/load.js';
 import { syncPlanCards } from './plans/plan-cards.js';
+import { syncMateCards } from './srs/mate-cards.js';
 import { loadLessons } from './course/load.js';
 import type { Lesson } from '../shared/types.js';
 import { loadAllRepertoires } from './repertoire/load.js';
@@ -77,6 +78,12 @@ const server = serve(
       syncPlanCards(db, plans);
     } catch (err) {
       console.error('plan card sync failed:', err);
+    }
+    try {
+      const mates = syncMateCards(db);
+      if (mates.created > 0) console.log(`mate cards: ${mates.created} new from ${mates.games} games`);
+    } catch (err) {
+      console.error('mate card sync failed:', err);
     }
     const app = createApp({ db, repertoires, lessons, plans });
 

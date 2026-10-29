@@ -6,6 +6,7 @@ import { getGameRow } from '../db/games-repo.js';
 import type { EnginePool } from '../engine/pool.js';
 import { runJob } from '../jobs.js';
 import { currentLevel } from '../level.js';
+import { buildMateCards } from '../srs/mate-cards.js';
 import { buildMistakeCards } from '../srs/mistake-cards.js';
 import { analyseGame } from './analyse-game.js';
 import { ANALYSIS_VERSION, markAnalysis, markCardsBuilt, saveAnalysis } from './analysis-repo.js';
@@ -87,14 +88,23 @@ async function analyseOne(db: DatabaseSync, id: number, deps: QueueDeps): Promis
     return '';
   }
   // Cards never change the analysis status. A failure only shows on the job message.
+  const done = { ...result, status: 'done' as const, error: null };
+  let note = '';
+  // Mate cards first: they take the mistake cards of the same plies.
   try {
-    await buildMistakeCards(db, { ...result, status: 'done', error: null }, deps.pool, { nodes });
+    buildMateCards(db, done);
+  } catch (e) {
+    console.error(`Mate card building failed for game ${id}:`, e);
+    note += ' (mate cards: failed)';
+  }
+  try {
+    await buildMistakeCards(db, done, deps.pool, { nodes });
     markCardsBuilt(db, id, Date.now());
-    return '';
   } catch (e) {
     console.error(`Card building failed for game ${id}:`, e);
-    return ' (cards: failed)';
+    note += ' (cards: failed)';
   }
+  return note;
 }
 
 /** Sort key that puts newer games first. */
