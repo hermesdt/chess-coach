@@ -89,3 +89,19 @@ describe('LessonPage', () => {
     await screen.findByText('Correct');
   });
 });
+
+describe('related plans', () => {
+  it('lists the plans that name the lesson', async () => {
+    vi.spyOn(api, 'getLesson').mockResolvedValue({ ...lesson, relatedPlans: [{ id: 'london-h-file', title: 'Use the h-file' }] });
+    renderPage();
+    await screen.findByText('Related plans');
+    expect(screen.getByRole('link', { name: 'Use the h-file' }).getAttribute('href')).toBe('/plans/london-h-file');
+  });
+
+  it('shows nothing when no plan names the lesson', async () => {
+    vi.spyOn(api, 'getLesson').mockResolvedValue(lesson);
+    renderPage();
+    await screen.findByText('Take the centre');
+    expect(screen.queryByText('Related plans')).toBeNull();
+  });
+});

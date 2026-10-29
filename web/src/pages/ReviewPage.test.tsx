@@ -9,9 +9,9 @@ import { ReviewPage } from './ReviewPage';
 
 // jsdom has no layout, so the real board cannot render. The stub exposes the position and the click handler.
 vi.mock('react-chessboard', () => ({
-  Chessboard: ({ options }: { options: { position: string; onSquareClick: (a: { piece: null; square: string }) => void } }) => (
-    <div data-testid="board" data-position={options.position}>
-      {['e2', 'e4', 'e7', 'e8'].map((square) => (
+  Chessboard: ({ options }: { options: { position: string; arrows?: unknown[]; onSquareClick: (a: { piece: null; square: string }) => void } }) => (
+    <div data-testid="board" data-position={options.position} data-arrows={JSON.stringify(options.arrows ?? [])}>
+      {['e2', 'e3', 'e4', 'e7', 'e8'].map((square) => (
         <button key={square} type="button" onClick={() => options.onSquareClick({ piece: null, square })}>
           sq-{square}
         </button>
@@ -210,5 +210,74 @@ describe('ReviewPage', () => {
       await waitFor(() => expect(list).toHaveBeenCalled());
       expect(screen.queryByRole('link', { name: 'Plan' })).toBeNull();
     });
+  });
+});
+
+describe('ReviewPage plan cards', () => {
+  const planCard = (): CardWithState => ({
+    id: 7, kind: 'plan', positionKey: 'k', fen: START, sideToMove: 'white', prompt: 'White to move. Start the plan.',
+    solution: {
+      accepted: ['e2e4'], best: 'e2e4', explanation: 'The e4 pawn takes the centre.',
+      choices: [
+        { uci: 'e2e4', san: 'e4', why: 'e4 takes the centre.' },
+        { uci: 'd2d4', san: 'd4', why: 'd4 is fine too.' },
+        { uci: 'f2f3', san: 'f3', why: 'f3 weakens your king.' },
+      ],
+    },
+    refs: [{ planId: 'sample', exerciseId: 'start' }], suspended: false, createdAt: 0, due: null, isNew: true,
+  });
+  const arrows = () => JSON.parse(screen.getByTestId('board').getAttribute('data-arrows')!) as { color: string }[];
+
+  const open = async () => {
+    vi.spyOn(api, 'getReviewSession').mockResolvedValue({ cards: [planCard()], dueCount: 0, newAvailable: 1 });
+    vi.spyOn(api, 'submitReview').mockResolvedValue({ cardId: 7, nextDue: 0 });
+    render(<MemoryRouter><ReviewPage /></MemoryRouter>);
+    await screen.findByText('White to move. Start the plan.');
+  };
+
+  it('shows the choices as arrows and buttons, and hides the reasons until the answer', async () => {
+    await open();
+    expect(screen.getAllByRole('button').map((b) => b.textContent)).toEqual(expect.arrayContaining(['A e4', 'B d4', 'C f3']));
+    expect(arrows().map((a) => a.color)).toEqual(['#0969da', '#0969da', '#0969da']);
+    expect(screen.queryByText('f3 weakens your king.')).toBeNull();
+    fireEvent.mouseEnter(screen.getByRole('button', { name: 'B d4' }));
+    expect(arrows().map((a) => a.color)).toEqual(['#0969da', '#1a7f37', '#0969da']);
+  });
+
+  it('an accepted choice says Good., shows the explanation and links the plan', async () => {
+    await open();
+    fireEvent.click(screen.getByRole('button', { name: 'A e4' }));
+    await screen.findByText('Good.');
+    expect(screen.getByText('The e4 pawn takes the centre.')).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Plan' }).getAttribute('href')).toBe('/plans/sample');
+    expect(screen.getByRole('button', { name: '3 Good' }).className).toBe('default');
+    for (const b of screen.getAllByRole('button', { name: /^[ABC] / })) expect((b as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('a wrong choice shows its reason and the plan move, and defaults to Again', async () => {
+    await open();
+    fireEvent.click(screen.getByRole('button', { name: 'C f3' }));
+    await screen.findByText('Not quite. f3 weakens your king.');
+    expect(screen.getByText('The plan move here is e4.')).toBeTruthy();
+    expect(screen.getByRole('button', { name: '1 Again' }).className).toBe('default');
+  });
+
+  it('a board move outside the choices is checked with the engine and a sound one defaults to Hard', async () => {
+    const check = vi.spyOn(api, 'checkOpeningMove').mockResolvedValue({ playedSan: 'e3', repertoireSan: 'e4', repertoireName: 'Sample plan', loss: 1 });
+    await open();
+    fireEvent.click(screen.getByText('sq-e2'));
+    fireEvent.click(screen.getByText('sq-e3'));
+    await screen.findByText('e3 is also a good move (Stockfish), but this plan plays e4 here.');
+    expect(check).toHaveBeenCalledWith(7, 'e2e3');
+    await waitFor(() => expect(screen.getByRole('button', { name: '2 Hard' }).className).toBe('default'));
+  });
+
+  it('keeps the card usable when the engine check fails (Review Focus 5)', async () => {
+    vi.spyOn(api, 'checkOpeningMove').mockRejectedValue(new Error('Engine not available.'));
+    await open();
+    fireEvent.click(screen.getByText('sq-e2'));
+    fireEvent.click(screen.getByText('sq-e3'));
+    await screen.findByText('The engine check is not available.');
+    expect(screen.getByRole('button', { name: '3 Good' })).toBeTruthy();
   });
 });
