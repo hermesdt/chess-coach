@@ -81,6 +81,8 @@ export interface PlanIndexEntry {
   locked: boolean; summary: string; trained: boolean; exercises: number;
   /** The position of the main board, for the small board in the list. */
   fen: string;
+  /** Games of the owner where the plan fits (M12b). */
+  gameCount: number;
 }
 
 export interface ResolvedBoard {
@@ -89,6 +91,15 @@ export interface ResolvedBoard {
   lastMove: { from: string; to: string } | null;
   arrows: PlanArrow[];
   marks: string[];
+}
+
+/** One plan moment on the game page. */
+export interface GamePlanDTO { planId: string; title: string; ply: number }
+
+export interface PlanGamesDTO {
+  total: number; wins: number; draws: number; losses: number;
+  /** The five newest games. */
+  games: { id: number; ply: number; result: 'win' | 'loss' | 'draw' | null; white: string; black: string; playedAt: number }[];
 }
 
 export interface PlanMoveDTO { san: string; from: string; to: string }

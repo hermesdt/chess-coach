@@ -66,7 +66,7 @@ export function plansRoutes(db: DatabaseSync, getPlans: () => PlanFile[], getLes
       const trained = plannedIds(db);
       const list: PlanIndexEntry[] = getPlans().map((p) => ({
         id: p.id, title: p.title, group: p.group, side: p.side, level: p.level, locked: p.level > level,
-        summary: p.summary, trained: trained.has(p.id), exercises: p.exercises.length, fen: resolveBoard(p.position).fen,
+        summary: p.summary, trained: trained.has(p.id), exercises: p.exercises.length, fen: resolveBoard(p.position).fen, gameCount: 0,
       }));
       return c.json(list);
     })
