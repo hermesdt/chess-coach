@@ -1,5 +1,6 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Hono } from 'hono';
+import type { PlanFile } from '../../shared/plans.js';
 import type { Lesson } from '../../shared/types.js';
 import { TAG_SEVERITY } from '../../shared/tag-text.js';
 import type { Tag } from '../../shared/types.js';
@@ -69,12 +70,12 @@ function levelUp(db: DatabaseSync, current: CurrentLevel, getLessons: () => Less
   return level > from ? { from, to: level, message: levelUpMessage(from, level, getLessons(), getReps()) } : null;
 }
 
-export function dashboardRoutes(db: DatabaseSync, now: () => number, getLessons: () => Lesson[], getReps: () => Repertoire[]): Hono {
+export function dashboardRoutes(db: DatabaseSync, now: () => number, getLessons: () => Lesson[], getReps: () => Repertoire[], getPlans: () => PlanFile[] = () => []): Hono {
   return new Hono()
     .get('/dashboard', (c) => {
       const level = currentLevel(db);
       return c.json({
-        review: reviewStats(db, now(), getLessons()),
+        review: reviewStats(db, now(), getLessons(), getPlans()),
         sync: { chesscom: getLastSyncedAt(db, 'chesscom'), lichess: getLastSyncedAt(db, 'lichess') },
         recentGames: listGames(db, { limit: RECENT_GAMES }).items,
         topTag: topTag(db, level.level),

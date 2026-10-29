@@ -13,6 +13,7 @@ import { closeLiveEngine } from './engine/live.js';
 import { markInterruptedChats } from './chat/chat-repo.js';
 import { recoverInterruptedJobs } from './jobs.js';
 import { syncLessonCards } from './course/lesson-cards.js';
+import type { PlanFile } from '../shared/plans.js';
 import { loadPlans } from './plans/load.js';
 import { syncPlanCards } from './plans/plan-cards.js';
 import { loadLessons } from './course/load.js';
@@ -70,12 +71,14 @@ const server = serve(
     } catch (err) {
       console.error('lesson card sync failed:', err);
     }
+    let plans: PlanFile[] = [];
     try {
-      syncPlanCards(db, loadPlans(undefined, repertoires));
+      plans = loadPlans(undefined, repertoires);
+      syncPlanCards(db, plans);
     } catch (err) {
       console.error('plan card sync failed:', err);
     }
-    const app = createApp({ db, repertoires, lessons });
+    const app = createApp({ db, repertoires, lessons, plans });
 
     if (existsSync('dist')) {
       app.use('/*', serveStatic({ root: './dist' }));
