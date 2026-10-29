@@ -15,7 +15,7 @@ The AI never invents moves, lines, or evaluations.
 
 ## Status
 
-Milestones M1 to M9 are done. Next: opening guides, then a content audit.
+Milestones M1 to M12a are done (see `docs/ROADMAP.md`). The Plans page covers the middlegame: one plan for each typical position, with a daily quiz.
 See `docs/ROADMAP.md` for the status of each milestone.
 
 ## Requirements

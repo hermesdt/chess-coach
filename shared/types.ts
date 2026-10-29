@@ -77,12 +77,14 @@ export interface GameAnalysis {
 export interface AnalysisBadge { accuracyUser: number | null; blunders: number; mistakes: number; status: GameAnalysis['status'] }
 
 // M3: spaced-repetition cards
-export type CardKind = 'opening' | 'mistake' | 'lesson';
+export type CardKind = 'opening' | 'mistake' | 'lesson' | 'plan';
 export type Rating = 'again' | 'hard' | 'good' | 'easy';
-export interface CardRef { gameId?: number; ply?: number; repertoire?: string; nodeId?: string; lessonId?: string; exerciseId?: string; source?: 'chat' }
+export interface CardRef { gameId?: number; ply?: number; repertoire?: string; nodeId?: string; lessonId?: string; planId?: string; exerciseId?: string; source?: 'chat' }
 export interface Card {
   id: number; kind: CardKind; positionKey: string; fen: string; sideToMove: Color;
-  prompt: string; solution: { accepted: string[]; best: string; explanation: string | null };
+  prompt: string;
+  /** Plan cards also carry the arrows A to D: `choices` (UCI, SAN and the reason a wrong choice fails). */
+  solution: { accepted: string[]; best: string; explanation: string | null; choices?: { uci: string; san: string; why: string }[] };
   refs: CardRef[]; suspended: boolean; createdAt: number;
   lastMove?: { uci: string } | null; // opponent's move leading to fen, for animation (openings)
 }
@@ -128,7 +130,7 @@ export interface Lesson {
 }
 export type LessonStatus = 'new' | 'done' | 'locked';
 export interface CourseLesson { id: string; order: number; level: 1 | 2 | 3; title: string; summary: string; status: LessonStatus; exercises: number }
-export type CourseLessonDetail = Lesson & { status: LessonStatus };
+export type CourseLessonDetail = Lesson & { status: LessonStatus; /** Plans that name this lesson (M12). */ relatedPlans: { id: string; title: string }[] };
 
 // M7: insights
 export type InsightsWindow = '30d' | '90d' | '365d' | 'all';
@@ -182,9 +184,14 @@ export interface GuideVariationDTO {
   mistakes: { moves: string[]; fen: string; text: string; bad?: GuideMove; good?: GuideMove[] }[];
   locked: boolean; requiredLevel: 1 | 2 | 3;
   personal: VariationPersonal | null;
+  /** Plans that name this variation in `guideLinks` (M12). */
+  plans: { id: string; title: string }[];
 }
 /** A move resolved on the server: SAN plus the squares to draw an arrow. */
 export interface GuideMove { san: string; from: string; to: string }
 export interface GuideDTO {
   repertoireId: string; name: string; color: Color; level: 1 | 2 | 3; why: string; variations: GuideVariationDTO[];
 }
+
+// M12: middlegame plans
+export type * from './plans';

@@ -11,6 +11,8 @@ import { GameViewerPage } from './pages/GameViewerPage';
 import { LessonPage } from './pages/LessonPage';
 import { InsightsPage } from './pages/InsightsPage';
 import { OpeningsPage } from './pages/OpeningsPage';
+import { PlanPage } from './pages/PlanPage';
+import { PlansPage } from './pages/PlansPage';
 import { ReviewPage } from './pages/ReviewPage';
 import { SettingsPage } from './pages/SettingsPage';
 
@@ -53,6 +55,7 @@ export function App() {
         <ReviewLink />
         <NavLink to="/insights">Insights</NavLink>
         <NavLink to="/openings">Openings</NavLink>
+        <NavLink to="/plans">Plans</NavLink>
         <NavLink to="/course">Course</NavLink>
         <NavLink to="/coach">Coach</NavLink>
         <NavLink to="/settings">Settings</NavLink>
@@ -66,6 +69,8 @@ export function App() {
           <Route path="/insights" element={<InsightsPage />} />
           <Route path="/openings" element={<OpeningsPage />} />
           <Route path="/openings/:id/guide" element={<GuidePage />} />
+          <Route path="/plans" element={<PlansPage />} />
+          <Route path="/plans/:id" element={<PlanPage />} />
           <Route path="/course" element={<CoursePage />} />
           <Route path="/course/:id" element={<LessonPage />} />
           <Route path="/coach" element={<CoachPage />} />

@@ -1,10 +1,11 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Hono } from 'hono';
+import type { PlanFile } from '../../shared/plans.js';
 import type { CourseLesson, CourseLessonDetail, Lesson, LessonStatus } from '../../shared/types.js';
 import { completeLesson, lessonStatuses } from '../course/lesson-cards.js';
 import { currentLevel } from '../level.js';
 
-export function courseRoutes(db: DatabaseSync, getLessons: () => Lesson[], now: () => number): Hono {
+export function courseRoutes(db: DatabaseSync, getLessons: () => Lesson[], now: () => number, getPlans: () => PlanFile[] = () => []): Hono {
   /** Computes the level and the progress once; a completed lesson stays `done` even above the level. */
   const statusResolver = (): ((lesson: Lesson) => LessonStatus) => {
     const level = currentLevel(db).level;
@@ -27,7 +28,8 @@ export function courseRoutes(db: DatabaseSync, getLessons: () => Lesson[], now: 
     .get('/course/:id', (c) => {
       const lesson = find(c.req.param('id'));
       if (!lesson) return c.json({ error: 'not found' }, 404);
-      const detail: CourseLessonDetail = { ...lesson, status: statusResolver()(lesson) };
+      const relatedPlans = getPlans().filter((p) => p.lessons.includes(lesson.id)).map((p) => ({ id: p.id, title: p.title }));
+      const detail: CourseLessonDetail = { ...lesson, status: statusResolver()(lesson), relatedPlans };
       return c.json(detail);
     })
     .post('/course/:id/complete', (c) => {

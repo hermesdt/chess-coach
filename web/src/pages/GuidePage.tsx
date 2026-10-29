@@ -121,6 +121,12 @@ function VariationParts({ guide, v }: { guide: GuideDTO; v: GuideVariationDTO })
       <section id={`middlegame-${v.key}`} className="guide-part">
         <h2>Middlegame plan</h2>
         <Paragraphs text={v.middlegame} />
+        {v.plans.length > 0 && (
+          <>
+            <h3>Plans for this set-up</h3>
+            <ul>{v.plans.map((pl) => <li key={pl.id}><Link to={`/plans/${pl.id}`}>{pl.title}</Link></li>)}</ul>
+          </>
+        )}
       </section>
       <section id={`mistakes-${v.key}`} className="guide-part">
         <h2>Typical mistakes</h2>

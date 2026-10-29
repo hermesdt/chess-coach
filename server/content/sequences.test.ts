@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { Chess } from 'chess.js';
+import type { PlanFile } from '../../shared/plans.js';
+import { loadPlan } from '../plans/load.js';
+import { loadAllRepertoires } from '../repertoire/load.js';
 import { loadRepertoire } from '../repertoire/load.js';
 import { applySeverity, checkSequence, extractSan, sequenceCheck, REJECT, sequenceExitCode, sequenceIssues, splitSentences, type ContentSources } from './sequences.js';
 
@@ -57,7 +61,7 @@ describe('checkSequence', () => {
 
 function sources(comment: string): ContentSources {
   const rep = loadRepertoire({ id: 'fx', name: 'Fixture', color: 'white', moves: [{ san: 'e4', comment, children: [{ san: 'e5' }] }] });
-  return { repertoires: [{ file: 'fx.json', rep }], lessons: [], guides: [] };
+  return { repertoires: [{ file: 'fx.json', rep }], lessons: [], guides: [], plans: [] };
 }
 
 describe('sequenceIssues', () => {
@@ -184,7 +188,7 @@ describe('severity helpers', () => {
       repertoireId: 'fx', why: bad,
       variations: [{ key: 'v', name: 'V', roots: ['e4'], finalForm: { nodeId: 'e4', jobs: [] }, route: [], deviations: [], middlegame: 'M', mistakes: [] }],
     } as unknown as ContentSources['guides'][number]['guide'];
-    return { repertoires: [{ file: 'rep.json', rep }], lessons: [{ file: 'les.json', lesson }], guides: [{ file: 'gui.json', guide, rep }] };
+    return { repertoires: [{ file: 'rep.json', rep }], lessons: [{ file: 'les.json', lesson }], guides: [{ file: 'gui.json', guide, rep }], plans: [] };
   };
   const files = (issues: { file: string }[]) => [...new Set(issues.map((i) => i.file))].sort();
   it('sequenceCheck filters by scope', () => {
@@ -207,5 +211,36 @@ describe('severity helpers', () => {
   });
   it('sequenceCheck runs on the real content without throwing', { timeout: 60000 }, () => {
     expect(() => sequenceCheck({ lessons: true, repertoires: true }, false)).not.toThrow();
+  });
+});
+
+describe('sequenceIssues for plans', () => {
+  const reps = loadAllRepertoires();
+  const planSources = (mutate: (p: PlanFile) => void): ContentSources => {
+    const plan = loadPlan(JSON.parse(readFileSync('content/plans/__test__/sample.json', 'utf8')), reps);
+    mutate(plan);
+    return { repertoires: [], lessons: [], guides: [], plans: [{ file: 'sample.json', plan }] };
+  };
+  const issuesOf = (mutate: (p: PlanFile) => void) => sequenceIssues(planSources(mutate));
+
+  it('accepts the sample plan and a legal line in the goal', () => {
+    expect(issuesOf(() => {})).toEqual([]);
+    expect(issuesOf((p) => { p.goal = 'Play Re1 Bxg3 hxg3 and the h-file opens.'; })).toEqual([]);
+  });
+
+  it('reports an illegal line in the goal, a step, a mistake, a choice reason and an explanation', () => {
+    const bad = 'Next comes Qe2 Qe2 here.';
+    expect(issuesOf((p) => { p.goal = bad; }).map((i) => i.nodeId)).toEqual(['(goal)']);
+    expect(issuesOf((p) => { p.steps[0]!.text = bad; }).map((i) => i.nodeId)).toEqual(['step:1']);
+    expect(issuesOf((p) => { p.mistakes[0]!.text = bad; })).toHaveLength(1);
+    expect(issuesOf((p) => { p.exercises[0]!.choices[0]!.why = bad; })[0]?.nodeId).toBe('sample/start');
+    expect(issuesOf((p) => { p.exercises[1]!.explanation = bad; })[0]?.nodeId).toBe('sample/after-trade');
+  });
+
+  it('scope: plans only when asked; the file scope picks the plan by file name', () => {
+    const src = planSources((p) => { p.goal = 'Next comes Qe2 Qe2 here.'; });
+    expect(sequenceCheck({ lessons: true, repertoires: true }, true, src)).toEqual([]);
+    expect(sequenceCheck({ lessons: false, repertoires: false, plans: true }, true, src)).toHaveLength(1);
+    expect(sequenceCheck({ file: 'content/plans/sample.json' }, true, src)).toHaveLength(1);
   });
 });

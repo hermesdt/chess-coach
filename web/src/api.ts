@@ -28,6 +28,8 @@ import type {
   OpeningDetail,
   OpeningLeakGroup,
   OpeningSummary,
+  PlanDTO,
+  PlanIndexEntry,
   SettingsDTO,
   DataInfo,
   FlagDetail,
@@ -145,6 +147,9 @@ export const api = {
   makeWeakness: (provider?: ProviderId) => post<{ jobId: number }>('/coach/weakness', { provider }),
   listCourse: () => request<CourseLesson[]>('/course'),
   getLesson: (id: string) => request<CourseLessonDetail>(`/course/${encodeURIComponent(id)}`),
+  listPlans: () => request<PlanIndexEntry[]>('/plans'),
+  getPlan: (id: string) => request<PlanDTO>(`/plans/${encodeURIComponent(id)}`),
+  trainPlan: (id: string) => post<{ created: number }>(`/plans/${encodeURIComponent(id)}/train`),
   completeLesson: (id: string) => post<{ created: number }>(`/course/${encodeURIComponent(id)}/complete`),
   importPgn: (pgn: string, colors?: (Color | null)[]) =>
     post<ImportResult>('/import', { pgn, colors } satisfies ImportRequest),

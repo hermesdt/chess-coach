@@ -2,6 +2,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { Hono } from 'hono';
 import type { EnginePool } from '../engine/pool.js';
 import { backfillMistakeCards } from '../srs/backfill.js';
+import type { PlanFile } from '../../shared/plans.js';
 import type { Lesson, Rating, ReviewSubmit } from '../../shared/types.js';
 import { addFlag, getCard, listFlagDetails, listFlags, recordReview, restoreFlaggedCard } from '../srs/cards-repo.js';
 import type { Repertoire } from '../repertoire/types.js';
@@ -29,10 +30,11 @@ export function reviewRoutes(db: DatabaseSync, now: () => number, pool: Pick<Eng
   getReps: () => Repertoire[],
   getLessons: () => Lesson[],
   cache?: EngineCache,
+  getPlans: () => PlanFile[] = () => [],
 ): Hono {
   return new Hono()
     .get('/review/session', (c) => {
-      const session = buildSession(db, now(), sessionLimits(db, getLessons()));
+      const session = buildSession(db, now(), sessionLimits(db, getLessons(), getPlans()));
       const names = new Map(getReps().map((r) => [r.id, r.name]));
       const cards = session.cards.map((card) => {
         const repId = card.kind === 'opening' ? card.refs.find((r) => r.repertoire !== undefined)?.repertoire : undefined;
@@ -41,7 +43,7 @@ export function reviewRoutes(db: DatabaseSync, now: () => number, pool: Pick<Eng
       });
       return c.json({ ...session, cards });
     })
-    .get('/review/stats', (c) => c.json(reviewStats(db, now(), getLessons())))
+    .get('/review/stats', (c) => c.json(reviewStats(db, now(), getLessons(), getPlans())))
     .post('/review/:cardId', async (c) => {
       const id = parseId(c.req.param('cardId'));
       const submit = parseSubmit(await c.req.json().catch(() => null));
@@ -57,12 +59,15 @@ export function reviewRoutes(db: DatabaseSync, now: () => number, pool: Pick<Eng
       const card = id === null ? undefined : getCard(db, id);
       if (id === null || !card) return c.json({ error: 'card not found' }, 404);
       const repId = card.refs.find((r) => r.repertoire !== undefined)?.repertoire;
-      if (card.kind !== 'opening' || repId === undefined) return c.json({ error: 'not an opening card' }, 400);
+      const planId = card.refs.find((r) => r.planId !== undefined)?.planId;
+      const isPlan = card.kind === 'plan' && planId !== undefined;
+      if (!isPlan && (card.kind !== 'opening' || repId === undefined)) return c.json({ error: 'not an opening or plan card' }, 400);
       if (body === null || typeof body !== 'object' || typeof body.uci !== 'string') return c.json({ error: 'uci must be a string' }, 400);
       try {
         const result = await checkMove(card.fen, body.uci, card.solution.best, pool, cache);
         if (!result) return c.json({ error: 'illegal move' }, 400);
-        const repertoireName = getReps().find((r) => r.id === repId)?.name ?? repId;
+        // For a plan card the name is the plan title (the same field the opening card uses for the repertoire).
+        const repertoireName = isPlan ? (getPlans().find((p) => p.id === planId)?.title ?? planId) : (getReps().find((r) => r.id === repId)?.name ?? repId);
         return c.json({ ...result, repertoireName });
       } catch (e) {
         console.error('[review-check] engine check failed:', e);

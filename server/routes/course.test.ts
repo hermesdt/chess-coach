@@ -1,7 +1,11 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { CourseLesson, CourseLessonDetail, Lesson } from '../../shared/types.js';
+import { readFileSync } from 'node:fs';
+import type { PlanFile } from '../../shared/plans.js';
 import { createApp } from '../app.js';
+import { loadPlan } from '../plans/load.js';
+import { loadAllRepertoires } from '../repertoire/load.js';
 import { loadLessons } from '../course/load.js';
 import { openDb } from '../db/db.js';
 import { setSetting } from '../db/settings-repo.js';
@@ -76,5 +80,16 @@ describe('POST /api/course/:id/complete', () => {
 
   it('returns 404 for an unknown lesson', async () => {
     expect((await post('/api/course/nope/complete')).status).toBe(404);
+  });
+});
+
+describe('related plans', () => {
+  it('lists the plans that name the lesson', async () => {
+    const plan: PlanFile = { ...loadPlan(JSON.parse(readFileSync('content/plans/__test__/sample.json', 'utf8')), loadAllRepertoires()), lessons: ['blunder-check'] };
+    const planApp = createApp({ db, lessons: [first, second], plans: [plan], now: () => 5000 });
+    const mine = (await (await planApp.request('/api/course/blunder-check')).json()) as CourseLessonDetail;
+    expect(mine.relatedPlans).toEqual([{ id: 'sample', title: 'Sample plan' }]);
+    const other = (await (await planApp.request('/api/course/free-material')).json()) as CourseLessonDetail;
+    expect(other.relatedPlans).toEqual([]);
   });
 });

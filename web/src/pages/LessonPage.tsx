@@ -67,6 +67,12 @@ export function LessonPage() {
           {lesson.links.map((l) => <li key={l.url}><a href={l.url} target="_blank" rel="noreferrer">{l.title}</a></li>)}
         </ul>
       )}
+      {lesson.relatedPlans.length > 0 && (
+        <>
+          <h2>Related plans</h2>
+          <ul>{lesson.relatedPlans.map((p) => <li key={p.id}><Link to={`/plans/${p.id}`}>{p.title}</Link></li>)}</ul>
+        </>
+      )}
       {exercise && !finished && (
         <>
           <h2>Exercise {index + 1} of {lesson.exercises.length}</h2>

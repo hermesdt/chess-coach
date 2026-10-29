@@ -7,7 +7,9 @@ import { createApp } from '../app.js';
 import { openDb } from '../db/db.js';
 import { insertGames } from '../db/games-repo.js';
 import { setSetting } from '../db/settings-repo.js';
+import type { PlanFile } from '../../shared/plans.js';
 import type { GuideFile, GuideVariation } from '../guides/types.js';
+import { loadPlan } from '../plans/load.js';
 import { loadRepertoire } from '../repertoire/load.js';
 
 const load = (name: string) => loadRepertoire(JSON.parse(readFileSync(`content/repertoires/${name}.json`, 'utf8')));
@@ -134,5 +136,25 @@ describe('GET /api/openings variationIndex', () => {
       guide.variations.map((v) => ({ key: v.key, roots: v.roots })),
     );
     expect(list.find((o) => o.id === 'london')!.variationIndex).toBeNull();
+  });
+});
+
+describe('plans for this set-up', () => {
+  const planFile = (): PlanFile => loadPlan(JSON.parse(readFileSync('content/plans/__test__/sample.json', 'utf8')), reps);
+  const body = async (plans: PlanFile[]): Promise<GuideDTO> => {
+    const planApp = createApp({ db, repertoires: reps, guides: [guide], plans });
+    return (await (await planApp.request('/api/openings/caro-kann/guide')).json()) as GuideDTO;
+  };
+
+  it('lists a plan under the variation its guideLinks name, and under no other', async () => {
+    const plan = { ...planFile(), guideLinks: [{ repertoireId: 'caro-kann', variation: 'advance' }] };
+    const dto = await body([plan]);
+    expect(dto.variations.find((v) => v.key === 'advance')!.plans).toEqual([{ id: 'sample', title: 'Sample plan' }]);
+    expect(dto.variations.find((v) => v.key === 'advance-c3')!.plans).toEqual([]);
+  });
+
+  it('ignores a plan that links to another repertoire', async () => {
+    const dto = await body([planFile()]);
+    expect(dto.variations.every((v) => v.plans.length === 0)).toBe(true);
   });
 });

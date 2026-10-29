@@ -16,11 +16,14 @@ export interface DrillBoardProps {
   lastMove?: string | null;
   onMove(uci: string): void;
   arrows?: DrillArrow[];
+  /** Squares to highlight (plan boards). */
+  marks?: string[];
   locked: boolean;
 }
 
 const ARROW_COLORS = { green: '#1a7f37', red: '#cf222e', blue: '#0969da' };
 const LAST_MOVE = { backgroundColor: 'rgba(255, 235, 59, 0.5)' };
+const MARK = { backgroundColor: 'rgba(26, 127, 55, 0.35)' };
 const SELECTED = { backgroundColor: 'rgba(20, 85, 200, 0.4)' };
 const TARGET = { background: 'radial-gradient(circle, rgba(20, 85, 200, 0.45) 22%, transparent 24%)' };
 const PROMOTION_PIECES = [
@@ -31,7 +34,7 @@ const PROMOTION_PIECES = [
 ] as const;
 
 /** Board for drills. Accepts legal moves only (drag or click-click) and reports them as UCI. */
-export function DrillBoard({ fen, orientation, lastMove, onMove, arrows = [], locked }: DrillBoardProps) {
+export function DrillBoard({ fen, orientation, lastMove, onMove, arrows = [], marks = [], locked }: DrillBoardProps) {
   // The parent gives each drill its own `key`, so state starts fresh for every card.
   const [position, setPosition] = useState(fen);
   const [selected, setSelected] = useState<string | null>(null);
@@ -66,6 +69,7 @@ export function DrillBoard({ fen, orientation, lastMove, onMove, arrows = [], lo
   };
 
   const squareStyles: Record<string, React.CSSProperties> = {};
+  for (const m of marks) squareStyles[m] = MARK;
   if (lastMove) {
     squareStyles[lastMove.slice(0, 2)] = LAST_MOVE;
     squareStyles[lastMove.slice(2, 4)] = LAST_MOVE;

@@ -307,15 +307,16 @@ describe('validateLesson (fix round 1)', () => {
 
 describe('parseValidateArgs', () => {
   it('defaults to everything', () => {
-    expect(parseValidateArgs([])).toEqual({ lessons: true, repertoires: true, file: null });
+    expect(parseValidateArgs([])).toEqual({ lessons: true, repertoires: true, plans: true, file: null });
   });
   it('--lessons and --repertoires select one side', () => {
-    expect(parseValidateArgs(['--lessons'])).toEqual({ lessons: true, repertoires: false, file: null });
-    expect(parseValidateArgs(['--repertoires'])).toEqual({ lessons: false, repertoires: true, file: null });
+    expect(parseValidateArgs(['--lessons'])).toEqual({ lessons: true, repertoires: false, plans: false, file: null });
+    expect(parseValidateArgs(['--repertoires'])).toEqual({ lessons: false, repertoires: true, plans: false, file: null });
+    expect(parseValidateArgs(['--plans'])).toEqual({ lessons: false, repertoires: false, plans: true, file: null });
   });
   it('a file path validates just that file', () => {
     expect(parseValidateArgs(['content/lessons/01-blunder-check.json']))
-      .toEqual({ lessons: false, repertoires: false, file: 'content/lessons/01-blunder-check.json' });
+      .toEqual({ lessons: false, repertoires: false, plans: false, file: 'content/lessons/01-blunder-check.json' });
   });
   it('rejects unknown flags', () => {
     expect(() => parseValidateArgs(['--nope'])).toThrow(/Unknown option/);

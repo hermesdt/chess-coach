@@ -51,6 +51,7 @@ const variation = (key: string, name: string, over: Partial<GuideVariationDTO> =
   mistakes: [{ moves: ['e4', 'c6', 'd4', 'd5', 'e5', 'Bf5', 'g4'], fen: START, text: 'Do not let g4 hit the bishop.' }],
   locked: false, requiredLevel: 1,
   personal: null,
+  plans: [],
   ...over,
 });
 const guide = (variations: GuideVariationDTO[], level: 1 | 2 | 3 = 1): GuideDTO => ({
@@ -295,5 +296,21 @@ describe('GuidePage', () => {
     renderPage(guide([variation('advance', 'Advance', { deviations: [dev(1, 'e4 c6 a'), dev(3, 'e4 c6 b')] })], 1));
     await screen.findByRole('heading', { name: 'If they do X…' });
     expect(screen.getAllByText('Unlocks at level 3')).toHaveLength(1);
+  });
+});
+
+describe('plans for this set-up', () => {
+  it('lists the plans of the variation under the middlegame text', async () => {
+    renderPage(guide([variation('advance', 'Advance', { plans: [{ id: 'caro-advance-d4', title: 'Attack d4' }] }), variation('classical', 'Classical')]));
+    await screen.findByRole('heading', { name: 'Why this opening' });
+    const link = screen.getByRole('link', { name: 'Attack d4' });
+    expect(link.getAttribute('href')).toBe('/plans/caro-advance-d4');
+    expect(screen.getByText('Plans for this set-up')).toBeTruthy();
+  });
+
+  it('shows no list when the variation has no plan', async () => {
+    renderPage(guide([variation('advance', 'Advance')]));
+    await screen.findByRole('heading', { name: 'Why this opening' });
+    expect(screen.queryByText('Plans for this set-up')).toBeNull();
   });
 });

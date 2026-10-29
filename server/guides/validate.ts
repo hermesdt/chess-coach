@@ -1,4 +1,5 @@
 import { Chess } from 'chess.js';
+import { checkBadGood, MAX_GOOD } from '../content/bad-good.js';
 import { inRoot } from '../../shared/guide-roots.js';
 import { moverWinAfter, winPct } from '../analysis/winpct.js';
 import type { EnginePool } from '../engine/pool.js';
@@ -7,7 +8,7 @@ import type { RepNode, Repertoire, ValidationIssue } from '../repertoire/types.j
 import { MAX_WIN_LOSS } from '../repertoire/validate.js';
 import type { GuideFile, GuideVariation } from './types.js';
 
-export const MAX_GOOD = 3;
+export { MAX_GOOD };
 export const MIN_JOBS = 3;
 export const MAX_JOBS = 6;
 const DEFAULT_NODES = 1_000_000;
@@ -140,40 +141,14 @@ export async function validateGuide(
         offTreeOwn.push({ key: `${v.key}: ${moves.join(' ')}`, fenBefore, san: move.san, uci: move.from + move.to + (move.promotion ?? ''), fenAfter: game.fen() });
       }
     }
-    checkBadGood(v, mistake, game);
+    checkGuideBadGood(v, mistake, game);
   }
 
   /** `game` stands at the position after the mistake line. */
-  function checkBadGood(v: GuideVariation, m: GuideVariation['mistakes'][number], game: Chess): void {
-    if (m.bad === undefined && m.good === undefined) return;
+  function checkGuideBadGood(v: GuideVariation, m: GuideVariation['mistakes'][number], game: Chess): void {
     const line = m.moves.join(' ');
     const where = `mistake line "${line}" (variation "${v.key}")`;
-    const good = m.good ?? [];
-    if (m.bad === undefined || good.length === 0) {
-      add(line, 'bad-good-pair', `A mistake needs both a bad move and at least one good move; ${where}`);
-    }
-    if (good.length > MAX_GOOD) add(line, 'good-count', `Mistake has ${good.length} good moves, at most ${MAX_GOOD} are allowed; ${where}`);
-    const legal = (san: string) => {
-      const board = new Chess(game.fen());
-      try {
-        const move = board.move(san);
-        return { san: move.san, uci: move.from + move.to + (move.promotion ?? ''), fenAfter: board.fen() };
-      } catch {
-        return null;
-      }
-    };
-    const bad = m.bad === undefined ? null : legal(m.bad);
-    if (m.bad !== undefined && !bad) add(line, 'illegal-bad', `Illegal bad move "${m.bad}" in ${where}`);
-    const seen = new Set<string>();
-    for (const g of good) {
-      const move = legal(g);
-      if (!move) {
-        add(line, 'illegal-good', `Illegal good move "${g}" in ${where}`);
-        continue;
-      }
-      if (seen.has(move.san)) add(line, 'duplicate-good', `Good move "${move.san}" is listed twice in ${where}`);
-      seen.add(move.san);
-      if (bad && bad.san === move.san) add(line, 'bad-in-good', `Move "${move.san}" is both bad and good in ${where}`);
+    for (const move of checkBadGood(game, m, (rule, detail) => add(line, rule, detail), where)) {
       goodMoves.push({ key: `${v.key}: ${line}`, fenBefore: game.fen(), ...move });
     }
   }

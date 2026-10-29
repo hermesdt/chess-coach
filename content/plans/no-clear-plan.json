@@ -1,0 +1,362 @@
+{
+  "id": "no-clear-plan",
+  "title": "When you do not know what to do",
+  "group": "general",
+  "side": "white",
+  "level": 1,
+  "summary": "Five questions to ask in a quiet position, in this order.",
+  "guideLinks": [
+    {
+      "repertoireId": "london",
+      "variation": "vs-d5"
+    }
+  ],
+  "lessons": [
+    "blunder-check",
+    "outposts",
+    "pawn-breaks",
+    "prophylaxis"
+  ],
+  "position": {
+    "moves": [
+      "d4",
+      "d5",
+      "Bf4",
+      "Nf6",
+      "e3",
+      "e6",
+      "Nf3",
+      "Bd6",
+      "Bg3",
+      "O-O",
+      "Nbd2",
+      "c5",
+      "c3",
+      "Nc6",
+      "Bd3",
+      "b6"
+    ],
+    "arrows": [
+      {
+        "from": "e1",
+        "to": "g1",
+        "kind": "move"
+      }
+    ]
+  },
+  "trigger": null,
+  "goal": "Use this checklist when no plan fits. Ask the five questions in order. Make your move after the last one.",
+  "steps": [
+    {
+      "text": "Blunder check. What do they attack? Here the b4 knight and the f5 bishop both attack c2.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Bf5",
+          "e3",
+          "Nc6",
+          "Nf3",
+          "Nb4"
+        ],
+        "arrows": [
+          {
+            "from": "b4",
+            "to": "c2",
+            "kind": "attack"
+          },
+          {
+            "from": "f5",
+            "to": "c2",
+            "kind": "attack"
+          }
+        ],
+        "marks": [
+          "c2"
+        ]
+      }
+    },
+    {
+      "text": "Check both kings. Here yours is on e1, so you can castle. Theirs is on g8.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6"
+        ],
+        "arrows": [
+          {
+            "from": "e1",
+            "to": "g1",
+            "kind": "move"
+          }
+        ]
+      }
+    },
+    {
+      "text": "Find your worst piece. Here the b1 knight has not moved. Nbd2 brings it out.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O"
+        ],
+        "arrows": [
+          {
+            "from": "b1",
+            "to": "d2",
+            "kind": "move"
+          }
+        ]
+      }
+    },
+    {
+      "text": "Look for a pawn break or a weak square. In the London, e4 is a common break.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6"
+        ],
+        "arrows": [
+          {
+            "from": "e3",
+            "to": "e4",
+            "kind": "move"
+          }
+        ]
+      }
+    },
+    {
+      "text": "Ask what your opponent wants. Look at their last move.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Bf5",
+          "e3",
+          "Nc6",
+          "Nf3",
+          "Nb4"
+        ],
+        "marks": [
+          "c2"
+        ]
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "square": "e1",
+      "text": "The king can castle short."
+    },
+    {
+      "square": "d3",
+      "text": "The bishop aims at h7."
+    },
+    {
+      "square": "f3",
+      "text": "The knight guards d4 and e5."
+    },
+    {
+      "square": "g3",
+      "text": "The bishop guards e5."
+    }
+  ],
+  "breaks": [
+    {
+      "from": "e3",
+      "to": "e4",
+      "text": "In the London, e4 is a common break."
+    }
+  ],
+  "opponent": [
+    {
+      "text": "Ask what Black wants. A knight on b4 and a bishop on f5 both attack c2.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Bf5",
+          "e3",
+          "Nc6",
+          "Nf3",
+          "Nb4"
+        ],
+        "marks": [
+          "c2"
+        ]
+      }
+    }
+  ],
+  "notNow": [
+    "Do not skip the blunder check. In the London, ...Nb4 and ...Bf5 attack c2 together."
+  ],
+  "mistakes": [
+    {
+      "moves": [
+        "d4",
+        "d5",
+        "Bf4",
+        "Bf5",
+        "e3",
+        "Nc6",
+        "Nf3",
+        "Nb4"
+      ],
+      "text": "c3 Nc2+ forks the king and the rook on a1. After Qxc2 Bxc2 you lose the queen for a knight.",
+      "bad": "c3",
+      "good": [
+        "Na3"
+      ]
+    }
+  ],
+  "models": [],
+  "exercises": [
+    {
+      "id": "blunder-check",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Bf5",
+          "e3",
+          "Nc6",
+          "Nf3",
+          "Nb4"
+        ]
+      },
+      "prompt": "White to move. Black has a knight on b4 and a bishop on f5. Ask what they attack.",
+      "choices": [
+        {
+          "san": "Na3",
+          "why": "Na3 guards c2."
+        },
+        {
+          "san": "c3",
+          "why": "c3 Nc2+ forks the king and the rook."
+        },
+        {
+          "san": "Qd2",
+          "why": "Qd2 Nxc2+ forks the king and the rook."
+        }
+      ],
+      "accepted": [
+        "Na3"
+      ],
+      "explanation": "Two black pieces attack c2. Guard it with the knight."
+    },
+    {
+      "id": "king-safety",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6"
+        ]
+      },
+      "prompt": "White to move. Your king is still on e1. Make it safe.",
+      "choices": [
+        {
+          "san": "O-O",
+          "why": "O-O puts the king on g1."
+        },
+        {
+          "san": "Bxh7+",
+          "why": "Bxh7+ Nxh7 loses a bishop for a pawn."
+        }
+      ],
+      "accepted": [
+        "O-O"
+      ],
+      "explanation": "Look at both kings. Castle before you attack. Bxh7+ loses a bishop."
+    },
+    {
+      "id": "worst-piece",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O"
+        ]
+      },
+      "prompt": "White to move. Find your worst piece and bring it out.",
+      "choices": [
+        {
+          "san": "Nbd2",
+          "why": "Nbd2 brings the last knight out."
+        },
+        {
+          "san": "Bd3",
+          "why": "Bd3 brings the bishop out."
+        },
+        {
+          "san": "e4",
+          "why": "e4 dxe4 wins a pawn for Black. Nothing guards e4."
+        }
+      ],
+      "accepted": [
+        "Nbd2",
+        "Bd3"
+      ],
+      "explanation": "Bring a piece out before you push a pawn. An unguarded e4 pawn is lost."
+    }
+  ]
+}

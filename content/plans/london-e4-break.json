@@ -1,0 +1,523 @@
+{
+  "id": "london-e4-break",
+  "title": "Prepare the e4 break",
+  "group": "london",
+  "side": "white",
+  "level": 1,
+  "summary": "Guard e4 first. Then push the e-pawn to attack the d5 pawn.",
+  "guideLinks": [
+    {
+      "repertoireId": "london",
+      "variation": "vs-d5"
+    },
+    {
+      "repertoireId": "london",
+      "variation": "vs-early-c5"
+    }
+  ],
+  "lessons": [
+    "pawn-breaks",
+    "london-plans"
+  ],
+  "position": {
+    "moves": [
+      "d4",
+      "d5",
+      "Bf4",
+      "Nf6",
+      "e3",
+      "e6",
+      "Nf3",
+      "Bd6",
+      "Bg3",
+      "O-O",
+      "Nbd2",
+      "c5",
+      "c3",
+      "Nc6",
+      "Bd3",
+      "b6",
+      "O-O",
+      "Bb7"
+    ],
+    "arrows": [
+      {
+        "from": "d3",
+        "to": "e4",
+        "kind": "attack"
+      },
+      {
+        "from": "d2",
+        "to": "e4",
+        "kind": "attack"
+      }
+    ],
+    "marks": [
+      "e4"
+    ]
+  },
+  "trigger": {
+    "all": [
+      {
+        "type": "pawns",
+        "side": "own",
+        "on": [
+          "c3",
+          "d4",
+          "e3"
+        ]
+      },
+      {
+        "type": "pawns",
+        "side": "opp",
+        "on": [
+          "d5"
+        ]
+      }
+    ],
+    "none": [
+      {
+        "type": "pawns",
+        "side": "own",
+        "on": [
+          "e4"
+        ]
+      }
+    ]
+  },
+  "goal": "Play e4 when your pieces guard it. The pawn then attacks d5.",
+  "steps": [
+    {
+      "text": "Count the guards of e4. The d3 bishop and the d2 knight guard it. The d5 pawn and the f6 knight attack it.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6",
+          "O-O",
+          "Bb7"
+        ],
+        "arrows": [
+          {
+            "from": "d3",
+            "to": "e4",
+            "kind": "attack"
+          },
+          {
+            "from": "d2",
+            "to": "e4",
+            "kind": "attack"
+          }
+        ],
+        "marks": [
+          "e4"
+        ]
+      }
+    },
+    {
+      "text": "Put a rook on e1 and the queen on e2. They stand behind the e3 pawn.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6",
+          "O-O",
+          "Bb7"
+        ],
+        "arrows": [
+          {
+            "from": "f1",
+            "to": "e1",
+            "kind": "move"
+          },
+          {
+            "from": "d1",
+            "to": "e2",
+            "kind": "move"
+          }
+        ]
+      }
+    },
+    {
+      "text": "Then play e4. The pawn attacks the d5 pawn.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6",
+          "O-O",
+          "Bb7",
+          "Qe2",
+          "Ne7"
+        ],
+        "arrows": [
+          {
+            "from": "e3",
+            "to": "e4",
+            "kind": "move"
+          }
+        ]
+      }
+    },
+    {
+      "text": "If Black takes with ...dxe4, retake with the bishop or the knight.",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6",
+          "O-O",
+          "Bb7",
+          "Qe2",
+          "Ne7",
+          "Rad1",
+          "Nf5",
+          "e4",
+          "dxe4"
+        ],
+        "arrows": [
+          {
+            "from": "d3",
+            "to": "e4",
+            "kind": "attack"
+          },
+          {
+            "from": "d2",
+            "to": "e4",
+            "kind": "attack"
+          }
+        ]
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "square": "d3",
+      "text": "The bishop guards e4."
+    },
+    {
+      "square": "d2",
+      "text": "The knight guards e4."
+    },
+    {
+      "square": "e3",
+      "text": "This is the pawn that goes to e4."
+    },
+    {
+      "square": "c3",
+      "text": "The pawn guards d4, so the centre stays solid."
+    }
+  ],
+  "breaks": [
+    {
+      "from": "e3",
+      "to": "e4",
+      "text": "The e4 push attacks the d5 pawn."
+    }
+  ],
+  "opponent": [
+    {
+      "text": "Black can trade bishops with ...Bxg3. Retake with hxg3 and go on with the plan."
+    }
+  ],
+  "notNow": [
+    "Do not push e4 when nothing guards it. Black takes with ...dxe4 and wins a pawn."
+  ],
+  "mistakes": [
+    {
+      "moves": [
+        "d4",
+        "d5",
+        "Bf4",
+        "Nf6",
+        "e3",
+        "c5",
+        "c3",
+        "Nc6",
+        "Nf3",
+        "e6"
+      ],
+      "text": "Do not push e4 yet. Nothing guards it. After ...dxe4 the pawn attacks your f3 knight, and Black has won a pawn.",
+      "bad": "e4",
+      "good": [
+        "Nbd2",
+        "Bd3"
+      ]
+    },
+    {
+      "moves": [
+        "d4",
+        "d5",
+        "Bf4",
+        "Nf6",
+        "e3",
+        "e6",
+        "Nf3",
+        "Bd6",
+        "Bg3",
+        "O-O",
+        "Nbd2",
+        "c5",
+        "c3",
+        "Nc6",
+        "Bd3",
+        "b6",
+        "O-O",
+        "Bb7",
+        "Qe2",
+        "Ne7",
+        "Rad1",
+        "Nf5"
+      ],
+      "text": "Nb3 takes a guard from e4. After ...c4 the pawn attacks the knight and the bishop.",
+      "bad": "Nb3",
+      "good": [
+        "e4",
+        "Bxd6"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "title": "Guard e4, then push",
+      "moves": [
+        "d4",
+        "d5",
+        "Bf4",
+        "Nf6",
+        "e3",
+        "e6",
+        "Nf3",
+        "Bd6",
+        "Bg3",
+        "O-O",
+        "Nbd2",
+        "c5",
+        "c3",
+        "Nc6",
+        "Bd3",
+        "b6",
+        "O-O",
+        "Bb7",
+        "Qe2",
+        "Ne7",
+        "Rad1",
+        "Nf5",
+        "e4",
+        "dxe4",
+        "Nxe4",
+        "cxd4",
+        "Nxf6+",
+        "Qxf6"
+      ],
+      "startPly": 18,
+      "kind": "plan",
+      "source": "stockfish",
+      "comments": [
+        {
+          "ply": 19,
+          "text": "The queen goes to e2, behind the e3 pawn."
+        },
+        {
+          "ply": 23,
+          "text": "The e4 push attacks the d5 pawn."
+        },
+        {
+          "ply": 25,
+          "text": "Retake with the knight. It attacks the f6 knight."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "guard-first",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "c5",
+          "c3",
+          "Nc6",
+          "Nf3",
+          "e6"
+        ]
+      },
+      "prompt": "White to move. Black has a pawn on d5. You want to push e4.",
+      "choices": [
+        {
+          "san": "Nbd2",
+          "why": "Nbd2 adds a guard for e4."
+        },
+        {
+          "san": "Bd3",
+          "why": "Bd3 adds a guard for e4."
+        },
+        {
+          "san": "e4",
+          "why": "e4 dxe4 and the pawn attacks your f3 knight. You lose a pawn."
+        }
+      ],
+      "accepted": [
+        "Nbd2",
+        "Bd3"
+      ],
+      "explanation": "Add guards first. Then the e4 push does not lose a pawn."
+    },
+    {
+      "id": "push-now",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6",
+          "O-O",
+          "Bb7",
+          "Re1",
+          "Ne7"
+        ]
+      },
+      "prompt": "White to move. A rook stands on e1. The bishop and the knight guard e4.",
+      "choices": [
+        {
+          "san": "e4",
+          "why": "e4 attacks the d5 pawn."
+        },
+        {
+          "san": "Qe2",
+          "why": "Qe2 gets the queen ready for the push."
+        },
+        {
+          "san": "Bxh7+",
+          "why": "Bxh7+ Nxh7 loses a bishop for a pawn."
+        }
+      ],
+      "accepted": [
+        "e4",
+        "Qe2"
+      ],
+      "explanation": "The e4 pawn has guards now, so the push is safe. Bxh7+ still loses a bishop."
+    },
+    {
+      "id": "keep-guards",
+      "board": {
+        "moves": [
+          "d4",
+          "d5",
+          "Bf4",
+          "Nf6",
+          "e3",
+          "e6",
+          "Nf3",
+          "Bd6",
+          "Bg3",
+          "O-O",
+          "Nbd2",
+          "c5",
+          "c3",
+          "Nc6",
+          "Bd3",
+          "b6",
+          "O-O",
+          "Bb7",
+          "Qe2",
+          "Ne7",
+          "Rad1",
+          "Nf5"
+        ]
+      },
+      "prompt": "White to move. Black has a knight on f5. Keep the guards of e4.",
+      "choices": [
+        {
+          "san": "e4",
+          "why": "e4 attacks the d5 pawn."
+        },
+        {
+          "san": "Bxd6",
+          "why": "Bxd6 trades the bishops."
+        },
+        {
+          "san": "Nb3",
+          "why": "Nb3 c4 attacks the knight and the bishop."
+        },
+        {
+          "san": "b4",
+          "why": "b4 cxb4 cxb4 Bxb4 loses a pawn."
+        }
+      ],
+      "accepted": [
+        "e4",
+        "Bxd6"
+      ],
+      "explanation": "Keep the knight on d2. Moves that take a guard from e4, or give up a pawn, lose material."
+    }
+  ]
+}
