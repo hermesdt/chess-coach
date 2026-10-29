@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { PlanDTO, ResolvedBoard } from '../../../shared/types';
+import type { PlanDTO, PlanGamesDTO, ResolvedBoard } from '../../../shared/types';
 import { api } from '../api';
 import { PlanPage } from './PlanPage';
 
@@ -39,8 +39,10 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const renderPage = (p: PlanDTO) => {
+const noGames: PlanGamesDTO = { total: 0, wins: 0, draws: 0, losses: 0, games: [] };
+const renderPage = (p: PlanDTO, games: PlanGamesDTO = noGames) => {
   vi.spyOn(api, 'getPlan').mockResolvedValue(p);
+  vi.spyOn(api, 'getPlanGames').mockResolvedValue(games);
   return render(
     <MemoryRouter initialEntries={['/plans/sample']}>
       <Routes><Route path="/plans/:id" element={<PlanPage />} /></Routes>
@@ -119,5 +121,41 @@ describe('PlanPage', () => {
       </MemoryRouter>,
     );
     await screen.findByText('not found');
+  });
+});
+
+describe('PlanPage your games', () => {
+  const games = (total: number, shown = Math.min(total, 5)): PlanGamesDTO => ({
+    total, wins: 2, draws: 1, losses: total - 3,
+    games: Array.from({ length: shown }, (_, i) => ({ id: 10 + i, ply: 17 + i, result: 'win', white: `me${i}`, black: `opp${i}`, playedAt: 0 })),
+  });
+
+  it('shows the count, W/D/L and the game links', async () => {
+    const { container } = renderPage(plan(), games(5));
+    await screen.findByText('5 games reach this plan. You won 2, drew 1 and lost 2.');
+    const link = screen.getByRole('link', { name: 'me0 - opp0, move 9' });
+    expect(link.getAttribute('href')).toBe('/games/10');
+    expect(screen.getAllByRole('link', { name: /^me\d - opp\d, move/ })).toHaveLength(5);
+    expect(container.querySelector('#games')).not.toBeNull();
+    expect(screen.queryByText(/and \d+ more/)).toBeNull();
+  });
+
+  it('says "and 2 more" for seven games', async () => {
+    renderPage(plan(), games(7));
+    await screen.findByText('and 2 more');
+  });
+
+  it('is hidden for two games, and the contents list has no link', async () => {
+    const { container } = renderPage(plan(), games(2));
+    await screen.findByRole('heading', { name: 'Sample plan' });
+    await waitFor(() => expect(api.getPlanGames).toHaveBeenCalled());
+    expect(container.querySelector('#games')).toBeNull();
+    expect(container.querySelector('a[href="#games"]')).toBeNull();
+  });
+
+  it('the contents list links to #games when the box shows', async () => {
+    const { container } = renderPage(plan(), games(3));
+    await screen.findByText(/3 games reach this plan/);
+    expect(container.querySelector('a[href="#games"]')).not.toBeNull();
   });
 });
