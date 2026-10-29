@@ -26,9 +26,10 @@
       "solution": [
         "g1f1",
         "g2g3",
-        "h2h3"
+        "h2h3",
+        "f2f3"
       ],
-      "explanation": "Black threatens Re1 mate. Your king has no escape square. Kf1, g3 or h3 stop it. Many other moves, such as a4 or Nd5, lose to Re1#."
+      "explanation": "Black threatens Re1 mate. Your king has no escape square. Kf1, g3 and h3 are the simple ways. The move f3 also works, because it gives the king a square. Many other moves, such as a4 or Nd5, lose to Re1#."
     },
     {
       "id": "queen-and-king",

@@ -47,3 +47,9 @@ Each is a move choice. No text calls these moves best. Nothing changed without y
 - Caro-Kann: tree moves 4 to 11 win % behind the engine (3...Bg4, 4...e6, Qh4 ...dxe4, Qf3 ...Nf6, 5...Bd7 and others). The guide repeats the first, second and third of these.
 - Slav: the missing 9.Nxd1 and 5.Qxf3 lines, ...Qb6 after `d4 d5 Bg5 c5 e3`, the short final form in vs-c4, `vs-nf3` ...e6 (about 9 win % behind ...Qxd4). `c4 c6 Nf3 d5` and `Nf3 d5 c4 c6` reach one position with different children.
 - Lessons: 10 `make-luft` (f3, f4, h4, g4 also stop the mate but are marked wrong), 11 `bishop-d6`, 12 `keep-bishop` (add Bg5?), 19 exercise id `queen-sacrifice-mate` (Qxc8+ takes a knight).
+
+## Owner decisions (2026-10-29)
+
+- Owner chose the recommendations. Lesson 10 `make-luft` now also accepts f3 (5.1 win % behind). The engine rates g4 as an error (13 %), and f4 and h4 as weak (8 %), so they stay wrong.
+- Lesson 12 `keep-bishop` now also accepts Bg5. The prompt no longer says "keep the b8-h2 diagonal".
+- Kept as they are: London Qc1, the Caro-Kann tree moves, lesson 11 `bishop-d6`, lesson 19 exercise id. The Slav missing lines wait until a game needs them.

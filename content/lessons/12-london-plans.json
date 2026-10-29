@@ -37,11 +37,12 @@
     {
       "id": "keep-bishop",
       "fen": "rnbqk2r/ppp2ppp/3bpn2/3p4/3P1B2/4PN2/PPP2PPP/RN1QKB1R w KQkq - 2 5",
-      "prompt": "White to move. Black's bishop attacks yours. Step back and keep your bishop on the b8-h2 diagonal.",
+      "prompt": "White to move. Black's bishop attacks yours. Step back and keep your bishop.",
       "solution": [
-        "f4g3"
+        "f4g3",
+        "f4g5"
       ],
-      "explanation": "Bg3 keeps your bishop on the b8-h2 diagonal. If Black plays ...Bxg3, retake with hxg3: the h-file is then half open for your rook. If you leave the bishop on f4, ...Bxf4 exf4 doubles your f-pawns."
+      "explanation": "Bg3 keeps your bishop on the b8-h2 diagonal, and Bg5 also keeps it. If Black plays ...Bxg3, retake with hxg3: the h-file is then half open for your rook. If you leave the bishop on f4, ...Bxf4 exf4 doubles your f-pawns."
     },
     {
       "id": "h3-retreat",
