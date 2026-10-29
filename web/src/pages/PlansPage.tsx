@@ -54,7 +54,7 @@ export function PlansPage() {
                     <p className="muted">
                       <span className="level-badge">Level {p.level}</span>
                       {p.locked && <span> Unlocks at level {p.level}</span>}
-                      {p.trained && <span className="badge"> Training</span>}
+                      {p.trained && <span className="level-badge">Training</span>}
                     </p>
                   </div>
                 </li>

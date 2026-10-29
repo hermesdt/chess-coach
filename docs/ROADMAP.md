@@ -39,7 +39,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M9 | Level 2–3 content (lessons, tags, deeper repertoire) | done | `docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md` |
 | M10 | Opening guides: per repertoire why, strengths, target set-up, plans, typical mistakes | done | spec `docs/superpowers/specs/2026-10-21-opening-guides-design.md`, plan `docs/superpowers/plans/2026-10-21-m10-opening-guides.md` |
 | M11 | Content quality audit: every repertoire comment, lesson and guide claim checked with chess.js + Stockfish | done | spec `docs/superpowers/specs/2026-10-20-content-audit-design.md`, plan `docs/superpowers/plans/2026-10-22-m11-content-audit.md` |
-| M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | planned | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12a plan `docs/superpowers/plans/2026-10-29-m12a-middlegame-plans.md` |
+| M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | M12a done; M12b and M12c planned | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12a plan `docs/superpowers/plans/2026-10-29-m12a-middlegame-plans.md` |
 
 ## Log
 
@@ -375,9 +375,54 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   file?" They want a section like Openings for the middlegame. This is M12; the
   spec has five open questions for the owner (each with a default).
 
+## M12a log
+
+- 2026-10-29 — **M12a done.** 1296 tests; `pnpm validate:plans` → content OK
+  (36 `missed-good-move` warnings); `pnpm check:sequences` 0 errors. New
+  **Plans** page (`/plans`, `/plans/:id`) with five level-1 plans in
+  `content/plans/`: `london-kingside-attack`, `london-h-file`, `london-e4-break`,
+  `caro-advance-d4` and the checklist `no-clear-plan`. Each plan has when (trigger
+  labels), goal, steps with arrows, key pieces, pawn breaks, watch out, typical
+  mistakes (red/green), a model line and "Train this plan". Training adds `plan`
+  cards ("find the plan move": arrows A to D, a free board move is checked by
+  Stockfish) to the daily review. New: `server/plans/` (loader, trigger
+  conditions, validator with chess and engine rules), `pnpm validate:plans`,
+  `pnpm tsx scripts/plan-probe.ts` (authoring aid), migration 016
+  (`plan_progress`), review mix with a plan share (level 1: 40/30/10/20),
+  "Plans for this set-up" on guide pages, "Related plans" on lesson pages.
+  Smoke on a temp DB (port 8788): list, five details, train twice (3 cards, then
+  0), plan cards in the session, guide and lesson links, pages screenshotted.
+  Content review ledger: `docs/superpowers/notes/2026-10-29-m12a-plans-review.md`
+  (4 false or misleading claims found and fixed). Implemented inline by the main
+  session, no subagents (owner instruction); the final review was a self-review.
+- M12a rulings (review these):
+  - **Five plans, not six.** `opposite-castling-race` was dropped: in the only
+    repertoire line with opposite castling Stockfish rates the pawn storm 8 to
+    20 win % worse than quiet moves. The replacement `london-vs-qb6` was dropped
+    too: Black's best move there is `…b5` (+0.49 for Black), so "win the c4
+    pawn" is not supported. Nothing unverified ships.
+  - `no-clear-plan` has five steps (schema limit); pawn break and weak square
+    are one step.
+  - Exercise positions are unique across plans (a card is one position); the
+    validator and a real-content test check this.
+  - Choice arrows are not lettered (the board library draws no text). Hovering
+    or focusing a button A to D turns its arrow green.
+  - Engine rules skip a model with `source: tree` and the own moves inside a
+    `fromNode` path (the repertoire validation covers them).
+  - `london-h-file` stays level 1: the rook is still on h1 because White has not
+    castled; the plan notes that castling short moves it.
+  - Level-1 new-card mix is now mistake 40 / lesson 30 / plan 10 / opening 20.
+- Known gaps for later: the plan list order is alphabetical by file name inside
+  each group; game links, plan matching on the owner's games and the coach
+  `structure` facts are M12b; the M10 guide `vs-qb6` text "play for the c4
+  pawn" may promise more than the position gives; many middlegame quiz moves are
+  within 5 win % of the best, so `missed-good-move` warnings stay.
+
 ## Next session
 
-- Pick the next work with the owner. All milestones through M11 are done.
+- M12a is done. Next: M12b (matcher on the owner's games, game-page links,
+  coach `structure` facts) or M12c (more plans, an opposite-castling plan from
+  an engine-backed line). Pick with the owner.
 - Done 2026-10-29: the coach's "why it matters" line on a mistake card no
   longer keeps sentences that claim an attack, defence or threat (the game
   facts hold no attack facts, so they cannot be checked). Known gap: the
