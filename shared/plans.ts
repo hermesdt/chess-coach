@@ -73,6 +73,9 @@ export interface PlanFile {
 
 // --- API shapes ---
 
+/** The ply after which a plan fits a game. The owner is to move next. */
+export interface PlanMoment { planId: string; ply: number }
+
 export interface PlanIndexEntry {
   id: string; title: string; group: PlanGroup; side: PlanSide; level: 1 | 2 | 3;
   locked: boolean; summary: string; trained: boolean; exercises: number;
