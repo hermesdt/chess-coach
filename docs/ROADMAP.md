@@ -373,9 +373,8 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 ## Next session
 
 - Pick the next work with the owner. All milestones through M11 are done.
-- Follow-up (from the owner's reported problems, 2026-10-22; note
-  `docs/superpowers/notes/2026-10-22-m11-reported-problems.md`): the coach's
-  "why it matters" line on a mistake card is not checked against attack facts
-  (a card said "b3 would have protected your bishop on c4" while nothing
-  attacked it). Grounding checks moves only. Plan it as a small fix (check
-  non-move claims, or drop the line when no attack fact backs it).
+- Done 2026-10-29: the coach's "why it matters" line on a mistake card no
+  longer keeps sentences that claim an attack, defence or threat (the game
+  facts hold no attack facts, so they cannot be checked). Known gap: the
+  filter is a word list. A card whose line is dropped shows only the label and
+  tags. A later step could add attack facts to the game-review facts.

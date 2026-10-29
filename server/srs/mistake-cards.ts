@@ -41,8 +41,17 @@ function explanation(m: MoveAnalysis, why?: string): string {
   return `${base}${base.endsWith('.') ? '' : '.'} ${why}`;
 }
 
+/** Words that claim an attack, a defence or a threat. The game facts hold no attack facts, so such a sentence cannot be checked. */
+const UNCHECKED_CLAIM = /\b(protect|defen[cd]|guard|attack|threat|hang|loose|undefended|unprotected|en prise)/i;
+
+/** Keeps the sentences of the coach's line that make no attack or defence claim. */
+function checkedSentences(text: string): string {
+  const sentences = text.match(/[^.!?]+[.!?]*/g) ?? [];
+  return sentences.map((s) => s.trim()).filter((s) => s !== '' && !UNCHECKED_CLAIM.test(s)).join(' ');
+}
+
 const whyByPly = (review: GameReview | null): Map<number, string> =>
-  new Map((review?.moments ?? []).filter((m) => m.whyItMatters.trim() !== '').map((m) => [m.ply, m.whyItMatters.trim()]));
+  new Map((review?.moments ?? []).map((m): [number, string] => [m.ply, checkedSentences(m.whyItMatters)]).filter(([, text]) => text !== ''));
 
 /** Adds the coach's "why it matters" to the mistake cards that point at a ply of this game. Other cards are not touched. */
 export function applyCoachExplanations(db: DatabaseSync, analysis: GameAnalysis, review: GameReview): number {

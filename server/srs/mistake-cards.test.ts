@@ -158,6 +158,20 @@ describe('buildMistakeCards', () => {
     expect(listCardsByRef(db, 1)[0]?.solution.explanation).toBeNull();
   });
 
+  it('drops coach sentences that claim an attack or a defence, and keeps the others', () => {
+    const fen = 'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1';
+    const seed = (why: string) => {
+      db.prepare('DELETE FROM cards').run();
+      upsertCard(db, { kind: 'mistake', positionKey: positionKey(fen), fen, sideToMove: 'black', prompt: 'p', solution: { accepted: ['d7d5'], best: 'd7d5', explanation: null }, refs: [{ gameId: 1, ply: 1 }], lastMove: null });
+      const review = { summary: '', openingNote: '', oneThingToPractice: '', moments: [{ ply: 1, whatHappened: 'w', whyItMatters: why, principle: 'p', lessonId: null }] };
+      applyCoachExplanations(db, analysis(1, [move()]), review);
+      return listCardsByRef(db, 1)[0]?.solution.explanation;
+    };
+    expect(seed('b3 would have protected your bishop on c4. The centre stays open.')).toBe('Blunder. The centre stays open.');
+    expect(seed('Nothing attacks it, but the knight guards e5.')).toBeNull();
+    expect(seed('The piece was lost.')).toBe('Blunder. The piece was lost.');
+  });
+
   it('stores a promotion answer with the piece letter', async () => {
     const m = move({ fenBefore: PROMO_FEN, san: 'e8=N', uci: 'e7e8n' });
     await buildMistakeCards(db, analysis(1, [m]), pool([line(1, 90, 'e7e8q'), line(2, 20, 'e7e8n')]), { nodes: 10 });
