@@ -1,13 +1,43 @@
 import { Chess, type Color, type Square } from 'chess.js';
 import type { PlanBoard, PlanFile } from '../../shared/plans.js';
+import { moverWinAfter, winPct } from '../analysis/winpct.js';
 import { checkBadGood } from '../content/bad-good.js';
 import type { EnginePool } from '../engine/pool.js';
+import type { EngineLine } from '../engine/uci.js';
 import type { Repertoire, ValidationIssue } from '../repertoire/types.js';
 import { replayBoard } from './board.js';
 import { matchTrigger } from './trigger.js';
 
 export interface PlanValidateOptions {
   nodes?: number;
+}
+
+const DEFAULT_NODES = 1_000_000;
+/** An own move in a board, a model or a good list may lose less than this many win %. */
+export const MAX_LOSS = 15;
+/** An accepted quiz move may lose less than this; a wrong choice must lose at least this. */
+export const QUIZ_LOSS = 10;
+/** An accepted move or a missed move this close to the best is not a warning. */
+export const NEAR_BEST = 5;
+
+interface Checked { key: string; fenBefore: string; san: string; uci: string; fenAfter: string }
+
+/** The moves of a board that the engine must check: every move of `mover` from index `from`. */
+function movesOf(moves: string[], from: number, mover: 'w' | 'b', key: string): Checked[] {
+  const game = new Chess();
+  const out: Checked[] = [];
+  for (let i = 0; i < moves.length; i++) {
+    const fenBefore = game.fen();
+    const turn = game.turn();
+    let move;
+    try {
+      move = game.move(moves[i]!);
+    } catch {
+      return out;
+    }
+    if (i >= from && turn === mover) out.push({ key, fenBefore, san: move.san, uci: move.from + move.to + (move.promotion ?? ''), fenAfter: game.fen() });
+  }
+  return out;
 }
 
 const isSquare = (s: string): s is Square => /^[a-h][1-8]$/.test(s);
@@ -45,12 +75,15 @@ export async function validatePlan(
   engine?: Pick<EnginePool, 'analyse'>,
   opts: PlanValidateOptions = {},
 ): Promise<ValidationIssue[]> {
-  void engine;
-  void opts;
   const file = `${plan.id}.json`;
   const issues: ValidationIssue[] = [];
   const add = (nodeId: string, rule: string, detail: string) => issues.push({ file, nodeId, rule, detail });
   const ownColor: Color = plan.side === 'white' ? 'w' : 'b';
+  const oppColor: Color = ownColor === 'w' ? 'b' : 'w';
+  const ownMoves: Checked[] = [];
+  const oppMoves: Checked[] = [];
+  const goodMoves: Checked[] = [];
+  const quizzes: { id: string; fen: string; choices: { san: string; uci: string; fenAfter: string }[]; accepted: Set<string> }[] = [];
 
   for (const { nodeId, text } of textFields(plan)) {
     if (/engine line/i.test(text)) add(nodeId, 'engine-line-text', 'Text must not say "engine line"');
@@ -74,6 +107,9 @@ export async function validatePlan(
         add(where, 'bad-from-node', `The moves of ${where} do not start with the node path "${nodeId}"`);
       }
     }
+    // Moves inside a repertoire path are checked by the repertoire validation.
+    const skip = board.fromNode ? board.fromNode.nodeId.split(' ').length : 0;
+    ownMoves.push(...movesOf(board.moves, skip, ownColor, where));
     const chess = new Chess(replay.fen);
     for (const a of board.arrows ?? []) {
       if (!isSquare(a.from) || !isSquare(a.to)) {
@@ -133,11 +169,22 @@ export async function validatePlan(
         break;
       }
     }
-    if (legal) checkBadGood(game, m, (rule, detail) => add(line, rule, detail), `mistake line "${line}"`);
+    if (legal) {
+      const fenBefore = game.fen();
+      for (const g of checkBadGood(game, m, (rule, detail) => add(line, rule, detail), `mistake line "${line}"`)) {
+        goodMoves.push({ key: line, fenBefore, ...g });
+      }
+    }
   }
 
   for (const model of plan.models) {
-    if (!replayBoard(model.moves)) add(`model:${model.title}`, 'illegal-san', `Illegal move in model "${model.title}"`);
+    if (!replayBoard(model.moves)) {
+      add(`model:${model.title}`, 'illegal-san', `Illegal move in model "${model.title}"`);
+      continue;
+    }
+    if (model.source === 'tree') continue;
+    ownMoves.push(...movesOf(model.moves, model.startPly, ownColor, `model:${model.title}`));
+    if (model.kind === 'plan') oppMoves.push(...movesOf(model.moves, model.startPly, oppColor, `model:${model.title}`));
   }
 
   const seenIds = new Set<string>();
@@ -163,15 +210,86 @@ export async function validatePlan(
       }
     };
     const choiceSans = new Set<string>();
+    const choiceMoves: { san: string; uci: string; fenAfter: string }[] = [];
     for (const c of e.choices) {
-      const n = normal(c.san);
-      if (n === null) add(where, 'illegal-san', `Illegal choice "${c.san}" in exercise "${e.id}"`);
-      else choiceSans.add(n);
+      const board = new Chess(fen);
+      try {
+        const m = board.move(c.san);
+        choiceSans.add(m.san);
+        choiceMoves.push({ san: m.san, uci: m.from + m.to + (m.promotion ?? ''), fenAfter: board.fen() });
+      } catch {
+        add(where, 'illegal-san', `Illegal choice "${c.san}" in exercise "${e.id}"`);
+      }
     }
+    quizzes.push({ id: e.id, fen, choices: choiceMoves, accepted: new Set(e.accepted.flatMap((a) => normal(a) ?? [])) });
     for (const a of e.accepted) {
       const n = normal(a);
       if (n === null || !choiceSans.has(n)) add(where, 'accepted-subset', `Accepted move "${a}" is not one of the choices of exercise "${e.id}"`);
     }
   }
+
+  if (engine) await engineRules();
   return issues;
+
+  async function engineRules(): Promise<void> {
+    const nodes = opts.nodes ?? DEFAULT_NODES;
+    const cache = new Map<string, EngineLine[]>();
+    const search = async (fen: string, multipv = 1): Promise<EngineLine[]> => {
+      const hit = cache.get(`${fen}|${multipv}`);
+      if (hit) return hit;
+      const lines = await engine!.analyse(fen, { nodes, multipv, newGame: true });
+      cache.set(`${fen}|${multipv}`, lines);
+      return lines;
+    };
+    /** Win % lost by the mover when the move is played instead of the best. */
+    const lossOf = async (m: { fenBefore: string; uci: string; fenAfter: string }): Promise<number> => {
+      const best = (await search(m.fenBefore))[0];
+      if (!best || best.pv[0] === m.uci) return 0;
+      const after = await search(m.fenAfter);
+      const winAfter = after.length === 0 ? (new Chess(m.fenAfter).isCheckmate() ? 100 : 50) : moverWinAfter(after[0]!.score);
+      return Math.max(0, winPct(best.score) - winAfter);
+    };
+    const seen = new Set<string>();
+    const checkAll = async (list: Checked[], rule: string): Promise<void> => {
+      for (const m of list) {
+        const id = `${rule}|${m.fenBefore}|${m.uci}`;
+        if (seen.has(id)) continue;
+        seen.add(id);
+        const loss = await lossOf(m);
+        if (loss >= MAX_LOSS) add(m.key, rule, `${m.san} loses ${loss.toFixed(1)} win % (${m.key})`);
+      }
+    };
+    await checkAll(ownMoves, 'engine-loss');
+    await checkAll(oppMoves, 'engine-loss-opp');
+    await checkAll(goodMoves, 'engine-loss-good');
+
+    const warn = (nodeId: string, rule: string, detail: string) => issues.push({ file, nodeId, rule, detail, severity: 'warning' });
+    for (const q of quizzes) {
+      const where = `exercise:${q.id}`;
+      const lines = await search(q.fen, 4);
+      const best = lines[0];
+      if (!best) continue;
+      const choiceUcis = new Set(q.choices.map((c) => c.uci));
+      for (const c of q.choices) {
+        const loss = await lossOf({ fenBefore: q.fen, uci: c.uci, fenAfter: c.fenAfter });
+        if (q.accepted.has(c.san)) {
+          if (loss >= QUIZ_LOSS) add(where, 'accepted-loss', `Accepted move ${c.san} loses ${loss.toFixed(1)} win % (exercise "${q.id}")`);
+          else if (loss >= NEAR_BEST) warn(where, 'weak-alternative', `Accepted move ${c.san} loses ${loss.toFixed(1)} win % (exercise "${q.id}")`);
+        } else if (loss < QUIZ_LOSS) {
+          add(where, 'ambiguous-choice', `Wrong choice ${c.san} loses only ${loss.toFixed(1)} win %, so it is not clearly wrong (exercise "${q.id}")`);
+        }
+      }
+      for (const l of lines) {
+        const uci = l.pv[0];
+        if (uci === undefined || choiceUcis.has(uci) || winPct(l.score) < winPct(best.score) - NEAR_BEST) continue;
+        let san = uci;
+        try {
+          san = new Chess(q.fen).move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci.slice(4) || undefined }).san;
+        } catch {
+          // keep the UCI text
+        }
+        warn(where, 'missed-good-move', `${san} is within ${NEAR_BEST} win % of the best move but is not one of the choices (exercise "${q.id}")`);
+      }
+    }
+  }
 }
