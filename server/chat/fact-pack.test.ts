@@ -2,6 +2,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { Chess } from 'chess.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { GameAnalysis, MoveAnalysis, NewGame } from '../../shared/types.js';
+import type { PlanFile } from '../../shared/plans.js';
 import { saveAnalysis } from '../analysis/analysis-repo.js';
 import { parsePgn } from '../chess/pgn.js';
 import { openDb } from '../db/db.js';
@@ -66,6 +67,14 @@ beforeEach(() => {
 const input = (ply: number, path: string[] = [], question = 'why?', turn = 1) => ({ gameId: 1, anchor: { ply, path }, question, turn });
 
 describe('buildFactPack', () => {
+  it('includes structure and only owner plans matching the branch position', async () => {
+    const plan = { id: 'test', title: 'Test plan', side: 'white', trigger: { all: [{ type: 'piece', side: 'own', piece: 'N', on: ['f3'] }] }, steps: [{ text: 'Develop.' }] } as PlanFile;
+    const pack = await buildFactPack({ db, pool: fakePool({}), reps: [], nodes: 1, plans: [plan] }, input(2, ['g1f3']));
+    expect(pack.structure.kings.white.square).toBe('e1');
+    expect(pack.plans).toEqual([{ id: 'test', title: 'Test plan', labels: ['Your knight is on f3.'], steps: ['Develop.'] }]);
+    const before = await buildFactPack({ db, pool: fakePool({}), reps: [], nodes: 1, plans: [plan] }, input(2));
+    expect(before.plans).toEqual([]);
+  });
   it('gives three MultiPV lines with turn-prefixed ids', async () => {
     const fen = fenAfter(2);
     const pool = fakePool({

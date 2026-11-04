@@ -97,7 +97,7 @@ export interface ChatMessageDTO {
   anchor: { ply: number; path: string[]; describe: string };
   status: 'pending' | 'done' | 'error'; error: string | null;
   deep: boolean; parentId: number | null; deeperAvailable: boolean;
-  answer: { text: string; lines: ChatLineDTO[]; rule: string; lessonId: LessonId | null } | null;
+  answer: { text: string; lines: ChatLineDTO[]; rule: string; lessonId: LessonId | null; planId?: string | null } | null;
   provider: ProviderId | null; model: string | null; createdAt: number;
 }
 export interface CardWithState extends Card { due: number | null; isNew: boolean; repertoireName?: string }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { FactPack } from '../chat/fact-pack.js';
+import { structureFacts } from '../chat/structure.js';
 import { askCoach, chatAnswerSchema } from './chat.js';
 import { CHAT_PROMPT_VERSION } from './prompts/chat.js';
 import { createOpenRouter } from './providers/openrouter.js';
@@ -17,6 +18,8 @@ function pack(prefix: string, sans: string[], over: Partial<FactPack> = {}): Fac
       { id: `${prefix}L2`, kind: 'best', startFen: 'x', san: ['c5'], uci: [], evalCp: 5, evalMate: null, winPctForUser: 51, materialEnd: { white: 39, black: 39 }, captures: [], checks: 0 },
     ],
     attacks: [],
+    structure: structureFacts('rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1'),
+    plans: [],
     playedAttacks: null,
     threat: null,
     named: [],
@@ -49,6 +52,47 @@ const base = (over: Partial<Parameters<typeof askCoach>[1]> = {}): Parameters<ty
 const turn = (n: number) => ({ question: `q${n}`, anchorDescribe: `spot ${n}`, answer: { answer: `a${n}`, lines: [{ id: `t${n}.L1`, why: 'w' }], rule: `r${n}`, lessonId: null } });
 
 describe('askCoach', () => {
+  it('retries an unknown plan id and accepts a matched plan', async () => {
+    const p = pack('t2.', ['Nf3'], { plans: [{ id: 'london-test', title: 'Test', labels: [], steps: [] }] });
+    const { provider, reqs } = fake([answer({ planId: 'wrong' }), answer({ planId: 'london-test' })]);
+    const result = await askCoach(provider, base({ pack: p }));
+    expect(result.answer.planId).toBe('london-test');
+    expect(JSON.stringify(reqs[0]!.jsonSchema)).toContain('london-test');
+    expect(JSON.stringify(reqs[0]!.jsonSchema)).not.toContain('wrong');
+    expect(reqs).toHaveLength(2);
+  });
+
+  it('retries a false file claim and accepts a true one', async () => {
+    const { provider, reqs } = fake([answer({ answer: 'The h-file is open.' }), answer({ answer: 'The h-file is closed.' })]);
+    const result = await askCoach(provider, base());
+    expect(result.answer.answer).toBe('The h-file is closed.');
+    expect(reqs).toHaveLength(2);
+  });
+
+  it('checks half-open files by side and accepts a true negated claim', async () => {
+    const p = pack('t2.', ['Nf3'], { structure: structureFacts('6k1/8/8/3p4/2P5/8/8/6K1 w - - 0 1') });
+    const { provider, reqs } = fake([answer({ answer: 'The c-file is half-open for White.' }), answer({ answer: 'The c-file is not open.' })]);
+    await askCoach(provider, base({ pack: p }));
+    expect(reqs).toHaveLength(2);
+  });
+
+  it('checks descriptive claims about an open file', async () => {
+    const { provider, reqs } = fake([answer({ answer: 'Use the open h-file.' }), answer({ answer: 'The h-file is closed.' })]);
+    await askCoach(provider, base());
+    expect(reqs).toHaveLength(2);
+  });
+
+  it('does not compare a future file claim to the current position', async () => {
+    const { provider, reqs } = fake([answer({ answer: 'After Nf3, use the open h-file.' })]);
+    await askCoach(provider, base());
+    expect(reqs).toHaveLength(1);
+  });
+
+  it('does not allow a move solely because it appears in a plan', async () => {
+    const p = pack('t2.', ['Nf3'], { plans: [{ id: 'test', title: 'Test', labels: [], steps: ['Play Qh5.'] }] });
+    const bad = answer({ answer: 'Play Qh5.' });
+    await expect(askCoach(fake([bad, bad]).provider, base({ pack: p }))).rejects.toBeInstanceOf(AiGroundingError);
+  });
   it('returns a valid answer and puts the facts, question and rules in the prompt', async () => {
     const { provider, reqs } = fake([answer()]);
     const out = await askCoach(provider, base());
@@ -201,7 +245,7 @@ describe('history in adapters', () => {
 describe('chat prompt attack rule', () => {
   it('has a new version, the attack rule and the field description', async () => {
     const { CHAT_SYSTEM } = await import('./prompts/chat.js');
-    expect(CHAT_PROMPT_VERSION).toBe('coach-chat-2');
+    expect(CHAT_PROMPT_VERSION).toBe('coach-chat-3');
     expect(CHAT_SYSTEM).toContain('Say that a piece attacks, defends, threatens or wins another piece only when the attacks facts or a line show it.');
     expect(CHAT_SYSTEM).toContain('"playedAttacks"');
     expect(CHAT_SYSTEM).toContain('Attacks and defences ignore pins');

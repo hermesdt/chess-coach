@@ -21,6 +21,7 @@ import { runJob } from '../jobs.js';
 import type { EngineCache } from '../engine/cache.js';
 import { currentLevel } from '../level.js';
 import type { Repertoire } from '../repertoire/types.js';
+import type { PlanFile } from '../../shared/plans.js';
 import { upsertCard } from '../srs/cards-repo.js';
 
 export const NO_COACH = 'No AI coach is set up. Open Settings.';
@@ -55,7 +56,7 @@ function anchorFen(db: DatabaseSync, gameId: number, anchor: { ply: number; path
   return chess.fen();
 }
 
-export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<EnginePool, 'analyse'>, getReps: () => Repertoire[], hub: StreamHub, cache?: EngineCache): Hono {
+export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<EnginePool, 'analyse'>, getReps: () => Repertoire[], hub: StreamHub, cache?: EngineCache, getPlans: () => PlanFile[] = () => []): Hono {
   const HEARTBEAT_MS = 15_000;
   /** Positions that a prefetch is searching now. */
   const prefetching = new Set<string>();
@@ -93,7 +94,7 @@ export function chatRoutes(db: DatabaseSync, registry: Registry, pool: Pick<Engi
         providerId = provider.id;
         report(0, null, `Asking ${provider.label}…`);
         const pack = await buildFactPack(
-          { db, pool, reps: getReps(), nodes: settings.engineNodes, cache },
+          { db, pool, reps: getReps(), nodes: settings.engineNodes, cache, plans: getPlans() },
           { gameId: rec.gameId, anchor: { ply: rec.anchor.ply, path: rec.anchor.path }, question: rec.question, turn: rec.turn },
         );
         savePack(db, rec.id, pack);

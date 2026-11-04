@@ -61,6 +61,14 @@ describe('migration 015', () => {
 });
 
 describe('chat repo', () => {
+  it('round-trips the selected plan and reads older answers without one', () => {
+    const old = insertPending(db, { gameId: 1, question: 'old', anchor: { ply: 0, path: [], describe: 'x' } });
+    completeMessage(db, old.id, { answer, provider: 'claude-cli', model: 'x' });
+    expect(toDto(getRecord(db, old.id)!).answer?.planId).toBeUndefined();
+    const current = insertPending(db, { gameId: 1, question: 'new', anchor: { ply: 0, path: [], describe: 'x' } });
+    completeMessage(db, current.id, { answer: { ...answer, planId: 'london-h-file' }, provider: 'claude-cli', model: 'x' });
+    expect(toDto(getRecord(db, current.id)!).answer?.planId).toBe('london-h-file');
+  });
   it('round-trips a message and resolves lines in answer order', () => {
     const m = insertPending(db, { gameId: 1, question: 'why?', anchor: { ply: 2, path: [], describe: 'x' } });
     expect(m).toMatchObject({ turn: 1, status: 'pending' });

@@ -1,6 +1,7 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Chess, type Move, type PieceSymbol, type Square } from 'chess.js';
 import type { Classification, Color, EngineScore, Tag } from '../../shared/types.js';
+import type { PlanFile } from '../../shared/plans.js';
 import { gameFacts, type GameFacts } from '../ai/facts.js';
 import { loadGame } from '../ai/game-review.js';
 import { getAnalysis } from '../analysis/analysis-repo.js';
@@ -11,6 +12,8 @@ import type { EngineLine, EngineLines } from '../engine/uci.js';
 import { currentLevel } from '../level.js';
 import type { Repertoire } from '../repertoire/types.js';
 import { parseNamedMoves } from './named-moves.js';
+import { structureFacts, type StructureFacts } from './structure.js';
+import { matchTrigger, triggerLabels } from '../plans/trigger.js';
 
 /** The game has no finished analysis, so the coach has no stored facts to use. */
 export class NotAnalysedError extends Error {
@@ -59,6 +62,8 @@ export interface FactPack {
   played: { san: string; mover: Color; winBefore: number; winAfter: number; classification: Classification; tags: Tag[] } | null;
   /** Pieces attacked by the other side in the anchor position. Computed by chess.js. */
   attacks: AttackFact[];
+  structure: StructureFacts;
+  plans: { id: string; title: string; labels: string[]; steps: string[] }[];
   /** The same after the played move. Null when there is no played move. */
   playedAttacks: AttackFact[] | null;
   lines: FactLine[];
@@ -72,6 +77,7 @@ export interface FactPackDeps {
   db: DatabaseSync;
   pool: Pick<EnginePool, 'analyse'>;
   reps: Repertoire[];
+  plans?: readonly PlanFile[];
   nodes: number;
   /** Reuses and stores the anchor's MultiPV 3 search. */
   cache?: EngineCache;
@@ -356,6 +362,8 @@ export async function buildFactPack(deps: FactPackDeps, input: FactPackInput): P
     },
     played,
     attacks: attackFacts(chess),
+    structure: structureFacts(fen),
+    plans: (deps.plans ?? []).filter((p) => p.side === game.userColor && p.trigger !== null && matchTrigger(fen, p.side, p.trigger)).map((p) => ({ id: p.id, title: p.title, labels: triggerLabels(p.trigger!), steps: p.steps.map((s) => s.text) })),
     playedAttacks: played ? attackFacts(new Chess(game.moves[ply]!.fenAfter)) : null,
     lines,
     threat,

@@ -19,17 +19,41 @@ const baseShape = {
   lessonId: z.enum(LESSON_IDS).nullable(),
 };
 
-export const chatAnswerSchema = z.object(baseShape);
+export const chatAnswerSchema = z.object({ ...baseShape, planId: z.string().nullable().optional() });
 export type ChatAnswer = z.infer<typeof chatAnswerSchema>;
 
 /** Strict: additionalProperties false, every key required, lessonId nullable. */
-export const CHAT_JSON_SCHEMA: object = toStrictJsonSchema(chatAnswerSchema);
+export const CHAT_JSON_SCHEMA: object = toStrictJsonSchema(z.object({ ...baseShape, planId: z.string().nullable() }));
 
 /** The same schema, but a line id must be one of the ids in this turn's fact pack. A failure goes to the runner's retry. */
-const schemaFor = (ids: Set<string>) =>
+const schemaFor = (ids: Set<string>, planIds: Set<string>, files: FactPack['structure']['files']) =>
   z.object({
     ...baseShape,
+    planId: z.string().nullable().optional().refine((id) => id == null || planIds.has(id), { message: 'unknown plan id' }),
     lines: z.array(z.object({ id: z.string().refine((id) => ids.has(id), { message: `unknown line id. Use only these ids: ${[...ids].join(', ') || '(none)'}` }), why: z.string() })).max(3),
+  }).superRefine((answer, ctx) => {
+    for (const text of [answer.answer, answer.rule, ...answer.lines.map((l) => l.why)]) {
+      const conditional = (index: number) => /\b(?:after|if|once|when)\b/i.test(text.slice(0, index).split(/[.!?]/).at(-1) ?? '');
+      for (const match of text.matchAll(/\b([a-h])[- ]file\s+(?:is|remains)\s+(not\s+)?(half[- ]open|semi[- ]open|open|closed)(?:\s+for\s+(white|black))?\b/gi)) {
+        if (conditional(match.index)) continue;
+        const status = files[match[1]!.toLowerCase()];
+        if (!status) continue;
+        const claimed = match[3]!.toLowerCase().replace(' ', '-');
+        const side = match[4]?.toLowerCase();
+        const fits = claimed === 'open' || claimed === 'closed' ? status === claimed : side ? status === `half-open-${side}` : status.startsWith('half-open-');
+        if (match[2] ? fits : !fits) {
+          ctx.addIssue({ code: 'custom', message: `Incorrect file claim: ${match[0]}` });
+        }
+      }
+      for (const match of text.matchAll(/\b(?:the|an?)\s+(open|closed|half[- ]open|semi[- ]open)\s+([a-h])[- ]file\b/gi)) {
+        if (conditional(match.index)) continue;
+        const status = files[match[2]!.toLowerCase()];
+        const claimed = match[1]!.toLowerCase();
+        if (status && ((claimed === 'open' || claimed === 'closed') ? status !== claimed : !status.startsWith('half-open-'))) {
+          ctx.addIssue({ code: 'custom', message: `Incorrect file claim: ${match[0]}` });
+        }
+      }
+    }
   });
 
 export interface AskCoachInput {
@@ -65,6 +89,8 @@ const packSan = (p: FactPack): string[] => [
 
 export async function askCoach(provider: AiProvider, input: AskCoachInput): Promise<{ answer: ChatAnswer; model: string }> {
   const { pack } = input;
+  const planIds = new Set((pack.plans ?? []).map((p) => p.id));
+  const planSchema = planIds.size ? z.enum([...planIds]).nullable() : z.null();
   const allowedSan = groundingSet([...packSan(pack), ...pack.game.movesSan, ...input.earlierPacks.flatMap(packSan)], packText(pack));
   const { value, model } = await runStructured(
     provider,
@@ -72,10 +98,10 @@ export async function askCoach(provider: AiProvider, input: AskCoachInput): Prom
       system: CHAT_SYSTEM,
       user: buildChatPrompt({ pack, question: input.question, level: input.level, rating: input.rating }),
       schemaName: 'coach_chat',
-      jsonSchema: CHAT_JSON_SCHEMA,
+      jsonSchema: toStrictJsonSchema(z.object({ ...baseShape, planId: planSchema })),
       history: historyMessages(input.history),
     },
-    schemaFor(new Set(pack.lines.map((l) => l.id))),
+    schemaFor(new Set(pack.lines.map((l) => l.id)), planIds, pack.structure?.files ?? {}),
     { model: input.model, allowedSan, textOf: (a) => [a.answer, a.rule, ...a.lines.map((l) => l.why)], signal: input.signal, onText: input.onText, onRetry: input.onRetry },
   );
   return { answer: { ...value, lessonId: capLessonId(value.lessonId, input.level) }, model };

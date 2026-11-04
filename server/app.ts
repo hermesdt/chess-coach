@@ -90,7 +90,7 @@ export function createApp(deps: AppDeps): Hono {
   app.route('/api', healthRoutes);
   app.route('/api', settingsRoutes(deps.db, getReps));
   app.route('/api', aiRoutes(deps.db, ai, deps.aiTestTimeoutMs, getReps));
-  app.route('/api', chatRoutes(deps.db, ai, pool, getReps, deps.hub ?? new StreamHub(), cache));
+  app.route('/api', chatRoutes(deps.db, ai, pool, getReps, deps.hub ?? new StreamHub(), cache, getPlans));
   app.route('/api', liveRoutes(deps.live ?? lazyLiveEngine, cache));
   app.route('/api', syncRoutes(deps.db, { fetchFn: deps.fetchFn, now: deps.now, pool }, getReps));
   app.route('/api', jobsRoutes(deps.db));

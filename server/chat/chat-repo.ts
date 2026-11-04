@@ -113,7 +113,7 @@ export function toDto(r: ChatRecord, strongerModel = false): ChatMessageDTO {
         winPctForUser: line.winPctForUser, why: l.why,
       });
     }
-    answer = { text: r.answer.answer, lines, rule: r.answer.rule, lessonId: r.answer.lessonId };
+    answer = { text: r.answer.answer, lines, rule: r.answer.rule, lessonId: r.answer.lessonId, ...(r.answer.planId ? { planId: r.answer.planId } : {}) };
   }
   return {
     id: r.id, turn: r.turn, question: r.question, anchor: r.anchor, status: r.status === 'streaming' ? 'pending' : r.status, error: r.error,

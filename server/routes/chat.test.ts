@@ -2,6 +2,7 @@ import { Chess } from 'chess.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { DatabaseSync } from 'node:sqlite';
 import type { ChatMessageDTO, GameAnalysis, MoveAnalysis, NewGame } from '../../shared/types.js';
+import type { PlanFile } from '../../shared/plans.js';
 import type { AiProvider } from '../ai/types.js';
 import { createRegistry } from '../ai/registry.js';
 import { saveAnalysis } from '../analysis/analysis-repo.js';
@@ -70,6 +71,19 @@ async function askAndWait(id = 1, question = 'What now?', anchor = { ply: 2, pat
 }
 
 describe('chat routes', () => {
+  it('passes matched plans to the coach and returns the chosen plan in chat', async () => {
+    const plan = { id: 'test-plan', title: 'Develop', side: 'white', trigger: { all: [{ type: 'piece', side: 'own', piece: 'N', on: ['f3'] }] }, steps: [{ text: 'Develop.' }] } as PlanFile;
+    let prompt = '';
+    const provider: AiProvider = {
+      id: 'claude-cli', label: 'Fake', available: async () => ({ ok: true }),
+      complete: async (req) => { prompt = req.user; return { text: JSON.stringify({ answer: 'Develop your pieces.', lines: [], rule: 'Develop.', lessonId: null, planId: 'test-plan' }), model: 'm' }; },
+    };
+    app = createApp({ db, pool, repertoires: [], plans: [plan], ai: createRegistry({ db, providers: [provider] }) });
+    await askAndWait(1, 'What now?', { ply: 2, path: ['g1f3'] });
+    expect(prompt).toContain('test-plan');
+    expect(prompt).toContain('"structure"');
+    expect((await list())[0]).toMatchObject({ status: 'done', answer: { planId: 'test-plan' } });
+  });
   it('runs the job and returns a done message with resolved lines', async () => {
     const res = await ask(1);
     expect(res.status).toBe(200);

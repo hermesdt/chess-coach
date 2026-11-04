@@ -72,6 +72,11 @@ function setup(messages: ChatMessageDTO[], props: Partial<Parameters<typeof Coac
 }
 
 describe('CoachChat', () => {
+  it('links a matched plan from the coach answer', async () => {
+    const base = answered();
+    setup([answered({ answer: { ...base.answer!, planId: 'london-h-file' } })]);
+    expect((await screen.findByRole('link', { name: 'Read the plan' })).getAttribute('href')).toBe('/plans/london-h-file');
+  });
   it('shows each paragraph of the answer in its own block', async () => {
     const base = answered();
     setup([answered({ answer: { ...base.answer!, text: 'First idea.\n\nSecond idea.' } })]);

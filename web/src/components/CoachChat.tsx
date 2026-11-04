@@ -138,6 +138,7 @@ function Answer({
         <LineButton key={l.id} line={l} onClick={() => props.onShowLine(l, message.anchor)} />
       ))}
       {answer.rule && <p className="muted">{answer.rule}</p>}
+      {answer.planId && <p><Link to={`/plans/${encodeURIComponent(answer.planId)}`}>Read the plan</Link></p>}
       {lesson && (
         <p>
           <Link to={`/course/${lesson}`}>{LESSON_TITLES[lesson]}</Link>
