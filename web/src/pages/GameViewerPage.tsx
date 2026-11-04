@@ -73,6 +73,7 @@ export function GameViewerPage() {
   const [error, setError] = useState<string | null>(null);
   const [current, setCurrent] = useState<Current>('root');
   const [branches, setBranches] = useState<VarTree | null>(null);
+  const [engineLine, setEngineLine] = useState<Current[] | null>(null);
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [momentPly, setMomentPly] = useState<number | null>(null);
@@ -86,6 +87,7 @@ export function GameViewerPage() {
     setError(null);
     setCurrent('root');
     setBranches(null);
+    setEngineLine(null);
     if (!/^\d+$/.test(id ?? '')) {
       setError('Game not found');
       return;
@@ -202,11 +204,16 @@ export function GameViewerPage() {
     (action: NavAction) => {
       if (!tree) return;
       setMomentPly(null);
+      if (typeof action === 'object') setEngineLine(null);
       setCurrent((c) => {
         if (action === 'first') return 'root';
         if (action === 'prev') return prev(tree, c) ?? c;
-        if (action === 'next') return next(tree, c) ?? c;
+        if (action === 'next') {
+          const index = engineLine?.indexOf(c) ?? -1;
+          return index >= 0 ? engineLine?.[index + 1] ?? c : next(tree, c) ?? c;
+        }
         if (action === 'last') {
+          if (engineLine?.includes(c)) return engineLine[engineLine.length - 1];
           let at = c;
           for (let n = next(tree, at); n; n = next(tree, at)) at = n;
           return at;
@@ -214,7 +221,7 @@ export function GameViewerPage() {
         return mainNode(Math.min(Math.max(action.goto, 0), game?.moves.length ?? 0));
       });
     },
-    [tree, game],
+    [tree, game, engineLine],
   );
 
   const playMove = (from: string, to: string): boolean => {
@@ -223,6 +230,7 @@ export function GameViewerPage() {
     const res = uci ? addMove(tree, current, uci) : null;
     if (!res) return false;
     setBranches(res.tree);
+    setEngineLine(null);
     setMomentPly(null);
     setCurrent(res.node);
     return true;
@@ -259,6 +267,7 @@ export function GameViewerPage() {
       ? [liveArrow]
       : [];
   const selectMoment = (p: number) => {
+    setEngineLine(null);
     setCurrent(mainNode(p - 1));
     setMomentPly(p);
   };
@@ -267,7 +276,8 @@ export function GameViewerPage() {
     ? { [last.uci.slice(0, 2)]: HIGHLIGHT, [last.uci.slice(2, 4)]: HIGHLIGHT }
     : {};
   const atStart = shown === 'root';
-  const atEnd = next(tree, shown) === null;
+  const lineIndex = engineLine?.indexOf(shown) ?? -1;
+  const atEnd = lineIndex >= 0 ? lineIndex === engineLine!.length - 1 : next(tree, shown) === null;
   const chatAnchor: ChatAnchor = { ...pathFromMain(tree, shown), describe: describeNode(tree, shown, game.userColor) };
 
   // Finds or creates the node for a chat anchor; a side-line anchor becomes a branch labelled "Your line".
@@ -280,6 +290,7 @@ export function GameViewerPage() {
   const showAnchor = (a: { ply: number; path: string[] }) => {
     const res = nodeForAnchor(tree, a);
     setBranches(res.tree);
+    setEngineLine(null);
     setMomentPly(null);
     setCurrent(res.node);
   };
@@ -289,8 +300,27 @@ export function GameViewerPage() {
       const res = playLine(at.tree, at.node, line, line.label);
       setLineError(null);
       setBranches(res.tree);
+      setEngineLine(null);
       setMomentPly(null);
       setCurrent(res.first);
+    } catch {
+      setLineError('Could not show this line.');
+    }
+  };
+  const showEngineLine = (uci: string[]) => {
+    try {
+      const res = addLine(tree, shown, uci, 'Stockfish');
+      const nodes: Current[] = [];
+      let node: Current = res.last;
+      while (node !== shown) {
+        nodes.unshift(node);
+        node = prev(res.tree, node) ?? 'root';
+      }
+      setBranches(res.tree);
+      setEngineLine([shown, ...nodes]);
+      setMomentPly(null);
+      setLineError(null);
+      setCurrent(nodes[0] ?? shown);
     } catch {
       setLineError('Could not show this line.');
     }
@@ -369,18 +399,19 @@ export function GameViewerPage() {
             <button type="button" aria-label="Previous move" onClick={() => go('prev')} disabled={atStart}>◀</button>
             <button type="button" aria-label="Next move" onClick={() => go('next')} disabled={atEnd}>▶</button>
             <button type="button" aria-label="Last move" onClick={() => go('last')} disabled={atEnd}>⏭</button>
-            {inBranch && (
+            {(inBranch || engineLine) && (
               <button type="button" onClick={() => {
                 setMomentPly(null);
-                setCurrent(branchPoint(tree, current) ?? 'root');
+                setCurrent(engineLine?.[0] ?? branchPoint(tree, current) ?? 'root');
+                setEngineLine(null);
               }}>Back to game</button>
             )}
           </div>
-          <LiveEval fen={fenOf(tree, shown)} userColor={game.userColor} onArrow={setLiveArrow} />
+          <LiveEval fen={fenOf(tree, shown)} userColor={game.userColor} onArrow={setLiveArrow} onSelectLine={showEngineLine} />
           {lineError && <p className="error" role="alert">{lineError}</p>}
         </div>
         <GameTabs
-          moves={<MoveList tree={tree} current={shown} onSelect={(id) => { setMomentPly(null); setCurrent(id); }} analysis={done?.moves} />}
+          moves={<MoveList tree={tree} current={shown} onSelect={(id) => { setEngineLine(null); setMomentPly(null); setCurrent(id); }} analysis={done?.moves} />}
           initial={query.get('tab') === 'chat' ? 'chat' : undefined}
           chat={(shown) => (
             <CoachChat
@@ -399,7 +430,7 @@ export function GameViewerPage() {
       {gamePlans.map((p) => (
         <p key={p.planId} className="plan-moment">
           <strong>Middlegame plan: {p.title} (move {Math.ceil(p.ply / 2)})</strong>{' '}
-          <button type="button" className="link" onClick={() => { setMomentPly(null); setCurrent(mainNode(p.ply)); }}>Show the move</button>
+          <button type="button" className="link" onClick={() => { setEngineLine(null); setMomentPly(null); setCurrent(mainNode(p.ply)); }}>Show the move</button>
           {' · '}
           <Link to={`/plans/${p.planId}`}>Read the plan</Link>
         </p>

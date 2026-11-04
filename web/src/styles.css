@@ -36,6 +36,9 @@ tr.clickable:hover { background: #eef2f7 !important; }
 .live-eval p { margin: 0; }
 .live-eval .live-lines { margin: 0.15rem 0 0; padding: 0; list-style: none; color: #3d444d; }
 .live-eval .live-lines li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.live-eval .live-line { border: 0; padding: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.live-eval .live-line:hover:not(:disabled) { color: #0969da; text-decoration: underline; }
+.live-eval .live-line:disabled { cursor: default; }
 .viewer-board { flex: 1 1 320px; max-width: 560px; min-width: 0; }
 .move-list { flex: 1 1 200px; max-height: 560px; overflow-y: auto; background: #fff; border: 1px solid #eaeef2; border-radius: 6px; padding: 0.5rem; }
 .move-row { display: grid; grid-template-columns: 2.5rem 1fr 1fr; align-items: center; }

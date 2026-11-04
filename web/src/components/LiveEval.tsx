@@ -43,9 +43,9 @@ function lineText(fen: string, san: string[]): string {
     .join(' ');
 }
 
-interface Props { fen: string; userColor: Color | null; onArrow: (arrow: LiveArrow | null) => void }
+interface Props { fen: string; userColor: Color | null; onArrow: (arrow: LiveArrow | null) => void; onSelectLine?: (uci: string[]) => void }
 
-export function LiveEval({ fen, userColor, onArrow }: Props) {
+export function LiveEval({ fen, userColor, onArrow, onSelectLine }: Props) {
   const [data, setData] = useState<LiveEvalDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
@@ -95,7 +95,7 @@ export function LiveEval({ fen, userColor, onArrow }: Props) {
           <p><strong>Stockfish: {sum.eval} · {userColor ? 'your' : "White's"} chances {sum.chances} %</strong></p>
           <ul className="live-lines">
             {data.lines.slice(0, 3).map((l, i) => (
-              <li key={i}>{lineText(data.fen, l.san)}</li>
+              <li key={i}><button type="button" className="live-line" disabled={data.fen !== fen || !onSelectLine || l.uci.length === 0} onClick={() => onSelectLine?.(l.uci)}>{lineText(data.fen, l.san)}</button></li>
             ))}
           </ul>
         </>

@@ -97,6 +97,25 @@ describe('GameViewerPage plan moment', () => {
     );
   };
 
+  it('steps through a selected engine line even when it starts with a game move', async () => {
+    vi.spyOn(api, 'getGamePlans').mockResolvedValue([]);
+    vi.spyOn(api, 'getLive').mockImplementation(async (fen) => ({
+      fen, sideToMove: 'white', lines: fen === START
+        ? [{ san: ['e4', 'c5', 'Nf3'], uci: ['e2e4', 'c7c5', 'g1f3'], evalCp: 30, evalMate: null }]
+        : [],
+    }));
+    open();
+    fireEvent.click(await screen.findByRole('button', { name: '1. e4 c5 2. Nf3' }));
+    expect(screen.getByTestId('board').getAttribute('data-fen')).toBe(E4);
+    fireEvent.click(screen.getByRole('button', { name: 'Next move' }));
+    expect(screen.getByTestId('board').getAttribute('data-fen')).toContain('2p5/4P3');
+    fireEvent.click(screen.getByRole('button', { name: 'Previous move' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Next move' }));
+    expect(screen.getByTestId('board').getAttribute('data-fen')).toContain('2p5/4P3');
+    fireEvent.click(screen.getByRole('button', { name: 'Back to game' }));
+    expect(screen.getByTestId('board').getAttribute('data-fen')).toBe(START);
+  });
+
   it('shows the plan box with the move number and a link to the plan', async () => {
     vi.spyOn(api, 'getGamePlans').mockResolvedValue([{ planId: 'london-e4-break', title: 'London e4 break', ply: 2 }]);
     open();
