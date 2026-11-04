@@ -39,7 +39,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M9 | Level 2–3 content (lessons, tags, deeper repertoire) | done | `docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md` |
 | M10 | Opening guides: per repertoire why, strengths, target set-up, plans, typical mistakes | done | spec `docs/superpowers/specs/2026-10-21-opening-guides-design.md`, plan `docs/superpowers/plans/2026-10-21-m10-opening-guides.md` |
 | M11 | Content quality audit: every repertoire comment, lesson and guide claim checked with chess.js + Stockfish | done | spec `docs/superpowers/specs/2026-10-20-content-audit-design.md`, plan `docs/superpowers/plans/2026-10-22-m11-content-audit.md` |
-| M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | M12a and M12b part 1 done; M12b part 2 (coach) and M12c planned | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12a plan `docs/superpowers/plans/2026-10-29-m12a-middlegame-plans.md` |
+| M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | M12a and M12b done; M12c planned | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12a plan `docs/superpowers/plans/2026-10-29-m12a-middlegame-plans.md` |
 | M13 | Missed-mate cards: a review card for each mate in 1 or 2 that the owner missed in a game, built from stored analysis and proven with chess.js | done | spec `docs/superpowers/specs/2026-10-29-m13-mate-cards-design.md`, plan `docs/superpowers/plans/2026-10-29-m13-mate-cards.md` |
 
 ## Log
@@ -477,12 +477,25 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   - Final review was a self-review (no reviewer subagent).
 - Open: M12b part 2 (coach `structure` facts, `plan_id`, file-claim check).
 
+## M12b log (part 2: coach)
+
+- 2026-11-04 — **M12b part 2 done.** 1377 tests; typecheck and lint pass;
+  `pnpm validate:content` reports content OK (121 warnings). An isolated server
+  with a temporary database started and served the plans endpoint; the chat flow
+  is covered by route tests with a fake provider.
+- The coach fact pack includes kings, pawn files and structures, shields and pawn
+  breaks, plus plans whose triggers match the anchor, including side lines.
+  The chosen plan links from chat; old saved answers remain readable. Plan text
+  does not add moves to the grounding set. Explicit file claims are checked and
+  rejected answers retry once. The file-claim check recognizes common phrasing,
+  not every possible wording; hypothetical pawn breaks for the side not to move
+  have no en passant. Final review was a self-review (no reviewer subagent).
+
 ## Next session
 
-- M13 is done. M12b part 1 is done. Next: M12b part 2 (coach) or M12c (more plans). The classifier fix stays as it is (owner decision 2026-10-29).
-- M12a is done. Next: M12b (matcher on the owner's games, game-page links,
-  coach `structure` facts) or M12c (more plans, an opposite-castling plan from
-  an engine-backed line). Pick with the owner.
+- M12a, M12b and M13 are done. Next: M12c (more plans, including an a-file or
+  opposite-castling plan backed by Stockfish). The classifier fix stays as it
+  is (owner decision 2026-10-29).
 - Done 2026-10-29: the coach's "why it matters" line on a mistake card no
   longer keeps sentences that claim an attack, defence or threat (the game
   facts hold no attack facts, so they cannot be checked). Known gap: the
