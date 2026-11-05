@@ -39,7 +39,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M9 | Level 2–3 content (lessons, tags, deeper repertoire) | done | `docs/superpowers/plans/2026-10-20-m9-level-2-3-content.md` |
 | M10 | Opening guides: per repertoire why, strengths, target set-up, plans, typical mistakes | done | spec `docs/superpowers/specs/2026-10-21-opening-guides-design.md`, plan `docs/superpowers/plans/2026-10-21-m10-opening-guides.md` |
 | M11 | Content quality audit: every repertoire comment, lesson and guide claim checked with chess.js + Stockfish | done | spec `docs/superpowers/specs/2026-10-20-content-audit-design.md`, plan `docs/superpowers/plans/2026-10-22-m11-content-audit.md` |
-| M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | M12a and M12b done; M12c planned | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12a plan `docs/superpowers/plans/2026-10-29-m12a-middlegame-plans.md` |
+| M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | done | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12c plan `docs/superpowers/plans/2026-11-04-m12c-more-plans.md` |
 | M13 | Missed-mate cards: a review card for each mate in 1 or 2 that the owner missed in a game, built from stored analysis and proven with chess.js | done | spec `docs/superpowers/specs/2026-10-29-m13-mate-cards-design.md`, plan `docs/superpowers/plans/2026-10-29-m13-mate-cards.md` |
 
 ## Log
@@ -491,11 +491,26 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   not every possible wording; hypothetical pawn breaks for the side not to move
   have no en passant. Final review was a self-review (no reviewer subagent).
 
+## M12c log
+
+- 2026-11-05 — **M12c done.** Added three plans: `slav-a-file` (level 2),
+  `carlsbad-minority` (level 3), and `caro-opposite-castling` (level 3).
+  Each has three training exercises. The opposite-castling plan shows a rook
+  using the a-file in a separately labelled trap: White has a stronger reply,
+  so the plan does not claim a forced win.
+- Independent content review and Stockfish checks: `docs/superpowers/notes/2026-11-04-m12c-plans-review.md`.
+  Added `clearFile` to plan triggers and tests for blocked files and lost pawns.
+  The opposite-castling trigger is strategic; it does not guarantee that an
+  a-pawn push is legal immediately. Example-specific coach advice is labelled.
+- Verification: 1387 tests, typecheck and lint passed; content OK with 147
+  warnings; sequence check had 0 errors and 18 warnings. Isolated smoke: all
+  three plans loaded, each created three cards, and plan cards appeared in a
+  review session. SQLite backup: `data/backups/pre-m12c-2026-11-05.db`.
+
 ## Next session
 
-- M12a, M12b and M13 are done. Next: M12c (more plans, including an a-file or
-  opposite-castling plan backed by Stockfish). The classifier fix stays as it
-  is (owner decision 2026-10-29).
+- All numbered milestones M1 through M13 are done. Pick the next improvement
+  with the owner. The classifier fix stays as it is (owner decision 2026-10-29).
 - Done 2026-10-29: the coach's "why it matters" line on a mistake card no
   longer keeps sentences that claim an attack, defence or threat (the game
   facts hold no attack facts, so they cannot be checked). Known gap: the
