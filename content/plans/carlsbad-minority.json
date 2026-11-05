@@ -1,0 +1,56 @@
+{
+  "id": "carlsbad-minority",
+  "title": "Create a queenside weakness",
+  "group": "general",
+  "side": "white",
+  "level": 3,
+  "summary": "Use the b-pawn against Black's queenside pawns, and use the a-file if it opens.",
+  "guideLinks": [],
+  "lessons": ["minority-attack", "pawn-structures"],
+  "position": {
+    "moves": ["d4", "d5", "c4", "e6", "Nc3", "Nf6", "cxd5", "exd5", "Bg5", "Be7", "e3", "O-O", "Bd3", "c6", "Nf3", "Nbd7", "Qc2", "Re8", "O-O", "Nf8", "Rab1", "Ng6"],
+    "arrows": [{ "from": "b2", "to": "b4", "kind": "move" }],
+    "marks": ["b2", "c6"]
+  },
+  "trigger": {
+    "all": [
+      { "type": "pawns", "side": "own", "on": ["d4", "e3"] },
+      { "type": "pawns", "side": "opp", "on": ["b7", "c6", "d5"] },
+      { "type": "piece", "side": "opp", "piece": "P", "on": ["a7", "a6"] },
+      { "type": "piece", "side": "own", "piece": "P", "on": ["a2", "a4"] },
+      { "type": "piece", "side": "own", "piece": "P", "on": ["b2", "b4", "b5"] },
+      { "type": "piece", "side": "own", "piece": "R", "on": ["a1", "b1"] },
+      { "type": "noPawn", "side": "own", "file": "c" },
+      { "type": "noPawn", "side": "opp", "file": "e" }
+    ]
+  },
+  "goal": "Advance the b-pawn to challenge Black's queenside pawns and create targets.",
+  "steps": [
+    { "text": "In the example, the a-pawn and b-pawn face three black queenside pawns. This pawn shape is called the Carlsbad structure." },
+    { "text": "In the example, the rook on b1 stands behind the b-pawn. Push the pawn to b4 when it is safe." },
+    { "text": "In the example, after a4 and b5, the b-pawn attacks c6. Check Black's reply before pushing.", "board": { "moves": ["d4", "d5", "c4", "e6", "Nc3", "Nf6", "cxd5", "exd5", "Bg5", "Be7", "e3", "O-O", "Bd3", "c6", "Nf3", "Nbd7", "Qc2", "Re8", "O-O", "Nf8", "Rab1", "Ng6", "b4", "a6", "a4", "Bd6", "b5", "axb5", "axb5"], "arrows": [{ "from": "b5", "to": "c6", "kind": "attack" }] } },
+    { "text": "If Black takes on b5 with the a-pawn and you retake with your a-pawn, the a-file opens. A rook can use it later; it is not an automatic win." }
+  ],
+  "jobs": [
+    { "square": "b1", "text": "This rook stands behind your b-pawn." },
+    { "square": "b2", "text": "The b-pawn can advance toward Black's queenside pawns." },
+    { "square": "a2", "text": "The a-pawn can support the b-pawn after it reaches b5." }
+  ],
+  "breaks": [{ "from": "b2", "to": "b4", "text": "Advance the b-pawn to start the queenside plan." }],
+  "opponent": [{ "text": "Black can counter in the centre or on the kingside. Check threats before each pawn move." }],
+  "notNow": ["Do not start a slow pawn advance while your king or a piece needs immediate defence."],
+  "mistakes": [{
+    "moves": ["d4", "d5", "c4", "e6", "Nc3", "Nf6", "cxd5", "exd5", "Bg5", "Be7", "e3", "O-O", "Bd3", "c6", "Nf3", "Nbd7", "Qc2", "Re8", "O-O", "Nf8"],
+    "text": "The immediate e4 push runs into a capture. Put the rook behind the b-pawn instead.", "bad": "e4", "good": ["Rab1"]
+  }],
+  "models": [{
+    "title": "An a-file opens", "kind": "plan", "source": "stockfish", "startPly": 22,
+    "moves": ["d4", "d5", "c4", "e6", "Nc3", "Nf6", "cxd5", "exd5", "Bg5", "Be7", "e3", "O-O", "Bd3", "c6", "Nf3", "Nbd7", "Qc2", "Re8", "O-O", "Nf8", "Rab1", "Ng6", "b4", "a6", "a4", "Bd6", "b5", "axb5", "axb5", "Be6", "bxc6", "bxc6"],
+    "comments": [{ "ply": 27, "text": "The b-pawn attacks c6." }, { "ply": 29, "text": "Both a-pawns have left the a-file." }, { "ply": 32, "text": "No black pawn can defend the c6 pawn." }]
+  }],
+  "exercises": [
+    { "id": "rook-behind", "board": { "moves": ["d4", "d5", "c4", "e6", "Nc3", "Nf6", "cxd5", "exd5", "Bg5", "Be7", "e3", "O-O", "Bd3", "c6", "Nf3", "Nbd7", "Qc2", "Re8", "O-O", "Nf8"] }, "prompt": "White to move. Put a rook behind the b-pawn.", "choices": [{ "san": "Rab1", "why": "The rook stands behind the b-pawn." }, { "san": "e4", "why": "The immediate central push can be captured." }], "accepted": ["Rab1"], "explanation": "Rab1 supports the b-pawn's advance. Check the centre before pushing there." },
+    { "id": "advance-b4", "board": { "moves": ["d4", "d5", "c4", "e6", "Nc3", "Nf6", "cxd5", "exd5", "Bg5", "Be7", "e3", "O-O", "Bd3", "c6", "Nf3", "Nbd7", "Qc2", "Re8", "O-O", "Nf8", "Rab1", "Ng6"] }, "prompt": "White to move. Advance the b-pawn with the rook behind it.", "choices": [{ "san": "b4", "why": "The b-pawn starts its advance." }, { "san": "e4", "why": "The central push gives Black a tactical opportunity." }], "accepted": ["b4"], "explanation": "b4 starts the queenside plan. The rook remains behind the pawn." },
+    { "id": "advance-b5", "board": { "moves": ["d4", "d5", "c4", "e6", "Nc3", "Nf6", "cxd5", "exd5", "Bg5", "Be7", "e3", "O-O", "Bd3", "c6", "Nf3", "Nbd7", "Qc2", "Re8", "O-O", "Nf8", "Rab1", "Ng6", "b4", "a6", "a4", "Bd6"] }, "prompt": "White to move. Attack the c6 pawn with the b-pawn.", "choices": [{ "san": "b5", "why": "The b-pawn attacks c6 and a6." }, { "san": "Nxd5", "why": "The knight can be captured." }], "accepted": ["b5"], "explanation": "b5 attacks two pawns. If Black takes with the a-pawn, your a-pawn can retake and open the a-file." }
+  ]
+}

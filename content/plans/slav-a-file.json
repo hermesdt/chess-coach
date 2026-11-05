@@ -1,0 +1,56 @@
+{
+  "id": "slav-a-file",
+  "title": "Use the half-open a-file",
+  "group": "slav",
+  "side": "black",
+  "level": 2,
+  "summary": "After the queen trade, support the c4 pawn and use the rook's pressure on a2.",
+  "guideLinks": [{ "repertoireId": "slav", "variation": "anti-london" }],
+  "lessons": ["caro-kann-plans", "rook-endgames"],
+  "position": {
+    "fromNode": { "repertoireId": "slav", "nodeId": "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6 Qb3 c4 Qxb6 axb6 Nd2 Nf6" },
+    "moves": ["d4", "d5", "Bf4", "c5", "e3", "Nc6", "c3", "Qb6", "Qb3", "c4", "Qxb6", "axb6", "Nd2", "Nf6", "Ngf3"],
+    "arrows": [{ "from": "a8", "to": "a2", "kind": "attack" }],
+    "marks": ["a2", "c4"]
+  },
+  "trigger": {
+    "all": [
+      { "type": "piece", "side": "own", "piece": "R", "on": ["a8"] },
+      { "type": "piece", "side": "opp", "piece": "R", "on": ["a1"] },
+      { "type": "pawns", "side": "own", "on": ["c4", "d5"] },
+      { "type": "pawns", "side": "opp", "on": ["a2"] },
+      { "type": "noPawn", "side": "own", "file": "a" },
+      { "type": "clearFile", "file": "a", "from": 8, "to": 2 }
+    ]
+  },
+  "goal": "Keep pressure on a2 while developing and supporting the c4 pawn.",
+  "steps": [
+    { "text": "In the example, the a-pawn retakes on b6 after the queen trade. The rook has a half-open a-file and attacks a2." },
+    { "text": "In the example, the white rook on a1 defends a2. Do not take the pawn while that rook can recapture." },
+    { "text": "In the example, the pawn on b6 can go to b5. There it defends c4 and gains queenside space.", "board": { "fromNode": { "repertoireId": "slav", "nodeId": "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6 Qb3 c4 Qxb6 axb6 Nd2 Nf6" }, "moves": ["d4", "d5", "Bf4", "c5", "e3", "Nc6", "c3", "Qb6", "Qb3", "c4", "Qxb6", "axb6", "Nd2", "Nf6", "Ngf3"], "arrows": [{ "from": "b6", "to": "b5", "kind": "move" }] } },
+    { "text": "In the example, develop the c8 bishop before closing its diagonal with the e-pawn. Keep checking the a-file as the pieces move." }
+  ],
+  "jobs": [
+    { "square": "a8", "text": "The rook attacks the defended a2 pawn along the half-open file." },
+    { "square": "c4", "text": "The pawn controls b3 and d3." },
+    { "square": "d5", "text": "This pawn defends c4." },
+    { "square": "c8", "text": "The bishop can develop along its open diagonal." }
+  ],
+  "breaks": [{ "from": "b6", "to": "b5", "text": "The pawn can advance to defend c4." }],
+  "opponent": [{ "text": "White can move the a-pawn or add defenders. Recheck the file before trying to win a pawn." }],
+  "notNow": ["Do not take on a2 while the rook on a1 can recapture."],
+  "mistakes": [{
+    "moves": ["d4", "d5", "Bf4", "c5", "e3", "Nc6", "c3", "Qb6", "Qb3", "c4", "Qxb6", "axb6", "Nd2", "Nf6", "Ngf3"],
+    "text": "The a2 pawn is defended by the rook on a1. Develop or support c4 instead of taking it.", "bad": "Rxa2", "good": ["b5", "Bf5"]
+  }],
+  "models": [{
+    "title": "Support c4 and develop", "kind": "plan", "source": "stockfish", "startPly": 15,
+    "moves": ["d4", "d5", "Bf4", "c5", "e3", "Nc6", "c3", "Qb6", "Qb3", "c4", "Qxb6", "axb6", "Nd2", "Nf6", "Ngf3", "b5", "Be2", "Bf5", "O-O", "e6"],
+    "comments": [{ "ply": 16, "text": "The b5 pawn defends c4." }, { "ply": 18, "text": "The bishop develops before the e-pawn moves." }]
+  }],
+  "exercises": [
+    { "id": "support-c4", "board": { "fromNode": { "repertoireId": "slav", "nodeId": "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6 Qb3 c4 Qxb6 axb6 Nd2 Nf6" }, "moves": ["d4", "d5", "Bf4", "c5", "e3", "Nc6", "c3", "Qb6", "Qb3", "c4", "Qxb6", "axb6", "Nd2", "Nf6", "Ngf3"] }, "prompt": "Black to move. Support your c4 pawn with a pawn.", "choices": [{ "san": "b5", "why": "The b5 pawn defends c4." }, { "san": "e5", "why": "The immediate central push is tactically risky." }], "accepted": ["b5"], "explanation": "The b-pawn supports c4. The rook still pressures a2." },
+    { "id": "develop-bishop", "board": { "fromNode": { "repertoireId": "slav", "nodeId": "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6 Qb3 c4 Qxb6 axb6 Nd2 Nf6" }, "moves": ["d4", "d5", "Bf4", "c5", "e3", "Nc6", "c3", "Qb6", "Qb3", "c4", "Qxb6", "axb6", "Nd2", "Nf6", "Ngf3", "b5", "Be2"] }, "prompt": "Black to move. Develop the bishop before moving the e-pawn.", "choices": [{ "san": "Bf5", "why": "The bishop develops outside the pawn chain." }, { "san": "Rxa2", "why": "The rook on a1 can recapture." }], "accepted": ["Bf5"], "explanation": "Develop the bishop. The a2 pawn is not free while the white rook defends it." },
+    { "id": "finish-development", "board": { "fromNode": { "repertoireId": "slav", "nodeId": "d4 d5 Bf4 c5 e3 Nc6 c3 Qb6 Qb3 c4 Qxb6 axb6 Nd2 Nf6" }, "moves": ["d4", "d5", "Bf4", "c5", "e3", "Nc6", "c3", "Qb6", "Qb3", "c4", "Qxb6", "axb6", "Nd2", "Nf6", "Ngf3", "b5", "Be2", "Bf5", "O-O"] }, "prompt": "Black to move. Open a path for the f8 bishop.", "choices": [{ "san": "e6", "why": "The e-pawn opens the bishop's diagonal." }, { "san": "Rxa2", "why": "The white rook still defends a2." }], "accepted": ["e6"], "explanation": "e6 frees the f8 bishop. Taking on a2 would lose the rook to the rook on a1." }
+  ]
+}

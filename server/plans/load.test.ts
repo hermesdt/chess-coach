@@ -27,6 +27,20 @@ describe('replayBoard', () => {
 });
 
 describe('loadPlan', () => {
+  it('accepts valid clear-file conditions and rejects malformed ranges', () => {
+    const json = raw();
+    json.trigger.all = [{ type: 'clearFile', file: 'a', from: 8, to: 2 }];
+    expect(load(json).trigger?.all[0]).toEqual({ type: 'clearFile', file: 'a', from: 8, to: 2 });
+    for (const condition of [
+      { type: 'clearFile', file: 'z', from: 8, to: 2 },
+      { type: 'clearFile', file: 'a', from: 9, to: 2 },
+      { type: 'clearFile', file: 'a', from: 2, to: 3 },
+      { type: 'clearFile', file: 'a', from: 2.5, to: 8 },
+    ]) {
+      json.trigger.all = [condition];
+      expect(() => load(json)).toThrow(/clearFile/);
+    }
+  });
   it('loads the valid sample', () => {
     const plan = load(raw());
     expect(plan.id).toBe('sample');

@@ -43,6 +43,7 @@ export type Condition =
   | { type: 'piece'; side: 'own' | 'opp'; piece: 'K' | 'Q' | 'R' | 'B' | 'N' | 'P'; on: string[] }
   | { type: 'pawns'; side: 'own' | 'opp'; on: string[] }
   | { type: 'noPawn'; side: 'own' | 'opp'; file: string }
+  | { type: 'clearFile'; file: string; from: number; to: number }
   | { type: 'castled'; side: 'own' | 'opp'; wing: 'short' | 'long' }
   | { type: 'queensOn' }
   | { type: 'minPieces'; count: number };

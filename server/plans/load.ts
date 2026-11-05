@@ -48,6 +48,9 @@ function loadCondition(fail: (m: string) => never, raw: unknown): Condition {
     case 'noPawn':
       if (!own || !isString(raw.file) || !/^[a-h]$/.test(raw.file)) return fail('A noPawn condition needs side and a file a to h');
       return { type: 'noPawn', side: raw.side as 'own' | 'opp', file: raw.file };
+    case 'clearFile':
+      if (!isString(raw.file) || !/^[a-h]$/.test(raw.file) || typeof raw.from !== 'number' || typeof raw.to !== 'number' || !Number.isInteger(raw.from) || !Number.isInteger(raw.to) || !inRange(raw.from, 1, 8) || !inRange(raw.to, 1, 8) || Math.abs(raw.from - raw.to) < 2) return fail('A clearFile condition needs a file and two ranks with a square between them');
+      return { type: 'clearFile', file: raw.file, from: raw.from, to: raw.to };
     case 'castled':
       if (!own || (raw.wing !== 'short' && raw.wing !== 'long')) return fail('A castled condition needs side and wing short or long');
       return { type: 'castled', side: raw.side as 'own' | 'opp', wing: raw.wing };

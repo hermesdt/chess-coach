@@ -12,6 +12,13 @@ function after(moves: string): string {
 const all = (...c: Trigger['all']): Trigger => ({ all: c });
 
 describe('matchTrigger', () => {
+  it('clearFile: checks every intervening square, but not the endpoints', () => {
+    const t = all({ type: 'clearFile', file: 'a', from: 8, to: 2 });
+    expect(matchTrigger('r5k1/8/8/8/8/8/P7/R5K1 b - - 0 1', 'black', t)).toBe(true);
+    expect(matchTrigger('r5k1/8/8/n7/8/8/P7/R5K1 b - - 0 1', 'black', t)).toBe(false);
+    expect(matchTrigger('r5k1/8/8/8/8/8/P7/R5K1 b - - 0 1', 'white', all({ type: 'clearFile', file: 'a', from: 2, to: 8 }))).toBe(true);
+    expect(triggerLabels(t)).toEqual(['The a-file is clear between a8 and a2.']);
+  });
   it('piece: own knight on f3 matches, on c3 does not', () => {
     const fen = after('Nf3');
     expect(matchTrigger(fen, 'white', all({ type: 'piece', side: 'own', piece: 'N', on: ['f3'] }))).toBe(true);

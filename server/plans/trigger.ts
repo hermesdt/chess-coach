@@ -27,6 +27,11 @@ function holds(chess: Chess, owner: PlanSide, cond: Condition): boolean {
       const color = colorOf(owner, cond.side);
       return !pieces(color).some((p) => p.type === 'p' && p.square[0] === cond.file);
     }
+    case 'clearFile': {
+      const low = Math.min(cond.from, cond.to);
+      const high = Math.max(cond.from, cond.to);
+      return !board.flat().some((p) => p && p.square[0] === cond.file && Number(p.square[1]) > low && Number(p.square[1]) < high);
+    }
     case 'castled': {
       const color = colorOf(owner, cond.side);
       const king = pieces(color).find((p) => p.type === 'k');
@@ -68,6 +73,8 @@ function label(c: Condition): string {
       return `${c.side === 'own' ? 'You have' : 'They have'} ${c.on.length === 1 ? 'a pawn' : 'pawns'} on ${andList(c.on)}.`;
     case 'noPawn':
       return `${c.side === 'own' ? 'You have' : 'They have'} no ${c.file}-pawn.`;
+    case 'clearFile':
+      return `The ${c.file}-file is clear between ${c.file}${c.from} and ${c.file}${c.to}.`;
     case 'castled':
       return `${c.side === 'own' ? 'You' : 'They'} castled ${c.wing}.`;
     case 'queensOn':

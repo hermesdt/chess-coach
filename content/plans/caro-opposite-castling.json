@@ -1,0 +1,62 @@
+{
+  "id": "caro-opposite-castling",
+  "title": "Race on opposite wings",
+  "group": "caro-kann",
+  "side": "black",
+  "level": 3,
+  "summary": "Advance the a-pawn toward the white king, but watch White's kingside attack.",
+  "guideLinks": [{ "repertoireId": "caro-kann", "variation": "classical" }],
+  "lessons": ["castling-sides", "calculation"],
+  "position": {
+    "fromNode": { "repertoireId": "caro-kann", "nodeId": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Bf5 Ng3 Bg6 h4 h6 Nf3 Nd7 h5 Bh7 Bd3 Bxd3 Qxd3 e6" },
+    "moves": ["e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4", "Bf5", "Ng3", "Bg6", "h4", "h6", "Nf3", "Nd7", "h5", "Bh7", "Bd3", "Bxd3", "Qxd3", "e6", "Bd2", "Ngf6", "O-O-O", "Be7", "Kb1", "O-O", "Ne4"],
+    "arrows": [{ "from": "a7", "to": "a5", "kind": "move" }], "marks": ["b1", "g8"]
+  },
+  "trigger": {
+    "all": [
+      { "type": "piece", "side": "own", "piece": "K", "on": ["g8"] },
+      { "type": "piece", "side": "opp", "piece": "K", "on": ["b1"] },
+      { "type": "piece", "side": "own", "piece": "R", "on": ["a8"] },
+      { "type": "piece", "side": "own", "piece": "P", "on": ["a7", "a5", "a4"] },
+      { "type": "pawns", "side": "own", "on": ["b7", "c6"] },
+      { "type": "pawns", "side": "opp", "on": ["a2", "b2", "h5"] },
+      { "type": "clearFile", "file": "a", "from": 7, "to": 5 },
+      { "type": "queensOn" }
+    ]
+  },
+  "goal": "Create queenside pressure while keeping enough time to meet White's attack.",
+  "steps": [
+    { "text": "In the example, the kings are on opposite wings. White has a pawn on h5 near your king, so check the kingside before advancing." },
+    { "text": "In the example, the a-pawn can advance to a5 and then a4. Each move needs a fresh calculation." },
+    { "text": "In the example, the pawn can reach a3 and attack b2. If it captures on b2, the rook gains a half-open a-file.", "board": { "moves": ["e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4", "Bf5", "Ng3", "Bg6", "h4", "h6", "Nf3", "Nd7", "h5", "Bh7", "Bd3", "Bxd3", "Qxd3", "e6", "Bd2", "Ngf6", "O-O-O", "Be7", "Kb1", "O-O", "Ne4", "a5", "Rhg1", "a4", "Nxf6+", "Nxf6", "g4", "a3", "g5", "hxg5", "Rxg5", "axb2"], "arrows": [{ "from": "a8", "to": "a2", "kind": "attack" }] } },
+    { "text": "The file and the pawn do not guarantee mate. White can attack quickly too; be ready to defend or choose a central move instead." },
+    { "text": "In the trap example, if White takes the b2 pawn with the king, the rook can move to a3 and attack the queen. The e7 bishop defends the rook. White has a stronger reply than taking the pawn.", "board": { "fromNode": { "repertoireId": "caro-kann", "nodeId": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Bf5 Ng3 Bg6 h4 h6 Nf3 Nd7 h5 Bh7 Bd3 Bxd3 Qxd3 e6" }, "moves": ["e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4", "Bf5", "Ng3", "Bg6", "h4", "h6", "Nf3", "Nd7", "h5", "Bh7", "Bd3", "Bxd3", "Qxd3", "e6", "Bd2", "Ngf6", "O-O-O", "Be7", "Kb1", "O-O", "Ne4", "a5", "Rhg1", "a4", "Nxf6+", "Nxf6", "g4", "a3", "g5", "hxg5", "Rxg5", "axb2", "Kxb2", "Ra3"], "arrows": [{ "from": "a3", "to": "d3", "kind": "attack" }, { "from": "e7", "to": "a3", "kind": "attack" }] } }
+  ],
+  "jobs": [
+    { "square": "a7", "text": "The a-pawn can advance toward the white king." },
+    { "square": "a8", "text": "The rook can use the a-file if the a-pawn leaves it." },
+    { "square": "c6", "text": "The c-pawn controls b5 and d5." },
+    { "square": "g8", "text": "Your king must be protected against White's kingside play." }
+  ],
+  "breaks": [{ "from": "a7", "to": "a5", "text": "The a-pawn can advance toward the white king." }],
+  "opponent": [{ "text": "White can bring a rook to the g-file and advance the g-pawn. Calculate the threats before another pawn move." }],
+  "notNow": ["Do not continue the pawn advance if you must answer a check or a direct threat to your king.", "The example is a race, not a forced win. A central move can also be strong."],
+  "mistakes": [{
+    "moves": ["e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4", "Bf5", "Ng3", "Bg6", "h4", "h6", "Nf3", "Nd7", "h5", "Bh7", "Bd3", "Bxd3", "Qxd3", "e6", "Bd2", "Ngf6", "O-O-O", "Be7", "Kb1", "O-O", "Ne4"],
+    "text": "The pawn on b2 can capture a bishop that goes to a3. Advance the pawn instead.", "bad": "Ba3", "good": ["a5"]
+  }],
+  "models": [{
+    "title": "The a-pawn creates pressure", "kind": "plan", "source": "stockfish", "startPly": 27,
+    "moves": ["e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4", "Bf5", "Ng3", "Bg6", "h4", "h6", "Nf3", "Nd7", "h5", "Bh7", "Bd3", "Bxd3", "Qxd3", "e6", "Bd2", "Ngf6", "O-O-O", "Be7", "Kb1", "O-O", "Ne4", "a5", "Rhg1", "a4", "Nxf6+", "Nxf6", "g4", "a3", "g5", "hxg5", "Rxg5", "axb2"],
+    "comments": [{ "ply": 28, "text": "The a-pawn starts toward White's queenside." }, { "ply": 34, "text": "The pawn on a3 attacks b2." }, { "ply": 38, "text": "The a-pawn captures on b2, leaving the a-file half open for the rook." }]
+  }, {
+    "title": "Trap: the rook attacks the queen", "kind": "trap", "source": "stockfish", "startPly": 38,
+    "moves": ["e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4", "Bf5", "Ng3", "Bg6", "h4", "h6", "Nf3", "Nd7", "h5", "Bh7", "Bd3", "Bxd3", "Qxd3", "e6", "Bd2", "Ngf6", "O-O-O", "Be7", "Kb1", "O-O", "Ne4", "a5", "Rhg1", "a4", "Nxf6+", "Nxf6", "g4", "a3", "g5", "hxg5", "Rxg5", "axb2", "Kxb2", "Ra3"],
+    "comments": [{ "ply": 39, "text": "This king capture is a mistake; White has stronger moves." }, { "ply": 40, "text": "The rook uses the a-file and attacks the d3 queen. The e7 bishop defends the rook." }]
+  }],
+  "exercises": [
+    { "id": "advance-a5", "board": { "fromNode": { "repertoireId": "caro-kann", "nodeId": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Bf5 Ng3 Bg6 h4 h6 Nf3 Nd7 h5 Bh7 Bd3 Bxd3 Qxd3 e6" }, "moves": ["e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4", "Bf5", "Ng3", "Bg6", "h4", "h6", "Nf3", "Nd7", "h5", "Bh7", "Bd3", "Bxd3", "Qxd3", "e6", "Bd2", "Ngf6", "O-O-O", "Be7", "Kb1", "O-O", "Ne4"] }, "prompt": "Black to move. Advance the a-pawn toward the white king.", "choices": [{ "san": "a5", "why": "The a-pawn starts the queenside advance." }, { "san": "Ba3", "why": "The b2 pawn can capture the bishop." }], "accepted": ["a5"], "explanation": "a5 starts the pawn advance. White's kingside play remains dangerous." },
+    { "id": "advance-a4", "board": { "fromNode": { "repertoireId": "caro-kann", "nodeId": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Bf5 Ng3 Bg6 h4 h6 Nf3 Nd7 h5 Bh7 Bd3 Bxd3 Qxd3 e6" }, "moves": ["e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4", "Bf5", "Ng3", "Bg6", "h4", "h6", "Nf3", "Nd7", "h5", "Bh7", "Bd3", "Bxd3", "Qxd3", "e6", "Bd2", "Ngf6", "O-O-O", "Be7", "Kb1", "O-O", "Ne4", "a5", "Rhg1"] }, "prompt": "Black to move. Continue the a-pawn advance.", "choices": [{ "san": "a4", "why": "The a-pawn advances toward a3." }, { "san": "Ba3", "why": "The b2 pawn can capture the bishop." }], "accepted": ["a4"], "explanation": "a4 continues the plan, but White's rook on g1 makes king safety important." },
+    { "id": "attack-b2", "board": { "fromNode": { "repertoireId": "caro-kann", "nodeId": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Bf5 Ng3 Bg6 h4 h6 Nf3 Nd7 h5 Bh7 Bd3 Bxd3 Qxd3 e6" }, "moves": ["e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4", "Bf5", "Ng3", "Bg6", "h4", "h6", "Nf3", "Nd7", "h5", "Bh7", "Bd3", "Bxd3", "Qxd3", "e6", "Bd2", "Ngf6", "O-O-O", "Be7", "Kb1", "O-O", "Ne4", "a5", "Rhg1", "a4", "Nxf6+", "Nxf6", "g4"] }, "prompt": "Black to move. Attack the b2 pawn with your a-pawn.", "choices": [{ "san": "a3", "why": "The a-pawn attacks b2." }, { "san": "Qxd4", "why": "The f3 knight can capture the queen." }], "accepted": ["a3"], "explanation": "a3 attacks b2. The kingside remains dangerous, and quieter defensive moves are also possible." }
+  ]
+}
