@@ -24,3 +24,8 @@ beginner principles with spaced repetition.
 Never delete or overwrite `data/chess.db` or stop a process you did not start.
 Manual and smoke runs use `pnpm smoke:start` (temp DB, port 8788) and
 `pnpm smoke:stop <pid>`. Backups live in `data/backups/`.
+
+Before you check out a branch that changes start-up code, take a backup first.
+The owner's dev server (`tsx watch`) restarts on a file change. Start-up syncs
+then write to `data/chess.db`. Use `sqlite3 data/chess.db ".backup <file>"`.
+A plain `cp` misses the WAL file.

@@ -510,9 +510,14 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 ## Next session
 
 - All numbered milestones M1 through M13 are done. Pick the next improvement
-  with the owner. The classifier fix stays as it is (owner decision 2026-10-29).
-- Done 2026-10-29: the coach's "why it matters" line on a mistake card no
-  longer keeps sentences that claim an attack, defence or threat (the game
-  facts hold no attack facts, so they cannot be checked). Known gap: the
-  filter is a word list. A card whose line is dropped shows only the label and
-  tags. A later step could add attack facts to the game-review facts.
+  with the owner.
+- Start each milestone with the brainstorming skill, then the planning skill.
+  Read `CLAUDE.md` and the latest milestone log first.
+- Known gaps:
+  - Plan pages link to the game, not to the move.
+  - The classifier marks some missed mates as `good`. The owner chose to keep it
+    (2026-10-29). A fix needs a new `ANALYSIS_VERSION` and a new analysis.
+  - The "why it matters" line on a mistake card drops sentences with attack,
+    defence or threat words (word-list filter).
+  - Two checks were never done in a browser: the plan quiz card and the new
+    game-page plan line. Tests cover them.
