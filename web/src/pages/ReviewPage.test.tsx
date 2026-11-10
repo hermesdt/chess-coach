@@ -11,7 +11,7 @@ import { ReviewPage } from './ReviewPage';
 vi.mock('react-chessboard', () => ({
   Chessboard: ({ options }: { options: { position: string; arrows?: unknown[]; onSquareClick: (a: { piece: null; square: string }) => void } }) => (
     <div data-testid="board" data-position={options.position} data-arrows={JSON.stringify(options.arrows ?? [])}>
-      {['e2', 'e3', 'e4', 'e7', 'e8'].map((square) => (
+      {['e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8'].map((square) => (
         <button key={square} type="button" onClick={() => options.onSquareClick({ piece: null, square })}>
           sq-{square}
         </button>
@@ -205,9 +205,9 @@ describe('ReviewPage', () => {
       expect(check).not.toHaveBeenCalled();
     });
 
-    it('links to the game', async () => {
+    it('links to the game at the position before the move', async () => {
       await open();
-      expect(screen.getByRole('link', { name: 'See the game' }).getAttribute('href')).toBe('/games/7');
+      expect(screen.getByRole('link', { name: 'See the game' }).getAttribute('href')).toBe('/games/7?ply=2');
     });
   });
 
@@ -314,5 +314,84 @@ describe('ReviewPage plan cards', () => {
     fireEvent.click(screen.getByText('sq-e3'));
     await screen.findByText('The engine check is not available.');
     expect(screen.getByRole('button', { name: '3 Good' })).toBeTruthy();
+  });
+});
+
+describe('ReviewPage threat cards', () => {
+  const THREAT_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1';
+  const threatCard: CardWithState = {
+    id: 9, kind: 'threat', positionKey: 'k', fen: START, sideToMove: 'white',
+    prompt: 'White to move. Your opponent just played Nf6. What does it threaten?',
+    solution: {
+      accepted: ['e2e4'], best: 'e2e4', explanation: 'In the game you played e3. Black played e5.', played: 'e3',
+      threat: { fen: THREAT_FEN, accepted: ['e7e5'], best: 'e7e5', explanation: 'e5 takes the centre.' },
+    },
+    refs: [{ gameId: 5, ply: 12 }], suspended: false, createdAt: 0, due: null, isNew: true, lastMove: { uci: 'g8f6' },
+  };
+  const position = () => screen.getByTestId('board').getAttribute('data-position');
+  const move = (from: string, to: string) => {
+    fireEvent.click(screen.getByText(`sq-${from}`));
+    fireEvent.click(screen.getByText(`sq-${to}`));
+  };
+  const open = async () => {
+    vi.spyOn(api, 'getReviewSession').mockResolvedValue({ cards: [threatCard], dueCount: 0, newAvailable: 1 });
+    render(<MemoryRouter><ReviewPage /></MemoryRouter>);
+    await screen.findByText(/What does it threaten\?/);
+  };
+  const step1 = async (from: string, to: string) => {
+    move(from, to);
+    fireEvent.click(await screen.findByRole('button', { name: 'Now find your answer' }));
+  };
+
+  it('a threat card starts with step 1 on the null-move position', async () => {
+    await open();
+    expect(screen.getByText('Step 1 of 2')).toBeTruthy();
+    expect(position()).toBe(THREAT_FEN);
+  });
+
+  it('step 2 shows the card position after the button', async () => {
+    await open();
+    await step1('e7', 'e5');
+    expect(screen.getByText('Step 2 of 2. Now find your answer.')).toBeTruthy();
+    expect(position()).toBe(START);
+  });
+
+  it('both steps right default to Good', async () => {
+    await open();
+    await step1('e7', 'e5');
+    move('e2', 'e4');
+    await screen.findByText('Correct');
+    expect(screen.getByText('3 Good').className).toBe('default');
+  });
+
+  it('one wrong step defaults to Hard, and a wrong step 2 names the best move', async () => {
+    await open();
+    await step1('e7', 'e5');
+    move('e2', 'e3');
+    await screen.findByText('Not quite. The best move was e4.');
+    expect(screen.getByText('In the game you played e3. Black played e5.')).toBeTruthy();
+    expect(screen.getByText('2 Hard').className).toBe('default');
+  });
+
+  it('both steps wrong default to Again', async () => {
+    await open();
+    await step1('e7', 'e6');
+    move('e2', 'e3');
+    await screen.findByText('Not quite. The best move was e4.');
+    expect(screen.getByText('1 Again').className).toBe('default');
+  });
+
+  it('submits the step 2 move', async () => {
+    const submit = vi.spyOn(api, 'submitReview').mockResolvedValue({ cardId: 9, nextDue: 0 });
+    await open();
+    await step1('e7', 'e6');
+    move('e2', 'e4');
+    fireEvent.click(await screen.findByText('2 Hard'));
+    await waitFor(() => expect(submit).toHaveBeenCalledWith(9, expect.objectContaining({ rating: 'hard', answerUci: 'e2e4' })));
+  });
+
+  it('See the game opens the position before the move', async () => {
+    await open();
+    expect(screen.getByRole('link', { name: 'See the game' }).getAttribute('href')).toBe('/games/5?ply=11');
   });
 });

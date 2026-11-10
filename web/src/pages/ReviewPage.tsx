@@ -4,7 +4,8 @@ import type { CardWithState, OpeningMoveCheck, Rating } from '../../../shared/ty
 import { api } from '../api';
 import { DrillBoard, type DrillArrow } from '../components/DrillBoard';
 import { PlanChoices } from '../components/plan/PlanChoices';
-import { bestSan, checkAnswer } from '../lib/drill';
+import { ThreatStep } from '../components/ThreatStep';
+import { bestSan, checkAnswer, threatRating } from '../lib/drill';
 import { REVIEW_FINISHED } from '../lib/events';
 import { partForNode, planHref } from '../lib/guide-links';
 import { useGuideIndex } from '../lib/use-guide-index';
@@ -70,6 +71,8 @@ export function ReviewPage() {
   const [hoverChoice, setHoverChoice] = useState<string | null>(null);
   const [flagOpen, setFlagOpen] = useState(false);
   const [flagNote, setFlagNote] = useState('');
+  /** Threat cards: the result of step 1 (the opponent's threat). Null until step 1 is done. */
+  const [threatResult, setThreatResult] = useState<{ uci: string; correct: boolean } | null>(null);
   const startedAt = useRef(Date.now());
   // Cards rated Again return once at the end of the session. This remembers which already did.
   const requeued = useRef(new Set<number>());
@@ -106,13 +109,16 @@ export function ReviewPage() {
     setError(null);
     setCanSkip(false);
     setHoverChoice(null);
+    setThreatResult(null);
     startedAt.current = Date.now();
   }, []);
 
   const onMove = useCallback(
     (uci: string) => {
       if (!card) return;
-      const { correct, defaultRating } = checkAnswer(card, uci);
+      const checked = checkAnswer(card, uci);
+      const { correct } = checked;
+      const defaultRating = card.kind === 'threat' ? threatRating(threatResult?.correct ?? false, correct) : checked.defaultRating;
       const cardId = card.id;
       const isChoice = card.kind === 'plan' && (card.solution.choices ?? []).some((c) => c.uci === uci);
       if (correct || isChoice || (card.kind !== 'opening' && card.kind !== 'plan')) {
@@ -131,7 +137,7 @@ export function ReviewPage() {
         () => update({ state: 'failed' }),
       );
     },
-    [card],
+    [card, threatResult],
   );
 
   const submit = useCallback(
@@ -214,7 +220,9 @@ export function ReviewPage() {
     );
   }
 
-  const gameId = card.refs.find((r) => r.gameId !== undefined)?.gameId;
+  const gameRef = card.refs.find((r) => r.gameId !== undefined);
+  const gameHref = gameRef ? `/games/${gameRef.gameId}${gameRef.ply ? `?ply=${gameRef.ply - 1}` : ''}` : null;
+  const inThreatStep = card.kind === 'threat' && threatResult === null;
   const planId = card.kind === 'plan' ? card.refs.find((r) => r.planId !== undefined)?.planId : undefined;
   const choices = card.kind === 'plan' ? (card.solution.choices ?? []) : [];
   const chosen = answer ? choices.find((c) => c.uci === answer.uci) : undefined;
@@ -226,15 +234,22 @@ export function ReviewPage() {
         <div style={{ width: `${(index / cards.length) * 100}%` }} />
       </div>
       <p>{card.prompt}</p>
-      <DrillBoard
-        key={card.id}
-        fen={card.fen}
-        orientation={card.sideToMove}
-        lastMove={card.lastMove?.uci ?? null}
-        onMove={onMove}
-        arrows={arrowsFor(card, answer, hoverChoice)}
-        locked={answer !== null}
-      />
+      {inThreatStep ? (
+        <ThreatStep key={card.id} card={card} onDone={setThreatResult} />
+      ) : (
+        <>
+          {card.kind === 'threat' && <p>Step 2 of 2. Now find your answer.</p>}
+          <DrillBoard
+            key={card.id}
+            fen={card.fen}
+            orientation={card.sideToMove}
+            lastMove={card.lastMove?.uci ?? null}
+            onMove={onMove}
+            arrows={arrowsFor(card, answer, hoverChoice)}
+            locked={answer !== null}
+          />
+        </>
+      )}
       {choices.length > 0 && (
         <PlanChoices choices={choices} disabled={answer !== null} onPick={onMove} onHover={setHoverChoice} />
       )}
@@ -272,6 +287,8 @@ export function ReviewPage() {
                   : `The plan move here is ${bestSan(card)}.`
               : answer.correct
                 ? 'Correct'
+                : card.kind === 'threat'
+                  ? `Not quite. The best move was ${bestSan(card)}.`
                 : answer.check
                   ? `Your ${card.repertoireName ?? 'repertoire'} move here is ${bestSan(card)}.`
                   : `Not quite — the best move was ${bestSan(card)}`}
@@ -299,7 +316,7 @@ export function ReviewPage() {
         </>
       )}
       <p className="muted">
-        {gameId !== undefined && (card.kind === 'mistake' || card.kind === 'mate') && <><Link to={`/games/${gameId}`}>See the game</Link> · </>}
+        {gameHref && (card.kind === 'mistake' || card.kind === 'mate' || card.kind === 'threat') && <><Link to={gameHref}>See the game</Link> · </>}
         <button type="button" className="link" onClick={() => setFlagOpen((o) => !o)}>Report a problem</button>
       </p>
       {flagOpen && (
