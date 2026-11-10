@@ -41,6 +41,8 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M11 | Content quality audit: every repertoire comment, lesson and guide claim checked with chess.js + Stockfish | done | spec `docs/superpowers/specs/2026-10-20-content-audit-design.md`, plan `docs/superpowers/plans/2026-10-22-m11-content-audit.md` |
 | M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | done | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12c plan `docs/superpowers/plans/2026-11-04-m12c-more-plans.md` |
 | M13 | Missed-mate cards: a review card for each mate in 1 or 2 that the owner missed in a game, built from stored analysis and proven with chess.js | done | spec `docs/superpowers/specs/2026-10-29-m13-mate-cards-design.md`, plan `docs/superpowers/plans/2026-10-29-m13-mate-cards.md` |
+| M14 | Tactics trainer: review cards for tactics the owner missed in own games (forks, pins, hanging pieces), found by Stockfish, proven with chess.js | design | — |
+| M15 | Vienna Game (1.e4 e5 2.Nc3) repertoire: lines, guide, drill and plans; scope to be agreed with the owner | not started | — |
 
 ## Log
 
@@ -520,11 +522,13 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 - Browser check in Chrome (Playwright, copy of the owner's database on port
   8788): the game-page plan line, "Show the move", the plan quiz card with its
   choices and feedback, and the new plan-page link. No page errors.
+- Guide "Typical mistakes" links open the position before the mistake
+  (`?ply=` is the mistake ply minus 1).
 
 ## Next session
 
-- All numbered milestones M1 through M13 are done. Pick the next improvement
-  with the owner.
+- M1 through M13 are done. M14 (tactics trainer) is in design. M15 (Vienna
+  Game) is next; the owner asked for it on 2026-11-10.
 - Start each milestone with the brainstorming skill, then the planning skill.
   Read `CLAUDE.md` and the latest milestone log first.
 - Known gaps:
@@ -532,5 +536,3 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
     (2026-10-29). A fix needs a new `ANALYSIS_VERSION` and a new analysis.
   - The "why it matters" line on a mistake card drops sentences with attack,
     defence or threat words (word-list filter).
-  - Guide "Typical mistakes" links still open the game at the start. They can
-    use `?ply=` too.

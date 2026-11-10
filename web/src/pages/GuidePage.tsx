@@ -135,7 +135,7 @@ function VariationParts({ guide, v }: { guide: GuideDTO; v: GuideVariationDTO })
             <ul>
               {p.mistakes.map((m) => (
                 <li key={`${m.gameId}|${m.ply}`}>
-                  <Link to={`/games/${m.gameId}`}>Game {m.gameId}</Link>, move {Math.ceil(m.ply / 2)}: you played {m.san}. {m.reason}
+                  <Link to={`/games/${m.gameId}?ply=${m.ply - 1}`}>Game {m.gameId}</Link>, move {Math.ceil(m.ply / 2)}: you played {m.san}. {m.reason}
                 </li>
               ))}
             </ul>

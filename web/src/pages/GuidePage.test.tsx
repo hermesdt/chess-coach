@@ -207,7 +207,8 @@ describe('GuidePage', () => {
     expect(screen.getAllByText('Your games').length).toBeGreaterThanOrEqual(3);
     expect(screen.getByText(/In 4 games you played 3…e6 instead of 3…Bf5/)).toBeTruthy();
     expect(screen.getByText(/Opponents played 4\.Nf3 in 3 of your games/)).toBeTruthy();
-    expect(screen.getByRole('link', { name: 'Game 14' }).getAttribute('href')).toBe('/games/14');
+    // The link opens the position before the mistake (ply 8), so it uses ply 7.
+    expect(screen.getByRole('link', { name: 'Game 14' }).getAttribute('href')).toBe('/games/14?ply=7');
   });
 
   it('uses h3 for the "Your games" boxes', async () => {
