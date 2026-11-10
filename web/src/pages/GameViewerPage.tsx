@@ -13,7 +13,7 @@ import { LiveEval, type LiveArrow } from '../components/LiveEval';
 import { KeyMoments } from '../components/KeyMoments';
 import { MoveList } from '../components/MoveList';
 import { noteIndexFor } from '../lib/coach-notes';
-import { formatDate } from '../lib/format';
+import { formatDate, nextMoveNumber } from '../lib/format';
 import { planHref } from '../lib/guide-links';
 import { useGuideIndex } from '../lib/use-guide-index';
 import { moveToUci } from '../lib/drill';
@@ -81,6 +81,8 @@ export function GameViewerPage() {
   const [lineError, setLineError] = useState<string | null>(null);
   const [liveArrow, setLiveArrow] = useState<LiveArrow | null>(null);
   const guideIndex = useGuideIndex(game?.repertoire?.id);
+  // `?ply=N` opens the game at the position after N half-moves (plan page links).
+  const startPly = Number(query.get('ply'));
 
   useEffect(() => {
     setGame(null);
@@ -95,7 +97,9 @@ export function GameViewerPage() {
     let stale = false;
     api.getGame(Number(id)).then(
       (g) => {
-        if (!stale) setGame(g);
+        if (stale) return;
+        setGame(g);
+        if (Number.isInteger(startPly) && startPly > 0) setCurrent(mainNode(Math.min(startPly, g.moves.length)));
       },
       (e: Error) => {
         if (!stale) setError(e.message);
@@ -104,7 +108,7 @@ export function GameViewerPage() {
     return () => {
       stale = true;
     };
-  }, [id]);
+  }, [id, startPly]);
 
   useEffect(() => {
     setGamePlans([]);
@@ -429,7 +433,7 @@ export function GameViewerPage() {
       </div>
       {gamePlans.map((p) => (
         <p key={p.planId} className="plan-moment">
-          <strong>Middlegame plan: {p.title} (move {Math.ceil(p.ply / 2)})</strong>{' '}
+          <strong>Middlegame plan: {p.title} (move {nextMoveNumber(p.ply)})</strong>{' '}
           <button type="button" className="link" onClick={() => { setEngineLine(null); setMomentPly(null); setCurrent(mainNode(p.ply)); }}>Show the move</button>
           {' · '}
           <Link to={`/plans/${p.planId}`}>Read the plan</Link>

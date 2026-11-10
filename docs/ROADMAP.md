@@ -507,6 +507,20 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   three plans loaded, each created three cards, and plan cards appeared in a
   review session. SQLite backup: `data/backups/pre-m12c-2026-11-05.db`.
 
+## Plan move links log
+
+- 2026-11-10 — **Done.** 1391 tests; typecheck and lint pass. No server change
+  and no database write.
+- `/games/:id?ply=N` opens the game at the position after N half-moves. A ply
+  past the end opens the last position. A value that is not a number is ignored.
+- The "Your games" links on a plan page use `?ply=`.
+- Fix: the plan line on the game page and the plan page showed the wrong move
+  number for an even ply. They now show the move that the owner plays next
+  (`nextMoveNumber`). Example: ply 16 is move 9, not move 8.
+- Browser check in Chrome (Playwright, copy of the owner's database on port
+  8788): the game-page plan line, "Show the move", the plan quiz card with its
+  choices and feedback, and the new plan-page link. No page errors.
+
 ## Next session
 
 - All numbered milestones M1 through M13 are done. Pick the next improvement
@@ -514,10 +528,9 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 - Start each milestone with the brainstorming skill, then the planning skill.
   Read `CLAUDE.md` and the latest milestone log first.
 - Known gaps:
-  - Plan pages link to the game, not to the move.
   - The classifier marks some missed mates as `good`. The owner chose to keep it
     (2026-10-29). A fix needs a new `ANALYSIS_VERSION` and a new analysis.
   - The "why it matters" line on a mistake card drops sentences with attack,
     defence or threat words (word-list filter).
-  - Two checks were never done in a browser: the plan quiz card and the new
-    game-page plan line. Tests cover them.
+  - Guide "Typical mistakes" links still open the game at the start. They can
+    use `?ply=` too.

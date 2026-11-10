@@ -10,3 +10,6 @@ export function opponentLabel(g: OpponentFields): string {
   if (g.userColor === null) return `${withElo(g.white, g.whiteElo)} vs ${withElo(g.black, g.blackElo)}`;
   return g.userColor === 'black' ? withElo(g.white, g.whiteElo) : withElo(g.black, g.blackElo);
 }
+
+/** Move number of the next move after `ply` half-moves. Ply 16 (after 8...x) gives move 9. */
+export const nextMoveNumber = (ply: number): number => Math.floor(ply / 2) + 1;

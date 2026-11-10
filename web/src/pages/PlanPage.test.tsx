@@ -134,10 +134,17 @@ describe('PlanPage your games', () => {
     const { container } = renderPage(plan(), games(5));
     await screen.findByText('5 games reach this plan. You won 2, drew 1 and lost 2.');
     const link = screen.getByRole('link', { name: 'me0 - opp0, move 9' });
-    expect(link.getAttribute('href')).toBe('/games/10');
+    expect(link.getAttribute('href')).toBe('/games/10?ply=17');
     expect(screen.getAllByRole('link', { name: /^me\d - opp\d, move/ })).toHaveLength(5);
     expect(container.querySelector('#games')).not.toBeNull();
     expect(screen.queryByText(/and \d+ more/)).toBeNull();
+  });
+
+  it('names the move the owner plays next after an even ply', async () => {
+    renderPage(plan(), games(5));
+    // Ply 18 ends with a black move, so White plays move 10 next.
+    const link = await screen.findByRole('link', { name: 'me1 - opp1, move 10' });
+    expect(link.getAttribute('href')).toBe('/games/11?ply=18');
   });
 
   it('says "and 2 more" for seven games', async () => {

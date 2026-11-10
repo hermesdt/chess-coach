@@ -87,11 +87,11 @@ describe('GameViewerPage plan moment', () => {
       { ply: 2, san: 'e5', uci: 'e7e5', fenBefore: E4, fenAfter: E5 },
     ],
   });
-  const open = () => {
+  const open = (url = '/games/7') => {
     vi.spyOn(api, 'getGame').mockResolvedValue(withMoves());
     vi.spyOn(api, 'getAnalysis').mockResolvedValue({ status: 'none' } as never);
     render(
-      <MemoryRouter initialEntries={['/games/7']}>
+      <MemoryRouter initialEntries={[url]}>
         <Routes><Route path="/games/:id" element={<GameViewerPage />} /></Routes>
       </MemoryRouter>,
     );
@@ -119,7 +119,8 @@ describe('GameViewerPage plan moment', () => {
   it('shows the plan box with the move number and a link to the plan', async () => {
     vi.spyOn(api, 'getGamePlans').mockResolvedValue([{ planId: 'london-e4-break', title: 'London e4 break', ply: 2 }]);
     open();
-    expect(await screen.findByText('Middlegame plan: London e4 break (move 1)')).toBeTruthy();
+    // Ply 2 ends with a black move, so the owner (White) plays move 2 next.
+    expect(await screen.findByText('Middlegame plan: London e4 break (move 2)')).toBeTruthy();
     expect(screen.getByRole('link', { name: 'Read the plan' }).getAttribute('href')).toBe('/plans/london-e4-break');
   });
 
@@ -129,6 +130,25 @@ describe('GameViewerPage plan moment', () => {
     await screen.findByText(/Middlegame plan:/);
     fireEvent.click(screen.getByRole('button', { name: 'Show the move' }));
     await waitFor(() => expect(screen.getByTestId('board').getAttribute('data-fen')).toBe(E5));
+  });
+
+  it('opens at the position after the ply in the URL', async () => {
+    vi.spyOn(api, 'getGamePlans').mockResolvedValue([]);
+    open('/games/7?ply=2');
+    await waitFor(() => expect(screen.getByTestId('board').getAttribute('data-fen')).toBe(E5));
+  });
+
+  it('opens at the last position when the ply in the URL is past the end', async () => {
+    vi.spyOn(api, 'getGamePlans').mockResolvedValue([]);
+    open('/games/7?ply=99');
+    await waitFor(() => expect(screen.getByTestId('board').getAttribute('data-fen')).toBe(E5));
+  });
+
+  it('opens at the start when the ply in the URL is not a number', async () => {
+    vi.spyOn(api, 'getGamePlans').mockResolvedValue([]);
+    open('/games/7?ply=x');
+    await screen.findByText(/Opp/);
+    expect(screen.getByTestId('board').getAttribute('data-fen')).toBe(START);
   });
 
   it('shows no box when the game has no plan moment', async () => {

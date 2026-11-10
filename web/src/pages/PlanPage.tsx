@@ -6,6 +6,7 @@ import { DrillBoard, type DrillArrow } from '../components/DrillBoard';
 import { FinalFormBoard } from '../components/guide/FinalFormBoard';
 import { ModelStepper } from '../components/plan/ModelStepper';
 import { PlanBoard } from '../components/plan/PlanBoard';
+import { nextMoveNumber } from '../lib/format';
 
 const mistakeArrows = (m: PlanDTO['mistakes'][number]): DrillArrow[] => [
   { from: m.bad.from, to: m.bad.to, color: 'red' },
@@ -161,7 +162,7 @@ export function PlanPage() {
           <p>{plural(games.total, 'game', 'games')} reach this plan. You won {games.wins}, drew {games.draws} and lost {games.losses}.</p>
           <ul>
             {games.games.map((g) => (
-              <li key={g.id}><Link to={`/games/${g.id}`}>{g.white} - {g.black}, move {Math.ceil(g.ply / 2)}</Link></li>
+              <li key={g.id}><Link to={`/games/${g.id}?ply=${g.ply}`}>{g.white} - {g.black}, move {nextMoveNumber(g.ply)}</Link></li>
             ))}
           </ul>
           {games.total > games.games.length && <p className="muted">and {games.total - games.games.length} more</p>}
