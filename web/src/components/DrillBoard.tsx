@@ -19,6 +19,8 @@ export interface DrillBoardProps {
   /** Squares to highlight (plan boards). */
   marks?: string[];
   locked: boolean;
+  /** Colour whose pieces can move. Defaults to `orientation`. */
+  mover?: Color;
 }
 
 const ARROW_COLORS = { green: '#1a7f37', red: '#cf222e', blue: '#0969da' };
@@ -34,7 +36,7 @@ const PROMOTION_PIECES = [
 ] as const;
 
 /** Board for drills. Accepts legal moves only (drag or click-click) and reports them as UCI. */
-export function DrillBoard({ fen, orientation, lastMove, onMove, arrows = [], marks = [], locked }: DrillBoardProps) {
+export function DrillBoard({ fen, orientation, lastMove, onMove, arrows = [], marks = [], locked, mover = orientation }: DrillBoardProps) {
   // The parent gives each drill its own `key`, so state starts fresh for every card.
   const [position, setPosition] = useState(fen);
   const [selected, setSelected] = useState<string | null>(null);
@@ -65,7 +67,7 @@ export function DrillBoard({ fen, orientation, lastMove, onMove, arrows = [], ma
 
   const ownPiece = (square: string) => {
     const piece = new Chess(fen).get(square as Square);
-    return !!piece && (piece.color === 'w') === (orientation === 'white');
+    return !!piece && (piece.color === 'w') === (mover === 'white');
   };
 
   const squareStyles: Record<string, React.CSSProperties> = {};

@@ -32,3 +32,9 @@ export function moveToUci(fen: string, from: string, to: string, promotion?: str
   if (!legal) return null;
   return `${from}${to}${legal.promotion ? (promotion ?? 'q') : ''}`;
 }
+
+/** Default rating of a threat card: both steps right is good, one is hard, none is again. */
+export function threatRating(step1: boolean, step2: boolean): Rating {
+  const right = Number(step1) + Number(step2);
+  return right === 2 ? 'good' : right === 1 ? 'hard' : 'again';
+}

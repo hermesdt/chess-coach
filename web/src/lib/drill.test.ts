@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Card } from '../../../shared/types';
-import { bestSan, checkAnswer, moveToUci } from './drill';
+import { bestSan, checkAnswer, moveToUci, threatRating } from './drill';
 
 const card: Card = {
   id: 1,
@@ -48,5 +48,14 @@ describe('moveToUci', () => {
   it('auto-queens a promotion when no piece is given', () => {
     expect(moveToUci(card.fen, 'e7', 'e8')).toBe('e7e8q');
     expect(moveToUci(card.fen, 'e7', 'e8', 'n')).toBe('e7e8n');
+  });
+});
+
+describe('threatRating', () => {
+  it('maps the two step results to a rating', () => {
+    expect(threatRating(true, true)).toBe('good');
+    expect(threatRating(true, false)).toBe('hard');
+    expect(threatRating(false, true)).toBe('hard');
+    expect(threatRating(false, false)).toBe('again');
   });
 });
