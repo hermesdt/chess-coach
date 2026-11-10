@@ -1,6 +1,6 @@
 # M14 — Threat cards (design)
 
-Date: 2026-11-10. Status: draft, waits for owner approval.
+Date: 2026-11-10. Status: approved by the owner (2026-11-10).
 
 ## Intent
 
