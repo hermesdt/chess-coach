@@ -9,11 +9,9 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 2. Pick the first milestone that is not `done`.
 3. If it has no plan file, write one with `superpowers:writing-plans` into
    `docs/superpowers/plans/` and link it here.
-4. Execute the plan with `superpowers:subagent-driven-development`:
-   - implementers: `model: sonnet` (use `haiku` for mechanical tasks such as
-     fixtures, config, copy, simple components), reviewed by a `sonnet`
-     reviewer;
-   - the main session supervises, runs verification, and commits.
+4. The main session implements the plan itself, task by task, with TDD.
+   Do not use subagents (owner instruction, 2026-11-10: they use too many
+   tokens).
 5. Before marking a milestone `done`: `pnpm typecheck && pnpm lint && pnpm test`
    (plus `pnpm validate:content` once it exists) are green, and a smoke run of
    the app works. Update this file and commit.
