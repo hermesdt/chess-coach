@@ -6,8 +6,7 @@ import type { EnginePool } from '../engine/pool.js';
 import type { EngineLine } from '../engine/uci.js';
 import { latestReviewUpTo } from '../ai/notes-repo.js';
 import { findMateMisses } from './mate-cards.js';
-import { threatPlies } from './threat-cards.js';
-import { listCardsByRef, positionKey, setRefs, setSolution, setSuspended, upsertCard } from './cards-repo.js';
+import { listCardsByRef, positionKey, setRefs, setSolution, setSuspended, threatPlies, upsertCard } from './cards-repo.js';
 
 const MULTIPV = 3;
 const ACCEPT_WITHIN = 5;

@@ -3,10 +3,10 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import type { GameAnalysis, MoveAnalysis } from '../../shared/types.js';
 import { openDb } from '../db/db.js';
 import type { EngineLine } from '../engine/uci.js';
-import { listCardsByKind, listCardsByRef } from './cards-repo.js';
+import { listCardsByKind, listCardsByRef, threatPlies } from './cards-repo.js';
 import { buildMateCards } from './mate-cards.js';
 import { buildMistakeCards } from './mistake-cards.js';
-import { buildThreatCards, threatPlies } from './threat-cards.js';
+import { buildThreatCards } from './threat-cards.js';
 
 const A = '4k3/8/1b6/8/3Q4/8/8/4K3 w - - 0 1';
 const A_NULL = '4k3/8/1b6/8/3Q4/8/8/4K3 b - - 0 1';

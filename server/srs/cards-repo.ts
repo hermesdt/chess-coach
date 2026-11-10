@@ -160,3 +160,13 @@ export function restoreFlaggedCard(db: DatabaseSync, flagId: number): boolean {
     return true;
   });
 }
+
+/** Plies of this game that have an active threat card. */
+export function threatPlies(db: DatabaseSync, gameId: number): Set<number> {
+  const plies = new Set<number>();
+  for (const card of listCardsByRef(db, gameId)) {
+    if (card.kind !== 'threat' || card.suspended) continue;
+    for (const r of card.refs) if (r.gameId === gameId && r.source !== 'chat' && r.ply !== undefined) plies.add(r.ply);
+  }
+  return plies;
+}

@@ -7,20 +7,10 @@ import type { EnginePool } from '../engine/pool.js';
 import type { EngineLine } from '../engine/uci.js';
 import { dropRefs, findMateMisses } from './mate-cards.js';
 import { acceptedMoves, playedWithinMargin } from './mistake-cards.js';
-import { listCardsByRef, positionKey, upsertCard } from './cards-repo.js';
+import { positionKey, upsertCard } from './cards-repo.js';
 import { confirmThreat, findThreatCandidates, threatText, type ThreatCandidate } from './threats.js';
 
 const MULTIPV = 3;
-
-/** Plies of this game that have an active threat card. */
-export function threatPlies(db: DatabaseSync, gameId: number): Set<number> {
-  const plies = new Set<number>();
-  for (const card of listCardsByRef(db, gameId)) {
-    if (card.kind !== 'threat' || card.suspended) continue;
-    for (const r of card.refs) if (r.gameId === gameId && r.source !== 'chat' && r.ply !== undefined) plies.add(r.ply);
-  }
-  return plies;
-}
 
 /** Step 1: the moves that carry out the threat. Null when the engine does not confirm it. */
 async function stepOne(
