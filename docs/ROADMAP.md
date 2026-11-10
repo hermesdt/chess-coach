@@ -40,8 +40,11 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | done | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12c plan `docs/superpowers/plans/2026-11-04-m12c-more-plans.md` |
 | M13 | Missed-mate cards: a review card for each mate in 1 or 2 that the owner missed in a game, built from stored analysis and proven with chess.js | done | spec `docs/superpowers/specs/2026-10-29-m13-mate-cards-design.md`, plan `docs/superpowers/plans/2026-10-29-m13-mate-cards.md` |
 | M14 | Threat cards: two-step review cards (find the opponent's threat, then your answer) from positions in own games where a threat existed and the owner's move ignored it | done | spec `docs/superpowers/specs/2026-11-10-m14-threat-cards-design.md`, plan `docs/superpowers/plans/2026-11-10-m14-threat-cards.md` |
-| M15 | Vienna Game (1.e4 e5 2.Nc3) repertoire: lines, guide, drill and plans; scope to be agreed with the owner | not started | — |
-| M16 | Longer mates: mate cards for mate in 3 (maybe 4) from own games; the owner plays the whole mate, the app plays the best defence; Stockfish finds, chess.js checks every defence | not started | — |
+| M15 | Longer mates: mate cards for mate in 3 (maybe 4) from own games; the owner plays the whole mate, the app plays the best defence; Stockfish finds, chess.js checks every defence | not started | — |
+| M16a | 1.e4 repertoire, part 1: Vienna Gambit vs 1...e5 (2.Nc3, f4), plus 2...Nc6 and 2...Bc5; lines, guide, drill, plans | not started | — |
+| M16b | 1.e4 repertoire, part 2: Grand Prix Attack vs the Sicilian (2.Nc3, f4) | not started | — |
+| M16c | 1.e4 repertoire, part 3: Advance Variation vs the French and the Caro-Kann | not started | — |
+| M16d | 1.e4 repertoire, part 4: Scandinavian and the rest (1...Nf6, 1...d6/g6, 1...Nc6), main lines kept simple | not started | — |
 
 ## Log
 
@@ -563,11 +566,14 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 
 ## Next session
 
-- M1 through M14 are done. Next: M15 (Vienna Game), then M16 (longer mates).
-  Owner's order, 2026-11-10. M15 has no spec yet: start with brainstorming. Open
-  question for M15: the owner plays the London (1.d4) as White; is the Vienna
-  (1.e4) a second White repertoire or a replacement?
-- M16 data (2026-11-10, read-only): the owner had mate in 3 in 40 positions and
+- M1 through M14 are done. Next: M15 (longer mates), then M16a–d (1.e4
+  repertoire). Owner's order, 2026-11-10.
+- 1.e4 decisions (owner, 2026-11-10): a second White repertoire next to the
+  London (not a replacement); reason: "saw it on a video and seems powerful";
+  full repertoire as deep as the London (about 300 positions each part), split
+  in four parts. Line choices (Vienna Gambit, Grand Prix, Advance vs French and
+  Caro-Kann) are the assistant's proposals; confirm in each part's design.
+- M15 data (2026-11-10, read-only): the owner had mate in 3 in 40 positions and
   did not play the fastest mate in 26; mate in 4: 28 and 13. The mate was lost
   completely 16 times across mate in 3 to 8.
 - Start each milestone with the brainstorming skill, then the planning skill.
