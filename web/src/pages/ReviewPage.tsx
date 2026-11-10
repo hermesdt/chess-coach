@@ -32,6 +32,9 @@ const GOOD_ALTERNATIVE_LOSS = 5;
 const isGoodAlternative = (a: Answer): boolean =>
   a.check?.state === 'done' && a.check.result.loss < GOOD_ALTERNATIVE_LOSS;
 
+/** After a failure only Again can be chosen (owner rule). A sound alternative is not a failure. */
+const allowedRatings = (failed: boolean) => (failed ? RATINGS.filter((r) => r.rating === 'again') : RATINGS);
+
 function isTypingTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
   return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(target.tagName);
@@ -178,19 +181,23 @@ export function ReviewPage() {
     }
   };
 
+  const failed = answer !== null && card !== undefined
+    && (card.kind === 'threat' ? !answer.correct || !threatResult?.correct : !answer.correct && !isGoodAlternative(answer));
+
   useEffect(() => {
     if (!answer) return;
     const onKey = (e: KeyboardEvent) => {
       if (isTypingTarget(e.target) || e.altKey || e.ctrlKey || e.metaKey) return;
       const byKey = RATINGS[Number(e.key) - 1];
+      if (byKey && failed && byKey.rating !== 'again') return;
       if (byKey) void submit(byKey.rating);
-      else if (e.key === 'Enter') void submit(answer.rating);
+      else if (e.key === 'Enter') void submit(failed ? 'again' : answer.rating);
       else return;
       e.preventDefault();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [answer, submit]);
+  }, [answer, submit, failed]);
 
   const finished = cards !== null && cards.length > 0 && !card;
   useEffect(() => {
@@ -301,7 +308,7 @@ export function ReviewPage() {
           {plan && <p><Link to={plan}>Plan</Link></p>}
           {planId !== undefined && <p><Link to={`/plans/${planId}`}>Plan</Link></p>}
           <div className="ratings">
-            {RATINGS.map(({ rating, label }, i) => (
+            {allowedRatings(failed).map(({ rating, label }) => (
               <button
                 key={rating}
                 type="button"
@@ -309,7 +316,7 @@ export function ReviewPage() {
                 disabled={submitting}
                 onClick={() => void submit(rating)}
               >
-                {i + 1} {label}
+                {RATINGS.findIndex((r) => r.rating === rating) + 1} {label}
               </button>
             ))}
           </div>

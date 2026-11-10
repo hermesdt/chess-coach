@@ -27,6 +27,8 @@ const card = (id: number): CardWithState => ({
   refs: [], suspended: false, createdAt: 0, due: null, isNew: true,
 });
 
+const ratingButtons = () => [...document.querySelectorAll('.ratings button')].map((b) => b.textContent);
+
 const summary = (over: Partial<OpeningSummary>): OpeningSummary => ({
   id: 'caro-kann', name: 'Caro-Kann', color: 'black', nodeCount: 1, cardCount: 1,
   stats: { games: 0, win: 0, draw: 0, loss: 0 }, variationIndex: null, ...over,
@@ -125,6 +127,7 @@ describe('ReviewPage', () => {
       expect(screen.getByText('Your London move here is Nf3.')).toBeTruthy();
       expect(screen.queryByText('Checking your move…')).toBeNull();
       expect(defaultButton()).toBe('2 Hard');
+      expect(ratingButtons()).toEqual(['1 Again', '2 Hard', '3 Good', '4 Easy']);
     });
 
     it('opening card: a weak move shows the loss and keeps Again', async () => {
@@ -173,6 +176,24 @@ describe('ReviewPage', () => {
       await screen.findByText('Not quite — the best move was Nf3');
       expect(check).not.toHaveBeenCalled();
       expect(defaultButton()).toBe('1 Again');
+    });
+
+    it('a wrong answer shows the answer and offers only Again', async () => {
+      const submit = vi.spyOn(api, 'submitReview').mockResolvedValue({ cardId: 1, nextDue: 0 });
+      await playE4({ ...openingNf3, kind: 'mistake', refs: [] });
+      await screen.findByText('Not quite — the best move was Nf3');
+      expect(screen.getByText('Develop the knight.')).toBeTruthy();
+      expect(ratingButtons()).toEqual(['1 Again']);
+      fireEvent.keyDown(window, { key: '3' });
+      expect(submit).not.toHaveBeenCalled();
+      fireEvent.keyDown(window, { key: 'Enter' });
+      await waitFor(() => expect(submit).toHaveBeenCalledWith(1, expect.objectContaining({ rating: 'again' })));
+    });
+
+    it('a right answer offers all four ratings', async () => {
+      await playE4({ ...openingNf3, kind: 'mistake', refs: [], solution: { accepted: ['e2e4'], best: 'e2e4', explanation: null } });
+      await screen.findByText('Correct');
+      expect(ratingButtons()).toEqual(['1 Again', '2 Hard', '3 Good', '4 Easy']);
     });
   });
 
@@ -313,7 +334,7 @@ describe('ReviewPage plan cards', () => {
     fireEvent.click(screen.getByText('sq-e2'));
     fireEvent.click(screen.getByText('sq-e3'));
     await screen.findByText('The engine check is not available.');
-    expect(screen.getByRole('button', { name: '3 Good' })).toBeTruthy();
+    expect(ratingButtons()).toEqual(['1 Again']);
   });
 });
 
@@ -356,38 +377,39 @@ describe('ReviewPage threat cards', () => {
     expect(position()).toBe(START);
   });
 
-  it('both steps right default to Good', async () => {
+  it('both steps right default to Good and offer all ratings', async () => {
     await open();
     await step1('e7', 'e5');
     move('e2', 'e4');
     await screen.findByText('Correct');
     expect(screen.getByText('3 Good').className).toBe('default');
+    expect(ratingButtons()).toEqual(['1 Again', '2 Hard', '3 Good', '4 Easy']);
   });
 
-  it('one wrong step defaults to Hard, and a wrong step 2 names the best move', async () => {
+  it('a wrong step 2 names the best move and offers only Again', async () => {
     await open();
     await step1('e7', 'e5');
     move('e2', 'e3');
     await screen.findByText('Not quite. The best move was e4.');
     expect(screen.getByText('In the game you played e3. Black played e5.')).toBeTruthy();
-    expect(screen.getByText('2 Hard').className).toBe('default');
+    expect(ratingButtons()).toEqual(['1 Again']);
   });
 
-  it('both steps wrong default to Again', async () => {
+  it('a wrong step 1 offers only Again, even when step 2 is right', async () => {
     await open();
     await step1('e7', 'e6');
-    move('e2', 'e3');
-    await screen.findByText('Not quite. The best move was e4.');
-    expect(screen.getByText('1 Again').className).toBe('default');
+    move('e2', 'e4');
+    await screen.findByText('Correct');
+    expect(ratingButtons()).toEqual(['1 Again']);
   });
 
   it('submits the step 2 move', async () => {
     const submit = vi.spyOn(api, 'submitReview').mockResolvedValue({ cardId: 9, nextDue: 0 });
     await open();
-    await step1('e7', 'e6');
+    await step1('e7', 'e5');
     move('e2', 'e4');
-    fireEvent.click(await screen.findByText('2 Hard'));
-    await waitFor(() => expect(submit).toHaveBeenCalledWith(9, expect.objectContaining({ rating: 'hard', answerUci: 'e2e4' })));
+    fireEvent.click(await screen.findByText('3 Good'));
+    await waitFor(() => expect(submit).toHaveBeenCalledWith(9, expect.objectContaining({ rating: 'good', answerUci: 'e2e4' })));
   });
 
   it('See the game opens the position before the move', async () => {

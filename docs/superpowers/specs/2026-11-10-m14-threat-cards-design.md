@@ -135,7 +135,9 @@ Step 2  Board: fenBefore. The owner's pieces move.
         Rating buttons.
 ```
 
-- Default rating: both steps right → Good. One step wrong → Hard. Both wrong → Again. The owner can change it.
+- Rating: both steps right → Good (all ratings can be chosen). A wrong step → Again, and Again is the only
+  button. Owner rule, 2026-11-10: after a failure, only Again (for every card kind; a sound alternative that
+  Stockfish confirms is not a failure). This replaces "one step wrong → Hard".
 - "See the game" opens `/games/:id?ply=<p-1>` (the position before the owner's move).
 - "Report a problem" works as for other cards.
 

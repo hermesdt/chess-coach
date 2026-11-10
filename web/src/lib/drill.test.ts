@@ -54,8 +54,8 @@ describe('moveToUci', () => {
 describe('threatRating', () => {
   it('maps the two step results to a rating', () => {
     expect(threatRating(true, true)).toBe('good');
-    expect(threatRating(true, false)).toBe('hard');
-    expect(threatRating(false, true)).toBe('hard');
+    expect(threatRating(true, false)).toBe('again');
+    expect(threatRating(false, true)).toBe('again');
     expect(threatRating(false, false)).toBe('again');
   });
 });
