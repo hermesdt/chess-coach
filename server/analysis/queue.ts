@@ -8,8 +8,9 @@ import { runJob } from '../jobs.js';
 import { currentLevel } from '../level.js';
 import { buildMateCards } from '../srs/mate-cards.js';
 import { buildMistakeCards } from '../srs/mistake-cards.js';
+import { buildThreatCards } from '../srs/threat-cards.js';
 import { analyseGame } from './analyse-game.js';
-import { ANALYSIS_VERSION, markAnalysis, markCardsBuilt, saveAnalysis } from './analysis-repo.js';
+import { ANALYSIS_VERSION, markAnalysis, markCardsBuilt, markThreatCardsBuilt, saveAnalysis } from './analysis-repo.js';
 
 export interface QueueDeps { pool: Pick<EnginePool, 'analyse'>; nodes?: number }
 
@@ -96,6 +97,14 @@ async function analyseOne(db: DatabaseSync, id: number, deps: QueueDeps): Promis
   } catch (e) {
     console.error(`Mate card building failed for game ${id}:`, e);
     note += ' (mate cards: failed)';
+  }
+  // Threat cards next: they take the mistake cards of the same plies.
+  try {
+    await buildThreatCards(db, done, deps.pool, { nodes });
+    markThreatCardsBuilt(db, id, Date.now());
+  } catch (e) {
+    console.error(`Threat card building failed for game ${id}:`, e);
+    note += ' (threat cards: failed)';
   }
   try {
     await buildMistakeCards(db, done, deps.pool, { nodes });
