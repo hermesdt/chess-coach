@@ -1,6 +1,6 @@
 # M15 — Longer mates (design)
 
-Date: 2026-11-10. Status: draft, waits for owner approval.
+Date: 2026-11-10. Status: approved by the owner (2026-11-10).
 
 ## Intent
 
@@ -73,8 +73,8 @@ Expected: about 26 mate in 3 and 13 mate in 4. The proof removes some.
 
 - `k ≤ 2`: use `findMates`. Accepted = all its moves (complete list). After each accepted move, the defence is the
   reply with the longest remaining mate (mate in 1 after a mate-in-2 move: any reply; pick per the tie rule).
-- `k ≥ 3`: `pool.analyse(fen, { nodes, multipv: 5 })`. Candidates = lines whose score is mate in exactly `k` for the
-  side to move. For each candidate M: play M; enumerate every legal reply with chess.js; each reply must give a
+- `k ≥ 3`: `pool.analyse(fen, { nodes, multipv: 5 })`. Candidates = lines whose score is a mate in `k` or fewer for the
+  side to move (plan ruling: the engine only proposes; chess.js decides the exact length). For each candidate M: play M; enumerate every legal reply with chess.js; each reply must give a
   proven mate in `k-1` or less (recursive). The candidate is accepted when all replies pass. Accepted is never empty
   for a stored card.
 - **Exact distance:** the distance of an owner move M is 1 + the longest proven remaining mate over all replies. M is
