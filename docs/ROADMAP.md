@@ -41,8 +41,9 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M11 | Content quality audit: every repertoire comment, lesson and guide claim checked with chess.js + Stockfish | done | spec `docs/superpowers/specs/2026-10-20-content-audit-design.md`, plan `docs/superpowers/plans/2026-10-22-m11-content-audit.md` |
 | M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | done | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12c plan `docs/superpowers/plans/2026-11-04-m12c-more-plans.md` |
 | M13 | Missed-mate cards: a review card for each mate in 1 or 2 that the owner missed in a game, built from stored analysis and proven with chess.js | done | spec `docs/superpowers/specs/2026-10-29-m13-mate-cards-design.md`, plan `docs/superpowers/plans/2026-10-29-m13-mate-cards.md` |
-| M14 | Tactics trainer: review cards for tactics the owner missed in own games (forks, pins, hanging pieces), found by Stockfish, proven with chess.js | design | — |
+| M14 | Threat cards: two-step review cards (find the opponent's threat, then your answer) from positions in own games where a threat existed and the owner's move ignored it | design | spec `docs/superpowers/specs/2026-11-10-m14-threat-cards-design.md` (draft) |
 | M15 | Vienna Game (1.e4 e5 2.Nc3) repertoire: lines, guide, drill and plans; scope to be agreed with the owner | not started | — |
+| M16 | Longer mates: mate cards for mate in 3 (maybe 4) from own games; the owner plays the whole mate, the app plays the best defence; Stockfish finds, chess.js checks every defence | not started | — |
 
 ## Log
 
@@ -527,8 +528,11 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 
 ## Next session
 
-- M1 through M13 are done. M14 (tactics trainer) is in design. M15 (Vienna
-  Game) is next; the owner asked for it on 2026-11-10.
+- M1 through M13 are done. M14 (threat cards) is in design. Then M15 (Vienna
+  Game), then M16 (longer mates). Owner's order, 2026-11-10.
+- M16 data (2026-11-10, read-only): the owner had mate in 3 in 40 positions and
+  did not play the fastest mate in 26; mate in 4: 28 and 13. The mate was lost
+  completely 16 times across mate in 3 to 8.
 - Start each milestone with the brainstorming skill, then the planning skill.
   Read `CLAUDE.md` and the latest milestone log first.
 - Known gaps:
