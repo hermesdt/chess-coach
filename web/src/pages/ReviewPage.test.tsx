@@ -384,6 +384,7 @@ describe('ReviewPage threat cards', () => {
     await screen.findByText('Correct');
     expect(screen.getByText('3 Good').className).toBe('default');
     expect(ratingButtons()).toEqual(['1 Again', '2 Hard', '3 Good', '4 Easy']);
+    expect(screen.queryByText(/Step 1 was not right/)).toBeNull();
   });
 
   it('a wrong step 2 names the best move and offers only Again', async () => {
@@ -401,6 +402,7 @@ describe('ReviewPage threat cards', () => {
     move('e2', 'e4');
     await screen.findByText('Correct');
     expect(ratingButtons()).toEqual(['1 Again']);
+    expect(screen.getByText('Step 1 was not right, so this card counts as Again.')).toBeTruthy();
   });
 
   it('submits the step 2 move', async () => {

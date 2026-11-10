@@ -302,6 +302,7 @@ export function ReviewPage() {
           </p>
           {card.kind === 'plan' && chosen && !answer.correct && <p>The plan move here is {bestSan(card)}.</p>}
           {card.solution.explanation && <p>{card.solution.explanation}</p>}
+          {card.kind === 'threat' && threatResult && !threatResult.correct && <p>Step 1 was not right, so this card counts as Again.</p>}
           {answer.check?.state === 'pending' && <p className="muted">Checking your move…</p>}
           {answer.check?.state === 'failed' && card.kind === 'plan' && <p className="muted">The engine check is not available.</p>}
           {answer.check?.state === 'done' && <p>{checkLine(answer.check.result, bestSan(card), card.kind === 'plan')}</p>}
