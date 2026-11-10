@@ -1,6 +1,6 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Chess } from 'chess.js';
-import type { CardRef, Color, GameAnalysis, MoveAnalysis } from '../../shared/types.js';
+import type { CardKind, CardRef, Color, GameAnalysis, MoveAnalysis } from '../../shared/types.js';
 import { ANALYSIS_VERSION, getAnalysis } from '../analysis/analysis-repo.js';
 import { listCardsByRef, positionKey, setRefs, setSuspended, upsertCard } from './cards-repo.js';
 import { findMates } from './mates.js';
@@ -64,7 +64,7 @@ function explanation(miss: MateMiss): string {
 }
 
 /** Keeps this game's refs of `kind` cards that are (`keepIn`) or are not in `plies`. Cards left without refs are suspended. */
-function dropRefs(db: DatabaseSync, gameId: number, kind: 'mate' | 'mistake', plies: Set<number>, keepIn: boolean): number {
+export function dropRefs(db: DatabaseSync, gameId: number, kind: CardKind, plies: Set<number>, keepIn: boolean): number {
   let suspended = 0;
   for (const card of listCardsByRef(db, gameId)) {
     if (card.kind !== kind) continue;

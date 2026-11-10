@@ -133,10 +133,10 @@ describe('priority cards', () => {
 
 describe('newQuotas', () => {
   it('splits a daily cap by the level mix', () => {
-    expect(newQuotas(1, 10)).toEqual({ mistake: 4, mate: 1, lesson: 3, plan: 1, opening: 1 });
-    expect(newQuotas(2, 10)).toEqual({ mistake: 3, mate: 1, lesson: 3, plan: 1, opening: 2 });
-    expect(newQuotas(3, 10)).toEqual({ mistake: 3, mate: 1, lesson: 2, plan: 1, opening: 3 });
-    expect(newQuotas(1, 20)).toEqual({ mistake: 7, mate: 2, lesson: 6, plan: 2, opening: 3 });
+    expect(newQuotas(1, 10)).toEqual({ mistake: 4, mate: 1, lesson: 3, plan: 1, opening: 1, threat: 0 });
+    expect(newQuotas(2, 10)).toEqual({ mistake: 3, mate: 1, lesson: 3, plan: 1, opening: 2, threat: 0 });
+    expect(newQuotas(3, 10)).toEqual({ mistake: 3, mate: 1, lesson: 2, plan: 1, opening: 3, threat: 0 });
+    expect(newQuotas(1, 20)).toEqual({ mistake: 7, mate: 2, lesson: 6, plan: 2, opening: 3, threat: 0 });
   });
 
   it('gives mate cards 10 % at every level', () => {
@@ -144,14 +144,14 @@ describe('newQuotas', () => {
   });
 
   it('keeps the sum equal to the cap, with ties going to mistake, then lesson, then opening', () => {
-    expect(newQuotas(3, 2)).toEqual({ mistake: 1, mate: 0, lesson: 0, plan: 0, opening: 1 });
+    expect(newQuotas(3, 2)).toEqual({ mistake: 1, mate: 0, lesson: 0, plan: 0, opening: 1, threat: 0 });
     for (const level of [1, 2, 3] as const) {
       for (let cap = 0; cap <= 40; cap++) {
         const q = newQuotas(level, cap);
         expect(q.mistake + q.mate + q.lesson + q.plan + q.opening).toBe(cap);
       }
     }
-    expect(newQuotas(2, 1)).toEqual({ mistake: 1, mate: 0, lesson: 0, plan: 0, opening: 0 });
+    expect(newQuotas(2, 1)).toEqual({ mistake: 1, mate: 0, lesson: 0, plan: 0, opening: 0, threat: 0 });
   });
 
   it('has shares that add up to 1 at every level', () => {

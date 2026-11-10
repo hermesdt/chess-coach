@@ -6,6 +6,7 @@ import type { EnginePool } from '../engine/pool.js';
 import type { EngineLine } from '../engine/uci.js';
 import { latestReviewUpTo } from '../ai/notes-repo.js';
 import { findMateMisses } from './mate-cards.js';
+import { threatPlies } from './threat-cards.js';
 import { listCardsByRef, positionKey, setRefs, setSolution, setSuspended, upsertCard } from './cards-repo.js';
 
 const MULTIPV = 3;
@@ -27,7 +28,7 @@ export function acceptedMoves(lines: EngineLine[], played: string): string[] {
 }
 
 /** True when the played move is one of the lines and within 5 win % of the best one. */
-function playedWithinMargin(lines: EngineLine[], played: string): boolean {
+export function playedWithinMargin(lines: EngineLine[], played: string): boolean {
   const first = lines[0];
   if (!first) return false;
   const best = winPct(first.score);
@@ -90,7 +91,9 @@ export async function buildMistakeCards(
   const result = { created: 0, updated: 0, suspended: 0 };
   // A missed mate gets a mate card, not a mistake card.
   const mateMisses = new Set(findMateMisses(analysis.moves).misses.map((m) => m.ply));
-  const mistakes = analysis.moves.filter((m) => isMistake(m) && !mateMisses.has(m.ply));
+  // A threat card replaces the mistake card at its ply.
+  const threats = threatPlies(db, analysis.gameId);
+  const mistakes = analysis.moves.filter((m) => isMistake(m) && !mateMisses.has(m.ply) && !threats.has(m.ply));
   const why = whyByPly(latestReviewUpTo(db, `game:${analysis.gameId}`, analysis.version));
 
   for (const m of mistakes) {

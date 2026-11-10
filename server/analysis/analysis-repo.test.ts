@@ -4,7 +4,7 @@ import { setSetting } from '../db/settings-repo.js';
 import type { GameAnalysis, MoveAnalysis } from '../../shared/types.js';
 import { openDb } from '../db/db.js';
 import { insertGames, listGames } from '../db/games-repo.js';
-import { ANALYSIS_VERSION, getAnalysis, markAnalysis, saveAnalysis } from './analysis-repo.js';
+import { ANALYSIS_VERSION, getAnalysis, markAnalysis, markThreatCardsBuilt, saveAnalysis } from './analysis-repo.js';
 
 let db: DatabaseSync;
 let gameId: number;
@@ -107,5 +107,18 @@ describe('analysis repo', () => {
       expect(getAnalysis(db, gameId, 2)).toEqual(withLevel2Tags());
       expect(getAnalysis(db, gameId, 1)!.moves[0]!.tags).toEqual(['hung_piece']);
     });
+  });
+});
+
+describe('threat_cards_built_at', () => {
+  const column = (): unknown => db.prepare('SELECT threat_cards_built_at AS t FROM game_analysis WHERE game_id = ?').get(gameId)!.t;
+
+  it('is set by markThreatCardsBuilt and cleared by saveAnalysis', () => {
+    saveAnalysis(db, analysis());
+    expect(column()).toBeNull();
+    markThreatCardsBuilt(db, gameId, 777);
+    expect(column()).toBe(777);
+    saveAnalysis(db, analysis());
+    expect(column()).toBeNull();
   });
 });
