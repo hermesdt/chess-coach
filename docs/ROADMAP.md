@@ -39,7 +39,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M11 | Content quality audit: every repertoire comment, lesson and guide claim checked with chess.js + Stockfish | done | spec `docs/superpowers/specs/2026-10-20-content-audit-design.md`, plan `docs/superpowers/plans/2026-10-22-m11-content-audit.md` |
 | M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | done | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12c plan `docs/superpowers/plans/2026-11-04-m12c-more-plans.md` |
 | M13 | Missed-mate cards: a review card for each mate in 1 or 2 that the owner missed in a game, built from stored analysis and proven with chess.js | done | spec `docs/superpowers/specs/2026-10-29-m13-mate-cards-design.md`, plan `docs/superpowers/plans/2026-10-29-m13-mate-cards.md` |
-| M14 | Threat cards: two-step review cards (find the opponent's threat, then your answer) from positions in own games where a threat existed and the owner's move ignored it | planned | spec `docs/superpowers/specs/2026-11-10-m14-threat-cards-design.md`, plan `docs/superpowers/plans/2026-11-10-m14-threat-cards.md` |
+| M14 | Threat cards: two-step review cards (find the opponent's threat, then your answer) from positions in own games where a threat existed and the owner's move ignored it | done | spec `docs/superpowers/specs/2026-11-10-m14-threat-cards-design.md`, plan `docs/superpowers/plans/2026-11-10-m14-threat-cards.md` |
 | M15 | Vienna Game (1.e4 e5 2.Nc3) repertoire: lines, guide, drill and plans; scope to be agreed with the owner | not started | — |
 | M16 | Longer mates: mate cards for mate in 3 (maybe 4) from own games; the owner plays the whole mate, the app plays the best defence; Stockfish finds, chess.js checks every defence | not started | — |
 
@@ -524,10 +524,49 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 - Guide "Typical mistakes" links open the position before the mistake
   (`?ply=` is the mistake ply minus 1).
 
+## M14 log
+
+- 2026-11-10 — **M14 done.** 1445 tests; typecheck and lint pass;
+  `pnpm validate:content` reports content OK (147 warnings). Migration 017 adds
+  `game_analysis.threat_cards_built_at`.
+- How it works: `findThreatCandidates` (chess.js) finds owner blunders and
+  mistakes where the opponent's best reply was a capture that was already legal
+  before the move, or a mate in 1 or 2 that already existed. `buildThreatCards`
+  confirms step 1 with Stockfish on the null-move position (within 5 win %, at
+  least 2 pawns gained in 4 plies, counted from the start) and takes step 2 from
+  the mistake-card rule. The threat card suspends the mistake card at that ply.
+  Order: mate, threat, mistake. A start-up job (`threat-backfill`) builds cards
+  once per analysis.
+- Real data (copy of the owner's database, 117 games): **46 threat cards** (2
+  mate threats), 41 mistake cards replaced. All 46 checked with chess.js: every
+  step 1 threat is legal and wins material or mates; every step 2 move is legal.
+  One game (123) hit an engine timeout once (several engines ran at the same
+  time); it stays unmarked and is retried at the next start.
+- Browser check in Chrome: step 1 right and wrong, step 2, ratings. No page
+  errors.
+- Owner rule (2026-11-10): **after a wrong answer only Again can be chosen**
+  (all card kinds; button, number keys and Enter). A sound alternative that
+  Stockfish confirms is not a failure. On a threat card a wrong step in either
+  step is a failure; the page says "Step 1 was not right, so this card counts as
+  Again." This replaces the approved "one wrong step → Hard".
+- "See the game" on mistake, mate and threat cards opens the position before
+  the owner's move (`?ply=`).
+- Execution: Tasks 1–4 by subagents with reviews; Tasks 5–7 in the main session
+  after the owner stopped subagents (token cost). The final whole-branch review
+  was a self-review.
+- Parked minor items: no test for the exact 5 win % boundary or for `mate: 3`;
+  the threat precedence test has no capture that also mates; `backfillThreatCards`
+  copies the loop of `backfillMistakeCards`; the same FEN can be analysed twice
+  per game (threat and mistake builds).
+- Flaky test seen once under full-suite load:
+  `server/sync/lichess.test.ts` "calls onBatch every 100 games and at the end".
+
 ## Next session
 
-- M1 through M13 are done. M14 (threat cards) is in design. Then M15 (Vienna
-  Game), then M16 (longer mates). Owner's order, 2026-11-10.
+- M1 through M14 are done. Next: M15 (Vienna Game), then M16 (longer mates).
+  Owner's order, 2026-11-10. M15 has no spec yet: start with brainstorming. Open
+  question for M15: the owner plays the London (1.d4) as White; is the Vienna
+  (1.e4) a second White repertoire or a replacement?
 - M16 data (2026-11-10, read-only): the owner had mate in 3 in 40 positions and
   did not play the fastest mate in 26; mate in 4: 28 and 13. The mate was lost
   completely 16 times across mate in 3 to 8.
