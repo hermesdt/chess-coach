@@ -77,6 +77,10 @@ export interface GameAnalysis {
 export interface AnalysisBadge { accuracyUser: number | null; blunders: number; mistakes: number; status: GameAnalysis['status'] }
 
 // M3: spaced-repetition cards
+/** One accepted owner move in a mate tree. `defence: null` means the move gives checkmate. */
+export interface MateStep { uci: string; san: string; defence: { uci: string; san: string } | null; next: MateNode | null }
+/** A position where the owner mates in `mateIn` moves. `accepted[0]` is the main line. */
+export interface MateNode { mateIn: number; accepted: MateStep[] }
 export type CardKind = 'opening' | 'mistake' | 'lesson' | 'plan' | 'mate' | 'threat';
 export type Rating = 'again' | 'hard' | 'good' | 'easy';
 export interface CardRef { gameId?: number; ply?: number; repertoire?: string; nodeId?: string; lessonId?: string; planId?: string; exerciseId?: string; source?: 'chat' }
@@ -86,7 +90,9 @@ export interface Card {
   /** Plan cards also carry the arrows A to D: `choices` (UCI, SAN and the reason a wrong choice fails). */
   solution: { accepted: string[]; best: string; explanation: string | null; choices?: { uci: string; san: string; why: string }[];
     /** Mate cards: the mate length and the move the owner played in the game. */
-    mateIn?: 1 | 2; played?: string;
+    mateIn?: 1 | 2 | 3 | 4; played?: string;
+    /** Mate in 3 and 4: the proven answer tree. The owner plays every own move; the app plays the stored defence. */
+    tree?: MateNode;
     /** Threat cards: step 1 asks for the best move for the opponent in the same position with the other side to move. */
     threat?: { fen: string; accepted: string[]; best: string; explanation: string } };
   refs: CardRef[]; suspended: boolean; createdAt: number;

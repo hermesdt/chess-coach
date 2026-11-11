@@ -6,13 +6,8 @@ const uci = (m: Move): string => m.from + m.to + (m.promotion ?? '');
 
 /** True when the side to move has a move that gives checkmate. */
 function hasMateInOne(chess: Chess): boolean {
-  for (const m of chess.moves({ verbose: true })) {
-    chess.move(m);
-    const mate = chess.isCheckmate();
-    chess.undo();
-    if (mate) return true;
-  }
-  return false;
+  // chess.js marks a mating move with '#' in its SAN, so no move needs to be played here.
+  return chess.moves({ verbose: true }).some((m) => m.san.endsWith('#'));
 }
 
 /** The move mates in 2: the opponent has a legal reply (no stalemate) and every reply allows a mate in 1. */
@@ -40,12 +35,7 @@ function matesInTwo(chess: Chess, move: Move): boolean {
 export function findMates(fen: string): Mates | null {
   const chess = new Chess(fen);
   const legal = chess.moves({ verbose: true });
-  const one: string[] = [];
-  for (const m of legal) {
-    chess.move(m);
-    if (chess.isCheckmate()) one.push(uci(m));
-    chess.undo();
-  }
+  const one = legal.filter((m) => m.san.endsWith('#')).map(uci);
   if (one.length > 0) return { mateIn: 1, moves: one };
   const two = legal.filter((m) => matesInTwo(chess, m)).map(uci);
   return two.length > 0 ? { mateIn: 2, moves: two } : null;
