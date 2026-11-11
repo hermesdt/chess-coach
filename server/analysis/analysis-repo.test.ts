@@ -4,7 +4,7 @@ import { setSetting } from '../db/settings-repo.js';
 import type { GameAnalysis, MoveAnalysis } from '../../shared/types.js';
 import { openDb } from '../db/db.js';
 import { insertGames, listGames } from '../db/games-repo.js';
-import { ANALYSIS_VERSION, getAnalysis, markAnalysis, markThreatCardsBuilt, saveAnalysis } from './analysis-repo.js';
+import { ANALYSIS_VERSION, getAnalysis, markAnalysis, markLongMateCardsBuilt, markThreatCardsBuilt, saveAnalysis } from './analysis-repo.js';
 
 let db: DatabaseSync;
 let gameId: number;
@@ -118,6 +118,19 @@ describe('threat_cards_built_at', () => {
     expect(column()).toBeNull();
     markThreatCardsBuilt(db, gameId, 777);
     expect(column()).toBe(777);
+    saveAnalysis(db, analysis());
+    expect(column()).toBeNull();
+  });
+});
+
+describe('long_mate_cards_built_at', () => {
+  const column = (): unknown => db.prepare('SELECT long_mate_cards_built_at AS t FROM game_analysis WHERE game_id = ?').get(gameId)!.t;
+
+  it('is set by markLongMateCardsBuilt and cleared by saveAnalysis', () => {
+    saveAnalysis(db, analysis());
+    expect(column()).toBeNull();
+    markLongMateCardsBuilt(db, gameId, 888);
+    expect(column()).toBe(888);
     saveAnalysis(db, analysis());
     expect(column()).toBeNull();
   });

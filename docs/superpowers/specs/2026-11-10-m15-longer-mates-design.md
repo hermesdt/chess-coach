@@ -86,8 +86,11 @@ Expected: about 26 mate in 3 and 13 mate in 4. The proof removes some.
   (`skipped` count).
 - The tree stores, per owner node: `accepted: { uci, san, defence: { uci, san } | null, next: Node | null }[]`.
   `defence: null` and `next: null` mean the move is checkmate.
-- The stored engine line is only a hint. If chess.js does not prove a mate in exactly `n` (the stored distance), the
-  position is skipped.
+- The stored engine line is only a hint. **Ruling (2026-11-11, during the build):** the card uses the *proven* length
+  when it is 3 or 4, even when it is shorter than the stored `n`. Reason: Stockfish at depth 30 reported a mate in 4
+  for `8/8/7k/8/8/8/R7/1R4K1 w`; chess.js proved a mate in 3 (1.Rg2), and Stockfish found it at depth 31. A move is
+  a miss when the stored engine says it was not fastest **and** it is not one of the proven fastest moves. No proof
+  within the budget → skipped.
 
 ### Card
 

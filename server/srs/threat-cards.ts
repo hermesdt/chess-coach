@@ -7,7 +7,7 @@ import type { EnginePool } from '../engine/pool.js';
 import type { EngineLine } from '../engine/uci.js';
 import { dropRefs, findMateMisses } from './mate-cards.js';
 import { acceptedMoves, playedWithinMargin } from './mistake-cards.js';
-import { positionKey, upsertCard } from './cards-repo.js';
+import { longMatePlies, positionKey, upsertCard } from './cards-repo.js';
 import { confirmThreat, findThreatCandidates, threatText, type ThreatCandidate } from './threats.js';
 
 const MULTIPV = 3;
@@ -41,9 +41,10 @@ export async function buildThreatCards(
   opts: { nodes: number },
 ): Promise<{ created: number; updated: number; suspended: number; skipped: number }> {
   const result = { created: 0, updated: 0, suspended: 0, skipped: 0 };
-  const mateMisses = new Set(findMateMisses(analysis.moves).misses.map((m) => m.ply));
+  // Mate cards of any length win over threat cards.
+  const mates = new Set([...findMateMisses(analysis.moves).misses.map((m) => m.ply), ...longMatePlies(db, analysis.gameId)]);
   const built = new Set<number>();
-  for (const c of findThreatCandidates(analysis.moves, mateMisses)) {
+  for (const c of findThreatCandidates(analysis.moves, mates)) {
     const step1 = await stepOne(c, pool, opts.nodes);
     if (!step1) {
       result.skipped += 1;

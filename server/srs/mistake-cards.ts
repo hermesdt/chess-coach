@@ -6,7 +6,7 @@ import type { EnginePool } from '../engine/pool.js';
 import type { EngineLine } from '../engine/uci.js';
 import { latestReviewUpTo } from '../ai/notes-repo.js';
 import { findMateMisses } from './mate-cards.js';
-import { listCardsByRef, positionKey, setRefs, setSolution, setSuspended, threatPlies, upsertCard } from './cards-repo.js';
+import { listCardsByRef, longMatePlies, positionKey, setRefs, setSolution, setSuspended, threatPlies, upsertCard } from './cards-repo.js';
 
 const MULTIPV = 3;
 const ACCEPT_WITHIN = 5;
@@ -92,7 +92,8 @@ export async function buildMistakeCards(
   const mateMisses = new Set(findMateMisses(analysis.moves).misses.map((m) => m.ply));
   // A threat card replaces the mistake card at its ply.
   const threats = threatPlies(db, analysis.gameId);
-  const mistakes = analysis.moves.filter((m) => isMistake(m) && !mateMisses.has(m.ply) && !threats.has(m.ply));
+  const longMates = longMatePlies(db, analysis.gameId);
+  const mistakes = analysis.moves.filter((m) => isMistake(m) && !mateMisses.has(m.ply) && !threats.has(m.ply) && !longMates.has(m.ply));
   const why = whyByPly(latestReviewUpTo(db, `game:${analysis.gameId}`, analysis.version));
 
   for (const m of mistakes) {

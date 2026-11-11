@@ -18,7 +18,7 @@ export function saveAnalysis(db: DatabaseSync, a: GameAnalysis): void {
          version = excluded.version, status = excluded.status, error = excluded.error,
          accuracy_user = excluded.accuracy_user, accuracy_opp = excluded.accuracy_opp,
          counts_json = excluded.counts_json, key_moments_json = excluded.key_moments_json,
-         analysed_at = excluded.analysed_at, user_tags_json = excluded.user_tags_json, cards_built_at = NULL, threat_cards_built_at = NULL`,
+         analysed_at = excluded.analysed_at, user_tags_json = excluded.user_tags_json, cards_built_at = NULL, threat_cards_built_at = NULL, long_mate_cards_built_at = NULL`,
     ).run(
       a.gameId, a.version, a.status, a.error, a.accuracyUser, a.accuracyOpp,
       JSON.stringify(a.counts), JSON.stringify(a.keyMoments), a.analysedAt, JSON.stringify(tagCounts(a.moves)),
@@ -89,4 +89,8 @@ export function markCardsBuilt(db: DatabaseSync, gameId: number, at: number): vo
 /** Records that the threat cards of an analysis are built. */
 export function markThreatCardsBuilt(db: DatabaseSync, gameId: number, at: number): void {
   db.prepare('UPDATE game_analysis SET threat_cards_built_at = ? WHERE game_id = ?').run(at, gameId);
+}
+
+export function markLongMateCardsBuilt(db: DatabaseSync, gameId: number, at: number): void {
+  db.prepare('UPDATE game_analysis SET long_mate_cards_built_at = ? WHERE game_id = ?').run(at, gameId);
 }

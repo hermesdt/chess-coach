@@ -161,12 +161,25 @@ export function restoreFlaggedCard(db: DatabaseSync, flagId: number): boolean {
   });
 }
 
-/** Plies of this game that have an active threat card. */
-export function threatPlies(db: DatabaseSync, gameId: number): Set<number> {
+/** Plies of this game that have an active card matching `match`. */
+function activePlies(db: DatabaseSync, gameId: number, match: (card: Card) => boolean): Set<number> {
   const plies = new Set<number>();
   for (const card of listCardsByRef(db, gameId)) {
-    if (card.kind !== 'threat' || card.suspended) continue;
+    if (card.suspended || !match(card)) continue;
     for (const r of card.refs) if (r.gameId === gameId && r.source !== 'chat' && r.ply !== undefined) plies.add(r.ply);
   }
   return plies;
+}
+
+/** Plies of this game that have an active threat card. */
+export function threatPlies(db: DatabaseSync, gameId: number): Set<number> {
+  return activePlies(db, gameId, (c) => c.kind === 'threat');
+}
+
+/** Mate in 3 or 4: the long mate cards (M15). Mate in 1 and 2 belong to the M13 builder. */
+export const isLongMate = (card: Card): boolean => card.kind === 'mate' && (card.solution.mateIn ?? 0) >= 3;
+
+/** Plies of this game that have an active long mate card. */
+export function longMatePlies(db: DatabaseSync, gameId: number): Set<number> {
+  return activePlies(db, gameId, isLongMate);
 }

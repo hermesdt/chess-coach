@@ -1,8 +1,8 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { Chess } from 'chess.js';
-import type { CardKind, CardRef, Color, GameAnalysis, MoveAnalysis } from '../../shared/types.js';
+import type { Card, CardKind, CardRef, Color, GameAnalysis, MoveAnalysis } from '../../shared/types.js';
 import { ANALYSIS_VERSION, getAnalysis } from '../analysis/analysis-repo.js';
-import { listCardsByRef, positionKey, setRefs, setSuspended, upsertCard } from './cards-repo.js';
+import { isLongMate, listCardsByRef, positionKey, setRefs, setSuspended, upsertCard } from './cards-repo.js';
 import { findMates } from './mates.js';
 
 export interface MateMiss {
@@ -64,10 +64,12 @@ function explanation(miss: MateMiss): string {
 }
 
 /** Keeps this game's refs of `kind` cards that are (`keepIn`) or are not in `plies`. Cards left without refs are suspended. */
-export function dropRefs(db: DatabaseSync, gameId: number, kind: CardKind, plies: Set<number>, keepIn: boolean): number {
+export function dropRefs(
+  db: DatabaseSync, gameId: number, kind: CardKind, plies: Set<number>, keepIn: boolean, only: (card: Card) => boolean = () => true,
+): number {
   let suspended = 0;
   for (const card of listCardsByRef(db, gameId)) {
-    if (card.kind !== kind) continue;
+    if (card.kind !== kind || !only(card)) continue;
     const refs = card.refs.filter((r: CardRef) => r.gameId !== gameId || r.source === 'chat' || plies.has(r.ply ?? -1) === keepIn);
     if (refs.length === card.refs.length) continue;
     setRefs(db, card.id, refs);
@@ -101,7 +103,8 @@ export function buildMateCards(
     result[existed ? 'updated' : 'created'] += 1;
   }
   const plies = new Set(misses.map((m) => m.ply));
-  result.suspended += dropRefs(db, analysis.gameId, 'mate', plies, true);
+  // Long mates (3 and 4) have their own builder; this one only owns mate in 1 and 2.
+  result.suspended += dropRefs(db, analysis.gameId, 'mate', plies, true, (c) => !isLongMate(c));
   result.suspended += dropRefs(db, analysis.gameId, 'mistake', plies, false);
   return result;
 }
