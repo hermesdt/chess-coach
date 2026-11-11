@@ -6,11 +6,12 @@ import { getGameRow } from '../db/games-repo.js';
 import type { EnginePool } from '../engine/pool.js';
 import { runJob } from '../jobs.js';
 import { currentLevel } from '../level.js';
+import { buildLongMateCards } from '../srs/long-mate-cards.js';
 import { buildMateCards } from '../srs/mate-cards.js';
 import { buildMistakeCards } from '../srs/mistake-cards.js';
 import { buildThreatCards } from '../srs/threat-cards.js';
 import { analyseGame } from './analyse-game.js';
-import { ANALYSIS_VERSION, markAnalysis, markCardsBuilt, markThreatCardsBuilt, saveAnalysis } from './analysis-repo.js';
+import { ANALYSIS_VERSION, markAnalysis, markCardsBuilt, markLongMateCardsBuilt, markThreatCardsBuilt, saveAnalysis } from './analysis-repo.js';
 
 export interface QueueDeps { pool: Pick<EnginePool, 'analyse'>; nodes?: number }
 
@@ -97,6 +98,14 @@ async function analyseOne(db: DatabaseSync, id: number, deps: QueueDeps): Promis
   } catch (e) {
     console.error(`Mate card building failed for game ${id}:`, e);
     note += ' (mate cards: failed)';
+  }
+  // Long mates (3 and 4) next: they take the threat and mistake cards of the same plies.
+  try {
+    await buildLongMateCards(db, done, deps.pool, { nodes });
+    markLongMateCardsBuilt(db, id, Date.now());
+  } catch (e) {
+    console.error(`Long mate card building failed for game ${id}:`, e);
+    note += ' (long mate cards: failed)';
   }
   // Threat cards next: they take the mistake cards of the same plies.
   try {

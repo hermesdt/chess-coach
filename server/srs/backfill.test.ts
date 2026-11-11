@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { GameAnalysis, MoveAnalysis } from '../../shared/types.js';
 import { ANALYSIS_VERSION, saveAnalysis } from '../analysis/analysis-repo.js';
+import { readFileSync } from 'node:fs';
 import { openDb } from '../db/db.js';
 import type { EngineLine } from '../engine/uci.js';
 import { waitForJob } from '../jobs.js';
-import { backfillMistakeCards, backfillThreatCards } from './backfill.js';
+import { backfillLongMateCards, backfillMistakeCards, backfillThreatCards } from './backfill.js';
 import { listCardsByKind } from './cards-repo.js';
 
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -118,6 +119,50 @@ describe('backfillThreatCards', () => {
     const { jobId } = backfillThreatCards(db, { analyse: async () => { throw new Error('boom'); } }, { nodes: 1 });
     await waitForJob(db, jobId as number);
     expect(threatBuilt(db)).toBeNull();
+    log.mockRestore();
+  });
+});
+
+describe('backfillLongMateCards', () => {
+  const L3 = '8/7k/8/8/8/8/R7/1R4K1 w - - 0 1';
+  const recorded = JSON.parse(readFileSync(new URL('./__fixtures__/long-mates-engine.json', import.meta.url), 'utf8')) as Record<string, EngineLine[]>;
+  const recordedPool = {
+    analyse: async (fen: string): Promise<EngineLine[]> => {
+      const l = recorded[fen];
+      if (!l) throw new Error(`no recording for ${fen}`);
+      return l;
+    },
+  };
+  const longAnalysis: GameAnalysis = {
+    ...analysis,
+    moves: [{ ...blunder, ply: 2, san: 'Kf2', uci: 'g1f2', fenBefore: L3, evalBefore: { cp: null, mate: 3 }, evalAfter: { cp: -300, mate: null }, pvSan: ['Rb6'] }],
+  };
+  function setupLong() {
+    const db = openDb(':memory:');
+    db.exec(`INSERT INTO games (id, source, source_id, played_at, time_class, rated, white, black, pgn, ply_count, imported_at)
+      VALUES (1, 'chesscom', 'a', 1, 'blitz', 1, 'Me', 'Opp', '*', 2, 1)`);
+    saveAnalysis(db, longAnalysis);
+    return db;
+  }
+  const longBuilt = (db: ReturnType<typeof openDb>) =>
+    (db.prepare('SELECT long_mate_cards_built_at AS at FROM game_analysis WHERE game_id = 1').get() as { at: number | null }).at;
+
+  it('builds once', async () => {
+    const db = setupLong();
+    const { jobId } = backfillLongMateCards(db, recordedPool, { nodes: 1 });
+    expect(jobId).not.toBeNull();
+    await waitForJob(db, jobId as number);
+    expect(listCardsByKind(db, 'mate').filter((c) => c.solution.mateIn === 3)).toHaveLength(1);
+    expect(longBuilt(db)).not.toBeNull();
+    expect(backfillLongMateCards(db, recordedPool, { nodes: 1 })).toEqual({ jobId: null });
+  });
+
+  it('leaves the game unmarked when the build fails', async () => {
+    const db = setupLong();
+    const log = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const { jobId } = backfillLongMateCards(db, { analyse: async () => { throw new Error('boom'); } }, { nodes: 1 });
+    await waitForJob(db, jobId as number);
+    expect(longBuilt(db)).toBeNull();
     log.mockRestore();
   });
 });
