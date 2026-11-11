@@ -18,7 +18,8 @@ export function saveAnalysis(db: DatabaseSync, a: GameAnalysis): void {
          version = excluded.version, status = excluded.status, error = excluded.error,
          accuracy_user = excluded.accuracy_user, accuracy_opp = excluded.accuracy_opp,
          counts_json = excluded.counts_json, key_moments_json = excluded.key_moments_json,
-         analysed_at = excluded.analysed_at, user_tags_json = excluded.user_tags_json, cards_built_at = NULL, threat_cards_built_at = NULL`,
+         analysed_at = excluded.analysed_at, user_tags_json = excluded.user_tags_json, cards_built_at = NULL,
+         threat_cards_built_at = NULL, mate_cards_version = NULL`,
     ).run(
       a.gameId, a.version, a.status, a.error, a.accuracyUser, a.accuracyOpp,
       JSON.stringify(a.counts), JSON.stringify(a.keyMoments), a.analysedAt, JSON.stringify(tagCounts(a.moves)),
