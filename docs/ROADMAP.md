@@ -568,6 +568,12 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 
 - M1 through M14 are done. Next: M15 (longer mates), then M16a–d (1.e4
   repertoire). Owner's order, 2026-11-10.
+- **M15 in progress (paused 2026-11-11, owner out of tokens).** Branch
+  `m15-longer-mates` in worktree `../chess-m15`. Plan
+  `docs/superpowers/plans/2026-11-10-m15-longer-mates.md`: Tasks 1–3 done and
+  committed (proof, cards, queue + start-up job; 1475 tests green). Next: Task 4
+  (review board `MateLine`), then Task 5 (real data, browser, backup, merge).
+  Ruling made during the build: cards use the proven mate length (see the spec).
 - 1.e4 decisions (owner, 2026-11-10): a second White repertoire next to the
   London (not a replacement); reason: "saw it on a video and seems powerful";
   full repertoire as deep as the London (about 300 positions each part), split

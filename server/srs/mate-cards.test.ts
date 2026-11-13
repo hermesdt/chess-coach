@@ -181,7 +181,42 @@ describe('syncMateCards', () => {
     const r = syncMateCards(db);
     expect(r).toMatchObject({ games: 1, created: 1 });
     expect(listCardsByKind(db, 'mate')).toHaveLength(1);
-    expect(syncMateCards(db)).toMatchObject({ games: 1, created: 0 });
+    expect(syncMateCards(db)).toMatchObject({ games: 0, created: 0 });
+  });
+
+  it('rebuilds cards after an analysis is replaced', () => {
+    saveAnalysis(db, analysis(1, [move({})]));
+    expect(syncMateCards(db).games).toBe(1);
+    saveAnalysis(db, analysis(1, [move({ san: 'Ra8#', uci: 'a1a8' })]));
+    expect(syncMateCards(db).games).toBe(1);
+    expect(listCardsByKind(db, 'mate')[0]!.suspended).toBe(true);
+    expect(syncMateCards(db).games).toBe(0);
+  });
+
+  it('rebuilds cards when their generator version is outdated', () => {
+    saveAnalysis(db, analysis(1, [move({})]));
+    expect(syncMateCards(db).games).toBe(1);
+    db.prepare('UPDATE game_analysis SET mate_cards_version = 0 WHERE game_id = 1').run();
+    expect(syncMateCards(db).games).toBe(1);
+    expect(syncMateCards(db).games).toBe(0);
+  });
+
+  it('does not rebuild a successfully built new analysis on startup', () => {
+    const a = analysis(1, [move({})]);
+    saveAnalysis(db, a);
+    buildMateCards(db, a);
+    expect(syncMateCards(db).games).toBe(0);
+  });
+
+  it('retries a build that failed before recording completion', () => {
+    saveAnalysis(db, analysis(1, [move({})]));
+    db.exec(`CREATE TRIGGER fail_mate_marker BEFORE UPDATE OF mate_cards_version ON game_analysis
+      WHEN NEW.mate_cards_version IS NOT NULL BEGIN SELECT RAISE(ABORT, 'test failure'); END`);
+    expect(() => syncMateCards(db)).toThrow('test failure');
+    expect(db.prepare('SELECT mate_cards_version FROM game_analysis WHERE game_id = 1').get()?.mate_cards_version).toBeNull();
+    db.exec('DROP TRIGGER fail_mate_marker');
+    expect(syncMateCards(db).games).toBe(1);
+    expect(syncMateCards(db).games).toBe(0);
   });
 });
 

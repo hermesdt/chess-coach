@@ -6,9 +6,8 @@ import { createApp } from './app.js';
 import { openDb } from './db/db.js';
 import { linkAllDuplicates } from './games/duplicates.js';
 import { backupDb } from './db/backup.js';
-import { backfillLongMateCards, backfillMistakeCards, backfillThreatCards } from './srs/backfill.js';
-import { requeuePending } from './analysis/queue.js';
-import { closeEnginePool, lazyEnginePool } from './engine/pool.js';
+import { closeEnginePool } from './engine/pool.js';
+import { startBackgroundJobs } from './startup.js';
 import { closeLiveEngine } from './engine/live.js';
 import { markInterruptedChats } from './chat/chat-repo.js';
 import { recoverInterruptedJobs } from './jobs.js';
@@ -56,10 +55,7 @@ const server = serve(
     }
     recoverInterruptedJobs(db, Date.now());
     markInterruptedChats(db);
-    requeuePending(db, { pool: lazyEnginePool });
-    backfillMistakeCards(db, lazyEnginePool);
-    backfillThreatCards(db, lazyEnginePool);
-    backfillLongMateCards(db, lazyEnginePool);
+    startBackgroundJobs(db);
     let repertoires: Repertoire[] = [];
     try {
       repertoires = loadAllRepertoires();

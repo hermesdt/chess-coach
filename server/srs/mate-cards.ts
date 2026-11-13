@@ -5,6 +5,9 @@ import { ANALYSIS_VERSION, getAnalysis } from '../analysis/analysis-repo.js';
 import { isLongMate, listCardsByRef, positionKey, setRefs, setSuspended, upsertCard } from './cards-repo.js';
 import { findMates } from './mates.js';
 
+/** Bump when the mate-card generation logic changes and existing analyses need rebuilding. */
+export const MATE_CARDS_VERSION = 1;
+
 export interface MateMiss {
   ply: number; fen: string; color: Color; mateIn: 1 | 2;
   /** Every UCI move that mates in `mateIn`. */
@@ -106,13 +109,16 @@ export function buildMateCards(
   // Long mates (3 and 4) have their own builder; this one only owns mate in 1 and 2.
   result.suspended += dropRefs(db, analysis.gameId, 'mate', plies, true, (c) => !isLongMate(c));
   result.suspended += dropRefs(db, analysis.gameId, 'mistake', plies, false);
+  db.prepare("UPDATE game_analysis SET mate_cards_version = ? WHERE game_id = ? AND version = ? AND status = 'done'")
+    .run(MATE_CARDS_VERSION, analysis.gameId, analysis.version);
   return result;
 }
 
-/** Builds the mate cards of every finished analysis at the current version. Safe to run again. */
+/** Builds mate cards for finished analyses not yet processed by the current generator. */
 export function syncMateCards(db: DatabaseSync): { games: number; created: number; skipped: number } {
-  const ids = db.prepare("SELECT game_id FROM game_analysis WHERE status = 'done' AND version = ? ORDER BY game_id")
-    .all(ANALYSIS_VERSION).map((r) => r.game_id as number);
+  const ids = db.prepare(`SELECT game_id FROM game_analysis
+    WHERE status = 'done' AND version = ? AND COALESCE(mate_cards_version, 0) != ? ORDER BY game_id`)
+    .all(ANALYSIS_VERSION, MATE_CARDS_VERSION).map((r) => r.game_id as number);
   const total = { games: 0, created: 0, skipped: 0 };
   for (const id of ids) {
     const analysis = getAnalysis(db, id);
