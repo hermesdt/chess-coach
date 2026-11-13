@@ -5,6 +5,7 @@ import { api } from '../api';
 import { DrillBoard, type DrillArrow } from '../components/DrillBoard';
 import { PlanChoices } from '../components/plan/PlanChoices';
 import { ThreatStep } from '../components/ThreatStep';
+import { MateLine } from '../components/MateLine';
 import { bestSan, checkAnswer, threatRating } from '../lib/drill';
 import { REVIEW_FINISHED } from '../lib/events';
 import { partForNode, planHref } from '../lib/guide-links';
@@ -243,6 +244,10 @@ export function ReviewPage() {
       <p>{card.prompt}</p>
       {inThreatStep ? (
         <ThreatStep key={card.id} card={card} onDone={setThreatResult} />
+      ) : card.kind === 'mate' && card.solution.tree ? (
+        <MateLine key={`${card.id}-${index}`} card={card} onDone={({ firstUci, correct }) => {
+          setAnswer({ cardId: card.id, uci: firstUci, correct, rating: correct ? 'good' : 'again' });
+        }} />
       ) : (
         <>
           {card.kind === 'threat' && <p>Step 2 of 2. Now find your answer.</p>}
@@ -281,7 +286,7 @@ export function ReviewPage() {
       )}
       {answer && (
         <>
-          <p className={`feedback ${answer.correct ? 'correct' : 'wrong'}`}>
+          {!(card.kind === 'mate' && card.solution.tree) && <p className={`feedback ${answer.correct ? 'correct' : 'wrong'}`}>
             {card.kind === 'mate'
               ? answer.correct
                 ? 'Correct. This is the fastest mate.'
@@ -299,7 +304,7 @@ export function ReviewPage() {
                 : answer.check
                   ? `Your ${card.repertoireName ?? 'repertoire'} move here is ${bestSan(card)}.`
                   : `Not quite — the best move was ${bestSan(card)}`}
-          </p>
+          </p>}
           {card.kind === 'plan' && chosen && !answer.correct && <p>The plan move here is {bestSan(card)}.</p>}
           {card.solution.explanation && <p>{card.solution.explanation}</p>}
           {card.kind === 'threat' && threatResult && !threatResult.correct && <p>Step 1 was not right, so this card counts as Again.</p>}

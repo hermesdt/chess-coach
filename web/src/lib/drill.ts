@@ -1,5 +1,11 @@
 import { Chess } from 'chess.js';
-import type { Card, Rating } from '../../../shared/types';
+import type { Card, MateNode, Rating } from '../../../shared/types';
+
+/** SAN line from the proven tree, including each stored longest defence. */
+export function mainLine(node: MateNode): string[] {
+  const step = node.accepted[0]!;
+  return [step.san, ...(step.defence ? [step.defence.san] : []), ...(step.next ? mainLine(step.next) : [])];
+}
 
 export function checkAnswer(card: Card, uci: string): { correct: boolean; defaultRating: Rating } {
   const correct = card.solution.accepted.includes(uci.toLowerCase());
