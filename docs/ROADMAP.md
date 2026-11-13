@@ -41,7 +41,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M13 | Missed-mate cards: a review card for each mate in 1 or 2 that the owner missed in a game, built from stored analysis and proven with chess.js | done | spec `docs/superpowers/specs/2026-10-29-m13-mate-cards-design.md`, plan `docs/superpowers/plans/2026-10-29-m13-mate-cards.md` |
 | M14 | Threat cards: two-step review cards (find the opponent's threat, then your answer) from positions in own games where a threat existed and the owner's move ignored it | done | spec `docs/superpowers/specs/2026-11-10-m14-threat-cards-design.md`, plan `docs/superpowers/plans/2026-11-10-m14-threat-cards.md` |
 | M15 | Longer mates: mate cards for mate in 3 and 4 from own games; the owner plays the whole mate, the app plays the longest defence; Stockfish proposes, chess.js proves | done | spec `docs/superpowers/specs/2026-11-10-m15-longer-mates-design.md`, plan `docs/superpowers/plans/2026-11-10-m15-longer-mates.md` |
-| M16a | 1.e4 repertoire, part 1: Vienna Gambit vs 1...e5 (2.Nc3, f4), plus 2...Nc6 and 2...Bc5; lines, guide, drill, plans | not started | — |
+| M16a | 1.e4 repertoire, part 1: Vienna Gambit vs 1...e5 (2.Nc3, f4), plus 2...Nc6 and 2...Bc5; lines, guide, drill, plans | in progress | plan on branch `m16a-vienna`: `docs/superpowers/plans/2026-11-13-m16a-vienna.md` |
 | M16b | 1.e4 repertoire, part 2: Grand Prix Attack vs the Sicilian (2.Nc3, f4) | not started | — |
 | M16c | 1.e4 repertoire, part 3: Advance Variation vs the French and the Caro-Kann | not started | — |
 | M16d | 1.e4 repertoire, part 4: Scandinavian and the rest (1...Nf6, 1...d6/g6, 1...Nc6), main lines kept simple | not started | — |
@@ -565,6 +565,16 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   `server/sync/lichess.test.ts` "calls onBatch every 100 games and at the end".
 
 ## Next session
+
+- **M16a in progress (2026-11-13).** Owner said proceed with the Vienna and
+  delegated remaining design choices. Branch `m16a-vienna`, native managed
+  worktree `/Users/alvarodurantovar/.codex/worktrees/a45d/chess`.
+  Task 1 complete (`37d6d58`): shared White opening-card prompts/answers and
+  preserved FSRS history, Vienna tab placement. 1488 tests, typecheck and lint
+  pass. Design and implementation plan live on the feature branch.
+  Next: Task 2 (engine-checked Vienna tree), Task 3 (guide and two plans),
+  Task 4 (full verification, backup, merge and push). No Vienna content has
+  shipped; main and the live database are otherwise unchanged.
 
 - M1 through M15 are done. Next: M16a–d (1.e4
   repertoire). Owner's order, 2026-11-10.
