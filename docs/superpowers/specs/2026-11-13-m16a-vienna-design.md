@@ -21,9 +21,10 @@ would broaden the milestone unnecessarily: both White repertoires are active.
 ## Content
 
 - ID `vienna`, name `Vienna Game`, White; about 300 move nodes, levels 1-3.
-- Start with e4 e5 Nc3. Against Nf6, build around f4; cover the central d5
-  counterstrike, acceptance and common retreats. Against Nc6 and Bc5, choose
-  sound development and only use f4 where engine validation supports it.
+- Start with e4 e5 Nc3. Against Nf6 and Nc6, build around f4; cover the central
+  d5 counterstrike, acceptance and common retreats. Against Bc5, use Bc4.
+  These initial recommendations lose at most 2.9 win percentage points in the
+  initial million-node probes; each later recommendation still needs validation.
 - Include secondary second moves such as d6, Bb4 and c6. Do not fabricate
   rare branches just to reach a node count. Depth grows behind level gates.
 - One White recommendation at each repertoire position; multiple opponent
@@ -31,8 +32,9 @@ would broaden the milestone unnecessarily: both White repertoires are active.
 - Guide: why, routes, piece jobs, deviations, middlegame ideas and concrete
   mistakes. Two validated plan cards, each with three exercises, tied to
   actual tree positions. No AI-generated chess facts.
-- Sources for opening identity: Lichess Vienna Game and Vienna Gambit opening
-  pages. Move choices and continuations must pass chess.js and Stockfish;
+- Sources for opening identity: [Lichess Vienna Game](https://lichess.org/opening/Vienna_Game)
+  and [Vienna Gambit](https://lichess.org/opening/Vienna_Game_Vienna_Gambit).
+  Move choices and continuations must pass chess.js and Stockfish;
   explanatory prose is original, not copied from sources.
 
 ## Integration

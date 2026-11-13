@@ -41,7 +41,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M13 | Missed-mate cards: a review card for each mate in 1 or 2 that the owner missed in a game, built from stored analysis and proven with chess.js | done | spec `docs/superpowers/specs/2026-10-29-m13-mate-cards-design.md`, plan `docs/superpowers/plans/2026-10-29-m13-mate-cards.md` |
 | M14 | Threat cards: two-step review cards (find the opponent's threat, then your answer) from positions in own games where a threat existed and the owner's move ignored it | done | spec `docs/superpowers/specs/2026-11-10-m14-threat-cards-design.md`, plan `docs/superpowers/plans/2026-11-10-m14-threat-cards.md` |
 | M15 | Longer mates: mate cards for mate in 3 and 4 from own games; the owner plays the whole mate, the app plays the longest defence; Stockfish proposes, chess.js proves | done | spec `docs/superpowers/specs/2026-11-10-m15-longer-mates-design.md`, plan `docs/superpowers/plans/2026-11-10-m15-longer-mates.md` |
-| M16a | 1.e4 repertoire, part 1: Vienna Gambit vs 1...e5 (2.Nc3, f4), plus 2...Nc6 and 2...Bc5; lines, guide, drill, plans | not started | — |
+| M16a | 1.e4 repertoire, part 1: Vienna Gambit vs 1...e5 (2.Nc3, f4), plus 2...Nc6 and 2...Bc5; lines, guide, drill, plans | in progress | `docs/superpowers/plans/2026-11-13-m16a-vienna.md` |
 | M16b | 1.e4 repertoire, part 2: Grand Prix Attack vs the Sicilian (2.Nc3, f4) | not started | — |
 | M16c | 1.e4 repertoire, part 3: Advance Variation vs the French and the Caro-Kann | not started | — |
 | M16d | 1.e4 repertoire, part 4: Scandinavian and the rest (1...Nf6, 1...d6/g6, 1...Nc6), main lines kept simple | not started | — |
@@ -565,6 +565,18 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   `server/sync/lichess.test.ts` "calls onBatch every 100 games and at the end".
 
 ## Next session
+
+- **M16a in progress (2026-11-13).** Owner said proceed with the Vienna and
+  delegated remaining design choices. Branch `m16a-vienna`, native managed
+  worktree `/Users/alvarodurantovar/.codex/worktrees/a45d/chess`.
+  Design and plan: `docs/superpowers/{specs,plans}/2026-11-13-m16a-vienna*.md`
+  on that branch. Task 1 complete, commit `37d6d58`: shared White opening
+  cards name all repertoires and preserve ID/FSRS; Vienna tab order and label.
+  1488 tests, typecheck and lint pass. Next: Task 2, engine-checked tree with
+  250-350 move nodes, then guide and two plans. No content published yet.
+  Initial million-node probes: f4 vs Nf6 loses 2.8 win %, f4 vs Nc6 2.9,
+  Bc4 vs Bc5 2.2. These are within existing validator tolerance, not claims
+  that they are engine-best. All continuations still need checking.
 
 - M1 through M15 are done. Next: M16a–d (1.e4
   repertoire). Owner's order, 2026-11-10.
