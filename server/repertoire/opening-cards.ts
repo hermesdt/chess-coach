@@ -53,6 +53,18 @@ function collectDrafts(reps: Repertoire[], level: number): Map<string, Draft> {
       if (item) add(rep, item.fen, item.child, item.lastMove);
     }
   }
+  // Shared positions keep one scheduled card, but the prompt must name every repertoire it accepts.
+  for (const draft of drafts.values()) {
+    const owners = reps.filter((rep) => draft.refs.some((ref) => ref.repertoire === rep.id));
+    if (owners.length < 2) continue;
+    draft.prompt = `${owners.map((rep) => rep.name).join(' / ')}: choose a repertoire move.`;
+    const explanations = owners.flatMap((rep) => draft.refs
+      .filter((ref) => ref.repertoire === rep.id)
+      .map((ref) => rep.byId.get(ref.nodeId ?? '')?.comment)
+      .filter((comment): comment is string => !!comment)
+      .map((comment) => `${rep.name}: ${comment}`));
+    draft.solution.explanation = [...new Set(explanations)].join('\n\n') || null;
+  }
   return drafts;
 }
 

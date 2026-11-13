@@ -19,6 +19,10 @@ describe('formatLeak', () => {
 });
 
 describe('tabRank', () => {
+  it('puts Vienna beside London and before the Black repertoires', () => {
+    const ids = ['slav', 'vienna', 'mystery', 'caro-kann', 'london'];
+    expect([...ids].sort((a, b) => tabRank(a) - tabRank(b))).toEqual(['london', 'vienna', 'caro-kann', 'slav', 'mystery']);
+  });
   it('puts unknown ids last', () => {
     const ids = ['mystery', 'slav', 'london', 'caro-kann'];
     expect([...ids].sort((a, b) => tabRank(a) - tabRank(b))).toEqual(['london', 'caro-kann', 'slav', 'mystery']);

@@ -148,6 +148,43 @@ describe('session ordering', () => {
 });
 
 describe('card order across repertoires', () => {
+  const london = () => loadRepertoire({ id: 'london', name: 'London System', color: 'white', moves: [{ san: 'd4', comment: 'Take the centre with d4.' }] });
+  const vienna = () => loadRepertoire({ id: 'vienna', name: 'Vienna Game', color: 'white', moves: [{ san: 'e4', comment: 'Take the centre with e4.' }] });
+
+  it('names both White repertoires when the initial card accepts either opening', () => {
+    syncOpeningCards(db, [london(), vienna()], 1);
+    const [row] = openingCards();
+    expect(openingCards()).toHaveLength(1);
+    expect(row!.prompt).toBe('London System / Vienna Game: choose a repertoire move.');
+    const solution = JSON.parse(row!.solution_json as string);
+    expect(solution.accepted).toEqual(['d2d4', 'e2e4']);
+    expect(solution.explanation).toBe('London System: Take the centre with d4.\n\nVienna Game: Take the centre with e4.');
+  });
+
+  it('preserves the shared card ID and scheduling when adding and removing Vienna', () => {
+    syncOpeningCards(db, [london()], 1);
+    const id = openingCards()[0]!.id;
+    db.prepare("INSERT INTO card_state (card_id, fsrs_json, due, last_review) VALUES (?, ?, ?, ?)")
+      .run(id as number, '{"reps":5}', NOW, NOW - 1000);
+    const state = db.prepare('SELECT * FROM card_state WHERE card_id = ?').get(id as number);
+    syncOpeningCards(db, [london(), vienna()], 1);
+    expect(openingCards()[0]!.id).toBe(id);
+    expect(db.prepare('SELECT * FROM card_state WHERE card_id = ?').get(id as number)).toEqual(state);
+    syncOpeningCards(db, [london()], 1);
+    expect(openingCards()[0]!.id).toBe(id);
+    expect(openingCards()[0]!.prompt).toBe('London System: your move.');
+    expect(JSON.parse(openingCards()[0]!.solution_json as string).accepted).toEqual(['d2d4']);
+    expect(db.prepare('SELECT * FROM card_state WHERE card_id = ?').get(id as number)).toEqual(state);
+  });
+
+  it('lists the same recommended move once when repertoires share it', () => {
+    const other = loadRepertoire({ id: 'other', name: 'Other', color: 'white', moves: [{ san: 'd4', comment: 'Claim central space.' }] });
+    syncOpeningCards(db, [london(), other], 1);
+    const row = openingCards()[0]!;
+    expect(row.prompt).toBe('London System / Other: choose a repertoire move.');
+    expect(JSON.parse(row.solution_json as string).accepted).toEqual(['d2d4']);
+  });
+
   it('alternates repertoires, depth-first inside each', () => {
     const white = loadRepertoire({
       id: 'a', name: 'A', color: 'white',
