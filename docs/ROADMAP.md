@@ -568,11 +568,20 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 
 - M1 through M14 are done. Next: M15 (longer mates), then M16a–d (1.e4
   repertoire). Owner's order, 2026-11-10.
-- **M15 in progress (paused 2026-11-11, owner out of tokens).** Branch
-  `m15-longer-mates` in worktree `../chess-m15`. Plan
-  `docs/superpowers/plans/2026-11-10-m15-longer-mates.md`: Tasks 1–3 done and
-  committed (proof, cards, queue + start-up job; 1475 tests green). Next: Task 4
-  (review board `MateLine`), then Task 5 (real data, browser, backup, merge).
+- **M15 in progress (resumed 2026-11-13).** Branch
+  `m15-longer-mates` in worktree `.worktrees/m15` (moved inside the writable
+  workspace). Plan `docs/superpowers/plans/2026-11-10-m15-longer-mates.md`:
+  Tasks 1–4 done; Task 4 commit `7b66a5f`. Main's incremental mate backfill
+  merged into the feature branch (`270f3b1`), retaining deferred long-mate startup.
+  Verification: 1484 tests, typecheck, lint and production build pass; temporary
+  server health returns OK. Real-data copy at 400000 nodes: 36 cards (25 mate
+  in 3, 11 mate in 4), 3 candidates skipped, 555 stored branches replayed with
+  chess.js and ending in checkmate. Live database unchanged.
+  Next: finish Task 5. No browser was connected; browser success/failure flows
+  remain unchecked. Full content validation was stopped after 140 repertoire
+  positions (no content changed), so it remains pending, along with final
+  whole-branch self-review, backup, merge and push. Temporary verification
+  database: `/tmp/chess-m15-verification-20261113.db`.
   Ruling made during the build: cards use the proven mate length (see the spec).
 - 1.e4 decisions (owner, 2026-11-10): a second White repertoire next to the
   London (not a replacement); reason: "saw it on a video and seems powerful";
