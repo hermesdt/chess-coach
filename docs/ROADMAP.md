@@ -40,7 +40,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M12 | Middlegame plans: plan cards by typical position (London, Caro-Kann, both colours), validator, "find the plan move" review cards, links to guides, lessons, games and the coach (M12a/b/c) | done | spec `docs/superpowers/specs/2026-10-29-middlegame-plans-design.md`, M12c plan `docs/superpowers/plans/2026-11-04-m12c-more-plans.md` |
 | M13 | Missed-mate cards: a review card for each mate in 1 or 2 that the owner missed in a game, built from stored analysis and proven with chess.js | done | spec `docs/superpowers/specs/2026-10-29-m13-mate-cards-design.md`, plan `docs/superpowers/plans/2026-10-29-m13-mate-cards.md` |
 | M14 | Threat cards: two-step review cards (find the opponent's threat, then your answer) from positions in own games where a threat existed and the owner's move ignored it | done | spec `docs/superpowers/specs/2026-11-10-m14-threat-cards-design.md`, plan `docs/superpowers/plans/2026-11-10-m14-threat-cards.md` |
-| M15 | Longer mates: mate cards for mate in 3 (maybe 4) from own games; the owner plays the whole mate, the app plays the best defence; Stockfish finds, chess.js checks every defence | planned | spec `docs/superpowers/specs/2026-11-10-m15-longer-mates-design.md`, plan `docs/superpowers/plans/2026-11-10-m15-longer-mates.md` |
+| M15 | Longer mates: mate cards for mate in 3 and 4 from own games; the owner plays the whole mate, the app plays the longest defence; Stockfish proposes, chess.js proves | done | spec `docs/superpowers/specs/2026-11-10-m15-longer-mates-design.md`, plan `docs/superpowers/plans/2026-11-10-m15-longer-mates.md` |
 | M16a | 1.e4 repertoire, part 1: Vienna Gambit vs 1...e5 (2.Nc3, f4), plus 2...Nc6 and 2...Bc5; lines, guide, drill, plans | not started | — |
 | M16b | 1.e4 repertoire, part 2: Grand Prix Attack vs the Sicilian (2.Nc3, f4) | not started | — |
 | M16c | 1.e4 repertoire, part 3: Advance Variation vs the French and the Caro-Kann | not started | — |
@@ -566,19 +566,21 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 
 ## Next session
 
-- M1 through M14 are done. Next: M15 (longer mates), then M16a–d (1.e4
+- M1 through M15 are done. Next: M16a–d (1.e4
   repertoire). Owner's order, 2026-11-10.
-- **M15 in progress (resumed 2026-11-13).** Branch `m15-longer-mates` in
-  worktree `.worktrees/m15`. Tasks 1–4 done; Task 4 commit `7b66a5f`.
-  Main's incremental startup fix merged in `270f3b1`; long-mate backfill now
-  participates in deferred startup (regression test RED then GREEN).
-  Verification: 1484 tests, typecheck, lint, production build, isolated health
-  check pass. Real-data copy at 400000 nodes: 36 cards (25 mate in 3, 11 mate
-  in 4), 3 skipped candidates, 555 stored branches checked with chess.js.
-  Live database unchanged. Next: finish Task 5: browser checks (no connected
-  browser), full content validation (stopped after 140 positions; no content
-  changed), final whole-branch self-review, backup, merge and push.
-  Verification copy: `/tmp/chess-m15-verification-20261113.db`.
+- **M15 done (2026-11-13).** 1484 tests, typecheck, lint, production build and
+  isolated health check pass. Full content validation passes with 147 warnings:
+  the first run timed out in Stockfish; a verification-only retry used the same
+  million-node budgets, a 120-second timeout and cached concurrent searches.
+  Production engine settings unchanged. Real-data copy at 400000 nodes: 36
+  cards (25 mate in 3, 11 mate in 4), 3 skipped candidates, 555 stored branches
+  checked with chess.js. Headless Chrome: full mate including promotion,
+  first-move submission, wrong second move, only Again, no page errors.
+  Final review was a self-review (no subagents); no blocking or deferred findings.
+  Review: `docs/superpowers/notes/2026-11-13-m15-review.md`.
+  Pre-merge backup: `data/backups/pre-m15-2026-11-13.db`.
+  Worktree was relocated from `../chess-m15` to `.worktrees/m15` for writable
+  access; main's incremental startup backfill remains intact.
   Ruling made during the build: cards use the proven mate length (see the spec).
 - 1.e4 decisions (owner, 2026-11-10): a second White repertoire next to the
   London (not a replacement); reason: "saw it on a video and seems powerful";

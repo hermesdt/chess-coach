@@ -15,7 +15,7 @@ The AI never invents moves, lines, or evaluations.
 
 ## Status
 
-Milestones M1 to M13 are done (see `docs/ROADMAP.md`). The Plans page covers the middlegame: one plan for each typical position, with a daily quiz. Missed mates in 1 or 2 from your games become review cards. Game pages show the plan that fits your game.
+Milestones M1 to M15 are done (see `docs/ROADMAP.md`). The Plans page covers the middlegame: one plan for each typical position, with a daily quiz. Missed mates in 1 to 4 from your games become review cards; for mates in 3 or 4, play the full line against the longest defence. Threat cards train you to spot the opponent's threat and find your answer. Game pages show the plan that fits your game.
 See `docs/ROADMAP.md` for the status of each milestone.
 
 ## Requirements
