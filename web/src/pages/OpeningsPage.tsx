@@ -10,7 +10,7 @@ import { nodeAtPath } from '../lib/line-drill';
 import { formatLeak, tabRank } from '../lib/openings';
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-const TAB_LABEL: Record<string, string> = { london: 'London', vienna: 'Vienna', 'caro-kann': 'Caro-Kann', slav: 'Slav' };
+const TAB_LABEL: Record<string, string> = { london: 'London', vienna: 'Vienna', 'grand-prix': 'Grand Prix', 'caro-kann': 'Caro-Kann', slav: 'Slav' };
 
 /** "1.e4 c6 2.d4" from a SAN path. */
 function formatPath(path: string[]): string {

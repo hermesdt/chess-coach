@@ -7,6 +7,8 @@ import { syncOpeningCards } from './opening-cards.js';
 import type { RepNode, Repertoire } from './types.js';
 
 const HASH_KEY = 'repertoire_hash';
+// Rescan stored events when the shared-root matching contract changes.
+const MATCH_VERSION = 2;
 
 const shape = (n: RepNode): unknown => [n.san, n.level, n.children.map(shape)];
 
@@ -16,7 +18,7 @@ const shape = (n: RepNode): unknown => [n.san, n.level, n.children.map(shape)];
  */
 export function repertoireHash(reps: Repertoire[]): string {
   const sorted = [...reps].sort((a, b) => a.id.localeCompare(b.id));
-  const json = JSON.stringify(sorted.map((r) => [r.id, r.color, r.roots.map(shape)]));
+  const json = JSON.stringify([MATCH_VERSION, sorted.map((r) => [r.id, r.color, r.roots.map(shape)])]);
   return createHash('sha1').update(json).digest('hex');
 }
 

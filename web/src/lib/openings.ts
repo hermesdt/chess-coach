@@ -1,6 +1,6 @@
 import type { OpeningLeakGroup } from '../../../shared/types';
 
-const TAB_ORDER = ['london', 'vienna', 'caro-kann', 'slav'];
+const TAB_ORDER = ['london', 'vienna', 'grand-prix', 'caro-kann', 'slav'];
 
 /** Sort key for opening tabs: known ids in a fixed order, unknown ids last. */
 export function tabRank(id: string): number {

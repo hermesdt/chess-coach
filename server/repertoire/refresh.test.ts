@@ -1,10 +1,11 @@
 import type { DatabaseSync } from 'node:sqlite';
+import { createHash } from 'node:crypto';
 import { Chess } from 'chess.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { openDb } from '../db/db.js';
 import { insertGames } from '../db/games-repo.js';
 import { getSetting } from '../db/settings-repo.js';
-import { loadRepertoire } from './load.js';
+import { loadRepertoire, type RepNode } from './load.js';
 import { refreshOpenings, repertoireHash } from './refresh.js';
 
 const NOW = new Date(2026, 9, 18, 12, 0, 0).getTime();
@@ -33,6 +34,12 @@ function addGame(sans: string, id: string): void {
 const events = () => db.prepare('SELECT kind, node_id FROM opening_events ORDER BY game_id').all();
 
 describe('repertoireHash', () => {
+  it('invalidates hashes from the old first-root matcher even when content is unchanged', () => {
+    const rep = v1();
+    const shape = (n: RepNode): unknown => [n.san, n.level, n.children.map(shape)];
+    const legacy = createHash('sha1').update(JSON.stringify([[rep.id, rep.color, rep.roots.map(shape)]])).digest('hex');
+    expect(repertoireHash([rep])).not.toBe(legacy);
+  });
   it('changes with the moves and levels, not with the order of the list or the comments', () => {
     expect(repertoireHash([v1()])).toBe(repertoireHash([v1()]));
     expect(repertoireHash([v1()])).not.toBe(repertoireHash([v2()]));

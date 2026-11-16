@@ -16,6 +16,30 @@ export function matchesRepertoire(rep: Repertoire, firstSan: string | undefined,
   return rep.color === userColor && rep.roots.some((r) => r.san === firstSan);
 }
 
+/** Identify the unique longest book prefix; ambiguous shared roots are not enough to label a game. */
+export function selectRepertoire(reps: Repertoire[], moves: MoveInfo[], userColor: Color): Repertoire | undefined {
+  let selected: Repertoire | undefined;
+  let longest = 0;
+  let tied = false;
+  for (const rep of reps) {
+    if (!matchesRepertoire(rep, moves[0]?.san, userColor)) continue;
+    let options = rep.roots;
+    let length = 0;
+    for (const move of moves) {
+      const node = options.find((n) => n.san === move.san);
+      if (!node) break;
+      length += 1;
+      options = node.children;
+    }
+    if (length > longest) {
+      longest = length;
+      selected = rep;
+      tied = false;
+    } else if (length === longest) tied = true;
+  }
+  return tied ? undefined : selected;
+}
+
 /**
  * Walk the game through the repertoire (nodes up to `maxLevel`). A leak is the user's first move that
  * differs from the repertoire move. An opponent move with no child is out of book, not a leak.
@@ -127,7 +151,7 @@ export function scanLeaks(
       const before = previous.get(game.id) as { kind: string; node_id: string | null } | undefined;
       // A game from another start position, or an unreadable one, has no opening to check.
       const moves = openingMoves(game.pgn, limit) ?? [];
-      const rep = reps.find((r) => matchesRepertoire(r, moves[0]?.san, game.user_color));
+      const rep = selectRepertoire(reps, moves, game.user_color);
       if (!rep) {
         insert.run(game.id, null, 'not_this_opening', null, null, null, null, level);
         continue;

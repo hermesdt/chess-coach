@@ -7,7 +7,7 @@ import { openDb } from '../db/db.js';
 import { insertGames } from '../db/games-repo.js';
 import { parsePgn } from '../chess/pgn.js';
 import { positionKey, upsertCard } from '../srs/cards-repo.js';
-import { findLeak, openingMoves, scanLeaks } from './leaks.js';
+import { findLeak, openingMoves, scanLeaks, selectRepertoire } from './leaks.js';
 import { loadRepertoire } from './load.js';
 import { syncOpeningCards } from './opening-cards.js';
 
@@ -202,6 +202,56 @@ const lv = () => loadRepertoire({
 });
 const setLevel = (l: string) =>
   db.prepare("INSERT INTO settings (key, value) VALUES ('level_override', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(l);
+
+describe('shared-root repertoire selection', () => {
+  const white = (id: string, reply: string, level = 1) => loadRepertoire({
+    id, name: id, color: 'white', moves: [{ san: 'e4', children: [{ san: reply, level,
+      children: [{ san: 'Nc3', comment: 'Develop the knight.' }] }] }],
+  });
+  const vienna = white('vienna', 'e5');
+  const grandPrix = white('grand-prix', 'c5');
+
+  it.each([false, true])('selects by the actual continuation, not list order (reversed: %s)', (reverse) => {
+    const reps = reverse ? [grandPrix, vienna] : [vienna, grandPrix];
+    expect(selectRepertoire(reps, movesOf('e4 c5 Nc3'), 'white')?.id).toBe('grand-prix');
+    expect(selectRepertoire(reps, movesOf('e4 e5 Nc3'), 'white')?.id).toBe('vienna');
+    const moves = movesOf('e4 c5 Nf3');
+    const selected = selectRepertoire(reps, moves, 'white')!;
+    expect(selected.id).toBe('grand-prix');
+    expect(findLeak(selected, moves, 'white')).toMatchObject({ kind: 'leak', ply: 3, expectedSan: 'Nc3' });
+  });
+  it('does not attribute ambiguous or empty games arbitrarily', () => {
+    for (const reps of [[vienna, grandPrix], [grandPrix, vienna]]) {
+      expect(selectRepertoire(reps, movesOf('e4'), 'white')).toBeUndefined();
+      expect(selectRepertoire(reps, movesOf('e4 e6'), 'white')).toBeUndefined();
+      expect(selectRepertoire(reps, [], 'white')).toBeUndefined();
+    }
+  });
+  it('preserves unique existing matches and separates player colours', () => {
+    expect(selectRepertoire([vienna], movesOf('e4 c5'), 'white')?.id).toBe('vienna');
+    expect(selectRepertoire([london, vienna, grandPrix, caro], movesOf('d4 d5'), 'white')?.id).toBe('london');
+    expect(selectRepertoire([vienna, grandPrix, caro], movesOf('e4 c6'), 'black')?.id).toBe('caro-kann');
+  });
+  it('identifies a locked branch but still respects the level when finding leaks', () => {
+    const locked = white('grand-prix', 'c5', 3);
+    const moves = movesOf('e4 c5 Nf3');
+    const selected = selectRepertoire([vienna, locked], moves, 'white')!;
+    expect(selected.id).toBe('grand-prix');
+    expect(findLeak(selected, moves, 'white', 1).kind).toBe('end_of_book');
+    expect(findLeak(selected, moves, 'white', 3).kind).toBe('leak');
+  });
+  it('stores the correct repertoire and first leak during a real scan', () => {
+    addGame('e4 c5 Nf3', 'white');
+    addGame('e4 e5 Nf3', 'white');
+    addGame('e4 e6', 'white');
+    scanLeaks(db, [vienna, grandPrix], NOW);
+    expect(events()).toMatchObject([
+      { repertoire_id: 'grand-prix', kind: 'leak', ply: 3 },
+      { repertoire_id: 'vienna', kind: 'leak', ply: 3 },
+      { repertoire_id: null, kind: 'not_this_opening' },
+    ]);
+  });
+});
 
 describe('scanLeaks edge cases', () => {
   it('skips games that do not start from the standard position', () => {

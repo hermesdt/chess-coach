@@ -19,6 +19,10 @@ describe('formatLeak', () => {
 });
 
 describe('tabRank', () => {
+  it('puts Grand Prix after Vienna', () => {
+    expect(['slav', 'grand-prix', 'caro-kann', 'vienna', 'london'].sort((a,b) => tabRank(a)-tabRank(b)))
+      .toEqual(['london', 'vienna', 'grand-prix', 'caro-kann', 'slav']);
+  });
   it('puts Vienna beside London and before the Black repertoires', () => {
     const ids = ['slav', 'vienna', 'mystery', 'caro-kann', 'london'];
     expect([...ids].sort((a, b) => tabRank(a) - tabRank(b))).toEqual(['london', 'vienna', 'caro-kann', 'slav', 'mystery']);
