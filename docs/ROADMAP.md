@@ -566,17 +566,15 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 
 ## Next session
 
-- **M16a in progress (2026-11-13).** Owner said proceed with the Vienna and
+- **M16a in progress (2026-11-16).** Owner said proceed with the Vienna and
   delegated remaining design choices. Branch `m16a-vienna`, native managed
   worktree `/Users/alvarodurantovar/.codex/worktrees/a45d/chess`.
-  Design and plan: `docs/superpowers/{specs,plans}/2026-11-13-m16a-vienna*.md`
-  on that branch. Task 1 complete, commit `37d6d58`: shared White opening
-  cards name all repertoires and preserve ID/FSRS; Vienna tab order and label.
-  1488 tests, typecheck and lint pass. Next: Task 2, engine-checked tree with
-  250-350 move nodes, then guide and two plans. No content published yet.
-  Initial million-node probes: f4 vs Nf6 loses 2.8 win %, f4 vs Nc6 2.9,
-  Bc4 vs Bc5 2.2. These are within existing validator tolerance, not claims
-  that they are engine-best. All continuations still need checking.
+  Tasks 1-3 complete: shared opening-card support, 303-node tree, six-variation
+  guide and two plans with six exercises. Tree commit `1ec85d9`, teaching commit
+  `27869c6`. Million-node checks pass; twelve non-blocking quiz warnings accepted.
+  Browser smoke passed: tabs, drill, guide, plan training, shared first moves
+  and plan quiz. Final full content validation and suite rerun are in progress;
+  backup, merge and push follow only when all gates pass.
 
 - M1 through M15 are done. Next: M16a–d (1.e4
   repertoire). Owner's order, 2026-11-10.
