@@ -1,0 +1,2064 @@
+{
+  "id": "grand-prix",
+  "name": "Grand Prix Attack",
+  "color": "white",
+  "moves": [
+    {
+      "san": "e4",
+      "comment": "Take space in the centre and open the diagonals of your queen and f1 bishop. This first move is shared with your Vienna repertoire.",
+      "level": 1,
+      "children": [
+        {
+          "san": "c5",
+          "comment": null,
+          "level": 1,
+          "children": [
+            {
+              "san": "Nc3",
+              "comment": "Develop the queen-side knight. It defends e4 and controls d5. Keep the f-pawn free while you see how Black develops.",
+              "level": 1,
+              "children": [
+                {
+                  "san": "Nc6",
+                  "comment": null,
+                  "level": 1,
+                  "children": [
+                    {
+                      "san": "f4",
+                      "comment": "Gain king-side space and control e5 with the f-pawn. Develop your pieces promptly; Black can still challenge the centre.",
+                      "level": 1,
+                      "children": [
+                        {
+                          "san": "g6",
+                          "comment": null,
+                          "level": 1,
+                          "children": [
+                            {
+                              "san": "Nf3",
+                              "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 1,
+                              "children": [
+                                {
+                                  "san": "Bg7",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "Be2",
+                                      "comment": "Bring your bishop to e2. It supports your knight on f3.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Nh6",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "d3",
+                                              "comment": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "d6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "O-O",
+                                                      "comment": "Castle short. The king leaves the centre and the rook comes to f1; finish developing before starting an attack.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "f5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Nd5",
+                                                      "comment": "Bring your knight to d5. It supports your pawn on f4.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "d6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "d4",
+                                      "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "cxd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Nxd4",
+                                              "comment": "Capture the pawn with your knight. From d4 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Nf6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be3",
+                                                      "comment": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "Bg7",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be3",
+                                                      "comment": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "san": "e6",
+                          "comment": null,
+                          "level": 1,
+                          "children": [
+                            {
+                              "san": "Nf3",
+                              "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 1,
+                              "children": [
+                                {
+                                  "san": "Nh6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "Bb5",
+                                      "comment": "Bring your bishop to b5. From b5 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Nd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "O-O",
+                                              "comment": "Castle short. The king leaves the centre and the rook comes to f1; finish developing before starting an attack.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Be7",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "f5",
+                                                      "comment": "Bring your pawn to f5. Keep your pieces working together and check the opponent's threats before the next move.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "a6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Bd3",
+                                                      "comment": "Bring your bishop to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "d5",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "Bb5",
+                                      "comment": "Bring your bishop to b5. From b5 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Ne7",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "exd5",
+                                              "comment": "Capture the pawn with your pawn. From d5 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Nxd5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Bxc6+",
+                                                      "comment": "Capture the knight with your bishop. Give check, so Black must answer the attack on the king.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "exd5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Qe2",
+                                                      "comment": "Bring your queen to e2. From e2 it attacks the knight on e7; an attack is not a guarantee of winning it.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "san": "d6",
+                          "comment": null,
+                          "level": 1,
+                          "children": [
+                            {
+                              "san": "Nf3",
+                              "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 1,
+                              "children": [
+                                {
+                                  "san": "Nf6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "Bb5",
+                                      "comment": "Bring your bishop to b5. From b5 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Bd7",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "d3",
+                                              "comment": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "a6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Bc4",
+                                                      "comment": "Bring your bishop to c4. From c4 it controls d5. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "e6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "O-O",
+                                                      "comment": "Castle short. The king leaves the centre and the rook comes to f1; finish developing before starting an attack.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "g6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "d4",
+                                      "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "cxd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Nxd4",
+                                              "comment": "Capture the pawn with your knight. From d4 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Nf6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be3",
+                                                      "comment": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "Bg7",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be3",
+                                                      "comment": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "san": "d6",
+                  "comment": null,
+                  "level": 1,
+                  "children": [
+                    {
+                      "san": "f4",
+                      "comment": "Gain space on the king-side. The f-pawn controls e5, but moving it also weakens the diagonals around your king.",
+                      "level": 1,
+                      "children": [
+                        {
+                          "san": "Nc6",
+                          "comment": null,
+                          "level": 1,
+                          "children": [
+                            {
+                              "san": "Nf3",
+                              "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 1,
+                              "children": [
+                                {
+                                  "san": "g6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "d4",
+                                      "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "cxd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Nxd4",
+                                              "comment": "Capture the pawn with your knight. From d4 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Nf6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be3",
+                                                      "comment": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "Bg7",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be3",
+                                                      "comment": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "Nf6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "Bb5",
+                                      "comment": "Bring your bishop to b5. From b5 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Bd7",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "e5",
+                                              "comment": "Bring your pawn to e5. From e5 it attacks the knight on f6; an attack is not a guarantee of winning it.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Ng4",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "h3",
+                                                      "comment": "Bring your pawn to h3. From h3 it attacks the knight on g4; an attack is not a guarantee of winning it.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "dxe5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "fxe5",
+                                                      "comment": "Capture the pawn with your pawn. From e5 it attacks the knight on f6; an attack is not a guarantee of winning it.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "san": "e6",
+                          "comment": null,
+                          "level": 1,
+                          "children": [
+                            {
+                              "san": "Nf3",
+                              "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 1,
+                              "children": [
+                                {
+                                  "san": "a6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "d4",
+                                      "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "cxd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Qxd4",
+                                              "comment": "Capture the pawn with your queen. From d4 it controls e4 and d5 and e5. Keep watching Black's replies before advancing more pawns.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "b5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Bd2",
+                                                      "comment": "Bring your bishop to d2. It supports your pawn on f4.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "Nf6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Qf2",
+                                                      "comment": "Bring your queen to f2. From f2 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "Nf6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "d4",
+                                      "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "cxd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Nxd4",
+                                              "comment": "Capture the pawn with your knight. It supports your pawn on c2.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Nc6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be3",
+                                                      "comment": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "a6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be2",
+                                                      "comment": "Bring your bishop to e2. It supports your queen on d1.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "san": "Nf6",
+                          "comment": null,
+                          "level": 1,
+                          "children": [
+                            {
+                              "san": "Nf3",
+                              "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 1,
+                              "children": [
+                                {
+                                  "san": "Nc6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "Bb5",
+                                      "comment": "Bring your bishop to b5. From b5 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Bd7",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "e5",
+                                              "comment": "Bring your pawn to e5. From e5 it attacks the knight on f6; an attack is not a guarantee of winning it.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Ng4",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "h3",
+                                                      "comment": "Bring your pawn to h3. From h3 it attacks the knight on g4; an attack is not a guarantee of winning it.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "dxe5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "fxe5",
+                                                      "comment": "Capture the pawn with your pawn. From e5 it attacks the knight on f6; an attack is not a guarantee of winning it.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "a6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "d4",
+                                      "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "cxd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Qxd4",
+                                              "comment": "Capture the pawn with your queen. From d4 it attacks the knight on f6; an attack is not a guarantee of winning it.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "g6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Qg1",
+                                                      "comment": "Bring your queen to g1. From g1 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "e6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Qf2",
+                                                      "comment": "Bring your queen to f2. From f2 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "san": "e6",
+                  "comment": null,
+                  "level": 1,
+                  "children": [
+                    {
+                      "san": "f4",
+                      "comment": "Start the Grand Prix setup, but do not ignore the central counterstrike. Black can advance the d-pawn supported by the e6 pawn.",
+                      "level": 1,
+                      "children": [
+                        {
+                          "san": "d5",
+                          "comment": null,
+                          "level": 1,
+                          "children": [
+                            {
+                              "san": "Nf3",
+                              "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 1,
+                              "children": [
+                                {
+                                  "san": "d4",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "Bb5+",
+                                      "comment": "Bring your bishop to b5. Give check, so Black must answer the attack on the king.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Nd7",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Ne2",
+                                              "comment": "Bring your knight to e2. From e2 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "a6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Bxd7+",
+                                                      "comment": "Capture the knight with your bishop. Give check, so Black must answer the attack on the king.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "Nf6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Bd3",
+                                                      "comment": "Bring your bishop to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "dxe4",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "Nxe4",
+                                      "comment": "Capture the pawn with your knight. It supports your pawn on d2.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Nc6",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Bb5",
+                                              "comment": "Bring your bishop to b5. From b5 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Bd7",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Qe2",
+                                                      "comment": "Bring your queen to e2. From e2 it controls e4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "Qc7",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Bxc6+",
+                                                      "comment": "Capture the knight with your bishop. Give check, so Black must answer the attack on the king.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "san": "Nc6",
+                          "comment": null,
+                          "level": 1,
+                          "children": [
+                            {
+                              "san": "Nf3",
+                              "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 1,
+                              "children": [
+                                {
+                                  "san": "Nh6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "d4",
+                                      "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "d5",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Bb5",
+                                              "comment": "Bring your bishop to b5. From b5 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "a6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Bxc6+",
+                                                      "comment": "Capture the knight with your bishop. Give check, so Black must answer the attack on the king.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "dxe4",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Ne5",
+                                                      "comment": "Bring your knight to e5. From e5 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "d5",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "Bb5",
+                                      "comment": "Bring your bishop to b5. From b5 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Ne7",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "exd5",
+                                              "comment": "Capture the pawn with your pawn. From d5 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Nxd5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Bxc6+",
+                                                      "comment": "Capture the knight with your bishop. Give check, so Black must answer the attack on the king.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "exd5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Qe2",
+                                                      "comment": "Bring your queen to e2. From e2 it attacks the knight on e7; an attack is not a guarantee of winning it.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "san": "d6",
+                          "comment": null,
+                          "level": 1,
+                          "children": [
+                            {
+                              "san": "Nf3",
+                              "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 1,
+                              "children": [
+                                {
+                                  "san": "a6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "d4",
+                                      "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "cxd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Qxd4",
+                                              "comment": "Capture the pawn with your queen. From d4 it controls e4 and d5 and e5. Keep watching Black's replies before advancing more pawns.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "b5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Bd2",
+                                                      "comment": "Bring your bishop to d2. It supports your pawn on f4.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "Nf6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Qf2",
+                                                      "comment": "Bring your queen to f2. From f2 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "Nf6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "d4",
+                                      "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "cxd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Nxd4",
+                                              "comment": "Capture the pawn with your knight. It supports your pawn on c2.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Nc6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be3",
+                                                      "comment": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "a6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be2",
+                                                      "comment": "Bring your bishop to e2. It supports your queen on d1.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "san": "g6",
+                  "comment": null,
+                  "level": 1,
+                  "children": [
+                    {
+                      "san": "f4",
+                      "comment": "Gain king-side space while Black prepares a bishop fianchetto. Develop before deciding whether another pawn advance is safe.",
+                      "level": 1,
+                      "children": [
+                        {
+                          "san": "Bg7",
+                          "comment": null,
+                          "level": 1,
+                          "children": [
+                            {
+                              "san": "Nf3",
+                              "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 1,
+                              "children": [
+                                {
+                                  "san": "Nc6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "a4",
+                                      "comment": "Bring your pawn to a4. Keep your pieces working together and check the opponent's threats before the next move.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "a6",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "d3",
+                                              "comment": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "e6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be3",
+                                                      "comment": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "d6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be2",
+                                                      "comment": "Bring your bishop to e2. It supports your pawn on d3.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "d6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "d4",
+                                      "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "cxd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Nxd4",
+                                              "comment": "Capture the pawn with your knight. It supports your pawn on c2.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Nc6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be3",
+                                                      "comment": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "Bd7",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be2",
+                                                      "comment": "Bring your bishop to e2. It supports your queen on d1.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "san": "Nc6",
+                          "comment": null,
+                          "level": 1,
+                          "children": [
+                            {
+                              "san": "Nf3",
+                              "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 1,
+                              "children": [
+                                {
+                                  "san": "Bg7",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "a4",
+                                      "comment": "Bring your pawn to a4. Keep your pieces working together and check the opponent's threats before the next move.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "a6",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "d3",
+                                              "comment": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "e6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be3",
+                                                      "comment": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "d6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be2",
+                                                      "comment": "Bring your bishop to e2. It supports your pawn on d3.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "d6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "d4",
+                                      "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "cxd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Nxd4",
+                                              "comment": "Capture the pawn with your knight. From d4 it attacks the knight on c6; an attack is not a guarantee of winning it.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Nf6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be3",
+                                                      "comment": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "Bg7",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be3",
+                                                      "comment": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "san": "d6",
+                          "comment": null,
+                          "level": 1,
+                          "children": [
+                            {
+                              "san": "d4",
+                              "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 1,
+                              "children": [
+                                {
+                                  "san": "cxd4",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "Qxd4",
+                                      "comment": "Capture the pawn with your queen. From d4 it attacks the rook on h8; an attack is not a guarantee of winning it.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Nf6",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Nf3",
+                                              "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Bg7",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "h3",
+                                                      "comment": "Bring your pawn to h3. Keep your pieces working together and check the opponent's threats before the next move.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "Nc6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Qf2",
+                                                      "comment": "Bring your queen to f2. From f2 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "Bg7",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "dxc5",
+                                      "comment": "Capture the pawn with your pawn. Keep your pieces working together and check the opponent's threats before the next move.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Bxc3+",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "bxc3",
+                                              "comment": "Capture the bishop with your pawn. From c3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Nf6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "cxd6",
+                                                      "comment": "Capture the pawn with your pawn. Keep your pieces working together and check the opponent's threats before the next move.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "dxc5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Qxd8+",
+                                                      "comment": "Capture the queen with your queen. Give check, so Black must answer the attack on the king.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "san": "a6",
+                  "comment": null,
+                  "level": 2,
+                  "children": [
+                    {
+                      "san": "f4",
+                      "comment": "Use the time to gain king-side space. This does not stop Black from expanding on the queen-side or striking in the centre.",
+                      "level": 2,
+                      "children": [
+                        {
+                          "san": "Nc6",
+                          "comment": null,
+                          "level": 2,
+                          "children": [
+                            {
+                              "san": "Nf3",
+                              "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 2,
+                              "children": [
+                                {
+                                  "san": "e6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "d4",
+                                      "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Nxd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Nxd4",
+                                              "comment": "Capture the knight with your knight. It supports your pawn on c2.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "cxd4",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Qxd4",
+                                                      "comment": "Capture the pawn with your queen. From d4 it controls e4 and d5 and e5. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "b5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Nf3",
+                                                      "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "b5",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "g3",
+                                      "comment": "Bring your pawn to g3. It supports your pawn on f4.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "e6",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Bg2",
+                                              "comment": "Bring your bishop to g2. It supports your knight on f3.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Be7",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "d3",
+                                                      "comment": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "Rb8",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "O-O",
+                                                      "comment": "Castle short. The king leaves the centre and the rook comes to f1; finish developing before starting an attack.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "san": "e6",
+                          "comment": null,
+                          "level": 2,
+                          "children": [
+                            {
+                              "san": "Nf3",
+                              "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 2,
+                              "children": [
+                                {
+                                  "san": "b5",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "d4",
+                                      "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "cxd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Qxd4",
+                                              "comment": "Capture the pawn with your queen. From d4 it controls e4 and d5 and e5. Keep watching Black's replies before advancing more pawns.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Nc6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Qf2",
+                                                      "comment": "Bring your queen to f2. From f2 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "Bb7",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Bd3",
+                                                      "comment": "Bring your bishop to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "Nc6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "d4",
+                                      "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Nxd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Nxd4",
+                                              "comment": "Capture the knight with your knight. It supports your pawn on c2.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "cxd4",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Qxd4",
+                                                      "comment": "Capture the pawn with your queen. From d4 it controls e4 and d5 and e5. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "b5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Nf3",
+                                                      "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "san": "Nf6",
+                  "comment": null,
+                  "level": 2,
+                  "children": [
+                    {
+                      "san": "e5",
+                      "comment": "Advance with an attack on the f6 knight. Answer its pressure on e4 concretely rather than playing the usual f-pawn move automatically.",
+                      "level": 2,
+                      "children": [
+                        {
+                          "san": "Ng8",
+                          "comment": null,
+                          "level": 2,
+                          "children": [
+                            {
+                              "san": "d4",
+                              "comment": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns.",
+                              "level": 2,
+                              "children": [
+                                {
+                                  "san": "cxd4",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "Qxd4",
+                                      "comment": "Capture the pawn with your queen. From d4 it controls e4 and d5 and e5. Keep watching Black's replies before advancing more pawns.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Nc6",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Qf4",
+                                              "comment": "Bring your queen to f4. From f4 it controls d4 and e4 and e5. Keep watching Black's replies before advancing more pawns.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "e6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Nf3",
+                                                      "comment": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "d5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Be3",
+                                                      "comment": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "d5",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "exd6",
+                                      "comment": "Capture the pawn with your pawn. Keep your pieces working together and check the opponent's threats before the next move.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "cxd4",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "Bb5+",
+                                              "comment": "Bring your bishop to b5. Give check, so Black must answer the attack on the king.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "Nc6",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Qxd4",
+                                                      "comment": "Capture the pawn with your queen. From d4 it controls e4 and d5 and e5. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "Bd7",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Qxd4",
+                                                      "comment": "Capture the pawn with your queen. From d4 it controls e4 and d5 and e5. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "san": "Nc6",
+                          "comment": null,
+                          "level": 2,
+                          "children": [
+                            {
+                              "san": "exf6",
+                              "comment": "Capture the knight with your pawn. Keep your pieces working together and check the opponent's threats before the next move.",
+                              "level": 2,
+                              "children": [
+                                {
+                                  "san": "gxf6",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "g3",
+                                      "comment": "Bring your pawn to g3. Keep your pieces working together and check the opponent's threats before the next move.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "d5",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "d3",
+                                              "comment": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "d4",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Ne4",
+                                                      "comment": "Bring your knight to e4. It supports your pawn on g3.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "h5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "Bg2",
+                                                      "comment": "Bring your bishop to g2. From g2 it controls e4 and d5. Keep watching Black's replies before advancing more pawns.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "san": "d5",
+                                  "comment": null,
+                                  "level": 2,
+                                  "children": [
+                                    {
+                                      "san": "fxg7",
+                                      "comment": "Capture the pawn with your pawn. From g7 it attacks the bishop on f8; an attack is not a guarantee of winning it.",
+                                      "level": 2,
+                                      "children": [
+                                        {
+                                          "san": "Bxg7",
+                                          "comment": null,
+                                          "level": 2,
+                                          "children": [
+                                            {
+                                              "san": "d3",
+                                              "comment": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns.",
+                                              "level": 2,
+                                              "children": [
+                                                {
+                                                  "san": "O-O",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "g3",
+                                                      "comment": "Bring your pawn to g3. Keep your pieces working together and check the opponent's threats before the next move.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "san": "e5",
+                                                  "comment": null,
+                                                  "level": 3,
+                                                  "children": [
+                                                    {
+                                                      "san": "g3",
+                                                      "comment": "Bring your pawn to g3. Keep your pieces working together and check the opponent's threats before the next move.",
+                                                      "level": 3,
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,494 @@
+{
+  "repertoireId": "grand-prix",
+  "why": "Use this repertoire when Black answers your king pawn with the Sicilian c-pawn. Keep the London and Vienna as separate choices; sharing the first move does not make their later plans interchangeable.\n\nThe Grand Prix approach develops the queen-side knight and usually advances the f-pawn. That gains king-side space and controls e5, but also weakens diagonals around your king. The bishop may develop actively or quietly depending on Black's reply. Complete development and meet central threats before attacking.\n\nBlack often has central counterplay with the d-pawn. Do not play the same pawn sequence automatically: the early knight attack on e4 is one example where a concrete central response comes first. The deeper branches are level-gated, and an attack is never promised.",
+  "variations": [
+    {
+      "key": "nc6",
+      "name": "Against the queen-side knight",
+      "roots": [
+        "e4 c5 Nc3 Nc6"
+      ],
+      "finalForm": {
+        "nodeId": "e4 c5 Nc3 Nc6 f4 g6 Nf3 Bg7 Be2 Nh6 d3",
+        "jobs": [
+          {
+            "square": "c3",
+            "text": "The knight controls e4 and d5 from here."
+          },
+          {
+            "square": "f3",
+            "text": "The knight controls d4 and e5 from here."
+          },
+          {
+            "square": "e4",
+            "text": "The pawn controls d5 from here."
+          }
+        ]
+      },
+      "route": [
+        {
+          "nodeId": "e4",
+          "why": "Take space in the centre and open the diagonals of your queen and f1 bishop. This first move is shared with your Vienna repertoire."
+        },
+        {
+          "nodeId": "e4 c5 Nc3",
+          "why": "Develop the queen-side knight. It defends e4 and controls d5. Keep the f-pawn free while you see how Black develops."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 Nc6 f4",
+          "why": "Gain king-side space and control e5 with the f-pawn. Develop your pieces promptly; Black can still challenge the centre."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 Nc6 f4 g6 Nf3",
+          "why": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 Nc6 f4 g6 Nf3 Bg7 Be2",
+          "why": "Bring your bishop to e2. It supports your knight on f3."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 Nc6 f4 g6 Nf3 Bg7 Be2 Nh6 d3",
+          "why": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns."
+        }
+      ],
+      "deviations": [
+        {
+          "nodeId": "e4 c5 Nc3 Nc6 f4 g6",
+          "showNodeId": "e4 c5 Nc3 Nc6 f4 g6 Nf3",
+          "plan": "After this reply, use the shown continuation. Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 Nc6 f4 e6",
+          "showNodeId": "e4 c5 Nc3 Nc6 f4 e6 Nf3",
+          "plan": "After this reply, use the shown continuation. Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 Nc6 f4 d6",
+          "showNodeId": "e4 c5 Nc3 Nc6 f4 d6 Nf3",
+          "plan": "After this reply, use the shown continuation. Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        }
+      ],
+      "middlegame": "The f-pawn gains space, but development comes first. Black can fianchetto the bishop or prepare central counterplay. Choose a bishop square for the actual position, not for a promised attack.",
+      "mistakes": [
+        {
+          "moves": [
+            "e4",
+            "c5",
+            "Nc3",
+            "Nc6"
+          ],
+          "bad": "Ba6",
+          "good": [
+            "Nf3"
+          ],
+          "text": "The bishop on a6 can be taken by the pawn on b7. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ]
+    },
+    {
+      "key": "d6",
+      "name": "Against the d6 structure",
+      "roots": [
+        "e4 c5 Nc3 d6"
+      ],
+      "finalForm": {
+        "nodeId": "e4 c5 Nc3 d6 f4 Nc6 Nf3 g6 d4 cxd4 Nxd4",
+        "jobs": [
+          {
+            "square": "d4",
+            "text": "Keep the knight on d4 coordinated with the other pieces; check threats before moving it again."
+          },
+          {
+            "square": "c3",
+            "text": "The knight controls e4 and d5 from here."
+          },
+          {
+            "square": "e4",
+            "text": "The pawn controls d5 from here."
+          }
+        ]
+      },
+      "route": [
+        {
+          "nodeId": "e4",
+          "why": "Take space in the centre and open the diagonals of your queen and f1 bishop. This first move is shared with your Vienna repertoire."
+        },
+        {
+          "nodeId": "e4 c5 Nc3",
+          "why": "Develop the queen-side knight. It defends e4 and controls d5. Keep the f-pawn free while you see how Black develops."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 d6 f4",
+          "why": "Gain space on the king-side. The f-pawn controls e5, but moving it also weakens the diagonals around your king."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 d6 f4 Nc6 Nf3",
+          "why": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 d6 f4 Nc6 Nf3 g6 d4",
+          "why": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 d6 f4 Nc6 Nf3 g6 d4 cxd4 Nxd4",
+          "why": "Capture the pawn with your knight. From d4 it attacks the knight on c6; an attack is not a guarantee of winning it."
+        }
+      ],
+      "deviations": [
+        {
+          "nodeId": "e4 c5 Nc3 d6 f4 Nc6",
+          "showNodeId": "e4 c5 Nc3 d6 f4 Nc6 Nf3",
+          "plan": "After this reply, use the shown continuation. Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 d6 f4 e6",
+          "showNodeId": "e4 c5 Nc3 d6 f4 e6 Nf3",
+          "plan": "After this reply, use the shown continuation. Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 d6 f4 Nf6",
+          "showNodeId": "e4 c5 Nc3 d6 f4 Nf6 Nf3",
+          "plan": "After this reply, use the shown continuation. Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        }
+      ],
+      "middlegame": "Black has left the d5 square in front of the d-pawn. Develop the king-side knight and consider a central advance only after counting captures and recaptures.",
+      "mistakes": [
+        {
+          "moves": [
+            "e4",
+            "c5",
+            "Nc3",
+            "d6"
+          ],
+          "bad": "Ba6",
+          "good": [
+            "Nge2"
+          ],
+          "text": "The bishop on a6 can be taken by the pawn on b7. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ]
+    },
+    {
+      "key": "e6",
+      "name": "Meet the immediate central counterstrike",
+      "roots": [
+        "e4 c5 Nc3 e6"
+      ],
+      "finalForm": {
+        "nodeId": "e4 c5 Nc3 e6 f4 d5 Nf3 d4 Bb5+ Nd7 Ne2",
+        "jobs": [
+          {
+            "square": "f3",
+            "text": "The knight controls d4 and e5 from here."
+          },
+          {
+            "square": "b5",
+            "text": "Keep the bishop on b5 coordinated with the other pieces; check threats before moving it again."
+          },
+          {
+            "square": "e4",
+            "text": "The pawn controls d5 from here."
+          }
+        ]
+      },
+      "route": [
+        {
+          "nodeId": "e4",
+          "why": "Take space in the centre and open the diagonals of your queen and f1 bishop. This first move is shared with your Vienna repertoire."
+        },
+        {
+          "nodeId": "e4 c5 Nc3",
+          "why": "Develop the queen-side knight. It defends e4 and controls d5. Keep the f-pawn free while you see how Black develops."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 e6 f4",
+          "why": "Start the Grand Prix setup, but do not ignore the central counterstrike. Black can advance the d-pawn supported by the e6 pawn."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 e6 f4 d5 Nf3",
+          "why": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 e6 f4 d5 Nf3 d4 Bb5+",
+          "why": "Bring your bishop to b5. Give check, so Black must answer the attack on the king."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 e6 f4 d5 Nf3 d4 Bb5+ Nd7 Ne2",
+          "why": "Bring your knight to e2. From e2 it controls d4. Keep watching Black's replies before advancing more pawns."
+        }
+      ],
+      "deviations": [
+        {
+          "nodeId": "e4 c5 Nc3 e6 f4 d5",
+          "showNodeId": "e4 c5 Nc3 e6 f4 d5 Nf3",
+          "plan": "After this reply, use the shown continuation. Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 e6 f4 Nc6",
+          "showNodeId": "e4 c5 Nc3 e6 f4 Nc6 Nf3",
+          "plan": "After this reply, use the shown continuation. Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 e6 f4 d6",
+          "showNodeId": "e4 c5 Nc3 e6 f4 d6 Nf3",
+          "plan": "After this reply, use the shown continuation. Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        }
+      ],
+      "middlegame": "The e6 pawn supports a d-pawn advance. If that pawn moves again and attacks your c3 knight, meet the threat rather than continuing a king-side pawn storm.",
+      "mistakes": [
+        {
+          "moves": [
+            "e4",
+            "c5",
+            "Nc3",
+            "e6"
+          ],
+          "bad": "Ba6",
+          "good": [
+            "Nf3"
+          ],
+          "text": "The bishop on a6 can be taken by the pawn on b7. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ]
+    },
+    {
+      "key": "g6",
+      "name": "Against the bishop fianchetto",
+      "roots": [
+        "e4 c5 Nc3 g6"
+      ],
+      "finalForm": {
+        "nodeId": "e4 c5 Nc3 g6 f4 Bg7 Nf3 Nc6 a4 a6 d3",
+        "jobs": [
+          {
+            "square": "c3",
+            "text": "The knight controls e4 and d5 from here."
+          },
+          {
+            "square": "f3",
+            "text": "The knight controls d4 and e5 from here."
+          },
+          {
+            "square": "a4",
+            "text": "Keep the pawn on a4 coordinated with the other pieces; check threats before moving it again."
+          }
+        ]
+      },
+      "route": [
+        {
+          "nodeId": "e4",
+          "why": "Take space in the centre and open the diagonals of your queen and f1 bishop. This first move is shared with your Vienna repertoire."
+        },
+        {
+          "nodeId": "e4 c5 Nc3",
+          "why": "Develop the queen-side knight. It defends e4 and controls d5. Keep the f-pawn free while you see how Black develops."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 g6 f4",
+          "why": "Gain king-side space while Black prepares a bishop fianchetto. Develop before deciding whether another pawn advance is safe."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 g6 f4 Bg7 Nf3",
+          "why": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 g6 f4 Bg7 Nf3 Nc6 a4",
+          "why": "Bring your pawn to a4. Keep your pieces working together and check the opponent's threats before the next move."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 g6 f4 Bg7 Nf3 Nc6 a4 a6 d3",
+          "why": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns."
+        }
+      ],
+      "deviations": [
+        {
+          "nodeId": "e4 c5 Nc3 g6 f4 Bg7",
+          "showNodeId": "e4 c5 Nc3 g6 f4 Bg7 Nf3",
+          "plan": "After this reply, use the shown continuation. Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 g6 f4 Nc6",
+          "showNodeId": "e4 c5 Nc3 g6 f4 Nc6 Nf3",
+          "plan": "After this reply, use the shown continuation. Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 g6 f4 d6",
+          "showNodeId": "e4 c5 Nc3 g6 f4 d6 d4",
+          "plan": "After this reply, use the shown continuation. Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns."
+        }
+      ],
+      "middlegame": "Black prepares the bishop for the long diagonal. Your f-pawn gains space, but keep the centre and king safe while you complete development.",
+      "mistakes": [
+        {
+          "moves": [
+            "e4",
+            "c5",
+            "Nc3",
+            "g6"
+          ],
+          "bad": "Ba6",
+          "good": [
+            "d4"
+          ],
+          "text": "The bishop on a6 can be taken by the pawn on b7. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ]
+    },
+    {
+      "key": "a6",
+      "name": "Against the queen-side preparation",
+      "roots": [
+        "e4 c5 Nc3 a6"
+      ],
+      "finalForm": {
+        "nodeId": "e4 c5 Nc3 a6 f4 Nc6 Nf3 e6 d4 Nxd4 Nxd4",
+        "jobs": [
+          {
+            "square": "d4",
+            "text": "Keep the knight on d4 coordinated with the other pieces; check threats before moving it again."
+          },
+          {
+            "square": "c3",
+            "text": "The knight controls e4 and d5 from here."
+          },
+          {
+            "square": "e4",
+            "text": "The pawn controls d5 from here."
+          }
+        ]
+      },
+      "route": [
+        {
+          "nodeId": "e4",
+          "why": "Take space in the centre and open the diagonals of your queen and f1 bishop. This first move is shared with your Vienna repertoire."
+        },
+        {
+          "nodeId": "e4 c5 Nc3",
+          "why": "Develop the queen-side knight. It defends e4 and controls d5. Keep the f-pawn free while you see how Black develops."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 a6 f4",
+          "why": "Use the time to gain king-side space. This does not stop Black from expanding on the queen-side or striking in the centre."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 a6 f4 Nc6 Nf3",
+          "why": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 a6 f4 Nc6 Nf3 e6 d4",
+          "why": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 a6 f4 Nc6 Nf3 e6 d4 Nxd4 Nxd4",
+          "why": "Capture the knight with your knight. It supports your pawn on c2."
+        }
+      ],
+      "deviations": [
+        {
+          "nodeId": "e4 c5 Nc3 a6 f4 Nc6",
+          "showNodeId": "e4 c5 Nc3 a6 f4 Nc6 Nf3",
+          "plan": "After this reply, use the shown continuation. Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 a6 f4 e6",
+          "showNodeId": "e4 c5 Nc3 a6 f4 e6 Nf3",
+          "plan": "After this reply, use the shown continuation. Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        }
+      ],
+      "middlegame": "Black can expand on the queen-side. Gain space without assuming that a wing attack is faster than central counterplay. Keep the pieces coordinated through exchanges.",
+      "mistakes": [
+        {
+          "moves": [
+            "e4",
+            "c5",
+            "Nc3",
+            "a6"
+          ],
+          "bad": "Bb5",
+          "good": [
+            "Nf3"
+          ],
+          "text": "The bishop on b5 can be taken by the pawn on a6. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ]
+    },
+    {
+      "key": "nf6",
+      "name": "Answer pressure on e4 first",
+      "roots": [
+        "e4 c5 Nc3 Nf6"
+      ],
+      "finalForm": {
+        "nodeId": "e4 c5 Nc3 Nf6 e5 Ng8 d4 cxd4 Qxd4 Nc6 Qf4",
+        "jobs": [
+          {
+            "square": "c3",
+            "text": "The knight controls e4 and d5 from here."
+          },
+          {
+            "square": "e5",
+            "text": "Keep the pawn on e5 coordinated with the other pieces; check threats before moving it again."
+          },
+          {
+            "square": "f4",
+            "text": "The queen controls d4 and e4 and e5 from here."
+          }
+        ]
+      },
+      "route": [
+        {
+          "nodeId": "e4",
+          "why": "Take space in the centre and open the diagonals of your queen and f1 bishop. This first move is shared with your Vienna repertoire."
+        },
+        {
+          "nodeId": "e4 c5 Nc3",
+          "why": "Develop the queen-side knight. It defends e4 and controls d5. Keep the f-pawn free while you see how Black develops."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 Nf6 e5",
+          "why": "Advance with an attack on the f6 knight. Answer its pressure on e4 concretely rather than playing the usual f-pawn move automatically."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 Nf6 e5 Ng8 d4",
+          "why": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 Nf6 e5 Ng8 d4 cxd4 Qxd4",
+          "why": "Capture the pawn with your queen. From d4 it controls e4 and d5 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 Nf6 e5 Ng8 d4 cxd4 Qxd4 Nc6 Qf4",
+          "why": "Bring your queen to f4. From f4 it controls d4 and e4 and e5. Keep watching Black's replies before advancing more pawns."
+        }
+      ],
+      "deviations": [
+        {
+          "nodeId": "e4 c5 Nc3 Nf6 e5 Ng8",
+          "showNodeId": "e4 c5 Nc3 Nf6 e5 Ng8 d4",
+          "plan": "After this reply, use the shown continuation. Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "nodeId": "e4 c5 Nc3 Nf6 e5 Nc6",
+          "showNodeId": "e4 c5 Nc3 Nf6 e5 Nc6 exf6",
+          "plan": "After this reply, use the shown continuation. Capture the knight with your pawn. Keep your pieces working together and check the opponent's threats before the next move."
+        }
+      ],
+      "middlegame": "The f6 knight attacks the e4 pawn. This repertoire answers with a central advance attacking that knight rather than automatically moving the f-pawn. Develop after the immediate tension is resolved.",
+      "mistakes": [
+        {
+          "moves": [
+            "e4",
+            "c5",
+            "Nc3",
+            "Nf6"
+          ],
+          "bad": "Ba6",
+          "good": [
+            "e5"
+          ],
+          "text": "The bishop on a6 can be taken by the pawn on b7. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ]
+    }
+  ]
+}

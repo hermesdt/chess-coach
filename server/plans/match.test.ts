@@ -23,6 +23,13 @@ const game = (sans: string[], over: Partial<Parameters<typeof matchGame>[0]> = {
   ({ pgn: pgnOf(sans), userColor: 'white' as const, repertoireId: null, ...over });
 
 describe('matchGame', () => {
+  it('keeps Grand Prix plans out of Vienna and London games', () => {
+    const grandPrix = plan({ id: 'gp', group: 'grand-prix' });
+    expect(matchGame(game(shuffle(20), { repertoireId: 'grand-prix' }), [grandPrix])).toEqual([{ planId: 'gp', ply: 16 }]);
+    for (const repertoireId of ['vienna','london',null]) {
+      expect(matchGame(game(shuffle(20), { repertoireId }), [grandPrix])).toEqual([]);
+    }
+  });
   it('matches a Vienna group only in Vienna games', () => {
     const vienna = plan({ id: 'v', group: 'vienna' });
     expect(matchGame(game(shuffle(20), { repertoireId: 'vienna' }), [vienna])).toEqual([{ planId: 'v', ply: 16 }]);

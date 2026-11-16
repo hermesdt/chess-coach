@@ -29,6 +29,11 @@ it('renders Vienna plans in their own White group', async () => {
 });
 
 describe('PlansPage', () => {
+  it('groups Grand Prix plans as a separate White repertoire', async () => {
+    renderPage([entry({ id: 'grand-prix-development', title: 'Develop against the fianchetto', group: 'grand-prix' })]);
+    expect(await screen.findByRole('heading', { name: 'Grand Prix (White)' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Develop against the fianchetto' }).getAttribute('href')).toBe('/plans/grand-prix-development');
+  });
   it('groups the plans and links each one', async () => {
     renderPage([
       entry({ id: 'a', title: 'London attack' }),

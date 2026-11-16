@@ -1,0 +1,248 @@
+{
+  "id": "grand-prix-development",
+  "title": "Develop against the fianchetto",
+  "group": "grand-prix",
+  "side": "white",
+  "level": 1,
+  "summary": "Bring out the king-side pieces and support the centre before starting a wing attack.",
+  "guideLinks": [
+    {
+      "repertoireId": "grand-prix",
+      "variation": "nc6"
+    }
+  ],
+  "lessons": [],
+  "position": {
+    "fromNode": {
+      "repertoireId": "grand-prix",
+      "nodeId": "e4 c5 Nc3 Nc6 f4 g6"
+    },
+    "moves": [
+      "e4",
+      "c5",
+      "Nc3",
+      "Nc6",
+      "f4",
+      "g6"
+    ]
+  },
+  "trigger": {
+    "all": [
+      {
+        "type": "pawns",
+        "side": "own",
+        "on": [
+          "e4",
+          "f4"
+        ]
+      },
+      {
+        "type": "pawns",
+        "side": "opp",
+        "on": [
+          "g6"
+        ]
+      },
+      {
+        "type": "queensOn"
+      }
+    ]
+  },
+  "goal": "Bring out the king-side pieces and support the centre before starting a wing attack.",
+  "steps": [
+    {
+      "text": "Develop the king-side knight so it contributes to central control."
+    },
+    {
+      "text": "Choose a safe bishop square instead of sacrificing it on an unsupported attack."
+    },
+    {
+      "text": "Support the centre and prepare to castle before advancing another wing pawn."
+    }
+  ],
+  "jobs": [
+    {
+      "square": "c3",
+      "text": "The knight controls e4 and d5 from here."
+    },
+    {
+      "square": "e4",
+      "text": "The pawn controls d5 from here."
+    },
+    {
+      "square": "f4",
+      "text": "The pawn controls e5 from here."
+    }
+  ],
+  "breaks": [],
+  "opponent": [
+    {
+      "text": "Black prepares the bishop for g7 and can challenge the centre later. The long diagonal matters even when your immediate plan is on the wing."
+    }
+  ],
+  "notNow": [
+    "Do not treat the f-pawn advance as a reason to sacrifice a piece without a concrete continuation."
+  ],
+  "mistakes": [
+    {
+      "moves": [
+        "e4",
+        "c5",
+        "Nc3",
+        "Nc6",
+        "f4",
+        "g6"
+      ],
+      "bad": "Ba6",
+      "good": [
+        "Nf3"
+      ],
+      "text": "The bishop on a6 can be taken by the pawn on b7. Do not sacrifice a developed piece without a concrete follow-up."
+    }
+  ],
+  "models": [
+    {
+      "title": "Develop against the fianchetto",
+      "moves": [
+        "e4",
+        "c5",
+        "Nc3",
+        "Nc6",
+        "f4",
+        "g6",
+        "Nf3",
+        "Bg7",
+        "Be2",
+        "Nh6",
+        "d3",
+        "d6",
+        "O-O"
+      ],
+      "startPly": 6,
+      "kind": "plan",
+      "source": "tree",
+      "comments": [
+        {
+          "ply": 7,
+          "text": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "ply": 9,
+          "text": "Bring your bishop to e2. It supports your knight on f3."
+        },
+        {
+          "ply": 11,
+          "text": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "ply": 13,
+          "text": "Castle short. The king leaves the centre and the rook comes to f1; finish developing before starting an attack."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "step-1",
+      "board": {
+        "fromNode": {
+          "repertoireId": "grand-prix",
+          "nodeId": "e4 c5 Nc3 Nc6 f4 g6"
+        },
+        "moves": [
+          "e4",
+          "c5",
+          "Nc3",
+          "Nc6",
+          "f4",
+          "g6"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Nf3",
+          "why": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "san": "Ba6",
+          "why": "The bishop on a6 can be taken by the pawn on b7. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Nf3"
+      ],
+      "explanation": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+    },
+    {
+      "id": "step-2",
+      "board": {
+        "fromNode": {
+          "repertoireId": "grand-prix",
+          "nodeId": "e4 c5 Nc3 Nc6 f4 g6 Nf3 Bg7"
+        },
+        "moves": [
+          "e4",
+          "c5",
+          "Nc3",
+          "Nc6",
+          "f4",
+          "g6",
+          "Nf3",
+          "Bg7"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Be2",
+          "why": "Bring your bishop to e2. It supports your knight on f3."
+        },
+        {
+          "san": "Ba6",
+          "why": "The bishop on a6 can be taken by the pawn on b7. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Be2"
+      ],
+      "explanation": "Bring your bishop to e2. It supports your knight on f3."
+    },
+    {
+      "id": "step-3",
+      "board": {
+        "fromNode": {
+          "repertoireId": "grand-prix",
+          "nodeId": "e4 c5 Nc3 Nc6 f4 g6 Nf3 Bg7 Be2 Nh6"
+        },
+        "moves": [
+          "e4",
+          "c5",
+          "Nc3",
+          "Nc6",
+          "f4",
+          "g6",
+          "Nf3",
+          "Bg7",
+          "Be2",
+          "Nh6"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "d3",
+          "why": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "san": "Ba6",
+          "why": "The bishop on a6 can be taken by the pawn on b7. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "d3"
+      ],
+      "explanation": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns."
+    }
+  ]
+}

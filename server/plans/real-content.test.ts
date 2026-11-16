@@ -38,7 +38,7 @@ describe('real plans against the real repertoires, lessons and guides (no engine
 
   it('includes the M12a plans and the level-2 and level-3 M12c plans', () => {
     expect(loadPlans(undefined, reps, LESSON_IDS).map((p) => p.id).sort()).toEqual([
-      'carlsbad-minority', 'caro-advance-d4', 'caro-opposite-castling', 'london-e4-break', 'london-h-file', 'london-kingside-attack', 'no-clear-plan', 'slav-a-file',
+      'carlsbad-minority', 'caro-advance-d4', 'caro-opposite-castling', 'grand-prix-central-response', 'grand-prix-development', 'london-e4-break', 'london-h-file', 'london-kingside-attack', 'no-clear-plan', 'slav-a-file',
       'vienna-central-tempi', 'vienna-development',
     ]);
     expect(loadPlans(undefined, reps, LESSON_IDS).find((p) => p.id === 'slav-a-file')?.level).toBe(2);

@@ -27,15 +27,16 @@ Files: `server/repertoire/leaks.ts`, `leaks.test.ts`, `refresh.ts`,
 `refresh.test.ts`, `opening-cards.test.ts`, `web/src/lib/openings.ts` and its
 tests, `web/src/pages/OpeningsPage.tsx`.
 
-- [ ] Add failing tests: e4 c5 selects Grand Prix and e4 e5 selects Vienna in
+- [x] Add failing tests: e4 c5 selects Grand Prix and e4 e5 selects Vienna in
   both list orders; deviation at White's third move is still a leak; bare e4
   and e4 e6 are ambiguous; d4 London and Black repertoires unchanged; selection
   works below locked branches. An actual scan stores the correct repertoire.
-- [ ] Implement `selectRepertoire(reps: Repertoire[], moves: MoveInfo[],
+- [x] Implement `selectRepertoire(reps: Repertoire[], moves: MoveInfo[],
   userColor: Color): Repertoire | undefined`; use it in scanLeaks. Version the
   matching hash. Add tab label/order. Preserve single-root matches.
-- [ ] Test three White repertoires sharing the initial card: d4/e4 appear once,
+- [x] Test three White repertoires sharing the initial card: d4/e4 appear once,
   three refs/names, FSRS preserved. Targeted tests, typecheck, lint; commit.
+  Commit `4a9722c`: 52 focused tests and 1508 full-suite tests pass.
 
 ### Task 2: Grand Prix Content
 
@@ -43,14 +44,16 @@ Files: `content/repertoires/grand-prix.json`, `content/guides/grand-prix.json`,
 two `content/plans/grand-prix-*.json`; `shared/plans.ts`,
 `server/plans/load.ts`, `web/src/pages/PlansPage.tsx`; content/group/page tests.
 
-- [ ] Failing tests: 250-350 legal move nodes, levels 1-3, six defences, one
+- [x] Failing tests: 250-350 legal move nodes, levels 1-3, six defences, one
   White recommendation per node, six valid guide variations, two valid plans
   and six exercise positions unique across existing content.
-- [ ] Author concrete early recommendations and engine continuations, with
+- [x] Author concrete early recommendations and engine continuations, with
   board-verified explanations. Retain engine results in ignored scratch. Add
   group/schema/UI support. Create guide, models, examples and plan quizzes.
-- [ ] Validate all content at one million nodes. Review every claim, inspect
+- [x] Validate all content at one million nodes. Review every claim, inspect
   warnings, run targeted tests/typecheck/lint; commit.
+  303 move nodes, six guide variations, six quizzes. Full validator: content
+  OK, 176 warnings (17 new quiz alternatives). 1519 tests pass.
 
 ### Task 3: Verify And Integrate
 

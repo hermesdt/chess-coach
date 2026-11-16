@@ -7,6 +7,7 @@ import { DrillBoard } from '../components/DrillBoard';
 const GROUPS: { group: PlanGroup; title: string }[] = [
   { group: 'london', title: 'London (White)' },
   { group: 'vienna', title: 'Vienna (White)' },
+  { group: 'grand-prix', title: 'Grand Prix (White)' },
   { group: 'caro-kann', title: 'Caro-Kann (Black)' },
   { group: 'slav', title: 'Slav (Black)' },
   { group: 'general', title: 'Both colours' },

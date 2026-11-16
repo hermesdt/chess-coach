@@ -27,6 +27,10 @@ describe('replayBoard', () => {
 });
 
 describe('loadPlan', () => {
+  it('accepts the Grand Prix group', () => {
+    const json=raw();json.group='grand-prix';
+    expect(load(json).group).toBe('grand-prix');
+  });
   it('accepts the Vienna group', () => {
     const json = raw();
     json.group = 'vienna';
