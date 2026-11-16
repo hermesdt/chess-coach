@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { openDb } from '../db/db.js';
 import { positionKey, setSuspended, upsertCard } from '../srs/cards-repo.js';
 import { buildSession } from '../srs/session.js';
-import { loadRepertoire } from './load.js';
+import { loadAllRepertoires, loadRepertoire } from './load.js';
 import { syncOpeningCards } from './opening-cards.js';
 
 const NOW = new Date(2026, 9, 18, 12, 0, 0).getTime();
@@ -148,6 +148,26 @@ describe('session ordering', () => {
 });
 
 describe('card order across repertoires', () => {
+  it('preserves the real shared initial card and FSRS history when adding the final White part', () => {
+    const reps = loadAllRepertoires();
+    syncOpeningCards(db, reps.filter(r => r.id !== 'other-e4'), 1);
+    const initial = () => db.prepare("SELECT * FROM cards WHERE kind='opening' AND last_move_uci IS NULL").get()!;
+    const id = initial().id as number;
+    db.prepare('INSERT INTO card_state (card_id, fsrs_json, due, last_review) VALUES (?, ?, ?, ?)')
+      .run(id, '{"reps":9}', NOW, NOW - 1000);
+    const state = db.prepare('SELECT * FROM card_state WHERE card_id=?').get(id);
+    syncOpeningCards(db, reps, 1);
+    const row = initial();
+    expect(row.id).toBe(id);
+    expect(JSON.parse(row.solution_json as string).accepted.sort()).toEqual(['d2d4', 'e2e4']);
+    expect(JSON.parse(row.refs_json as string)).toHaveLength(5);
+    expect(row.prompt).toContain('1.e4: Other Replies');
+    expect(db.prepare('SELECT * FROM card_state WHERE card_id=?').get(id)).toEqual(state);
+    syncOpeningCards(db, reps.filter(r => r.id !== 'other-e4'), 1);
+    expect(initial().id).toBe(id);
+    expect(JSON.parse(initial().refs_json as string)).toHaveLength(4);
+    expect(db.prepare('SELECT * FROM card_state WHERE card_id=?').get(id)).toEqual(state);
+  });
   const london = () => loadRepertoire({ id: 'london', name: 'London System', color: 'white', moves: [{ san: 'd4', comment: 'Take the centre with d4.' }] });
   const vienna = () => loadRepertoire({ id: 'vienna', name: 'Vienna Game', color: 'white', moves: [{ san: 'e4', comment: 'Take the centre with e4.' }] });
 

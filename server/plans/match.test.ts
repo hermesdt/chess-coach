@@ -23,6 +23,14 @@ const game = (sans: string[], over: Partial<Parameters<typeof matchGame>[0]> = {
   ({ pgn: pgnOf(sans), userColor: 'white' as const, repertoireId: null, ...over });
 
 describe('matchGame', () => {
+  it('restricts Other 1.e4 plans to that White repertoire', () => {
+    const p = plan({ id: 'other', group: 'other-e4' });
+    expect(matchGame(game(shuffle(20), { repertoireId: 'other-e4' }), [p])).toEqual([{ planId: 'other', ply: 16 }]);
+    for (const repertoireId of ['vienna', 'grand-prix', 'advance', 'london', 'caro-kann', null]) {
+      expect(matchGame(game(shuffle(20), { repertoireId }), [p])).toEqual([]);
+    }
+    expect(matchGame(game(shuffle(20), { repertoireId: 'other-e4', userColor: 'black' }), [p])).toEqual([]);
+  });
   it('keeps White Advance plans out of Black Caro-Kann games',()=>{
     const advance=plan({id:'advance',group:'advance'});
     expect(matchGame(game(shuffle(20),{repertoireId:'advance'}),[advance])).toEqual([{planId:'advance',ply:16}]);

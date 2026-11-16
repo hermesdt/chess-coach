@@ -29,6 +29,11 @@ it('renders Vienna plans in their own White group', async () => {
 });
 
 describe('PlansPage', () => {
+  it('renders the remaining White replies in their own group', async () => {
+    renderPage([entry({ id: 'other-e4-development', title: 'Develop behind the broad centre', group: 'other-e4' })]);
+    expect(await screen.findByRole('heading', { name: 'Other 1.e4 Replies (White)' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Develop behind the broad centre' }).getAttribute('href')).toBe('/plans/other-e4-development');
+  });
   it('separates White Advance plans from Black Caro-Kann plans', async () => {
     renderPage([entry({ id:'advance-development',title:'Develop against the active bishop',group:'advance' }),entry({ id:'black-caro',title:'Black plan',group:'caro-kann',side:'black' })]);
     expect(await screen.findByRole('heading',{name:'Advance (White)'})).toBeTruthy();

@@ -15,9 +15,9 @@ The AI never invents moves, lines, or evaluations.
 
 ## Status
 
-Milestones through M16c are done (see `docs/ROADMAP.md`). The Plans page covers the middlegame: one plan for each typical position, with a daily quiz. Missed mates in 1 to 4 from your games become review cards; for mates in 3 or 4, play the full line against the longest defence. Threat cards train you to spot the opponent's threat and find your answer. Game pages show the plan that fits your game.
+Milestones through M16d are done (see `docs/ROADMAP.md`). The Plans page covers the middlegame: one plan for each typical position, with a daily quiz. Missed mates in 1 to 4 from your games become review cards; for mates in 3 or 4, play the full line against the longest defence. Threat cards train you to spot the opponent's threat and find your answer. Game pages show the plan that fits your game.
 
-As White, train the London or the 1.e4 repertoire: Vienna against `1...e5`, Grand Prix against `1...c5`, and Advance lines against the French `1...e6` and Caro-Kann `1...c6`. Vienna and Grand Prix each have 303 move nodes; Advance has 261 across both defences. Each part has a guide and two plans. The Black Caro-Kann repertoire stays separate. Other first replies remain planned for M16d. Shared review positions accept each repertoire's recommended move; game statistics and leaks use the actual opening continuation.
+As White, train the London or the 1.e4 repertoire: Vienna against `1...e5`, Grand Prix against `1...c5`, Advance against the French `1...e6` and Caro-Kann `1...c6`, and Other Replies against the Scandinavian, Alekhine, Pirc, Modern, Nimzowitsch and unusual first moves. Vienna and Grand Prix each have 303 move nodes; Advance has 261 and Other Replies has 301. Each part has a guide and two plans. All twenty legal first replies to 1.e4 are represented, without claiming exhaustive later coverage. The Black Caro-Kann repertoire stays separate. Shared review positions accept each repertoire's recommended move; game statistics and leaks use the actual opening continuation.
 See `docs/ROADMAP.md` for the status of each milestone.
 
 ## Requirements

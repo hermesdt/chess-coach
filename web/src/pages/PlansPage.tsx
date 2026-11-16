@@ -9,6 +9,7 @@ const GROUPS: { group: PlanGroup; title: string }[] = [
   { group: 'vienna', title: 'Vienna (White)' },
   { group: 'grand-prix', title: 'Grand Prix (White)' },
   { group: 'advance', title: 'Advance (White)' },
+  { group: 'other-e4', title: 'Other 1.e4 Replies (White)' },
   { group: 'caro-kann', title: 'Caro-Kann (Black)' },
   { group: 'slav', title: 'Slav (Black)' },
   { group: 'general', title: 'Both colours' },

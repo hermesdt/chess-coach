@@ -1,0 +1,229 @@
+{
+  "id": "other-e4-development",
+  "title": "Develop behind the broad centre",
+  "group": "other-e4",
+  "side": "white",
+  "level": 1,
+  "summary": "Use the space from d4 and e4 to develop and secure your king before advancing more pawns.",
+  "guideLinks": [
+    {
+      "repertoireId": "other-e4",
+      "variation": "pirc"
+    }
+  ],
+  "lessons": [],
+  "position": {
+    "fromNode": {
+      "repertoireId": "other-e4",
+      "nodeId": "e4 d6 d4 Nf6"
+    },
+    "moves": [
+      "e4",
+      "d6",
+      "d4",
+      "Nf6"
+    ]
+  },
+  "trigger": {
+    "all": [
+      {
+        "type": "pawns",
+        "side": "own",
+        "on": [
+          "d4",
+          "e4"
+        ]
+      },
+      {
+        "type": "queensOn"
+      }
+    ]
+  },
+  "goal": "Use the space from d4 and e4 to develop and secure your king before advancing more pawns.",
+  "steps": [
+    {
+      "text": "Develop a knight so it supports the centre."
+    },
+    {
+      "text": "Develop the remaining king-side pieces and prepare to castle when safe."
+    },
+    {
+      "text": "Watch Black's central pawn breaks before deciding whether to gain more space."
+    }
+  ],
+  "jobs": [
+    {
+      "square": "b1",
+      "text": "Develop the b1 knight to c3 to defend e4 and control d5."
+    },
+    {
+      "square": "d4",
+      "text": "The pawn controls e5 from here."
+    },
+    {
+      "square": "e4",
+      "text": "The pawn controls d5 from here."
+    }
+  ],
+  "breaks": [],
+  "opponent": [
+    {
+      "text": "Black may fianchetto the king-side bishop and challenge the centre with a pawn break. Count attacks on the central pawns after every developing move."
+    }
+  ],
+  "notNow": [
+    "If central exchanges remove one of your centre pawns, reassess rather than repeating this setup automatically."
+  ],
+  "mistakes": [
+    {
+      "moves": [
+        "e4",
+        "d6",
+        "d4",
+        "Nf6"
+      ],
+      "bad": "Bh6",
+      "good": [
+        "Nc3"
+      ],
+      "text": "The bishop on h6 can be captured from g7. Do not sacrifice a developed piece without a concrete follow-up."
+    }
+  ],
+  "models": [
+    {
+      "title": "Develop behind the broad centre",
+      "moves": [
+        "e4",
+        "d6",
+        "d4",
+        "Nf6",
+        "Nc3",
+        "e5",
+        "Nf3",
+        "Nbd7",
+        "Bc4",
+        "Be7",
+        "O-O"
+      ],
+      "startPly": 4,
+      "kind": "plan",
+      "source": "tree",
+      "comments": [
+        {
+          "ply": 5,
+          "text": "Bring your knight to c3. From c3 it controls e4 and d5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "ply": 7,
+          "text": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "ply": 9,
+          "text": "Bring your bishop to c4. From c4 it controls d5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "ply": 11,
+          "text": "Castle short. The king leaves the centre and the rook comes to f1; finish developing before starting an attack."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "step-1",
+      "board": {
+        "fromNode": {
+          "repertoireId": "other-e4",
+          "nodeId": "e4 d6 d4 Nf6"
+        },
+        "moves": [
+          "e4",
+          "d6",
+          "d4",
+          "Nf6"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Nc3",
+          "why": "Bring your knight to c3. From c3 it controls e4 and d5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "san": "Bh6",
+          "why": "The bishop on h6 can be captured from g7. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Nc3"
+      ],
+      "explanation": "Bring your knight to c3. From c3 it controls e4 and d5. Keep watching Black's replies before advancing more pawns."
+    },
+    {
+      "id": "step-2",
+      "board": {
+        "fromNode": {
+          "repertoireId": "other-e4",
+          "nodeId": "e4 d6 d4 Nf6 Nc3 e5"
+        },
+        "moves": [
+          "e4",
+          "d6",
+          "d4",
+          "Nf6",
+          "Nc3",
+          "e5"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Nf3",
+          "why": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "san": "Bf4",
+          "why": "The bishop on f4 can be captured from e5. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Nf3"
+      ],
+      "explanation": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+    },
+    {
+      "id": "step-3",
+      "board": {
+        "fromNode": {
+          "repertoireId": "other-e4",
+          "nodeId": "e4 d6 d4 Nf6 Nc3 e5 Nf3 Nbd7"
+        },
+        "moves": [
+          "e4",
+          "d6",
+          "d4",
+          "Nf6",
+          "Nc3",
+          "e5",
+          "Nf3",
+          "Nbd7"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Bc4",
+          "why": "Bring your bishop to c4. From c4 it controls d5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "san": "Bf4",
+          "why": "The bishop on f4 can be captured from e5. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Bc4"
+      ],
+      "explanation": "Bring your bishop to c4. From c4 it controls d5. Keep watching Black's replies before advancing more pawns."
+    }
+  ]
+}

@@ -27,6 +27,10 @@ describe('replayBoard', () => {
 });
 
 describe('loadPlan', () => {
+  it('accepts the Other 1.e4 Replies group', () => {
+    const json = raw(); json.group = 'other-e4';
+    expect(load(json).group).toBe('other-e4');
+  });
   it('accepts the White Advance group', () => {
     const json=raw();json.group='advance';
     expect(load(json).group).toBe('advance');

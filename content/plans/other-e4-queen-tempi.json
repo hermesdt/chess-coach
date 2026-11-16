@@ -1,0 +1,238 @@
+{
+  "id": "other-e4-queen-tempi",
+  "title": "Develop with time against the queen",
+  "group": "other-e4",
+  "side": "white",
+  "level": 1,
+  "summary": "Develop with an attack on the exposed queen, then occupy the centre and bring out your pieces.",
+  "guideLinks": [
+    {
+      "repertoireId": "other-e4",
+      "variation": "scandinavian"
+    }
+  ],
+  "lessons": [],
+  "position": {
+    "fromNode": {
+      "repertoireId": "other-e4",
+      "nodeId": "e4 d5 exd5 Qxd5"
+    },
+    "moves": [
+      "e4",
+      "d5",
+      "exd5",
+      "Qxd5"
+    ]
+  },
+  "trigger": {
+    "all": [
+      {
+        "type": "noPawn",
+        "side": "own",
+        "file": "e"
+      },
+      {
+        "type": "piece",
+        "side": "opp",
+        "piece": "Q",
+        "on": [
+          "d5",
+          "a5",
+          "d6",
+          "d8",
+          "e5"
+        ]
+      },
+      {
+        "type": "queensOn"
+      }
+    ]
+  },
+  "goal": "Develop with an attack on the exposed queen, then occupy the centre and bring out your pieces.",
+  "steps": [
+    {
+      "text": "Develop the b1 knight to c3 with an attack on the queen on d5."
+    },
+    {
+      "text": "After the queen moves, occupy the centre when sound instead of chasing it automatically."
+    },
+    {
+      "text": "Bring out the remaining pieces and prepare to castle, checking the queen's new threats."
+    }
+  ],
+  "jobs": [
+    {
+      "square": "b1",
+      "text": "The b1 knight can develop to c3 with an attack on the queen on d5."
+    },
+    {
+      "square": "f1",
+      "text": "The e-pawn has left the f1 bishop's diagonal open. Develop this bishop and prepare to castle when safe."
+    },
+    {
+      "square": "d2",
+      "text": "The d-pawn can occupy d4 after the queen retreats, giving your pieces central support."
+    }
+  ],
+  "breaks": [],
+  "opponent": [
+    {
+      "text": "The queen can retreat or give pressure from a5 or d6. A tempo gained against it is useful development, not a forced win of the queen."
+    }
+  ],
+  "notNow": [
+    "Once the queen is no longer exposed, do not make weakening pawn moves just to attack it again."
+  ],
+  "mistakes": [
+    {
+      "moves": [
+        "e4",
+        "d5",
+        "exd5",
+        "Qxd5"
+      ],
+      "bad": "Bd3",
+      "good": [
+        "Nc3"
+      ],
+      "text": "The bishop on d3 can be captured from d5. Do not sacrifice a developed piece without a concrete follow-up."
+    }
+  ],
+  "models": [
+    {
+      "title": "Develop with time against the queen",
+      "moves": [
+        "e4",
+        "d5",
+        "exd5",
+        "Qxd5",
+        "Nc3",
+        "Qa5",
+        "d4",
+        "Nf6",
+        "Nf3",
+        "Bf5",
+        "Ne5"
+      ],
+      "startPly": 4,
+      "kind": "plan",
+      "source": "tree",
+      "comments": [
+        {
+          "ply": 5,
+          "text": "Develop the knight with an attack on the queen on d5. Gain time for development rather than chasing the queen with repeated pawn moves."
+        },
+        {
+          "ply": 7,
+          "text": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "ply": 9,
+          "text": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "ply": 11,
+          "text": "Bring your knight to e5. Keep your pieces working together and check the opponent's threats before the next move."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "step-1",
+      "board": {
+        "fromNode": {
+          "repertoireId": "other-e4",
+          "nodeId": "e4 d5 exd5 Qxd5"
+        },
+        "moves": [
+          "e4",
+          "d5",
+          "exd5",
+          "Qxd5"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Nc3",
+          "why": "Develop the knight with an attack on the queen on d5. Gain time for development rather than chasing the queen with repeated pawn moves."
+        },
+        {
+          "san": "Bd3",
+          "why": "The bishop on d3 can be captured from d5. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Nc3"
+      ],
+      "explanation": "Develop the knight with an attack on the queen on d5. Gain time for development rather than chasing the queen with repeated pawn moves."
+    },
+    {
+      "id": "step-2",
+      "board": {
+        "fromNode": {
+          "repertoireId": "other-e4",
+          "nodeId": "e4 d5 exd5 Qxd5 Nc3 Qa5"
+        },
+        "moves": [
+          "e4",
+          "d5",
+          "exd5",
+          "Qxd5",
+          "Nc3",
+          "Qa5"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "d4",
+          "why": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "san": "Ba6",
+          "why": "The bishop on a6 can be captured from b8. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "d4"
+      ],
+      "explanation": "Bring your pawn to d4. From d4 it controls e5. Keep watching Black's replies before advancing more pawns."
+    },
+    {
+      "id": "step-3",
+      "board": {
+        "fromNode": {
+          "repertoireId": "other-e4",
+          "nodeId": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6"
+        },
+        "moves": [
+          "e4",
+          "d5",
+          "exd5",
+          "Qxd5",
+          "Nc3",
+          "Qa5",
+          "d4",
+          "Nf6"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Nf3",
+          "why": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "san": "Bg5",
+          "why": "The bishop on g5 can be captured from a5. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Nf3"
+      ],
+      "explanation": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+    }
+  ]
+}

@@ -44,7 +44,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M16a | 1.e4 repertoire, part 1: Vienna Gambit vs 1...e5 (2.Nc3, f4), plus 2...Nc6 and 2...Bc5; lines, guide, drill, plans | done | `docs/superpowers/plans/2026-11-13-m16a-vienna.md` |
 | M16b | 1.e4 repertoire, part 2: Grand Prix Attack vs the Sicilian (2.Nc3, f4) | done | `docs/superpowers/plans/2026-11-16-m16b-grand-prix.md` |
 | M16c | 1.e4 repertoire, part 3: Advance Variation vs the French and the Caro-Kann | done | `docs/superpowers/plans/2026-11-16-m16c-advance.md` |
-| M16d | 1.e4 repertoire, part 4: Scandinavian and the rest (1...Nf6, 1...d6/g6, 1...Nc6), main lines kept simple | not started | — |
+| M16d | 1.e4 repertoire, part 4: Scandinavian and the rest (1...Nf6, 1...d6/g6, 1...Nc6), main lines kept simple | done | `docs/superpowers/plans/2026-11-16-m16d-other-e4.md` |
 
 ## Log
 
@@ -566,6 +566,22 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 
 ## Next session
 
+- **M16d done (2026-11-16).** Other Replies adds 301 nodes (93 level 1,
+  106 level 2, 102 level 3), sixteen first-reply roots, six guide sections and
+  two plans with six quizzes. Combined White 1.e4 content uniquely covers all
+  twenty legal first replies; later coverage is intentionally not exhaustive.
+  Black Caro-Kann remains distinct. Real shared initial-card tests preserve
+  ID/FSRS history while adding/removing the fifth White repertoire.
+  1543 tests, typecheck/lint/build pass; full content OK with 211 warnings
+  (18 new omitted sound-alternative warnings); strict sequence check has
+  0 errors, 18 existing warnings. Temporary-DB Chrome smoke passes seven tabs,
+  new opening attribution, drill, guide, six plan cards, shared initial answers
+  and a plan quiz, without page errors. Review was an author self-review,
+  no subagents; generic unmoved-piece guidance was corrected before completion.
+  Backup: `data/backups/pre-m16d-2026-11-16.db` (quick_check OK).
+  Review: `docs/superpowers/notes/2026-11-16-m16d-review.md`.
+  All four planned 1.e4 parts are now implemented. No M17 scope is agreed.
+
 - **M16c done (2026-11-16).** White Advance versus French/Caro-Kann, kept
   separate from the existing Black Caro-Kann repertoire. One tab, two opening
   roots, six guide sections and two plans with six exercises. Tree: 261 nodes
@@ -615,8 +631,9 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   `docs/superpowers/notes/2026-11-16-m16a-final-review.md`.
   Shared e4-root matching was subsequently resolved in M16b.
 
-- M1 through M16c are done. Next: M16d (1.e4
-  repertoire). Owner's order, 2026-11-10.
+- M1 through M16d are done, including all four planned 1.e4 parts.
+  No further milestone is agreed; use the app and review actual game leaks
+  before choosing the next feature.
 - **M15 done (2026-11-13).** 1484 tests, typecheck, lint, production build and
   isolated health check pass. Full content validation passes with 147 warnings:
   the first run timed out in Stockfish; a verification-only retry used the same
