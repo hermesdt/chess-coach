@@ -42,7 +42,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M14 | Threat cards: two-step review cards (find the opponent's threat, then your answer) from positions in own games where a threat existed and the owner's move ignored it | done | spec `docs/superpowers/specs/2026-11-10-m14-threat-cards-design.md`, plan `docs/superpowers/plans/2026-11-10-m14-threat-cards.md` |
 | M15 | Longer mates: mate cards for mate in 3 and 4 from own games; the owner plays the whole mate, the app plays the longest defence; Stockfish proposes, chess.js proves | done | spec `docs/superpowers/specs/2026-11-10-m15-longer-mates-design.md`, plan `docs/superpowers/plans/2026-11-10-m15-longer-mates.md` |
 | M16a | 1.e4 repertoire, part 1: Vienna Gambit vs 1...e5 (2.Nc3, f4), plus 2...Nc6 and 2...Bc5; lines, guide, drill, plans | done | `docs/superpowers/plans/2026-11-13-m16a-vienna.md` |
-| M16b | 1.e4 repertoire, part 2: Grand Prix Attack vs the Sicilian (2.Nc3, f4) | not started | — |
+| M16b | 1.e4 repertoire, part 2: Grand Prix Attack vs the Sicilian (2.Nc3, f4) | done | `docs/superpowers/plans/2026-11-16-m16b-grand-prix.md` |
 | M16c | 1.e4 repertoire, part 3: Advance Variation vs the French and the Caro-Kann | not started | — |
 | M16d | 1.e4 repertoire, part 4: Scandinavian and the rest (1...Nf6, 1...d6/g6, 1...Nc6), main lines kept simple | not started | — |
 
@@ -566,6 +566,22 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 
 ## Next session
 
+- **M16b done (2026-11-16).** Grand Prix alongside London/Vienna: 303 move
+  nodes (35 level 1, 140 level 2, 128 level 3), six guide variations, two plans
+  with six exercises. Shared e4 roots now use the unique longest matching
+  prefix; ties remain unassigned. Matcher hash version forces stored events
+  to rescan. Three-repertoire initial cards retain ID and FSRS state.
+  1519 tests, typecheck, lint and build pass. Full content: OK, 176 warnings
+  (17 new sound-alternative warnings). Sequence check: 0 errors, 18 warnings.
+  Million-node results are cached, with a verification-only 120-second timeout;
+  production settings unchanged. Browser smoke: five tabs, drill/guide, six
+  trained plan cards, shared initial answers, quiz and separate Sicilian/Vienna
+  attribution, no page errors. Final review was an author self-review, without
+  subagents; no blocking or deferred review findings.
+  Backup: `data/backups/pre-m16b-2026-11-16.db` (quick_check OK).
+  Review: `docs/superpowers/notes/2026-11-16-m16b-review.md`.
+  Next: M16c, White's Advance approach against the French and Caro-Kann.
+
 - **M16a done (2026-11-16).** Owner said proceed with the Vienna and
   delegated remaining design choices. Branch `m16a-vienna`, native managed
   worktree `/Users/alvarodurantovar/.codex/worktrees/a45d/chess`.
@@ -582,10 +598,9 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   `data/backups/pre-m16a-2026-11-16.db` (SQLite quick_check OK).
   Reviews: `docs/superpowers/notes/2026-11-16-vienna-tree-review.md` and
   `docs/superpowers/notes/2026-11-16-m16a-final-review.md`.
-  Next: M16b, Grand Prix against the Sicilian. Confirm its opening choice and
-  resolve shared e4-root repertoire matching in that milestone's design.
+  Shared e4-root matching was subsequently resolved in M16b.
 
-- M1 through M16a are done. Next: M16b–d (1.e4
+- M1 through M16b are done. Next: M16c–d (1.e4
   repertoire). Owner's order, 2026-11-10.
 - **M15 done (2026-11-13).** 1484 tests, typecheck, lint, production build and
   isolated health check pass. Full content validation passes with 147 warnings:
