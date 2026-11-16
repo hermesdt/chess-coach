@@ -54,5 +54,8 @@ Global sequence check: 0 errors, 18 existing warnings.
 Production build passes, with the existing large-bundle warning.
 The first full-suite run found the old eight-plan inventory assertion; updated
 it to include the two new plans. A known lichess batching timeout also appeared
-under engine load and passed when rerun in isolation. Final full-suite and
-content results are recorded in ROADMAP.md after the engine job finishes.
+under engine load and passed when rerun in isolation. Final full suite: 1499
+tests pass. Full content validator: content OK, 159 warnings (147 existing and
+12 new quiz alternative warnings). All engines used the same million-node
+budget; cache warming used the existing pool, not additional dependencies.
+Backup `data/backups/pre-m16a-2026-11-16.db` passes SQLite quick_check.

@@ -15,7 +15,9 @@ The AI never invents moves, lines, or evaluations.
 
 ## Status
 
-Milestones M1 to M15 are done (see `docs/ROADMAP.md`). The Plans page covers the middlegame: one plan for each typical position, with a daily quiz. Missed mates in 1 to 4 from your games become review cards; for mates in 3 or 4, play the full line against the longest defence. Threat cards train you to spot the opponent's threat and find your answer. Game pages show the plan that fits your game.
+Milestones through M16a are done (see `docs/ROADMAP.md`). The Plans page covers the middlegame: one plan for each typical position, with a daily quiz. Missed mates in 1 to 4 from your games become review cards; for mates in 3 or 4, play the full line against the longest defence. Threat cards train you to spot the opponent's threat and find your answer. Game pages show the plan that fits your game.
+
+As White, train the London or the Vienna. The Vienna adds 303 move nodes, a guide and two plans alongside the London, without replacing it. It currently covers `1.e4 e5` only; the rest of the 1.e4 repertoire is planned for later milestones. Shared review positions accept either repertoire's recommended move.
 See `docs/ROADMAP.md` for the status of each milestone.
 
 ## Requirements
