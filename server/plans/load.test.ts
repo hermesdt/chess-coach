@@ -27,6 +27,10 @@ describe('replayBoard', () => {
 });
 
 describe('loadPlan', () => {
+  it('accepts the White Advance group', () => {
+    const json=raw();json.group='advance';
+    expect(load(json).group).toBe('advance');
+  });
   it('accepts the Grand Prix group', () => {
     const json=raw();json.group='grand-prix';
     expect(load(json).group).toBe('grand-prix');

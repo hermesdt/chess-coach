@@ -1,0 +1,261 @@
+{
+  "id": "advance-pawn-chain",
+  "title": "Protect the base of the pawn chain",
+  "group": "advance",
+  "side": "white",
+  "level": 1,
+  "summary": "Support d4 against the c-pawn attack, then develop behind the centre.",
+  "guideLinks": [
+    {
+      "repertoireId": "advance",
+      "variation": "french-c5"
+    }
+  ],
+  "lessons": [],
+  "position": {
+    "fromNode": {
+      "repertoireId": "advance",
+      "nodeId": "e4 e6 d4 d5 e5 c5"
+    },
+    "moves": [
+      "e4",
+      "e6",
+      "d4",
+      "d5",
+      "e5",
+      "c5"
+    ]
+  },
+  "trigger": {
+    "all": [
+      {
+        "type": "pawns",
+        "side": "own",
+        "on": [
+          "d4",
+          "e5"
+        ]
+      },
+      {
+        "type": "pawns",
+        "side": "opp",
+        "on": [
+          "c5",
+          "e6"
+        ]
+      },
+      {
+        "type": "queensOn"
+      }
+    ]
+  },
+  "goal": "Support d4 against the c-pawn attack, then develop behind the centre.",
+  "steps": [
+    {
+      "text": "Support the d4 pawn before assuming your space advantage gives an attack."
+    },
+    {
+      "text": "Develop the king-side knight so it contributes to the centre."
+    },
+    {
+      "text": "Bring out the bishop and secure the king while watching for more pressure on d4."
+    }
+  ],
+  "jobs": [
+    {
+      "square": "e5",
+      "text": "Keep the pawn on e5 coordinated with the other pieces; check threats before moving it again."
+    },
+    {
+      "square": "d4",
+      "text": "The pawn controls e5 from here."
+    },
+    {
+      "square": "d1",
+      "text": "The queen controls d4 from here."
+    }
+  ],
+  "breaks": [],
+  "opponent": [
+    {
+      "text": "The c5 pawn attacks d4. A knight or queen can add pressure, so count attackers and defenders after each new developing move."
+    }
+  ],
+  "notNow": [
+    "If exchanges have removed the d4 pawn, reassess the new structure instead of following the original chain plan."
+  ],
+  "mistakes": [
+    {
+      "moves": [
+        "e4",
+        "e6",
+        "d4",
+        "d5",
+        "e5",
+        "c5"
+      ],
+      "bad": "Bh6",
+      "good": [
+        "c3"
+      ],
+      "text": "The bishop on h6 can be taken by the pawn on g7. Do not sacrifice a developed piece without a concrete follow-up."
+    }
+  ],
+  "models": [
+    {
+      "title": "Protect the base of the pawn chain",
+      "moves": [
+        "e4",
+        "e6",
+        "d4",
+        "d5",
+        "e5",
+        "c5",
+        "c3",
+        "Nc6",
+        "Nf3",
+        "Bd7",
+        "Be2",
+        "Nge7",
+        "O-O",
+        "Ng6",
+        "Na3",
+        "Be7",
+        "Nc2"
+      ],
+      "startPly": 6,
+      "kind": "plan",
+      "source": "tree",
+      "comments": [
+        {
+          "ply": 7,
+          "text": "Support the d4 pawn with your c-pawn. Black is attacking the base of your pawn chain, so reinforce it before starting a wing attack."
+        },
+        {
+          "ply": 9,
+          "text": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "ply": 11,
+          "text": "Bring your bishop to e2. It supports your knight on f3."
+        },
+        {
+          "ply": 13,
+          "text": "Castle short. The king leaves the centre and the rook comes to f1; finish developing before starting an attack."
+        },
+        {
+          "ply": 15,
+          "text": "Bring your knight to a3. Keep your pieces working together and check the opponent's threats before the next move."
+        },
+        {
+          "ply": 17,
+          "text": "Bring your knight to c2. From c2 it controls d4. Keep watching Black's replies before advancing more pawns."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "step-1",
+      "board": {
+        "fromNode": {
+          "repertoireId": "advance",
+          "nodeId": "e4 e6 d4 d5 e5 c5"
+        },
+        "moves": [
+          "e4",
+          "e6",
+          "d4",
+          "d5",
+          "e5",
+          "c5"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "c3",
+          "why": "Support the d4 pawn with your c-pawn. Black is attacking the base of your pawn chain, so reinforce it before starting a wing attack."
+        },
+        {
+          "san": "Bh6",
+          "why": "The bishop on h6 can be taken by the pawn on g7. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "c3"
+      ],
+      "explanation": "Support the d4 pawn with your c-pawn. Black is attacking the base of your pawn chain, so reinforce it before starting a wing attack."
+    },
+    {
+      "id": "step-2",
+      "board": {
+        "fromNode": {
+          "repertoireId": "advance",
+          "nodeId": "e4 e6 d4 d5 e5 c5 c3 Nc6"
+        },
+        "moves": [
+          "e4",
+          "e6",
+          "d4",
+          "d5",
+          "e5",
+          "c5",
+          "c3",
+          "Nc6"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Nf3",
+          "why": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "san": "Bh6",
+          "why": "The bishop on h6 can be taken by the pawn on g7. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Nf3"
+      ],
+      "explanation": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+    },
+    {
+      "id": "step-3",
+      "board": {
+        "fromNode": {
+          "repertoireId": "advance",
+          "nodeId": "e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Bd7"
+        },
+        "moves": [
+          "e4",
+          "e6",
+          "d4",
+          "d5",
+          "e5",
+          "c5",
+          "c3",
+          "Nc6",
+          "Nf3",
+          "Bd7"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Be2",
+          "why": "Bring your bishop to e2. It supports your knight on f3."
+        },
+        {
+          "san": "Bh6",
+          "why": "The bishop on h6 can be taken by the pawn on g7. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Be2"
+      ],
+      "explanation": "Bring your bishop to e2. It supports your knight on f3."
+    }
+  ]
+}

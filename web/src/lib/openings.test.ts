@@ -19,6 +19,10 @@ describe('formatLeak', () => {
 });
 
 describe('tabRank', () => {
+  it('puts White Advance after Grand Prix and before the Black repertoires', () => {
+    expect(['caro-kann','advance','slav','grand-prix','vienna','london'].sort((a,b)=>tabRank(a)-tabRank(b)))
+      .toEqual(['london','vienna','grand-prix','advance','caro-kann','slav']);
+  });
   it('puts Grand Prix after Vienna', () => {
     expect(['slav', 'grand-prix', 'caro-kann', 'vienna', 'london'].sort((a,b) => tabRank(a)-tabRank(b)))
       .toEqual(['london', 'vienna', 'grand-prix', 'caro-kann', 'slav']);

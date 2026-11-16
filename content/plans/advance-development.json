@@ -1,0 +1,261 @@
+{
+  "id": "advance-development",
+  "title": "Develop against the active bishop",
+  "group": "advance",
+  "side": "white",
+  "level": 1,
+  "summary": "Develop behind the pawn centre without ignoring the bishop already outside Black's chain.",
+  "guideLinks": [
+    {
+      "repertoireId": "advance",
+      "variation": "caro-bf5"
+    }
+  ],
+  "lessons": [],
+  "position": {
+    "fromNode": {
+      "repertoireId": "advance",
+      "nodeId": "e4 c6 d4 d5 e5 Bf5"
+    },
+    "moves": [
+      "e4",
+      "c6",
+      "d4",
+      "d5",
+      "e5",
+      "Bf5"
+    ]
+  },
+  "trigger": {
+    "all": [
+      {
+        "type": "pawns",
+        "side": "own",
+        "on": [
+          "d4",
+          "e5"
+        ]
+      },
+      {
+        "type": "piece",
+        "side": "opp",
+        "piece": "B",
+        "on": [
+          "f5"
+        ]
+      },
+      {
+        "type": "queensOn"
+      }
+    ]
+  },
+  "goal": "Develop behind the pawn centre without ignoring the bishop already outside Black's chain.",
+  "steps": [
+    {
+      "text": "Develop the king-side knight to support the central pawns."
+    },
+    {
+      "text": "Bring out the king-side bishop and prepare to castle when safe."
+    },
+    {
+      "text": "Develop the remaining pieces while checking central captures and the active opposing bishop."
+    }
+  ],
+  "jobs": [
+    {
+      "square": "e5",
+      "text": "Keep the pawn on e5 coordinated with the other pieces; check threats before moving it again."
+    },
+    {
+      "square": "d4",
+      "text": "The pawn controls e5 from here."
+    },
+    {
+      "square": "d1",
+      "text": "The queen controls d4 from here."
+    }
+  ],
+  "breaks": [],
+  "opponent": [
+    {
+      "text": "The bishop on f5 is already outside the pawn chain. Black can still challenge the centre with the c-pawn; do not ignore that break while developing."
+    }
+  ],
+  "notNow": [
+    "Do not copy a French plan that assumes the opposing light-square bishop is blocked on c8."
+  ],
+  "mistakes": [
+    {
+      "moves": [
+        "e4",
+        "c6",
+        "d4",
+        "d5",
+        "e5",
+        "Bf5"
+      ],
+      "bad": "Bh6",
+      "good": [
+        "Nf3"
+      ],
+      "text": "The bishop on h6 can be taken by the pawn on g7. Do not sacrifice a developed piece without a concrete follow-up."
+    }
+  ],
+  "models": [
+    {
+      "title": "Develop against the active bishop",
+      "moves": [
+        "e4",
+        "c6",
+        "d4",
+        "d5",
+        "e5",
+        "Bf5",
+        "Nf3",
+        "e6",
+        "Be2",
+        "c5",
+        "Be3",
+        "cxd4",
+        "Nxd4",
+        "Ne7",
+        "c4",
+        "Nbc6",
+        "Qa4"
+      ],
+      "startPly": 6,
+      "kind": "plan",
+      "source": "tree",
+      "comments": [
+        {
+          "ply": 7,
+          "text": "Develop the king-side knight to support d4 and e5. The opposing light-square bishop is already outside the pawn chain, so do not treat this as the same French position."
+        },
+        {
+          "ply": 9,
+          "text": "Bring your bishop to e2. It supports your knight on f3."
+        },
+        {
+          "ply": 11,
+          "text": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "ply": 13,
+          "text": "Capture the pawn with your knight. From d4 it attacks the bishop on f5; an attack is not a guarantee of winning it."
+        },
+        {
+          "ply": 15,
+          "text": "Bring your pawn to c4. From c4 it controls d5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "ply": 17,
+          "text": "Bring your queen to a4. From a4 it attacks the knight on c6; an attack is not a guarantee of winning it."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "step-1",
+      "board": {
+        "fromNode": {
+          "repertoireId": "advance",
+          "nodeId": "e4 c6 d4 d5 e5 Bf5"
+        },
+        "moves": [
+          "e4",
+          "c6",
+          "d4",
+          "d5",
+          "e5",
+          "Bf5"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Nf3",
+          "why": "Develop the king-side knight to support d4 and e5. The opposing light-square bishop is already outside the pawn chain, so do not treat this as the same French position."
+        },
+        {
+          "san": "Bh6",
+          "why": "The bishop on h6 can be taken by the pawn on g7. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Nf3"
+      ],
+      "explanation": "Develop the king-side knight to support d4 and e5. The opposing light-square bishop is already outside the pawn chain, so do not treat this as the same French position."
+    },
+    {
+      "id": "step-2",
+      "board": {
+        "fromNode": {
+          "repertoireId": "advance",
+          "nodeId": "e4 c6 d4 d5 e5 Bf5 Nf3 e6"
+        },
+        "moves": [
+          "e4",
+          "c6",
+          "d4",
+          "d5",
+          "e5",
+          "Bf5",
+          "Nf3",
+          "e6"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Be2",
+          "why": "Bring your bishop to e2. It supports your knight on f3."
+        },
+        {
+          "san": "Bh6",
+          "why": "The bishop on h6 can be taken by the pawn on g7. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Be2"
+      ],
+      "explanation": "Bring your bishop to e2. It supports your knight on f3."
+    },
+    {
+      "id": "step-3",
+      "board": {
+        "fromNode": {
+          "repertoireId": "advance",
+          "nodeId": "e4 c6 d4 d5 e5 Bf5 Nf3 e6 Be2 c5"
+        },
+        "moves": [
+          "e4",
+          "c6",
+          "d4",
+          "d5",
+          "e5",
+          "Bf5",
+          "Nf3",
+          "e6",
+          "Be2",
+          "c5"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Be3",
+          "why": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "san": "Bc4",
+          "why": "The bishop on c4 can be taken by the pawn on d5. Do not sacrifice a developed piece without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Be3"
+      ],
+      "explanation": "Bring your bishop to e3. From e3 it controls d4. Keep watching Black's replies before advancing more pawns."
+    }
+  ]
+}

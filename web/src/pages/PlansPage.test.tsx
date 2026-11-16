@@ -29,6 +29,11 @@ it('renders Vienna plans in their own White group', async () => {
 });
 
 describe('PlansPage', () => {
+  it('separates White Advance plans from Black Caro-Kann plans', async () => {
+    renderPage([entry({ id:'advance-development',title:'Develop against the active bishop',group:'advance' }),entry({ id:'black-caro',title:'Black plan',group:'caro-kann',side:'black' })]);
+    expect(await screen.findByRole('heading',{name:'Advance (White)'})).toBeTruthy();
+    expect(screen.getByRole('heading',{name:'Caro-Kann (Black)'})).toBeTruthy();
+  });
   it('groups Grand Prix plans as a separate White repertoire', async () => {
     renderPage([entry({ id: 'grand-prix-development', title: 'Develop against the fianchetto', group: 'grand-prix' })]);
     expect(await screen.findByRole('heading', { name: 'Grand Prix (White)' })).toBeTruthy();

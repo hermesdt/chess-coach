@@ -43,7 +43,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M15 | Longer mates: mate cards for mate in 3 and 4 from own games; the owner plays the whole mate, the app plays the longest defence; Stockfish proposes, chess.js proves | done | spec `docs/superpowers/specs/2026-11-10-m15-longer-mates-design.md`, plan `docs/superpowers/plans/2026-11-10-m15-longer-mates.md` |
 | M16a | 1.e4 repertoire, part 1: Vienna Gambit vs 1...e5 (2.Nc3, f4), plus 2...Nc6 and 2...Bc5; lines, guide, drill, plans | done | `docs/superpowers/plans/2026-11-13-m16a-vienna.md` |
 | M16b | 1.e4 repertoire, part 2: Grand Prix Attack vs the Sicilian (2.Nc3, f4) | done | `docs/superpowers/plans/2026-11-16-m16b-grand-prix.md` |
-| M16c | 1.e4 repertoire, part 3: Advance Variation vs the French and the Caro-Kann | not started | — |
+| M16c | 1.e4 repertoire, part 3: Advance Variation vs the French and the Caro-Kann | done | `docs/superpowers/plans/2026-11-16-m16c-advance.md` |
 | M16d | 1.e4 repertoire, part 4: Scandinavian and the rest (1...Nf6, 1...d6/g6, 1...Nc6), main lines kept simple | not started | — |
 
 ## Log
@@ -566,6 +566,21 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 
 ## Next session
 
+- **M16c done (2026-11-16).** White Advance versus French/Caro-Kann, kept
+  separate from the existing Black Caro-Kann repertoire. One tab, two opening
+  roots, six guide sections and two plans with six exercises. Tree: 261 nodes
+  (27 level 1, 90 level 2, 144 level 3). All moves board/engine-validated.
+  1531 tests, typecheck/lint/build pass. Full content OK, 193 warnings (17 new
+  sound-alternative warnings). Sequence check: 0 errors, 18 existing warnings.
+  Browser smoke: six tabs, both White roots, distinct White/Black Caro stats,
+  drills, guide, six trained plan cards, shared opening and plan review, no
+  page errors. Review fixed an off-plan h4 quiz answer to validated Nf3 with
+  a RED-to-GREEN regression test. Author self-review, no subagents; no remaining
+  blocking or deferred review findings. Backup:
+  `data/backups/pre-m16c-2026-11-16.db` (quick_check OK).
+  Review: `docs/superpowers/notes/2026-11-16-m16c-review.md`.
+  Next: M16d, Scandinavian and the remaining first replies.
+
 - **M16b done (2026-11-16).** Grand Prix alongside London/Vienna: 303 move
   nodes (35 level 1, 140 level 2, 128 level 3), six guide variations, two plans
   with six exercises. Shared e4 roots now use the unique longest matching
@@ -600,7 +615,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   `docs/superpowers/notes/2026-11-16-m16a-final-review.md`.
   Shared e4-root matching was subsequently resolved in M16b.
 
-- M1 through M16b are done. Next: M16c–d (1.e4
+- M1 through M16c are done. Next: M16d (1.e4
   repertoire). Owner's order, 2026-11-10.
 - **M15 done (2026-11-13).** 1484 tests, typecheck, lint, production build and
   isolated health check pass. Full content validation passes with 147 warnings:
