@@ -61,7 +61,9 @@ two `content/plans/grand-prix-*.json`; `shared/plans.ts`,
 - [x] Full tests/typecheck/lint/build, content and sequence validation pass.
 - [x] Temporary DB/browser: five tabs, Grand Prix drill/guide, plan training,
   shared initial review card and distinct Sicilian/Vienna game attribution.
-- [ ] Update README/ROADMAP, take and check SQLite backup, merge main,
+- [x] Update README/ROADMAP, take and check SQLite backup, merge main,
   verify merged tests, push. Preserve managed worktree ownership.
+  Completed 2026-11-16: main pushed at `e83492c`; 1519 merged-result tests
+  pass, with typecheck/lint/build green and the managed worktree preserved.
 
 Owner delegated remaining choices; do not invent a separate design approval.
