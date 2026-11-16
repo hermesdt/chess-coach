@@ -27,6 +27,11 @@ describe('replayBoard', () => {
 });
 
 describe('loadPlan', () => {
+  it('accepts the Vienna group', () => {
+    const json = raw();
+    json.group = 'vienna';
+    expect(load(json).group).toBe('vienna');
+  });
   it('accepts valid clear-file conditions and rejects malformed ranges', () => {
     const json = raw();
     json.trigger.all = [{ type: 'clearFile', file: 'a', from: 8, to: 2 }];

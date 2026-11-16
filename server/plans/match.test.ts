@@ -23,6 +23,12 @@ const game = (sans: string[], over: Partial<Parameters<typeof matchGame>[0]> = {
   ({ pgn: pgnOf(sans), userColor: 'white' as const, repertoireId: null, ...over });
 
 describe('matchGame', () => {
+  it('matches a Vienna group only in Vienna games', () => {
+    const vienna = plan({ id: 'v', group: 'vienna' });
+    expect(matchGame(game(shuffle(20), { repertoireId: 'vienna' }), [vienna])).toEqual([{ planId: 'v', ply: 16 }]);
+    expect(matchGame(game(shuffle(20), { repertoireId: 'london' }), [vienna])).toEqual([]);
+    expect(matchGame(game(shuffle(20), { repertoireId: null }), [vienna])).toEqual([]);
+  });
   it('uses the window 16 to 60 and at most two plans', () => {
     expect([PLAN_FROM_PLY, PLAN_TO_PLY, MAX_PLANS_PER_GAME]).toEqual([16, 60, 2]);
   });

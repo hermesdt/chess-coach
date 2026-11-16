@@ -1,6 +1,6 @@
 // M12: middlegame plans (content files and API shapes)
 
-export type PlanGroup = 'london' | 'caro-kann' | 'slav' | 'general';
+export type PlanGroup = 'london' | 'vienna' | 'caro-kann' | 'slav' | 'general';
 export type PlanSide = 'white' | 'black';
 
 export interface PlanArrow { from: string; to: string; kind: 'move' | 'attack' | 'route' }

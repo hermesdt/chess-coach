@@ -24,7 +24,7 @@ const isStringArray = (v: unknown): v is string[] => Array.isArray(v) && v.every
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const isSquare = (v: unknown): v is string => isString(v) && /^[a-h][1-8]$/.test(v);
 
-const GROUPS = ['london', 'caro-kann', 'slav', 'general'];
+const GROUPS = ['london', 'vienna', 'caro-kann', 'slav', 'general'];
 const SIDES = ['white', 'black'];
 const PIECES = ['K', 'Q', 'R', 'B', 'N', 'P'];
 const ARROW_KINDS = ['move', 'attack', 'route'];

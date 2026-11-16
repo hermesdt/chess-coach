@@ -1,0 +1,263 @@
+{
+  "id": "vienna-central-tempi",
+  "title": "Use the centre to gain time",
+  "group": "vienna",
+  "side": "white",
+  "level": 2,
+  "summary": "Use central pawn threats, then develop; answer queen pressure before pushing blindly.",
+  "guideLinks": [
+    {
+      "repertoireId": "vienna",
+      "variation": "gambit"
+    }
+  ],
+  "lessons": [],
+  "position": {
+    "fromNode": {
+      "repertoireId": "vienna",
+      "nodeId": "e4 e5 Nc3 Nf6 f4 Nc6 fxe5 Nxe5 d4 Ng6"
+    },
+    "moves": [
+      "e4",
+      "e5",
+      "Nc3",
+      "Nf6",
+      "f4",
+      "Nc6",
+      "fxe5",
+      "Nxe5",
+      "d4",
+      "Ng6"
+    ]
+  },
+  "trigger": {
+    "all": [
+      {
+        "type": "pawns",
+        "side": "own",
+        "on": [
+          "d4"
+        ]
+      },
+      {
+        "type": "piece",
+        "side": "own",
+        "piece": "N",
+        "on": [
+          "c3"
+        ]
+      },
+      {
+        "type": "noPawn",
+        "side": "own",
+        "file": "f"
+      },
+      {
+        "type": "queensOn"
+      }
+    ]
+  },
+  "goal": "Use central pawn threats, then develop; answer queen pressure before pushing blindly.",
+  "steps": [
+    {
+      "text": "Look for a central pawn advance that attacks a knight, but check whether your king is in check first."
+    },
+    {
+      "text": "Develop the king-side knight when it does not ignore a direct threat."
+    },
+    {
+      "text": "If the opposing queen adds pressure to the centre, defend that pressure before pushing again."
+    }
+  ],
+  "jobs": [
+    {
+      "square": "c3",
+      "text": "The knight controls e4 and d5 from here."
+    },
+    {
+      "square": "d4",
+      "text": "The pawn controls e5 from here."
+    },
+    {
+      "square": "e4",
+      "text": "The pawn controls d5 from here."
+    }
+  ],
+  "breaks": [],
+  "opponent": [
+    {
+      "text": "Black can use the queen to add pressure to your central pawns. Your space advantage does not remove the need to defend."
+    }
+  ],
+  "notNow": [
+    "Do not push another pawn automatically when the opposing queen creates a direct threat."
+  ],
+  "mistakes": [
+    {
+      "moves": [
+        "e4",
+        "e5",
+        "Nc3",
+        "Nf6",
+        "f4",
+        "Nc6",
+        "fxe5",
+        "Nxe5",
+        "d4",
+        "Ng6"
+      ],
+      "bad": "Ba6",
+      "good": [
+        "e5"
+      ],
+      "text": "Moving the bishop to a6 leaves it capturable by the b7 pawn. Do not sacrifice it without a concrete follow-up."
+    }
+  ],
+  "models": [
+    {
+      "title": "Use the centre to gain time",
+      "moves": [
+        "e4",
+        "e5",
+        "Nc3",
+        "Nf6",
+        "f4",
+        "Nc6",
+        "fxe5",
+        "Nxe5",
+        "d4",
+        "Ng6",
+        "e5",
+        "Qe7",
+        "Qe2"
+      ],
+      "startPly": 10,
+      "kind": "plan",
+      "source": "tree",
+      "comments": [
+        {
+          "ply": 11,
+          "text": "Bring your pawn to e5. From e5 it attacks the knight on f6; an attack is not a guarantee of winning it."
+        },
+        {
+          "ply": 13,
+          "text": "Bring your queen to e2. From e2 it controls e4 and e5. Keep watching Black's replies before advancing more pawns."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "step-1",
+      "board": {
+        "fromNode": {
+          "repertoireId": "vienna",
+          "nodeId": "e4 e5 Nc3 Nf6 f4 Nc6 fxe5 Nxe5 d4 Ng6"
+        },
+        "moves": [
+          "e4",
+          "e5",
+          "Nc3",
+          "Nf6",
+          "f4",
+          "Nc6",
+          "fxe5",
+          "Nxe5",
+          "d4",
+          "Ng6"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "e5",
+          "why": "Bring your pawn to e5. From e5 it attacks the knight on f6; an attack is not a guarantee of winning it."
+        },
+        {
+          "san": "Ba6",
+          "why": "Moving the bishop to a6 leaves it capturable by the b7 pawn. Do not sacrifice it without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "e5"
+      ],
+      "explanation": "Bring your pawn to e5. From e5 it attacks the knight on f6; an attack is not a guarantee of winning it."
+    },
+    {
+      "id": "step-2",
+      "board": {
+        "fromNode": {
+          "repertoireId": "vienna",
+          "nodeId": "e4 e5 Nc3 Nf6 f4 Nc6 fxe5 Nxe5 d4 Ng6 e5 Ng8"
+        },
+        "moves": [
+          "e4",
+          "e5",
+          "Nc3",
+          "Nf6",
+          "f4",
+          "Nc6",
+          "fxe5",
+          "Nxe5",
+          "d4",
+          "Ng6",
+          "e5",
+          "Ng8"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Nf3",
+          "why": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "san": "Ba6",
+          "why": "Moving the bishop to a6 leaves it capturable by the b7 pawn. Do not sacrifice it without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Nf3"
+      ],
+      "explanation": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+    },
+    {
+      "id": "step-3",
+      "board": {
+        "fromNode": {
+          "repertoireId": "vienna",
+          "nodeId": "e4 e5 Nc3 Nf6 f4 Nc6 fxe5 Nxe5 d4 Ng6 e5 Qe7"
+        },
+        "moves": [
+          "e4",
+          "e5",
+          "Nc3",
+          "Nf6",
+          "f4",
+          "Nc6",
+          "fxe5",
+          "Nxe5",
+          "d4",
+          "Ng6",
+          "e5",
+          "Qe7"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Qe2",
+          "why": "Bring your queen to e2. From e2 it controls e4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "san": "Ba6",
+          "why": "Moving the bishop to a6 leaves it capturable by the b7 pawn. Do not sacrifice it without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Qe2"
+      ],
+      "explanation": "Bring your queen to e2. From e2 it controls e4 and e5. Keep watching Black's replies before advancing more pawns."
+    }
+  ]
+}

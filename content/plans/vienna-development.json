@@ -1,0 +1,256 @@
+{
+  "id": "vienna-development",
+  "title": "Finish development before attacking",
+  "group": "vienna",
+  "side": "white",
+  "level": 1,
+  "summary": "Bring out the king-side knight, castle when safe, and support the centre.",
+  "guideLinks": [
+    {
+      "repertoireId": "vienna",
+      "variation": "bishop"
+    }
+  ],
+  "lessons": [],
+  "position": {
+    "fromNode": {
+      "repertoireId": "vienna",
+      "nodeId": "e4 e5 Nc3 Bc5 Bc4 Nf6"
+    },
+    "moves": [
+      "e4",
+      "e5",
+      "Nc3",
+      "Bc5",
+      "Bc4",
+      "Nf6"
+    ]
+  },
+  "trigger": {
+    "all": [
+      {
+        "type": "pawns",
+        "side": "own",
+        "on": [
+          "e4"
+        ]
+      },
+      {
+        "type": "piece",
+        "side": "own",
+        "piece": "B",
+        "on": [
+          "c4"
+        ]
+      },
+      {
+        "type": "piece",
+        "side": "own",
+        "piece": "N",
+        "on": [
+          "c3"
+        ]
+      },
+      {
+        "type": "queensOn"
+      }
+    ]
+  },
+  "goal": "Bring out the king-side knight, castle when safe, and support the centre.",
+  "steps": [
+    {
+      "text": "Develop the king-side knight to support central play."
+    },
+    {
+      "text": "Castle only when the path is clear and the king will not pass through check."
+    },
+    {
+      "text": "Support the e4 pawn and bring out the remaining bishop before committing to an attack."
+    }
+  ],
+  "jobs": [
+    {
+      "square": "c3",
+      "text": "The knight controls e4 and d5 from here."
+    },
+    {
+      "square": "c4",
+      "text": "The bishop controls d5 from here."
+    },
+    {
+      "square": "e4",
+      "text": "The pawn controls d5 from here."
+    }
+  ],
+  "breaks": [],
+  "opponent": [
+    {
+      "text": "Black can develop the f6 knight to attack the e4 pawn. Count the defenders before choosing a pawn break."
+    }
+  ],
+  "notNow": [
+    "Do not sacrifice the active bishop just because it points toward the king-side."
+  ],
+  "mistakes": [
+    {
+      "moves": [
+        "e4",
+        "e5",
+        "Nc3",
+        "Bc5",
+        "Bc4",
+        "Nf6"
+      ],
+      "bad": "Ba6",
+      "good": [
+        "Nf3"
+      ],
+      "text": "Moving the bishop to a6 leaves it capturable by the b7 pawn. Do not sacrifice it without a concrete follow-up."
+    }
+  ],
+  "models": [
+    {
+      "title": "Finish development before attacking",
+      "moves": [
+        "e4",
+        "e5",
+        "Nc3",
+        "Bc5",
+        "Bc4",
+        "Nf6",
+        "Nf3",
+        "d6",
+        "O-O",
+        "O-O",
+        "d3",
+        "a5",
+        "a4"
+      ],
+      "startPly": 6,
+      "kind": "plan",
+      "source": "tree",
+      "comments": [
+        {
+          "ply": 7,
+          "text": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "ply": 9,
+          "text": "Castle short. The king leaves the centre and the rook comes to f1; finish developing before starting an attack."
+        },
+        {
+          "ply": 11,
+          "text": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "ply": 13,
+          "text": "Bring your pawn to a4. Keep your pieces working together and check the opponent's threats before the next move."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "step-1",
+      "board": {
+        "fromNode": {
+          "repertoireId": "vienna",
+          "nodeId": "e4 e5 Nc3 Bc5 Bc4 Nf6"
+        },
+        "moves": [
+          "e4",
+          "e5",
+          "Nc3",
+          "Bc5",
+          "Bc4",
+          "Nf6"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "Nf3",
+          "why": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "san": "Ba6",
+          "why": "Moving the bishop to a6 leaves it capturable by the b7 pawn. Do not sacrifice it without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "Nf3"
+      ],
+      "explanation": "Bring your knight to f3. From f3 it controls d4 and e5. Keep watching Black's replies before advancing more pawns."
+    },
+    {
+      "id": "step-2",
+      "board": {
+        "fromNode": {
+          "repertoireId": "vienna",
+          "nodeId": "e4 e5 Nc3 Bc5 Bc4 Nf6 Nf3 d6"
+        },
+        "moves": [
+          "e4",
+          "e5",
+          "Nc3",
+          "Bc5",
+          "Bc4",
+          "Nf6",
+          "Nf3",
+          "d6"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "O-O",
+          "why": "Castle short. The king leaves the centre and the rook comes to f1; finish developing before starting an attack."
+        },
+        {
+          "san": "Ba6",
+          "why": "Moving the bishop to a6 leaves it capturable by the b7 pawn. Do not sacrifice it without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "O-O"
+      ],
+      "explanation": "Castle short. The king leaves the centre and the rook comes to f1; finish developing before starting an attack."
+    },
+    {
+      "id": "step-3",
+      "board": {
+        "fromNode": {
+          "repertoireId": "vienna",
+          "nodeId": "e4 e5 Nc3 Bc5 Bc4 Nf6 Nf3 d6 O-O O-O"
+        },
+        "moves": [
+          "e4",
+          "e5",
+          "Nc3",
+          "Bc5",
+          "Bc4",
+          "Nf6",
+          "Nf3",
+          "d6",
+          "O-O",
+          "O-O"
+        ]
+      },
+      "prompt": "White to move. Find a sound move for this stage of the plan.",
+      "choices": [
+        {
+          "san": "d3",
+          "why": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns."
+        },
+        {
+          "san": "Ba6",
+          "why": "Moving the bishop to a6 leaves it capturable by the b7 pawn. Do not sacrifice it without a concrete follow-up."
+        }
+      ],
+      "accepted": [
+        "d3"
+      ],
+      "explanation": "Bring your pawn to d3. From d3 it controls e4. Keep watching Black's replies before advancing more pawns."
+    }
+  ]
+}
