@@ -2,12 +2,36 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { TAG_TEXT } from '../../../shared/tag-text';
 import { api, type DashboardData } from '../api';
+import { LineSeries } from '../components/charts/LineSeries';
 import { SyncButton } from '../components/SyncButton';
 import { formatDate } from '../lib/format';
 import { lessonLink } from '../lib/lesson-links';
 
 const plural = (n: number, word: string) => (n === 1 ? word : `${word}s`);
 const when = (ms: number | null) => (ms === null ? 'never' : new Date(ms).toLocaleString());
+const formatWeek = (t: number) => new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+const TREND_COLOR = '#2a78d6';
+
+/** Weekly blunders per game, and the last 4 weeks against the 4 weeks before. */
+function BlunderTrendSection({ trend }: { trend: DashboardData['blunderTrend'] }) {
+  const points = trend.weeks.map((w) => ({ x: w.weekStart, y: Math.round((w.blunders / w.games) * 10) / 10 }));
+  return (
+    <>
+      <h2>Blunders per game</h2>
+      {points.length === 0 ? (
+        <p className="muted">No analysed games yet.</p>
+      ) : (
+        <>
+          {trend.last4 !== null && (
+            <p>Last 4 weeks: {trend.last4.toFixed(1)} per game.{trend.prev4 !== null && ` Before: ${trend.prev4.toFixed(1)}.`}</p>
+          )}
+          <LineSeries series={[{ name: 'Blunders per game', color: TREND_COLOR, points }]} formatX={formatWeek}
+            xLabel="Week" yLabel="Blunders per game" fromZero />
+        </>
+      )}
+    </>
+  );
+}
 
 export function DashboardPage() {
   const navigate = useNavigate();
@@ -34,7 +58,7 @@ export function DashboardPage() {
 
   if (!data) return <section><h1>Dashboard</h1>{error ? <p className="error">{error}</p> : <p>Loading...</p>}</section>;
 
-  const { review, sync, recentGames, topTag, level, levelUp } = data;
+  const { review, sync, recentGames, topTag, level, levelUp, blunderTrend } = data;
   return (
     <section>
       <h1>
@@ -74,6 +98,7 @@ export function DashboardPage() {
           )}
         </div>
       </div>
+      <BlunderTrendSection trend={blunderTrend} />
       <h2>Recent games</h2>
       {recentGames.length === 0 ? (
         <p>No games yet. Add your usernames in Settings, then press Sync now.</p>

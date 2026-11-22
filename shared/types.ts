@@ -115,6 +115,11 @@ export interface PlayoutStep {
   winBefore: number; winAfter: number; bestUci: string | null; bestSan: string | null;
   reply: { uci: string; san: string; fen: string } | null; gameOver: boolean; feedback: string | null;
 }
+/** M17: user blunders per analysed game. `weeks` start on Monday (local time); only weeks with games. */
+export interface BlunderTrend {
+  weeks: { weekStart: number; games: number; blunders: number }[];
+  last4: number | null; prev4: number | null;
+}
 export interface ReviewSubmit { rating: Rating; answerUci: string | null; durationMs: number }
 export interface OpeningMoveCheck { playedSan: string; repertoireSan: string; repertoireName: string; loss: number }
 export interface ReviewResult { cardId: number; nextDue: number }

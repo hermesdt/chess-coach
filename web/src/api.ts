@@ -4,6 +4,7 @@ import type {
   CourseLesson,
   CourseLessonDetail,
   Color,
+  BlunderTrend,
   OpeningMoveCheck,
   PlayoutStep,
   ReviewResult,
@@ -76,6 +77,7 @@ export interface DashboardData {
   topTag: { tag: Tag; count: number; games: number } | null;
   level: CurrentLevel;
   levelUp: { from: number; to: number; message: string } | null;
+  blunderTrend: BlunderTrend;
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {

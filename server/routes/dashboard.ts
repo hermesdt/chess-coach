@@ -6,6 +6,7 @@ import { TAG_SEVERITY } from '../../shared/tag-text.js';
 import type { Tag } from '../../shared/types.js';
 import { getAnalysis, userMoveTags } from '../analysis/analysis-repo.js';
 import { listGames } from '../db/games-repo.js';
+import { blunderTrend } from '../insights/blunder-trend.js';
 import { getSetting, setSetting } from '../db/settings-repo.js';
 import { type CurrentLevel, currentLevel, type Level } from '../level.js';
 import { getLastSyncedAt } from '../sync/sync-service.js';
@@ -81,6 +82,7 @@ export function dashboardRoutes(db: DatabaseSync, now: () => number, getLessons:
         topTag: topTag(db, level.level),
         level: { level: level.level, rating: level.rating, source: level.source },
         levelUp: levelUp(db, level, getLessons, getReps),
+        blunderTrend: blunderTrend(db, now()),
       });
     })
     .post('/dashboard/level-seen', (c) => {

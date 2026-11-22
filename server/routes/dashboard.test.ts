@@ -195,3 +195,10 @@ describe('level-up banner', () => {
     });
   });
 });
+
+describe('GET /api/dashboard blunder trend', () => {
+  it('includes the blunder trend', async () => {
+    const res = await app.request('/api/dashboard');
+    expect((await res.json()).blunderTrend).toEqual({ weeks: [], last4: null, prev4: null });
+  });
+});

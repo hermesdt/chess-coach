@@ -9,7 +9,8 @@ const data = (over: Partial<DashboardData> = {}): DashboardData => ({
   review: { dueNow: 3, dueToday: 3, totalCards: 5, reviewedToday: 0, sessionSize: 3 },
   sync: { chesscom: null, lichess: null }, recentGames: [],
   topTag: { tag: 'hung_piece', count: 7, games: 30 },
-  level: { level: 2, computedLevel: 2, rating: 1000, source: 'games' }, levelUp: { from: 1, to: 2, message: 'Level 2 unlocked: 7 new lessons and 12 new opening moves.' }, ...over,
+  level: { level: 2, computedLevel: 2, rating: 1000, source: 'games' }, levelUp: { from: 1, to: 2, message: 'Level 2 unlocked: 7 new lessons and 12 new opening moves.' },
+  blunderTrend: { weeks: [], last4: null, prev4: null }, ...over,
 });
 
 afterEach(() => {
@@ -18,6 +19,30 @@ afterEach(() => {
 });
 
 describe('DashboardPage', () => {
+  it('shows blunders per game for the last 4 weeks and the 4 weeks before', async () => {
+    vi.spyOn(api, 'getDashboard').mockResolvedValue(data({
+      levelUp: null,
+      blunderTrend: { weeks: [{ weekStart: 1, games: 3, blunders: 5 }, { weekStart: 2, games: 2, blunders: 2 }], last4: 1.4, prev4: 1.83 },
+    }));
+    vi.spyOn(api, 'getSyncStatus').mockResolvedValue({ chesscom: null, lichess: null, runningJobId: null });
+    render(<MemoryRouter><DashboardPage /></MemoryRouter>);
+    await screen.findByText('Last 4 weeks: 1.4 per game. Before: 1.8.');
+    expect(screen.getByRole('heading', { name: 'Blunders per game' })).toBeTruthy();
+  });
+
+  it('says when there are no analysed games, and leaves out Before without a value', async () => {
+    vi.spyOn(api, 'getSyncStatus').mockResolvedValue({ chesscom: null, lichess: null, runningJobId: null });
+    vi.spyOn(api, 'getDashboard').mockResolvedValue(data({ levelUp: null }));
+    render(<MemoryRouter><DashboardPage /></MemoryRouter>);
+    await screen.findByText('No analysed games yet.');
+    cleanup();
+    vi.spyOn(api, 'getDashboard').mockResolvedValue(data({
+      levelUp: null, blunderTrend: { weeks: [{ weekStart: 1, games: 1, blunders: 2 }], last4: 2, prev4: null },
+    }));
+    render(<MemoryRouter><DashboardPage /></MemoryRouter>);
+    await screen.findByText('Last 4 weeks: 2.0 per game.');
+  });
+
   it('shows the level, focus text and a banner that posts level-seen on dismiss', async () => {
     vi.spyOn(api, 'getDashboard').mockResolvedValue(data());
     vi.spyOn(api, 'getSyncStatus').mockResolvedValue({ chesscom: null, lichess: null, runningJobId: null });
