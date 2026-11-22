@@ -37,7 +37,15 @@ export function PlayoutBoard({ card, onDone, onError }: {
   const counts = useRef({ firstUci: null as string | null, rewinds: 0, rewindsHere: 0, warnings: 0, startWin: null as number | null });
   const blunderStep = useRef<PlayoutStep | null>(null);
 
-  useEffect(() => () => { if (timer.current !== null) clearTimeout(timer.current); }, []);
+  /** False after unmount (for example after Skip): a late answer must not reach the next card. */
+  const alive = useRef(true);
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+      if (timer.current !== null) clearTimeout(timer.current);
+    };
+  }, []);
 
   const later = (fn: () => void) => {
     timer.current = setTimeout(() => {
@@ -107,8 +115,9 @@ export function PlayoutBoard({ card, onDone, onError }: {
     setPhase('busy');
     setHint(null);
     api.playoutStep(card.id, base, uci).then(
-      (step) => onStep(uci, step),
+      (step) => { if (alive.current) onStep(uci, step); },
       () => {
+        if (!alive.current) return;
         busy.current = false;
         setPhase('play');
         setAttempt((a) => a + 1);

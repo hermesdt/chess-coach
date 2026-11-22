@@ -133,3 +133,15 @@ it('engine error shows the message', async () => {
   expect(onError).toHaveBeenCalledWith('The engine check is not available.');
   expect(position()).toBe(START);
 });
+
+it('a step that ends after the board is gone does not call onDone', async () => {
+  let resolve: (s: PlayoutStep) => void = () => undefined;
+  vi.spyOn(api, 'playoutStep').mockImplementation(() => new Promise((r) => { resolve = r; }));
+  const done = vi.fn();
+  const { unmount } = render(<PlayoutBoard card={card} onDone={done} onError={vi.fn()} />);
+  move('e2e4');
+  unmount();
+  resolve(stepFor(START, 'e2e4', { reply: null, gameOver: true }));
+  await flush();
+  expect(done).not.toHaveBeenCalled();
+});
