@@ -1,11 +1,12 @@
 import type { DatabaseSync } from 'node:sqlite';
 import type { GameAnalysis } from '../../shared/types.js';
-import { ANALYSIS_VERSION, getAnalysis, markCardsBuilt, markLongMateCardsBuilt, markThreatCardsBuilt } from '../analysis/analysis-repo.js';
+import { ANALYSIS_VERSION, getAnalysis, markCardsBuilt, markLongMateCardsBuilt, markPlayoutCardsBuilt, markThreatCardsBuilt } from '../analysis/analysis-repo.js';
 import { getSettings } from '../config.js';
 import type { EnginePool } from '../engine/pool.js';
 import { findActiveJob, runJob } from '../jobs.js';
 import { buildLongMateCards } from './long-mate-cards.js';
 import { buildMistakeCards } from './mistake-cards.js';
+import { buildPlayoutCards } from './playout-cards.js';
 import { buildThreatCards } from './threat-cards.js';
 
 /** Games with a finished analysis at the current version whose cards were never built. Newest first. */
@@ -54,7 +55,7 @@ export function backfillMistakeCards(
   return { jobId: job.id };
 }
 
-type Marker = 'threat_cards_built_at' | 'long_mate_cards_built_at';
+type Marker = 'threat_cards_built_at' | 'long_mate_cards_built_at' | 'playout_cards_built_at';
 
 /** Games with a finished analysis at the current version whose `marker` is not set. Newest first. */
 function unbuiltBy(db: DatabaseSync, marker: Marker): number[] {
@@ -129,4 +130,13 @@ export function backfillLongMateCards(
     build: (analysis, nodes) => buildLongMateCards(db, analysis, pool, { nodes }),
     mark: (id, at) => markLongMateCardsBuilt(db, id, at),
   }, opts.nodes);
+}
+
+/** Builds play-it-out cards for analyses that have none yet. Needs no engine. Returns the job id, or null. */
+export function backfillPlayoutCards(db: DatabaseSync): { jobId: number | null } {
+  return backfillOnce(db, {
+    kind: 'playout-backfill', marker: 'playout_cards_built_at', label: 'Play-it-out cards',
+    build: async (analysis) => buildPlayoutCards(db, analysis),
+    mark: (id, at) => markPlayoutCardsBuilt(db, id, at),
+  }, undefined);
 }

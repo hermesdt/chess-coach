@@ -1,7 +1,7 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { requeuePending } from './analysis/queue.js';
 import { lazyEnginePool } from './engine/pool.js';
-import { backfillLongMateCards, backfillMistakeCards, backfillThreatCards } from './srs/backfill.js';
+import { backfillLongMateCards, backfillMistakeCards, backfillPlayoutCards, backfillThreatCards } from './srs/backfill.js';
 
 export function startBackgroundJobs(db: DatabaseSync): void {
   setImmediate(() => {
@@ -9,5 +9,6 @@ export function startBackgroundJobs(db: DatabaseSync): void {
     backfillMistakeCards(db, lazyEnginePool);
     backfillThreatCards(db, lazyEnginePool);
     backfillLongMateCards(db, lazyEnginePool);
+    backfillPlayoutCards(db);
   });
 }

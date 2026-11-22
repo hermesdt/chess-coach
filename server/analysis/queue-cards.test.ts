@@ -32,4 +32,16 @@ describe('analysis job with failing card builder', () => {
     expect(getAnalysis(db, 1)?.status).toBe('done');
     expect(log).toHaveBeenCalled();
   });
+
+  it('still builds and marks the play-it-out cards', async () => {
+    const db = openDb(':memory:');
+    insertGames(db, [game]);
+    const pool = { analyse: async (): Promise<EngineLine[]> => [{ multipv: 1, score: { cp: 0, mate: null }, pv: [] }] };
+    const log = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const { jobId } = enqueueAnalysis(db, [1], { pool, nodes: 1 });
+    await waitForJob(db, jobId as number);
+    const row = db.prepare('SELECT playout_cards_built_at AS at FROM game_analysis WHERE game_id = 1').get() as { at: number | null };
+    expect(row.at).not.toBeNull();
+    log.mockRestore();
+  });
 });

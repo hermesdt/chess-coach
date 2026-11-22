@@ -9,9 +9,10 @@ import { currentLevel } from '../level.js';
 import { buildLongMateCards } from '../srs/long-mate-cards.js';
 import { buildMateCards } from '../srs/mate-cards.js';
 import { buildMistakeCards } from '../srs/mistake-cards.js';
+import { buildPlayoutCards } from '../srs/playout-cards.js';
 import { buildThreatCards } from '../srs/threat-cards.js';
 import { analyseGame } from './analyse-game.js';
-import { ANALYSIS_VERSION, markAnalysis, markCardsBuilt, markLongMateCardsBuilt, markThreatCardsBuilt, saveAnalysis } from './analysis-repo.js';
+import { ANALYSIS_VERSION, markAnalysis, markCardsBuilt, markLongMateCardsBuilt, markPlayoutCardsBuilt, markThreatCardsBuilt, saveAnalysis } from './analysis-repo.js';
 
 export interface QueueDeps { pool: Pick<EnginePool, 'analyse'>; nodes?: number }
 
@@ -121,6 +122,13 @@ async function analyseOne(db: DatabaseSync, id: number, deps: QueueDeps): Promis
   } catch (e) {
     console.error(`Card building failed for game ${id}:`, e);
     note += ' (cards: failed)';
+  }
+  try {
+    buildPlayoutCards(db, done);
+    markPlayoutCardsBuilt(db, id, Date.now());
+  } catch (e) {
+    console.error(`Play-it-out card building failed for game ${id}:`, e);
+    note += ' (playout cards: failed)';
   }
   return note;
 }
