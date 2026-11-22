@@ -55,7 +55,6 @@ const server = serve(
     }
     recoverInterruptedJobs(db, Date.now());
     markInterruptedChats(db);
-    startBackgroundJobs(db);
     let repertoires: Repertoire[] = [];
     try {
       repertoires = loadAllRepertoires();
@@ -63,6 +62,8 @@ const server = serve(
     } catch (err) {
       console.error('opening card sync or leak scan failed:', err);
     }
+    // After the repertoires load: the play-it-out job needs them. All jobs start only after start-up yields.
+    startBackgroundJobs(db, repertoires);
     let lessons: Lesson[] = [];
     try {
       lessons = loadLessons();
