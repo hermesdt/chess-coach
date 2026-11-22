@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { CardWithState, OpeningSummary } from '../../../shared/types';
+import type { CardWithState, OpeningSummary, PlayoutStep } from '../../../shared/types';
 import { api } from '../api';
 import { resetGuideIndexCache } from '../lib/use-guide-index';
 import { ReviewPage } from './ReviewPage';
@@ -229,6 +229,43 @@ describe('ReviewPage', () => {
     it('links to the game at the position before the move', async () => {
       await open();
       expect(screen.getByRole('link', { name: 'See the game' }).getAttribute('href')).toBe('/games/7?ply=2');
+    });
+  });
+
+  describe('Play-it-out card', () => {
+    const playoutCard: CardWithState = {
+      ...card(1), kind: 'playout', prompt: 'Play 5 moves. Before each move: Is my piece safe? Can I take something for free?',
+      solution: { accepted: [], best: '', explanation: null }, refs: [{ gameId: 7, ply: 19 }],
+    };
+    const step = (over: Partial<PlayoutStep>): PlayoutStep => ({
+      san: 'e4', fenAfter: START, classification: 'good', tags: [], winBefore: 50, winAfter: 50, bestUci: 'g1f3', bestSan: 'Nf3',
+      reply: null, gameOver: false, feedback: null, ...over,
+    });
+    const open = async () => {
+      vi.spyOn(api, 'getReviewSession').mockResolvedValue({ cards: [playoutCard], dueCount: 0, newAvailable: 1 });
+      render(<MemoryRouter><ReviewPage /></MemoryRouter>);
+      await screen.findByText(playoutCard.prompt);
+    };
+
+    it('a playout card sets the default rating from the result and offers all ratings', async () => {
+      vi.spyOn(api, 'playoutStep')
+        .mockResolvedValueOnce(step({ classification: 'blunder', feedback: 'Your pawn on e4 was undefended.' }))
+        .mockResolvedValueOnce(step({ classification: 'good' }));
+      await open();
+      fireEvent.click(screen.getByText('sq-e2'));
+      fireEvent.click(screen.getByText('sq-e4'));
+      fireEvent.click(await screen.findByText('Try again'));
+      fireEvent.click(screen.getByText('sq-e2'));
+      fireEvent.click(screen.getByText('sq-e3'));
+      await screen.findByText('Rewinds: 1. Warnings: 0.');
+      expect(ratingButtons()).toEqual(['1 Again', '2 Hard', '3 Good', '4 Easy']);
+      expect(document.querySelector('.ratings button.default')?.textContent).toBe('2 Hard');
+    });
+
+    it('links to the blunder-check lesson and to the game', async () => {
+      await open();
+      expect(screen.getByRole('link', { name: 'Blunder check lesson' }).getAttribute('href')).toBe('/course/blunder-check');
+      expect(screen.getByRole('link', { name: 'See the game' }).getAttribute('href')).toBe('/games/7?ply=18');
     });
   });
 

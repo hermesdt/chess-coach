@@ -6,8 +6,10 @@ import { DrillBoard, type DrillArrow } from '../components/DrillBoard';
 import { PlanChoices } from '../components/plan/PlanChoices';
 import { ThreatStep } from '../components/ThreatStep';
 import { MateLine } from '../components/MateLine';
+import { PlayoutBoard } from '../components/PlayoutBoard';
 import { bestSan, checkAnswer, threatRating } from '../lib/drill';
 import { REVIEW_FINISHED } from '../lib/events';
+import { playoutRating } from '../lib/playout';
 import { partForNode, planHref } from '../lib/guide-links';
 import { useGuideIndex } from '../lib/use-guide-index';
 
@@ -182,7 +184,8 @@ export function ReviewPage() {
     }
   };
 
-  const failed = answer !== null && card !== undefined
+  // A play-it-out card has no single right move: the owner may pick any rating.
+  const failed = answer !== null && card !== undefined && card.kind !== 'playout'
     && (card.kind === 'threat' ? !answer.correct || !threatResult?.correct : !answer.correct && !isGoodAlternative(answer));
 
   useEffect(() => {
@@ -242,8 +245,19 @@ export function ReviewPage() {
         <div style={{ width: `${(index / cards.length) * 100}%` }} />
       </div>
       <p>{card.prompt}</p>
+      {card.kind === 'playout' && <p className="muted"><Link to="/course/blunder-check">Blunder check lesson</Link></p>}
       {inThreatStep ? (
         <ThreatStep key={card.id} card={card} onDone={setThreatResult} />
+      ) : card.kind === 'playout' ? (
+        <PlayoutBoard key={`${card.id}-${index}`} card={card}
+          onDone={(r) => {
+            setError(null);
+            setAnswer({ cardId: card.id, uci: r.firstUci, correct: r.rewinds === 0, rating: playoutRating(r) });
+          }}
+          onError={(message) => {
+            setError(message);
+            setCanSkip(true);
+          }} />
       ) : card.kind === 'mate' && card.solution.tree ? (
         <MateLine key={`${card.id}-${index}`} card={card} onDone={({ firstUci, correct }) => {
           setAnswer({ cardId: card.id, uci: firstUci, correct, rating: correct ? 'good' : 'again' });
@@ -286,7 +300,7 @@ export function ReviewPage() {
       )}
       {answer && (
         <>
-          {!(card.kind === 'mate' && card.solution.tree) && <p className={`feedback ${answer.correct ? 'correct' : 'wrong'}`}>
+          {!(card.kind === 'mate' && card.solution.tree) && card.kind !== 'playout' && <p className={`feedback ${answer.correct ? 'correct' : 'wrong'}`}>
             {card.kind === 'mate'
               ? answer.correct
                 ? 'Correct. This is the fastest mate.'
@@ -329,7 +343,7 @@ export function ReviewPage() {
         </>
       )}
       <p className="muted">
-        {gameHref && (card.kind === 'mistake' || card.kind === 'mate' || card.kind === 'threat') && <><Link to={gameHref}>See the game</Link> · </>}
+        {gameHref && (card.kind === 'mistake' || card.kind === 'mate' || card.kind === 'threat' || card.kind === 'playout') && <><Link to={gameHref}>See the game</Link> · </>}
         <button type="button" className="link" onClick={() => setFlagOpen((o) => !o)}>Report a problem</button>
       </p>
       {flagOpen && (
