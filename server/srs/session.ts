@@ -27,23 +27,23 @@ function withState(db: DatabaseSync, id: number, due: number | null): CardWithSt
   return { ...card, due, isNew: due === null };
 }
 
-const KIND_ORDER: CardKind[] = ['mistake', 'mate', 'threat', 'opening', 'lesson', 'plan'];
+const KIND_ORDER: CardKind[] = ['mistake', 'mate', 'threat', 'playout', 'opening', 'lesson', 'plan'];
 /** Tie-break order for quotas and for handing out unused quota. */
-const QUOTA_ORDER: CardKind[] = ['mistake', 'mate', 'threat', 'lesson', 'plan', 'opening'];
+const QUOTA_ORDER: CardKind[] = ['mistake', 'mate', 'threat', 'playout', 'lesson', 'plan', 'opening'];
 
-/** Share of the new-card cap per kind, by level. */
+/** Share of the new-card cap per kind, by level. Shares are multiples of 0.05. */
 export const NEW_MIX: Record<Level, Record<CardKind, number>> = {
-  1: { mistake: 0.2, mate: 0.1, threat: 0.15, lesson: 0.3, plan: 0.1, opening: 0.15 },
-  2: { mistake: 0.15, mate: 0.1, threat: 0.15, lesson: 0.25, plan: 0.1, opening: 0.25 },
-  3: { mistake: 0.1, mate: 0.1, threat: 0.15, lesson: 0.15, plan: 0.15, opening: 0.35 },
+  1: { mistake: 0.15, mate: 0.1, threat: 0.1, lesson: 0.2, plan: 0.1, opening: 0.05, playout: 0.3 },
+  2: { mistake: 0.15, mate: 0.1, threat: 0.1, lesson: 0.2, plan: 0.1, opening: 0.15, playout: 0.2 },
+  3: { mistake: 0.1, mate: 0.1, threat: 0.1, lesson: 0.15, plan: 0.15, opening: 0.25, playout: 0.15 },
 };
 
-/** Split `newPerDay` by the level mix. Largest remainder; ties go in quota order (mistake, mate, threat, lesson, plan, opening). The sum is `newPerDay`. */
+/** Split `newPerDay` by the level mix. Largest remainder; ties go in quota order (mistake, mate, threat, playout, lesson, plan, opening). The sum is `newPerDay`. */
 export function newQuotas(level: Level, newPerDay: number): Record<CardKind, number> {
   const mix = NEW_MIX[level];
   // Work in hundredths of a card so the shares (multiples of 0.05) stay exact.
   const exact = QUOTA_ORDER.map((k) => ({ k, units: Math.round(mix[k] * 100) * newPerDay }));
-  const quotas: Record<CardKind, number> = { mistake: 0, mate: 0, lesson: 0, plan: 0, opening: 0, threat: 0 };
+  const quotas: Record<CardKind, number> = { mistake: 0, mate: 0, lesson: 0, plan: 0, opening: 0, threat: 0, playout: 0 };
   for (const e of exact) quotas[e.k] = Math.floor(e.units / 100);
   let left = newPerDay - QUOTA_ORDER.reduce((sum, k) => sum + quotas[k], 0);
   const byRemainder = [...exact].sort((a, b) => (b.units % 100) - (a.units % 100));
@@ -55,7 +55,7 @@ export function newQuotas(level: Level, newPerDay: number): Record<CardKind, num
   return quotas;
 }
 
-/** Round-robin over kinds (mistake, mate, threat, opening, lesson, plan), skipping a kind that ran out. Keeps order within a kind. */
+/** Round-robin over kinds (mistake, mate, threat, playout, opening, lesson, plan), skipping a kind that ran out. Keeps order within a kind. */
 function interleaveKinds(rows: { id: number; kind: string }[]): { id: number }[] {
   const queues = KIND_ORDER.map((k) => rows.filter((r) => r.kind === k));
   const out: { id: number }[] = [];

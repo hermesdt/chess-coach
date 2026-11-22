@@ -133,10 +133,10 @@ describe('priority cards', () => {
 
 describe('newQuotas', () => {
   it('splits a daily cap by the level mix', () => {
-    expect(newQuotas(1, 10)).toEqual({ mistake: 2, mate: 1, threat: 2, lesson: 3, plan: 1, opening: 1 });
-    expect(newQuotas(2, 10)).toEqual({ mistake: 2, mate: 1, threat: 2, lesson: 2, plan: 1, opening: 2 });
-    expect(newQuotas(3, 10)).toEqual({ mistake: 1, mate: 1, threat: 2, lesson: 2, plan: 1, opening: 3 });
-    expect(newQuotas(1, 20)).toEqual({ mistake: 4, mate: 2, threat: 3, lesson: 6, plan: 2, opening: 3 });
+    expect(newQuotas(1, 10)).toEqual({ mistake: 2, mate: 1, threat: 1, playout: 3, lesson: 2, plan: 1, opening: 0 });
+    expect(newQuotas(2, 10)).toEqual({ mistake: 2, mate: 1, threat: 1, playout: 2, lesson: 2, plan: 1, opening: 1 });
+    expect(newQuotas(3, 10)).toEqual({ mistake: 1, mate: 1, threat: 1, playout: 2, lesson: 2, plan: 1, opening: 2 });
+    expect(newQuotas(1, 20)).toEqual({ mistake: 3, mate: 2, threat: 2, playout: 6, lesson: 4, plan: 2, opening: 1 });
   });
 
   it('sums to a cap of 20 at every level', () => {
@@ -151,25 +151,32 @@ describe('newQuotas', () => {
   });
 
   it('keeps the sum equal to the cap, with ties going in quota order', () => {
-    expect(newQuotas(3, 2)).toEqual({ mistake: 0, mate: 0, threat: 1, lesson: 0, plan: 0, opening: 1 });
+    expect(newQuotas(3, 2)).toEqual({ mistake: 0, mate: 0, threat: 0, playout: 1, lesson: 0, plan: 0, opening: 1 });
     for (const level of [1, 2, 3] as const) {
       for (let cap = 0; cap <= 40; cap++) {
         const q = newQuotas(level, cap);
-        expect(q.mistake + q.mate + q.threat + q.lesson + q.plan + q.opening).toBe(cap);
+        expect(q.mistake + q.mate + q.threat + q.playout + q.lesson + q.plan + q.opening).toBe(cap);
       }
     }
-    expect(newQuotas(2, 1)).toEqual({ mistake: 0, mate: 0, threat: 0, lesson: 1, plan: 0, opening: 0 });
+    expect(newQuotas(2, 1)).toEqual({ mistake: 0, mate: 0, threat: 0, playout: 1, lesson: 0, plan: 0, opening: 0 });
   });
 
   it('has shares that add up to 1 at every level', () => {
     for (const level of [1, 2, 3] as const) {
       const m = NEW_MIX[level];
-      expect(m.mistake + m.mate + m.threat + m.lesson + m.plan + m.opening).toBeCloseTo(1);
+      expect(m.mistake + m.mate + m.threat + m.playout + m.lesson + m.plan + m.opening).toBeCloseTo(1);
     }
   });
 
-  it('gives threat cards 15 % at levels 1 to 3', () => {
-    for (const level of [1, 2, 3] as const) expect(NEW_MIX[level].threat).toBe(0.15);
+  it('gives threat cards 10 % at levels 1 to 3', () => {
+    for (const level of [1, 2, 3] as const) expect(NEW_MIX[level].threat).toBe(0.1);
+  });
+
+  it('gives play-it-out cards the largest new share at level 1 and cuts openings', () => {
+    expect(NEW_MIX[1]).toEqual({ mistake: 0.15, mate: 0.1, threat: 0.1, lesson: 0.2, plan: 0.1, opening: 0.05, playout: 0.3 });
+    expect(NEW_MIX[2].opening).toBe(0.15);
+    expect(NEW_MIX[3].playout).toBe(0.15);
+    expect(newQuotas(1, 10)).toEqual({ mistake: 2, mate: 1, threat: 1, playout: 3, lesson: 2, plan: 1, opening: 0 });
   });
 });
 
@@ -189,7 +196,7 @@ describe('level mix in the session', () => {
   it('serves new cards by the level-3 quotas', () => {
     for (let i = 0; i < 10; i++) { addKind('mistake'); addKind('lesson', 'a'); addKind('opening'); }
     const s = buildSession(db, NOW, { daily: 20, newPerDay: 10, level: 3 });
-    expect([count(s, 'mistake'), count(s, 'lesson'), count(s, 'opening')]).toEqual([3, 3, 4]);
+    expect([count(s, 'mistake'), count(s, 'lesson'), count(s, 'opening')]).toEqual([3, 4, 3]);
   });
 
   it('keeps the interleaving of kinds inside the session', () => {
@@ -214,13 +221,13 @@ describe('level mix in the session', () => {
   it('serves new threat cards in the session', () => {
     for (let i = 0; i < 10; i++) { addKind('mistake'); addKind('threat'); }
     const s = buildSession(db, NOW, { daily: 20, newPerDay: 10, level: 1 });
-    expect([count(s, 'mistake'), count(s, 'threat')]).toEqual([5, 5]);
+    expect([count(s, 'mistake'), count(s, 'threat')]).toEqual([6, 4]);
   });
 
   it('passes an unused threat quota on in quota order', () => {
     for (let i = 0; i < 10; i++) { addKind('mistake'); addKind('mate'); addKind('lesson', 'a'); addKind('opening'); }
     const s = buildSession(db, NOW, { daily: 40, newPerDay: 20, level: 1 });
-    expect([count(s, 'mistake'), count(s, 'mate'), count(s, 'threat'), count(s, 'lesson'), count(s, 'opening')]).toEqual([6, 3, 0, 7, 4]);
+    expect([count(s, 'mistake'), count(s, 'mate'), count(s, 'threat'), count(s, 'lesson'), count(s, 'opening')]).toEqual([6, 5, 0, 6, 3]);
   });
 
   it('shows a lesson card at a zero lesson quota when no other kind has a new card', () => {
@@ -243,7 +250,7 @@ describe('level mix in the session', () => {
   it('serves plan cards by the level-1 quota and interleaves them last', () => {
     for (let i = 0; i < 10; i++) { addKind('mistake'); addKind('lesson', 'a'); addPlan('p'); addKind('opening'); }
     const s = buildSession(db, NOW, { daily: 40, newPerDay: 20, level: 1 });
-    expect([count(s, 'mistake'), count(s, 'lesson'), count(s, 'plan'), count(s, 'opening')]).toEqual([6, 7, 3, 4]);
+    expect([count(s, 'mistake'), count(s, 'lesson'), count(s, 'plan'), count(s, 'opening')]).toEqual([6, 7, 4, 3]);
     expect(kinds(s.cards.map((c) => c.id)).slice(0, 4)).toEqual(['mistake', 'opening', 'lesson', 'plan']);
   });
 

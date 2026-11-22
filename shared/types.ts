@@ -81,7 +81,7 @@ export interface AnalysisBadge { accuracyUser: number | null; blunders: number; 
 export interface MateStep { uci: string; san: string; defence: { uci: string; san: string } | null; next: MateNode | null }
 /** A position where the owner mates in `mateIn` moves. `accepted[0]` is the main line. */
 export interface MateNode { mateIn: number; accepted: MateStep[] }
-export type CardKind = 'opening' | 'mistake' | 'lesson' | 'plan' | 'mate' | 'threat';
+export type CardKind = 'opening' | 'mistake' | 'lesson' | 'plan' | 'mate' | 'threat' | 'playout';
 export type Rating = 'again' | 'hard' | 'good' | 'easy';
 export interface CardRef { gameId?: number; ply?: number; repertoire?: string; nodeId?: string; lessonId?: string; planId?: string; exerciseId?: string; source?: 'chat' }
 export interface Card {
