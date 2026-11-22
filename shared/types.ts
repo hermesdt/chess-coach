@@ -109,6 +109,12 @@ export interface ChatMessageDTO {
   provider: ProviderId | null; model: string | null; createdAt: number;
 }
 export interface CardWithState extends Card { due: number | null; isNew: boolean; repertoireName?: string }
+/** M17: the result of one owner move in a play-it-out card. Win % values are the owner's view. */
+export interface PlayoutStep {
+  san: string; fenAfter: string; classification: Classification; tags: Tag[];
+  winBefore: number; winAfter: number; bestUci: string | null; bestSan: string | null;
+  reply: { uci: string; san: string; fen: string } | null; gameOver: boolean; feedback: string | null;
+}
 export interface ReviewSubmit { rating: Rating; answerUci: string | null; durationMs: number }
 export interface OpeningMoveCheck { playedSan: string; repertoireSan: string; repertoireName: string; loss: number }
 export interface ReviewResult { cardId: number; nextDue: number }

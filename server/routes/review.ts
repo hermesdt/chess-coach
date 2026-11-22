@@ -7,6 +7,7 @@ import type { Lesson, Rating, ReviewSubmit } from '../../shared/types.js';
 import { addFlag, getCard, listFlagDetails, listFlags, recordReview, restoreFlaggedCard } from '../srs/cards-repo.js';
 import type { Repertoire } from '../repertoire/types.js';
 import { checkMove } from '../srs/check-move.js';
+import { PlayoutInputError, playoutStep } from '../srs/playout-step.js';
 import type { EngineCache } from '../engine/cache.js';
 import { buildSession, sessionLimits } from '../srs/session.js';
 import { reviewStats } from '../srs/stats.js';
@@ -71,6 +72,25 @@ export function reviewRoutes(db: DatabaseSync, now: () => number, pool: Pick<Eng
         return c.json({ ...result, repertoireName });
       } catch (e) {
         console.error('[review-check] engine check failed:', e);
+        return c.json({ error: 'Engine not available.' }, 503);
+      }
+    })
+    .post('/review/cards/:id/playout-step', async (c) => {
+      const id = parseId(c.req.param('id'));
+      const card = id === null ? null : getCard(db, id);
+      if (!card) return c.json({ error: 'card not found' }, 404);
+      if (card.kind !== 'playout') return c.json({ error: 'not a play-it-out card' }, 400);
+      const body = (await c.req.json().catch(() => null)) as { fen?: unknown; uci?: unknown } | null;
+      if (body === null || typeof body !== 'object' || typeof body.fen !== 'string' || typeof body.uci !== 'string') {
+        return c.json({ error: 'fen and uci must be strings' }, 400);
+      }
+      const toMove = body.fen.split(' ')[1] === 'w' ? 'white' : body.fen.split(' ')[1] === 'b' ? 'black' : null;
+      if (toMove !== card.sideToMove) return c.json({ error: 'it is not your move in this position' }, 400);
+      try {
+        return c.json(await playoutStep(body.fen, body.uci, pool, cache));
+      } catch (e) {
+        if (e instanceof PlayoutInputError) return c.json({ error: 'illegal move' }, 400);
+        console.error('[review-playout] engine check failed:', e);
         return c.json({ error: 'Engine not available.' }, 503);
       }
     })

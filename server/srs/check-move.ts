@@ -1,6 +1,7 @@
 import { Chess } from 'chess.js';
 import type { EngineCache } from '../engine/cache.js';
 import type { EnginePool } from '../engine/pool.js';
+import type { EngineLines } from '../engine/uci.js';
 import { moverWinAfter } from '../analysis/winpct.js';
 
 export const CHECK_NODES = 200_000;
@@ -15,6 +16,22 @@ function play(fen: string, uci: string): { san: string; fenAfter: string } | nul
   }
 }
 
+/** Engine lines (multipv 1) for a position, from the cache when a search of at least `nodes` is stored. */
+export async function analyseCached(
+  fen: string,
+  pool: Pick<EnginePool, 'analyse'>,
+  cache: EngineCache | undefined,
+  nodes: number = CHECK_NODES,
+): Promise<EngineLines> {
+  let lines = cache?.get(fen, 1, nodes) ?? null;
+  if (!lines) {
+    lines = await pool.analyse(fen, { nodes, multipv: 1 });
+    if (lines.nodes !== undefined && lines.length > 0) cache?.set(fen, 1, lines, lines.nodes);
+  }
+  if (lines.length === 0) throw new Error('No engine line');
+  return lines;
+}
+
 /** Mover's win % after the move. A finished game needs no search. */
 async function winAfter(
   fenAfter: string,
@@ -24,12 +41,7 @@ async function winAfter(
   const chess = new Chess(fenAfter);
   if (chess.isCheckmate()) return 100;
   if (chess.isGameOver()) return 50;
-  let lines = cache?.get(fenAfter, 1, CHECK_NODES) ?? null;
-  if (!lines) {
-    lines = await pool.analyse(fenAfter, { nodes: CHECK_NODES, multipv: 1 });
-    if (lines.nodes !== undefined && lines.length > 0) cache?.set(fenAfter, 1, lines, lines.nodes);
-  }
-  if (lines.length === 0) throw new Error('No engine line');
+  const lines = await analyseCached(fenAfter, pool, cache);
   return moverWinAfter(lines[0]!.score);
 }
 
