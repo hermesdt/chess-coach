@@ -45,7 +45,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M16b | 1.e4 repertoire, part 2: Grand Prix Attack vs the Sicilian (2.Nc3, f4) | done | `docs/superpowers/plans/2026-11-16-m16b-grand-prix.md` |
 | M16c | 1.e4 repertoire, part 3: Advance Variation vs the French and the Caro-Kann | done | `docs/superpowers/plans/2026-11-16-m16c-advance.md` |
 | M16d | 1.e4 repertoire, part 4: Scandinavian and the rest (1...Nf6, 1...d6/g6, 1...Nc6), main lines kept simple | done | `docs/superpowers/plans/2026-11-16-m16d-other-e4.md` |
-| M17 | Play-it-out cards: play 5 moves from a middlegame position (own games, repertoire ends) against Stockfish; live tag feedback; blunders show the reply, then rewind; fewer new opening cards; blunders-per-game chart | planned | spec `docs/superpowers/specs/2026-11-22-m17-play-it-out-design.md`, plan `docs/superpowers/plans/2026-11-22-m17-play-it-out.md` |
+| M17 | Play-it-out cards: play 5 moves from a middlegame position (own games, repertoire ends) against Stockfish; live tag feedback; blunders show the reply, then rewind; fewer new opening cards; blunders-per-game chart | done | spec `docs/superpowers/specs/2026-11-22-m17-play-it-out-design.md`, plan `docs/superpowers/plans/2026-11-22-m17-play-it-out.md` |
 
 ## Log
 
@@ -566,6 +566,22 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   `server/sync/lichess.test.ts` "calls onBatch every 100 games and at the end".
 
 ## Next session
+
+- **M17 done (2026-11-22).** New `playout` card kind. Own games give 98 cards
+  (63 games, start two owner moves before a blunder or mistake at moves 10–25,
+  25–75 win %); level-1 repertoire ends give 121 (3 skipped), checked once
+  each with Stockfish (setting `playout_repertoire_checked`). Step endpoint
+  `POST /api/review/cards/:id/playout-step` judges each move with Stockfish
+  (`CHECK_NODES`, cache), `classify` and `materialTags`; fixed feedback texts.
+  Blunders show the reply, then rewind; hint after two rewinds. Level-1 mix:
+  playout 30 %, opening 5 %, threat 10 %. Dashboard "Blunders per game" chart.
+  1600 tests (from 1543), typecheck/lint/build pass; content OK, 211 warnings
+  (second run; the first timed out in Stockfish under test and smoke load).
+  Headless Chrome smoke: blunder text, rewind, 5 moves, summary, default
+  Hard, dashboard chart, no page errors. Author self-review, no subagents; one
+  fix (late step after Skip). Review: `docs/superpowers/notes/2026-11-22-m17-review.md`.
+  Backup: `data/backups/pre-m17-2026-11-22.db`. Next: the owner uses the cards
+  for some weeks; then compare blunders per game before choosing M18.
 
 - **M17 agreed (2026-11-22).** The owner stopped training in November: no
   felt progress, too much memorization, and "after 10–15 moves I don't know
