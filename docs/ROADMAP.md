@@ -45,6 +45,7 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
 | M16b | 1.e4 repertoire, part 2: Grand Prix Attack vs the Sicilian (2.Nc3, f4) | done | `docs/superpowers/plans/2026-11-16-m16b-grand-prix.md` |
 | M16c | 1.e4 repertoire, part 3: Advance Variation vs the French and the Caro-Kann | done | `docs/superpowers/plans/2026-11-16-m16c-advance.md` |
 | M16d | 1.e4 repertoire, part 4: Scandinavian and the rest (1...Nf6, 1...d6/g6, 1...Nc6), main lines kept simple | done | `docs/superpowers/plans/2026-11-16-m16d-other-e4.md` |
+| M17 | Play-it-out cards: play 5 moves from a middlegame position (own games, repertoire ends) against Stockfish; live tag feedback; blunders show the reply, then rewind; fewer new opening cards; blunders-per-game chart | planned | spec `docs/superpowers/specs/2026-11-22-m17-play-it-out-design.md` |
 
 ## Log
 
@@ -565,6 +566,14 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   `server/sync/lichess.test.ts` "calls onBatch every 100 games and at the end".
 
 ## Next session
+
+- **M17 agreed (2026-11-22).** The owner stopped training in November: no
+  felt progress, too much memorization, and "after 10–15 moves I don't know
+  what to do and blunder". Data: about 1.8 blunders per game, most on moves
+  11–20, mostly `hung_piece` and `missed_capture`. Owner's short-term signal:
+  fewer blunders. Owner chose play-it-out cards in the daily review (option 1)
+  and "show, then rewind" for blunders (option B). Spec:
+  `docs/superpowers/specs/2026-11-22-m17-play-it-out-design.md`. Next: plan.
 
 - **M16d done (2026-11-16).** Other Replies adds 301 nodes (93 level 1,
   106 level 2, 102 level 3), sixteen first-reply roots, six guide sections and
