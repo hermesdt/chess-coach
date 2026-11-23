@@ -656,9 +656,9 @@ Design: `docs/superpowers/specs/2026-10-18-chess-coach-design.md`.
   `docs/superpowers/notes/2026-11-16-m16a-final-review.md`.
   Shared e4-root matching was subsequently resolved in M16b.
 
-- M1 through M16d are done, including all four planned 1.e4 parts.
-  No further milestone is agreed; use the app and review actual game leaks
-  before choosing the next feature.
+- M1 through M17 are done, including all four planned 1.e4 parts (M16a–d) and
+  play-it-out cards (M17). No further milestone is agreed; use the app and
+  compare blunders per game before choosing M18.
 - **M15 done (2026-11-13).** 1484 tests, typecheck, lint, production build and
   isolated health check pass. Full content validation passes with 147 warnings:
   the first run timed out in Stockfish; a verification-only retry used the same
